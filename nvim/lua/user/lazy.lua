@@ -228,6 +228,11 @@ return {
   { "andymass/vim-matchup" },
   { "mrjones2014/nvim-ts-rainbow" },
   { "Wansmer/treesj" },
+  {
+    "ckolkey/ts-node-action",
+    -- dependencies = { "nvim-treesitter" },
+    opts = {},
+  },
 
   -- Hop, leap
   {

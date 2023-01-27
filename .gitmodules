@@ -1,0 +1,12 @@
+[submodule "oh-my-zsh/custom/plugins/conda-zsh-completion"]
+	path = oh-my-zsh/custom/plugins/conda-zsh-completion
+	url = https://github.com/conda-incubator/conda-zsh-completion
+[submodule "oh-my-zsh/custom/plugins/zsh-autosuggestions"]
+	path = oh-my-zsh/custom/plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions
+[submodule "oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
+	path = oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting
+[submodule "oh-my-zsh/custom/plugins/zsh-vi-mode"]
+	path = oh-my-zsh/custom/plugins/zsh-vi-mode
+	url = https://github.com/jeffreytse/zsh-vi-mode

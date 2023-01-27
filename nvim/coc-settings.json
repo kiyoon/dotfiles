@@ -1,0 +1,13 @@
+{
+  "sumneko-lua.enableNvimLuaDev": true,
+  "Lua.telemetry.enable": false,
+  "signature.enable": false,
+  "pyright.disableCompletion": true,
+  "pyright.disableDiagnostics": true,
+  "pyright.disableDocumentation": true,
+  "pyright.disableProgressNotifications": true,
+  "pyright.completion.importSupport": false,
+  "pyright.completion.snippetSupport": false,
+  "pyright.inlayHints.variableTypes": true,
+  "pyright.inlayHints.functionReturnTypes": true
+}

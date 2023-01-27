@@ -26,6 +26,7 @@ dashboard.section.buttons.val = {
   -- dashboard.button("p", " " .. " Recent projects", ":lua require('telescope').extensions.projects.projects()<CR>"),
   dashboard.button("w", "  Find word (\\fw)", "<cmd>Telescope live_grep<cr>"),
   dashboard.button("d", " " .. " Diff view (\\dv)", "<cmd>DiffviewOpen<CR>"),
+  dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>ChatGPT<CR>"),
   dashboard.button("l", " " .. " Install language support (:Mason)", ":Mason<CR>"),
   dashboard.button("p", " " .. " Plugins", "<cmd>Lazy<CR>"),
   dashboard.button("c", " " .. " Neovim config", ":e $MYVIMRC <CR>"),

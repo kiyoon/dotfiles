@@ -677,6 +677,11 @@ return {
   },
   {
     "jackMort/ChatGPT.nvim",
+    init = function()
+      require("which-key").register {
+        ["<leader>c"] = { name = "ChatGPT" },
+      }
+    end,
     config = function()
       require("chatgpt").setup {
         -- optional configuration
@@ -686,6 +691,28 @@ return {
       "MunifTanjim/nui.nvim",
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim",
+    },
+    cmd = {
+      "ChatGPT",
+      "ChatGPTEditWithInstructions",
+      "ChatGPTActAs",
+      "ChatGPTRunCustomCodeAction",
+    },
+    keys = {
+      { "<leader>cg", "<cmd>ChatGPT<CR>", mode = { "n", "x" }, desc = "ChatGPT" },
+      {
+        "<leader>ce",
+        "<cmd>ChatGPTEditWithInstructions<CR>",
+        mode = { "n", "x" },
+        desc = "ChatGPT Edit With Instructions",
+      },
+      { "<leader>ca", "<cmd>ChatGPTActAs<CR>", mode = { "n", "x" }, desc = "ChatGPT Act As" },
+      {
+        "<leader>cc",
+        "<cmd>ChatGPTRunCustomCodeAction<CR>",
+        mode = { "n", "x" },
+        desc = "ChatGPT Run Custom Code Action",
+      },
     },
   },
 }

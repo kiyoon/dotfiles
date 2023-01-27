@@ -21,7 +21,10 @@ null_ls.setup {
     formatting.stylua,
     formatting.google_java_format,
     diagnostics.flake8.with {
-      extra_args = { "--ignore=F821" }, -- ignore undefined name errors because pyright handles them
+      extra_args = {
+        "--ignore=F821", -- ignore undefined name errors because pyright handles them
+        "--max-line-length=88", -- black style
+      },
     },
   },
   -- format on save

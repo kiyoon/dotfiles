@@ -65,3 +65,5 @@ nmap <leader><leader>g <Cmd>let g:quit_nvim_hand_gesture = 1<CR>
 
 local vscodepath = vim.fn.stdpath "config" .. "/vscode.vim"
 vim.cmd("source " .. vscodepath)
+
+require "user.menu"

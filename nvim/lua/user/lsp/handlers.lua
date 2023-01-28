@@ -1,13 +1,12 @@
 local M = {}
 
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-if not status_cmp_ok then
-  return
-end
 
-M.capabilities = vim.lsp.protocol.make_client_capabilities()
-M.capabilities.textDocument.completion.completionItem.snippetSupport = true
-M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
+if status_cmp_ok then
+  M.capabilities = vim.lsp.protocol.make_client_capabilities()
+  M.capabilities.textDocument.completion.completionItem.snippetSupport = true
+  M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
+end
 
 M.setup = function()
   local signs = {
@@ -85,10 +84,12 @@ local function lsp_keymaps(bufnr)
     keymap("n", "<Tab>", "<cmd>PyrightOrganizeImports<cr>", opts)
   end
 
-  local wk = require "which-key"
-  wk.register {
-    ["<space>p"] = { name = "LSP (language server)" },
-  }
+  local status, wk = pcall(require, "which-key")
+  if status then
+    wk.register {
+      ["<space>p"] = { name = "LSP (language server)" },
+    }
+  end
 end
 
 M.on_attach = function(client, bufnr)

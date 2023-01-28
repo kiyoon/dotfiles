@@ -25,17 +25,14 @@ ghremote() {
 
 
 envpull() {
-	git -C ~/bin/vimrc4ubuntu pull
-	~/bin/vimrc4ubuntu/install-linux.sh
-	nvim +PlugInstall +qall
-	nvim +PlugUpdate +qall
+	git -C ~/.config/dotfiles pull
+	~/.config/dotfiles/nvim/install-linux.sh
+	nvim --headless '+Lazy update' +qall
 
-	git -C ~/bin/tmux-conf pull
 	~/.tmux/plugins/tpm/scripts/install_plugins.sh
 	~/.tmux/plugins/tpm/scripts/update_plugin.sh all
 
-	git -C ~/bin/oh-my-zsh-custom pull
-	~/bin/oh-my-zsh-custom/apps-local-install.sh
+	~/.config/dotfiles/oh-my-zsh/apps-local-install.sh
 	omz reload
 }
 

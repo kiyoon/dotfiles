@@ -67,3 +67,9 @@ local vscodepath = vim.fn.stdpath "config" .. "/vscode.vim"
 vim.cmd("source " .. vscodepath)
 
 require "user.menu"
+
+vim.o.foldmethod = "expr"
+vim.o.foldcolumn = "auto:9"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+-- open folds by default
+vim.cmd [[autocmd BufReadPost,FileReadPost * normal zR]]

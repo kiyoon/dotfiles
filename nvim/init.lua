@@ -70,6 +70,7 @@ require "user.menu"
 
 vim.o.foldmethod = "expr"
 vim.o.foldcolumn = "auto:9"
+vim.o.foldminlines = 15
 vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 -- open folds by default
 vim.cmd [[autocmd BufReadPost,FileReadPost * normal zR]]

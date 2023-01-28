@@ -284,10 +284,12 @@ return {
   -- Beautiful command menu
   {
     "gelguy/wilder.nvim",
+    build = ":UpdateRemotePlugins",
     dependencies = {
       "romgrk/fzy-lua-native",
       "nixprime/cpsm",
     },
+    event = "CmdlineEnter",
     config = function()
       require "user.wilder"
     end,

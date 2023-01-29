@@ -122,3 +122,4 @@ else
 fi
 
 cargo install viu # --features=sixel
+cargo install bat

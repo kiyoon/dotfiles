@@ -50,14 +50,6 @@ bash apps-local-install.sh
 mkdir ~/.local/bin -p
 sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$HOME/.local/bin" -y
 
-##### zoxide
-curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-
-##### fzf
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-
-pip3 install --user pygments		# colorize (ccat)
-pip3 install --user thefuck			# fix last command
 conda config --set changeps1 False	# suppress conda environment name in favour of Starship
 ```
 

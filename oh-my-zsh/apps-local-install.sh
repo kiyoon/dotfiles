@@ -2,6 +2,14 @@
 
 INSTALL_DIR="$HOME/.local"
 
+##### zoxide
+curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+
+##### fzf
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+
+pip3 install --user pygments		# colorize (ccat)
+pip3 install --user thefuck			# fix last command
 
 if ! command -v npm &> /dev/null
 then

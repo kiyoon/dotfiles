@@ -8,7 +8,8 @@ local servers = {
   "jsonls",
   "yamlls",
   "vimls",
-  -- "pylsp",
+  "dockerls",
+  -- "rust_analyzer", -- use rust-tools.nvim instead
 }
 
 local settings = {

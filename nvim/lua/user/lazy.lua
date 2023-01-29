@@ -80,7 +80,8 @@ return {
       vim.g.wordmotion_prefix = "<space>"
     end,
   },
-  "github/copilot.vim",
+  -- "github/copilot.vim",
+  "Exafunction/codeium.vim",
   {
     "nvim-lualine/lualine.nvim",
     cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
@@ -309,17 +310,18 @@ return {
       vim.cmd [[
         hi link CocInlayHint Comment
         call coc#add_extension('coc-pyright')
-        call coc#add_extension('coc-sh')
-        call coc#add_extension('coc-clangd')
-        call coc#add_extension('coc-vimlsp')
-        call coc#add_extension('coc-java')
-        call coc#add_extension('coc-html')
-        call coc#add_extension('coc-css')
-        call coc#add_extension('coc-json')
-        call coc#add_extension('coc-yaml')
-        call coc#add_extension('coc-markdownlint')
-        " call coc#add_extension('coc-sumneko-lua')
-        " call coc#add_extension('coc-snippets')
+        " CocUninstall coc-sh
+        " CocUninstall coc-clangd
+        " CocUninstall coc-vimlsp
+        " CocUninstall coc-java
+        " CocUninstall coc-html
+        " CocUninstall coc-css
+        " CocUninstall coc-json
+        " CocUninstall coc-yaml
+        " CocUninstall coc-markdownlint
+        " CocUninstall coc-sumneko-lua
+        " CocUninstall coc-snippets
+        " CocUninstall coc-actions
       ]]
     end,
   },
@@ -388,6 +390,27 @@ return {
         verbose = true, -- show debug line number
       }
       require("lsp_signature").setup(cfg)
+    end,
+  },
+  {
+    "simrat39/rust-tools.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "mfussenegger/nvim-dap",
+      "neovim/nvim-lspconfig",
+    },
+    config = function()
+      local rt = require "rust-tools"
+      rt.setup {
+        server = {
+          on_attach = function(_, bufnr)
+            -- Hover actions
+            vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+            -- Code action groups
+            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+          end,
+        },
+      }
     end,
   },
 

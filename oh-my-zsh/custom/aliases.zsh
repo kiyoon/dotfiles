@@ -1,4 +1,8 @@
 
+if (( $+commands[bat] )); then
+	alias cat='bat'
+fi
+
 if (( $+commands[exa] )); then
 	alias ls='exa --icons'
 	alias ll='exa -alF --icons'

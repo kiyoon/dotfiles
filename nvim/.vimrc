@@ -4,16 +4,16 @@
 " let os = 'ubuntu'
 "
 " if os ==? 'fc'
-" 	let use_vimplug         = 0
+"   let use_vimplug         = 0
 " elseif os ==? 'ubuntu'
-" 	let use_vimplug         = 1
+"   let use_vimplug         = 1
 " endif
 
 " directory path where the vimrc is installed
 " let vimrc_installed_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 "
 " if use_vimplug
-" 	exec "source " . vimrc_installed_dir . "/plugins.vim"
+"   exec "source " . vimrc_installed_dir . "/plugins.vim"
 " endif
 
 
@@ -65,7 +65,7 @@ set smartcase
 "/Copyright\c    : Case insensitive
 
 if !has('nvim')
-  set timeoutlen=10000	" leader key timeout = 10s
+  set timeoutlen=10000  " leader key timeout = 10s
 endif
 
 " map common mistakes: :W, :Q, :Wq, :WQ 
@@ -209,45 +209,6 @@ autocmd FileType vim set textwidth=0 wrapmargin=0
 
 set wildmenu
 
-set foldmethod=marker
-
-" Manual fold method to not leave dirty marks in the file.
-" Then we need to call mkview and loadview when we open / close the file.
-" https://vim.fandom.com/wiki/Make_views_automatic
-" set foldmethod=manual
-"
-" let g:skipview_files = [
-"             \ '[EXAMPLE PLUGIN BUFFER]'
-"             \ ]
-" function! MakeViewCheck()
-"     if has('quickfix') && &buftype =~ 'nofile'
-"         " Buffer is marked as not a file
-"         return 0
-"     endif
-"     if empty(glob(expand('%:p')))
-"         " File does not exist on disk
-"         return 0
-"     endif
-"     if len($TEMP) && expand('%:p:h') == $TEMP
-"         " We're in a temp dir
-"         return 0
-"     endif
-"     if len($TMP) && expand('%:p:h') == $TMP
-"         " Also in temp dir
-"         return 0
-"     endif
-"     if index(g:skipview_files, expand('%')) >= 0
-"         " File is in skip list
-"         return 0
-"     endif
-"     return 1
-" endfunction
-" augroup vimrcAutoView
-"     autocmd!
-"     " Autosave & Load Views.
-"     autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
-"     autocmd BufWinEnter ?* if MakeViewCheck() | silent loadview | endif
-" augroup end
 
 " zf folding comment set
 set commentstring=%s
@@ -257,62 +218,66 @@ autocmd FileType matlab setl commentstring=%%s
 autocmd FileType sml setl commentstring=(*%s*)
 "autocmd FileType html,php setl commentstring=<!--%s-->
 
-"" set foldcolumn automatically if there is at least one fold
-function HasFolds()
-	"Attempt to move between folds, checking line numbers to see if it worked.
-	"If it did, there are folds.
+" set foldcolumn automatically if there is at least one fold
+" WARNING: this function causes cursor to flicker when using with folke/which-key.nvim
 
-	function! HasFoldsInner()
-		let origline=line('.')  
-		:norm zk
-		if origline==line('.')
-			:norm zj
-			if origline==line('.')
-				return 0
-			else
-				return 1
-			endif
-		else
-			return 1
-		endif
-		return 0
-	endfunction
+if !has('nvim')
+  set foldmethod=marker
+  function HasFolds()
+    "Attempt to move between folds, checking line numbers to see if it worked.
+    "If it did, there are folds.
 
-	" suppress all sounds when this function calls
-"	set belloff=all
-	set noeb vb t_vb=
-	let l:winview=winsaveview() "save window and cursor position
-	let foldsexist=HasFoldsInner()
-	if foldsexist
-		set foldcolumn=3
-	else
-		"Move to the end of the current fold and check again in case the
-		"cursor was on the sole fold in the file when we checked
-		if line('.')!=1
-			:norm [z
-			:norm k
-		else
-			:norm ]z
-			:norm j
-		endif
-		let foldsexist=HasFoldsInner()
-		if foldsexist
-			set foldcolumn=3
-		else
-			set foldcolumn=0
-		endif
-	end
-	call winrestview(l:winview) "restore window/cursor position
+    function! HasFoldsInner()
+      let origline=line('.')  
+      :norm zk
+      if origline==line('.')
+        :norm zj
+        if origline==line('.')
+          return 0
+        else
+          return 1
+        endif
+      else
+        return 1
+      endif
+      return 0
+    endfunction
 
-	" enable bell sounds again
-"	set belloff=
-	set novb eb
-endfunction
+    " suppress all sounds when this function calls
+  "  set belloff=all
+    set noeb vb t_vb=
+    let l:winview=winsaveview() "save window and cursor position
+    let foldsexist=HasFoldsInner()
+    if foldsexist
+      set foldcolumn=3
+    else
+      "Move to the end of the current fold and check again in case the
+      "cursor was on the sole fold in the file when we checked
+      if line('.')!=1
+        :norm [z
+        :norm k
+      else
+        :norm ]z
+        :norm j
+      endif
+      let foldsexist=HasFoldsInner()
+      if foldsexist
+        set foldcolumn=3
+      else
+        set foldcolumn=0
+      endif
+    end
+    call winrestview(l:winview) "restore window/cursor position
 
-" This HasFolds function doesn't work well with the fern plugin.
-let fold_blacklist = ['fern']
-autocmd CursorHold,BufWinEnter ?* if index(fold_blacklist, &ft) < 0 | call HasFolds() | endif
+    " enable bell sounds again
+  "  set belloff=
+    set novb eb
+  endfunction
 
+  " This HasFolds function doesn't work well with the fern plugin.
+  let fold_blacklist = ['fern']
+  autocmd CursorHold,BufWinEnter ?* if index(fold_blacklist, &ft) < 0 | call HasFolds() | endif
+endif
 
 " restore the cursor position
 function! ResCur()
@@ -345,23 +310,23 @@ nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 " If the first line first word of the file is import, it will search the second import statement.
 " It will also try to restore the previous search string (@/).
 function! AddPythonImport(module)
-	normal! gg
-	let import_searched = search('import')
-	if import_searched
-		normal! O
-	else
-		normal! gg
-		" comment check: https://stackoverflow.com/questions/73356266/how-can-i-check-if-the-current-line-is-commented-in-vim-script
-		let commented = ! match(getline('.'), ' *#.*')
-		if commented
-			normal! o
-		else
-			normal! O
-		endif
-	endif
-	call setline('.', 'import ' . a:module)
-	"call feedkeys('iimport ' . a:module)
-	"call feedkeys("\<ESC>")
+  normal! gg
+  let import_searched = search('import')
+  if import_searched
+    normal! O
+  else
+    normal! gg
+    " comment check: https://stackoverflow.com/questions/73356266/how-can-i-check-if-the-current-line-is-commented-in-vim-script
+    let commented = ! match(getline('.'), ' *#.*')
+    if commented
+      normal! o
+    else
+      normal! O
+    endif
+  endif
+  call setline('.', 'import ' . a:module)
+  "call feedkeys('iimport ' . a:module)
+  "call feedkeys("\<ESC>")
 endfunction
 
 autocmd FileType python nnoremap <leader>i "syiw:call AddPythonImport(@s)<CR>
@@ -377,13 +342,13 @@ autocmd FileType python vnoremap <leader>i "sy:call AddPythonImport(@s)<CR>
 
 " WSL yank support
 if has('wsl')
-	let s:clip = '/mnt/c/Windows/System32/clip.exe'  " change this path according to your mount point
-	if executable(s:clip)
-		augroup WSLYank
-			autocmd!
-			autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
-		augroup END
-	endif
+  let s:clip = '/mnt/c/Windows/System32/clip.exe'  " change this path according to your mount point
+  if executable(s:clip)
+    augroup WSLYank
+      autocmd!
+      autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+    augroup END
+  endif
 endif
 
 " visual mode indent change
@@ -399,9 +364,9 @@ function! BlankUp(count) abort
 endfunction
 
 function! BlankDown(count) abort
-	put =repeat(nr2char(10), a:count)
-	'[-1
-	silent! call repeat#set("\<Plug>unimpairedBlankDown", a:count)
+  put =repeat(nr2char(10), a:count)
+  '[-1
+  silent! call repeat#set("\<Plug>unimpairedBlankDown", a:count)
 endfunction
 
 nnoremap <space>O :call BlankUp(v:count1)<CR>

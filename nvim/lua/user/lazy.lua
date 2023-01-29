@@ -89,7 +89,6 @@ return {
     end,
   },
 
-  { "nvim-lua/plenary.nvim" },
   {
     "sindrets/diffview.nvim",
     keys = {
@@ -285,10 +284,12 @@ return {
   -- Beautiful command menu
   {
     "gelguy/wilder.nvim",
+    build = ":UpdateRemotePlugins",
     dependencies = {
       "romgrk/fzy-lua-native",
       "nixprime/cpsm",
     },
+    event = "CmdlineEnter",
     config = function()
       require "user.wilder"
     end,
@@ -403,6 +404,9 @@ return {
   },
   {
     "jose-elias-alvarez/null-ls.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
     config = function()
       require "user.lsp.null-ls"
     end,
@@ -494,37 +498,6 @@ return {
     "folke/tokyonight.nvim",
     cond = false,
   },
-  -- {
-  --   "folke/noice.nvim",
-  --   config = function()
-  --     require("noice").setup {
-  --       lsp = {
-  --         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-  --         override = {
-  --           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-  --           ["vim.lsp.util.stylize_markdown"] = true,
-  --           ["cmp.entry.get_documentation"] = true,
-  --         },
-  --       },
-  --       -- you can enable a preset for easier configuration
-  --       presets = {
-  --         bottom_search = true, -- use a classic bottom cmdline for search
-  --         command_palette = true, -- position the cmdline and popupmenu together
-  --         long_message_to_split = true, -- long messages will be sent to a split
-  --         inc_rename = false, -- enables an input dialog for inc-rename.nvim
-  --         lsp_doc_border = false, -- add a border to hover docs and signature help
-  --       },
-  --     }
-  --   end,
-  --   dependencies = {
-  --     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-  --     "MunifTanjim/nui.nvim",
-  --     -- OPTIONAL:
-  --     --   `nvim-notify` is only needed, if you want to use the notification view.
-  --     --   If not available, we use `mini` as the fallback
-  --     "rcarriga/nvim-notify",
-  --   },
-  -- },
   "folke/lsp-colors.nvim",
   {
     "folke/which-key.nvim",
@@ -562,32 +535,6 @@ return {
       -- end, { desc = "Next error/warning todo comment" })
     end,
   },
-  -- {
-  --   "toppair/peek.nvim",
-  --   ft = "markdown",
-  --   build = "deno task --quiet build:fast",
-  --   config = function()
-  --     vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
-  --     vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
-  --     require("peek").setup {
-  --       auto_load = true, -- whether to automatically load preview when
-  --       -- entering another markdown buffer
-  --       close_on_bdelete = true, -- close preview window on buffer delete
-  --
-  --       syntax = true, -- enable syntax highlighting, affects performance
-  --
-  --       theme = "light", -- 'dark' or 'light'
-  --
-  --       update_on_change = true,
-  --
-  --       -- relevant if update_on_change is true
-  --       throttle_at = 200000, -- start throttling when file exceeds this
-  --       -- amount of bytes in size
-  --       throttle_time = "auto", -- minimum amount of time in milliseconds
-  --       -- that has to pass before starting new render
-  --     }
-  --   end,
-  -- },
 
   {
     "iamcco/markdown-preview.nvim",
@@ -683,9 +630,12 @@ return {
   {
     "jackMort/ChatGPT.nvim",
     init = function()
-      require("which-key").register {
-        ["<leader>c"] = { name = "ChatGPT" },
-      }
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<leader>c"] = { name = "ChatGPT" },
+        }
+      end
     end,
     config = function()
       require("chatgpt").setup {

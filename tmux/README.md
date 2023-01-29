@@ -3,13 +3,8 @@
 My IDE-like Tmux configuration and tutorial!
 
 ## Installation
-```bash
-mkdir ~/bin
-cd ~/bin
-git clone https://github.com/kiyoon/tmux-conf
-cd
-ln -s bin/tmux-conf/.tmux.conf
 
+```bash
 # Plugins
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # start a server but don't attach to it
@@ -23,10 +18,12 @@ tmux kill-server
 ```
 
 # Useful tmux commands
+
 First of all, launch tmux: `tmux`  
 or, `tmux new -s <session_name>`
 
 ## Create window and navigate
+
 - Ctrl+a + c: create window
 - `echo $TMUX_PANE`: see pane number (%0, %1, ..)
 - `echo ${TMUX_PANE##%}`: see pane number (0, 1, ..)
@@ -38,8 +35,8 @@ or, `tmux new -s <session_name>`
 - Ctrl+a + ,: change window title
 - Ctrl+Shift+s+Left / Right: re-order windows
 
-
 ## Detach and resume
+
 - Ctrl+a + d: detach tmux session
 - `tmux ls`: list sessions
 - `tmux attach` or `tmux a`: attach session
@@ -47,10 +44,11 @@ or, `tmux new -s <session_name>`
 - Ctrl+a + s: select and move session
 
 ## Divide window (create pane) and navigate
+
 - Ctrl+a + \\: divide screen (vertical)
 - Ctrl+a + -: divide screen (horizontal)
 - Ctrl+a + |: divide screen (vertical, current dir)
-- Ctrl+a + _: divide screen (horizontal, current dir)
+- Ctrl+a + \_: divide screen (horizontal, current dir)
 - Ctrl+a + h/j/k/l: move between panes
 - Alt + \<ArrowKey\>: move between panes
 - Ctrl+a + q + \<number\>: see pane number and move between panes
@@ -59,6 +57,7 @@ or, `tmux new -s <session_name>`
 You can even use mouse right click.
 
 ## Swap panes
+
 - Ctrl+a + {: swap with the prvious pane
 - Ctrl+a + }: swap with the next pane
 - Ctrl+a + `:swap-pane -U/-D/-L/-R`: swap with another pane
@@ -66,10 +65,12 @@ You can even use mouse right click.
 - Ctrl+a + Alt+o: rotate pane anticlockwise
 
 ## Change horizontal split to vertical (and vice verca)
+
 - Ctrl+a + `:move-pane -h -t '.{up-of}'`: horizontal split to vertical
 - Ctrl+a + `:move-pane -t '.{left-of}'`: vertical split to horizontal
 
 ## Copy / scroll
+
 - Ctrl+a + \[: Copy mode (use vim commands to scroll)
   - Ctrl+f: page down (front page)
   - Ctrl+b: page up (back page)
@@ -79,14 +80,15 @@ You can even use mouse right click.
 - You can use mouse drag to copy.
 - Ctrl+a + =: see buffer list
 
-
 ## Other tips
+
 - If you press Ctrl+s by mistake, it will freeze. Ctrl+q to unfreeze.
 - On a nested tmux, use Ctrl+a + a + \<command\>.
 - Ctrl+a `:attach -c /new/dir`: change default directory for new windows.
 - Shift + drag: bypass tmux mouse integration and select terminal.
 
 ## Plugins
+
 - Ctrl+a + I: Install plugins
 - Ctrl+a + U: Update plugins
 - (tmux-yank): Ctrl+a + y: copy bash command line
@@ -95,6 +97,7 @@ You can even use mouse right click.
 - (tmux-side-nvim-tree): Ctrl+a + \<Backspace\>: toggle file browser on the side, and focus on it
 
 # Advanced: scripting with tmux
+
 - `tmux new-session -d -s <session_name>`: start a session in detached mode.
 - `tmux new-window -t <session_name>:<window_index>`: create a window. You can omit the index. You can add the command at the end, but it will automatically be closed when the command finishes.
 - `tmux send-keys -t <session_name>:<window_index>.<pane_index> C-u 'some -new command' Enter`: write in a pane. You can use left/right instead of the pane index.
@@ -103,10 +106,10 @@ You can even use mouse right click.
 - `tmux display -pt "${TMUX_PANE:?}" '#{pane_index}'`: get current pane index
 - `tmux list-panes -s -F '#D #{pane_pid} #{pane_current_command}'`: list pane's unique identifier, pid, and the commands. (`-s` for current session, `-a` for all sessions.)
 
-
 ## Example: run batch job
 
-Below will create 3 windows and run python commands like:  
+Below will create 3 windows and run python commands like:
+
 - `CUDA_VISIBLE_DEVICES=0 python train.py --arg 1`
 - `CUDA_VISIBLE_DEVICES=1 python train.py --arg 2`
 - `CUDA_VISIBLE_DEVICES=2 python train.py --arg 3`
@@ -129,8 +132,8 @@ do
 done
 ```
 
-
 # References
+
 - https://yesmeck.github.io/tmuxrc/
 - https://github.com/yesmeck/tmuxrc/blob/master/tmux.conf
 - https://www.hamvocke.com/blog/a-guide-to-customizing-your-tmux-conf/

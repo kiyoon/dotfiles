@@ -64,6 +64,7 @@
   "treesitter-indent-object.nvim": { "branch": "master", "commit": "a747ab019428856c3d47c39a5c203b62f0b52c4f" },
   "treesj": { "branch": "main", "commit": "15a2262dfcd7848fbafa5afea8adec3941b83c12" },
   "trouble.nvim": { "branch": "main", "commit": "b2a0afac2c319a481f0f0318963a74d672ba5766" },
+  "ts-node-action": { "branch": "master", "commit": "4adc684711ef8d7b5c407e78024f5bdaaf37154b" },
   "vim-autoimport": { "branch": "master", "commit": "b78b543a74c3e930e25aeb85e9770e49daf67e8d" },
   "vim-illuminate": { "branch": "master", "commit": "4e1d43cdc39e35f495c7b39a78a349b4d5badad0" },
   "vim-matchup": { "branch": "master", "commit": "959e0e79ea240cdee29efbdd0d2e2e718931ccec" },

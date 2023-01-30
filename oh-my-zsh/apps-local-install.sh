@@ -4,6 +4,7 @@ INSTALL_DIR="$HOME/.local"
 
 ##### conda
 if ! command -v conda &> /dev/null
+then
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     CONDADIR="$HOME/bin/miniconda3"
     mkdir -p "$HOME/bin"

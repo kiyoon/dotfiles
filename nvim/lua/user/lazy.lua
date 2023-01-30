@@ -251,9 +251,51 @@ return {
       require("leap").add_default_mappings()
     end,
   },
-  { "mizlan/iswap.nvim", dependencies = {
-    "nvim-treesitter/nvim-treesitter",
-  } },
+  {
+    "Wansmer/sibling-swap.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("sibling-swap").setup {
+        use_default_keymaps = false,
+      }
+    end,
+    keys = {
+      {
+        "<space><space><space>,",
+        function()
+          require("sibling-swap").swap_with_left_with_opp()
+        end,
+        mode = "n",
+        desc = "Swap with left with opposite",
+      },
+      {
+        "<space><space><space>.",
+        function()
+          require("sibling-swap").swap_with_right_with_opp()
+        end,
+        mode = "n",
+        desc = "Swap with right with opposite",
+      },
+    },
+  },
+  {
+    "mizlan/iswap.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    keys = {
+      { "<leader>s", "<Cmd>ISwap<CR>", mode = "n", desc = "ISwap" },
+      { "<leader>S", "<Cmd>ISwapNode<CR>", mode = "n", desc = "ISwapNode" },
+      { "<leader><leader>s", "<Cmd>ISwapWith<CR>", mode = "n", desc = "ISwapWith" },
+      { "<leader><leader>S", "<Cmd>ISwapNodeWith<CR>", mode = "n", desc = "ISwapNodeWith" },
+      { "<space>.", "<Cmd>ISwapWithRight<CR>", mode = "n", desc = "ISwapWithRight" },
+      { "<space>,", "<Cmd>ISwapWithLeft<CR>", mode = "n", desc = "ISwapWithLeft" },
+      { "<space><space>.", "<Cmd>ISwapNodeWithRight<CR>", mode = "n", desc = "ISwapNodeWithRight" },
+      { "<space><space>,", "<Cmd>ISwapNodeWithLeft<CR>", mode = "n", desc = "ISwapNodeWithLeft" },
+    },
+  },
 
   -- Dashboard
   {

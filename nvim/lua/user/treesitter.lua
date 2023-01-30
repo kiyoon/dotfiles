@@ -349,14 +349,4 @@ omap     <silent> m :<C-U>lua require('tsht').nodes()<CR>
 xnoremap <silent> m :lua require('tsht').nodes()<CR>
 nmap m <Cmd>lua require('tsht').move({ side = "start" })<CR>
 nnoremap M m	" default m marking is now M
-
-"ISwap
-nmap <leader>s <Cmd>ISwap<CR>
-nmap <leader>S <Cmd>ISwapNode<CR>
-nmap <leader><leader>s <Cmd>ISwapWith<CR>
-nmap <leader><leader>S <Cmd>ISwapNodeWith<CR>
-nmap <space>. <Cmd>ISwapWithRight<CR>
-nmap <space>, <Cmd>ISwapWithLeft<CR>
-nmap <space><space>. <Cmd>ISwapNodeWithRight<CR>
-nmap <space><space>, <Cmd>ISwapNodeWithLeft<CR>
 ]]

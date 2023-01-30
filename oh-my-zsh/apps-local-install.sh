@@ -8,6 +8,12 @@ curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | 
 ##### fzf
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 
+##### Starship prompt
+if ! command -v starship &> /dev/null
+then
+    sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$HOME/.local/bin" -y
+fi
+
 pip3 install --user pygments		# colorize (ccat)
 pip3 install --user thefuck			# fix last command
 

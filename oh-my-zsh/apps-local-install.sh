@@ -2,6 +2,16 @@
 
 INSTALL_DIR="$HOME/.local"
 
+##### conda
+if ! command -v conda &> /dev/null
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    CONDADIR="$HOME/bin/miniconda3"
+    mkdir -p "$HOME/bin"
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p "$CONDADIR"
+    rm Miniconda3-latest-Linux-x86_64.sh
+    $CONDADIR/bin/conda init
+fi
+
 ##### zoxide
 curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
 

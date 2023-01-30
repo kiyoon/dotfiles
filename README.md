@@ -22,6 +22,7 @@ You need to configure below to use the programs,
 or just skip this and install zsh configuration which includes the following:
 
 ```bash
+# Don't need to configure this if you follow the next step for zsh.
 export PATH="$HOME/.local/bin:$PATH"
 export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
 export MANPATH="$HOME/.local/share/man:$MANPATH"

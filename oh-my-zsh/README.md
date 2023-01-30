@@ -50,8 +50,6 @@ bash apps-local-install.sh
 (Optional) Additional settings:
 
 ```zsh
-##### Conda
-conda config --set auto_activate_base false
 ##### git
 git config --global user.email "yoonkr33@gmail.com"
 git config --global user.name "Kiyoon Kim"

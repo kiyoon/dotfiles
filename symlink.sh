@@ -9,6 +9,7 @@ ln -srb "$CURRENT_DIR"/tmux/.tmux.conf ~
 ln -srb "$CURRENT_DIR"/oh-my-zsh/.zshrc ~
 ln -srb "$CURRENT_DIR"/oh-my-zsh/starship.toml ~/.config
 ln -srb "$CURRENT_DIR"/wezterm ~/.config
+mkdir -p ~/.cargo
 ln -srb "$CURRENT_DIR"/cargo/config.toml ~/.cargo
 ln -srb "$CURRENT_DIR"/conda/.condarc ~
 # ln -srb git/.gitconfig ~

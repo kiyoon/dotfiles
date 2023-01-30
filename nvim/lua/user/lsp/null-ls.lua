@@ -22,7 +22,7 @@ null_ls.setup {
     formatting.google_java_format,
     diagnostics.flake8.with {
       extra_args = {
-        "--ignore=F821", -- ignore undefined name errors because pyright handles them
+        "--extend-ignore=F821,E203,E266,E501,W503,B905", -- ignore undefined name errors because pyright handles them
         "--max-line-length=88", -- black style
       },
     },

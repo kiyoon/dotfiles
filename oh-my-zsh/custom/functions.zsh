@@ -1,3 +1,5 @@
+CURRENT_DIR="${0:a:h}"
+DOTFILES_DIR=$(git -C "$CURRENT_DIR" rev-parse --show-toplevel)
 ghremote() {
 	if [ $# -eq 1 ]; then
 		if [[ "$1" = *"/"* ]]; then
@@ -24,15 +26,18 @@ ghremote() {
 }
 
 
-envpull() {
-	git -C ~/.config/dotfiles pull
-	~/.config/dotfiles/nvim/install-linux.sh
+dotupdate() {
+	git -C "$DOTFILES_DIR" pull
+	"$DOTFILES_DIR"/nvim/install-linux.sh
 	nvim --headless '+Lazy update' +qall
 
 	~/.tmux/plugins/tpm/scripts/install_plugins.sh
 	~/.tmux/plugins/tpm/scripts/update_plugin.sh all
 
-	~/.config/dotfiles/oh-my-zsh/apps-local-install.sh
+	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
+
+	"$DOTFILES_DIR"/symlink.sh
+
 	omz reload
 }
 

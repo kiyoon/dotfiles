@@ -80,8 +80,8 @@ return {
       vim.g.wordmotion_prefix = "<space>"
     end,
   },
-  -- "github/copilot.vim",
-  "Exafunction/codeium.vim",
+  "github/copilot.vim",
+  -- "Exafunction/codeium.vim",
   {
     "nvim-lualine/lualine.nvim",
     cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,

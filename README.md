@@ -5,8 +5,8 @@
 1. Install dotfiles
 
 ```bash
-# Make sure you install under ~/.config
-git clone https://github.com/kiyoon/dotfiles ~/.config/dotfiles
+cd ~/.config	# it doesn't have to be here. Just install anywhere
+git clone https://github.com/kiyoon/dotfiles
 ```
 
 2. Install neovim and tmux

@@ -43,21 +43,13 @@ git submodule update --init --remote
 Install apps:
 
 ```zsh
-##### tig, exa, gh
+##### tig, exa, gh, starship, ..
 bash apps-local-install.sh
-
-##### Starship
-mkdir ~/.local/bin -p
-sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$HOME/.local/bin" -y
-
-conda config --set changeps1 False	# suppress conda environment name in favour of Starship
 ```
 
 (Optional) Additional settings:
 
 ```zsh
-##### Conda
-conda config --set auto_activate_base false
 ##### git
 git config --global user.email "yoonkr33@gmail.com"
 git config --global user.name "Kiyoon Kim"

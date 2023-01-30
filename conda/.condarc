@@ -1,0 +1,3 @@
+auto_activate_base: false
+# Do not prompt conda environment name. Startship does it instead.
+changeps1: false

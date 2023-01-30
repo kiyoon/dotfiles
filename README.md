@@ -15,6 +15,7 @@ For linux, you can install locally using:
 
 ```bash
 ./install-nvim-tmux-locally-linux.sh
+./wezterm/terminfo.sh	# if you're using wezterm you need this terminfo database
 ```
 
 This will download the latest appimage for each and extract at `~/.local/bin`.  

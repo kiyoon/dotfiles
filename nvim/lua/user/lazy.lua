@@ -520,8 +520,6 @@ return {
     end,
   },
 
-  -- 'doums/dmap.nvim',
-
   -- DAP (Debugger)
   "mfussenegger/nvim-dap",
   "mfussenegger/nvim-dap-python",
@@ -747,5 +745,13 @@ return {
         desc = "ChatGPT Run Custom Code Action",
       },
     },
+  },
+  {
+    "luukvbaal/statuscol.nvim",
+    config = function()
+      require("statuscol").setup {
+        setopt = true,
+      }
+    end,
   },
 }

@@ -79,3 +79,6 @@ vim.o.langmap =
   "ㅁa,ㅠb,ㅊc,ㅇd,ㄷe,ㄹf,ㅎg,ㅗh,ㅑi,ㅓj,ㅏk,ㅣl,ㅡm,ㅜn,ㅐo,ㅔp,ㅂq,ㄱr,ㄴs,ㅅt,ㅕu,ㅍv,ㅈw,ㅌx,ㅛy,ㅋz"
 -- Faster filetype detection for neovim
 vim.g.do_filetype_lua = 1
+
+-- splitting doesn't change the scroll
+vim.o.splitkeep = "screen"

@@ -352,7 +352,8 @@ return {
     branch = "release",
     cond = vim.g.vscode == nil,
     init = function()
-      vim.cmd [[ autocmd FileType lua,python let b:coc_suggest_disable = 1 ]]
+      vim.cmd [[ let b:coc_suggest_disable = 1 ]]
+      -- vim.cmd [[ autocmd FileType json let b:coc_suggest_disable = 0 ]]
     end,
     config = function()
       vim.cmd [[

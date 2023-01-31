@@ -329,8 +329,14 @@ return {
     "gelguy/wilder.nvim",
     build = ":UpdateRemotePlugins",
     dependencies = {
-      "romgrk/fzy-lua-native",
-      "nixprime/cpsm",
+      {
+        "romgrk/fzy-lua-native",
+        build = "make",
+      },
+      -- {
+      --   "nixprime/cpsm",
+      --   build = "./install.sh",
+      -- },
     },
     event = "CmdlineEnter",
     config = function()

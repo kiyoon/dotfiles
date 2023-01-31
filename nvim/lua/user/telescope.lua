@@ -114,5 +114,6 @@ vim.keymap.set({ "n" }, "<leader>fiw", M.grep_string_gitdir, { noremap = true, s
 vim.keymap.set({ "n" }, "<leader>fr", builtin.oldfiles, { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<leader>fb", builtin.buffers, { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<leader>fh", builtin.help_tags, { noremap = true, silent = true })
+vim.keymap.set({ "n" }, "<leader>fs", builtin.current_buffer_fuzzy_find, { noremap = true, silent = true })
 
 return M

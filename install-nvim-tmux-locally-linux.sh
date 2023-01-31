@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+## After installing, you need the followings to use nvim and tmux.
+## Don't need to configure this if you use the zsh config in this repo.
+##
+# export PATH="$HOME/.local/bin:$PATH"
+# export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
+# export MANPATH="$HOME/.local/share/man:$MANPATH"
+# export TERMINFO="$HOME/.local/share/terminfo"	# tmux needs this
+
 # neovim latest stable/nightly version
 # nvim_tag=stable
 nvim_tag=nightly

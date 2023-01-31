@@ -18,17 +18,7 @@ For linux, you can install locally using:
 ./wezterm/terminfo.sh	# if you're using wezterm you need this terminfo database
 ```
 
-This will download the latest appimage for each and extract at `~/.local/bin`.  
-You need to configure below to use the programs,  
-or just skip this and install zsh configuration which includes the following:
-
-```bash
-# Don't need to configure this if you follow the next step for zsh.
-export PATH="$HOME/.local/bin:$PATH"
-export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
-export MANPATH="$HOME/.local/share/man:$MANPATH"
-export TERMINFO="$HOME/.local/share/terminfo"	# tmux needs this
-```
+This will download the latest appimage for each and extract at `~/.local/bin`.
 
 3. Install zsh, oh-my-zsh
 

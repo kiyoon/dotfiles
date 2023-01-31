@@ -526,6 +526,12 @@ return {
   "mfussenegger/nvim-dap-python",
   "rcarriga/nvim-dap-ui",
   "Weissle/persistent-breakpoints.nvim",
+  {
+    "theHamsta/nvim-dap-virtual-text",
+    config = function()
+      require("nvim-dap-virtual-text").setup()
+    end,
+  },
 
   {
     "aserowy/tmux.nvim",

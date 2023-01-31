@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-# neovim latest stable version
+# neovim latest stable/nightly version
+# nvim_tag=stable
+nvim_tag=nightly
 mkdir ~/.local/bin -p
 cd ~/.local/bin
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
-chmod u+x nvim.appimage
+curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim.appimage
+chmod u+x ./nvim.appimage
 ./nvim.appimage --appimage-extract
 rsync -a squashfs-root/usr/ ~/.local/
 rm nvim.appimage

@@ -18,8 +18,16 @@ pip3 install --user flake8
 
 # Formatter
 pip3 install --user black
-npm install -g @johnnymorganz/stylua-bin
-npm install -g prettier
+
+if ! command -v stylua &> /dev/null
+then
+	npm install -g @johnnymorganz/stylua-bin
+fi
+
+if ! command -v prettier &> /dev/null
+then
+	npm install -g prettier
+fi
 
 if ! command -v tree-sitter &> /dev/null
 then
@@ -33,7 +41,10 @@ fi
 #npm install -g bash-language-server
 
 # wilder.nvim, telescope.nvim
-npm install -g fd-find
+if ! command -v fd &> /dev/null
+then
+	npm install -g fd-find
+fi
 
 # ripgrep for telescope.nvim
 

@@ -11,7 +11,7 @@ git clone https://github.com/kiyoon/dotfiles
 
 2. Install neovim and tmux
 
-For linux, you can install locally using:
+On Linux, you can install locally using:
 
 ```bash
 ./install-nvim-tmux-locally-linux.sh

@@ -9,6 +9,7 @@ local servers = {
   "yamlls",
   "vimls",
   "dockerls",
+  "grammarly",
   -- "rust_analyzer", -- use rust-tools.nvim instead
 }
 

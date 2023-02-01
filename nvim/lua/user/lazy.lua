@@ -624,55 +624,72 @@ return {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
     },
-    config = function()
-      require("refactoring").setup()
-      -- Remaps for the refactoring operations currently offered by the plugin
-      vim.api.nvim_set_keymap(
-        "v",
+    keys = {
+      {
         "<space>re",
         [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
-      vim.api.nvim_set_keymap(
-        "v",
+        mode = "v",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: [E]xtract function",
+      },
+      {
         "<space>rf",
         [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function To File')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
-      vim.api.nvim_set_keymap(
-        "v",
+        mode = "v",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract function to [F]ile",
+      },
+      {
         "<space>rv",
         [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
-      vim.api.nvim_set_keymap(
-        "v",
+        mode = "v",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract [V]ariable",
+      },
+      {
         "<space>ri",
         [[ <Esc><Cmd>lua require('refactoring').refactor('Inline Variable')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
-
-      -- Extract block doesn't need visual mode
-      vim.api.nvim_set_keymap(
-        "n",
+        mode = { "n", "v" },
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: [I]nline variable",
+      },
+      {
         "<space>rb",
-        [[ <Cmd>lua require('refactoring').refactor('Extract Block')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
-      vim.api.nvim_set_keymap(
-        "n",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block')<CR>]],
+        mode = "n",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract [B]lock",
+      },
+      {
         "<space>rbf",
-        [[ <Cmd>lua require('refactoring').refactor('Extract Block To File')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
-
-      -- Inline variable can also pick up the identifier currently under the cursor without visual mode
-      vim.api.nvim_set_keymap(
-        "n",
-        "<space>ri",
-        [[ <Cmd>lua require('refactoring').refactor('Inline Variable')<CR>]],
-        { noremap = true, silent = true, expr = false }
-      )
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block To File')<CR>]],
+        mode = "n",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract [B]lock to [F]ile",
+      },
+    },
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<space>r"] = { name = "[R]efactor" },
+        }
+      end
+    end,
+    config = function()
+      require("refactoring").setup()
     end,
   },
   {
@@ -750,6 +767,7 @@ return {
     "luukvbaal/statuscol.nvim",
     config = function()
       require("statuscol").setup {
+        foldfunc = "builtin",
         setopt = true,
       }
     end,
@@ -761,4 +779,67 @@ return {
       { "<space>u", "<cmd>UndotreeToggle<CR>", mode = { "n", "x" }, desc = "Undotree Toggle" },
     },
   },
+  -- {
+  --   "kevinhwang91/nvim-ufo",
+  --   dependencies = "kevinhwang91/promise-async",
+  --   config = function()
+  --     -- vim.cmd [[hi link Folded SignColumn]]
+  --     vim.cmd [[hi Folded guibg=black ctermbg=black]]
+  --     vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+  --     vim.o.foldcolumn = "auto:1" -- '0' is not bad
+  --     vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+  --     vim.o.foldlevelstart = 99
+  --     vim.o.foldenable = true
+  --
+  --     -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
+  --     vim.keymap.set("n", "zR", require("ufo").openAllFolds)
+  --     vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+  --
+  --     -- Option 2: nvim lsp as LSP client
+  --     -- Tell the server the capability of foldingRange,
+  --     -- Neovim hasn't added foldingRange to default capabilities, users must add it manually
+  --     local capabilities = vim.lsp.protocol.make_client_capabilities()
+  --     capabilities.textDocument.foldingRange = {
+  --       dynamicRegistration = false,
+  --       lineFoldingOnly = true,
+  --     }
+  --     local language_servers = require("lspconfig").util.available_servers() -- or list servers manually like {'gopls', 'clangd'}
+  --     for _, ls in ipairs(language_servers) do
+  --       require("lspconfig")[ls].setup {
+  --         capabilities = capabilities,
+  --         -- you can add other fields for setting up lsp server in this table
+  --       }
+  --     end
+  --     local handler = function(virtText, lnum, endLnum, width, truncate)
+  --       local newVirtText = {}
+  --       local suffix = ("  %d "):format(endLnum - lnum)
+  --       local sufWidth = vim.fn.strdisplaywidth(suffix)
+  --       local targetWidth = width - sufWidth
+  --       local curWidth = 0
+  --       for _, chunk in ipairs(virtText) do
+  --         local chunkText = chunk[1]
+  --         local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+  --         if targetWidth > curWidth + chunkWidth then
+  --           table.insert(newVirtText, chunk)
+  --         else
+  --           chunkText = truncate(chunkText, targetWidth - curWidth)
+  --           local hlGroup = chunk[2]
+  --           table.insert(newVirtText, { chunkText, hlGroup })
+  --           chunkWidth = vim.fn.strdisplaywidth(chunkText)
+  --           -- str width returned from truncate() may less than 2nd argument, need padding
+  --           if curWidth + chunkWidth < targetWidth then
+  --             suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+  --           end
+  --           break
+  --         end
+  --         curWidth = curWidth + chunkWidth
+  --       end
+  --       table.insert(newVirtText, { suffix, "MoreMsg" })
+  --       return newVirtText
+  --     end
+  --     require("ufo").setup {
+  --       fold_virt_text_handler = handler,
+  --     }
+  --   end,
+  -- },
 }

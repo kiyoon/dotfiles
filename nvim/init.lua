@@ -69,12 +69,17 @@ vim.cmd("source " .. vscodepath)
 
 require "user.menu"
 
+-- folding
+vim.cmd [[hi Folded guibg=black ctermbg=black]]
 vim.o.foldmethod = "expr"
 vim.o.foldcolumn = "auto:9"
-vim.o.foldminlines = 15
+-- vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+vim.o.fillchars = [[foldopen:,foldclose:]]
+vim.o.foldminlines = 25
 vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 -- open folds by default
 vim.cmd [[autocmd BufReadPost,FileReadPost * normal zR]]
+
 -- Better Korean mapping in normal mode. It's not perfect
 vim.o.langmap =
   "ㅁa,ㅠb,ㅊc,ㅇd,ㄷe,ㄹf,ㅎg,ㅗh,ㅑi,ㅓj,ㅏk,ㅣl,ㅡm,ㅜn,ㅐo,ㅔp,ㅂq,ㄱr,ㄴs,ㅅt,ㅕu,ㅍv,ㅈw,ㅌx,ㅛy,ㅋz"

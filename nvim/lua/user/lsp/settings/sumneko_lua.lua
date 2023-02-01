@@ -2,7 +2,8 @@ return {
   settings = {
     Lua = {
       diagnostics = {
-        globals = { "vim" },
+        -- neovim development, with plenary tests
+        globals = { "vim", "describe", "it", "before_each", "after_each" },
       },
       workspace = {
         library = {
@@ -19,8 +20,8 @@ return {
       },
       completion = {
         -- neodev
-        callSnippet = "Replace"
-      }
+        callSnippet = "Replace",
+      },
     },
   },
 }

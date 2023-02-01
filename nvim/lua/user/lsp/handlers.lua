@@ -78,6 +78,7 @@ local function lsp_keymaps(bufnr)
   keymap({ "n", "x", "o", "i" }, "<A-h>", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
   -- keymap("n", "<space>pr", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
   keymap("n", "<space>ps", vim.lsp.buf.signature_help, opts, "[S]ignature Help")
+  keymap("i", "<C-h>", vim.lsp.buf.signature_help, opts, "Signature [H]elp")
   keymap("n", "<space>pq", vim.diagnostic.setqflist, opts, "Set [Q]uickfix List")
 
   if vim.o.filetype == "python" then
@@ -87,7 +88,7 @@ local function lsp_keymaps(bufnr)
   local status, wk = pcall(require, "which-key")
   if status then
     wk.register {
-      ["<space>p"] = { name = "LSP (language server)" },
+      ["<space>p"] = { name = "LS[P] (language server)" },
     }
   end
 end

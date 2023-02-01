@@ -34,6 +34,7 @@ vim.o.termguicolors = true
 vim.opt.iskeyword:append "-" -- treats words with `-` as single words
 vim.o.cursorline = true
 vim.o.inccommand = "split"
+vim.o.updatetime = 500
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
   pattern = { "gitcommit", "markdown" },

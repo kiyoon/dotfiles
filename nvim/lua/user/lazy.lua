@@ -324,6 +324,13 @@ return {
 
   { "kiyoon/telescope-insert-path.nvim" },
 
+  {
+    "nvim-telescope/telescope-live-grep-args.nvim",
+    config = function()
+      require("telescope").load_extension "live_grep_args"
+    end,
+  },
+
   -- Beautiful command menu
   {
     "gelguy/wilder.nvim",

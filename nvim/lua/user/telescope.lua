@@ -20,6 +20,7 @@ end
 
 local path_actions = require "telescope_insert_path"
 local trouble = require "trouble.providers.telescope"
+local lga_actions = require "telescope-live-grep-args.actions"
 
 telescope.setup {
   defaults = {
@@ -72,6 +73,22 @@ telescope.setup {
       end,
     },
   },
+  extensions = {
+    live_grep_args = {
+      auto_quoting = true, -- enable/disable auto-quoting
+      -- define mappings, e.g.
+      mappings = { -- extend mappings
+        i = {
+          ["<C-k>"] = lga_actions.quote_prompt(),
+          ["<C-i>"] = lga_actions.quote_prompt { postfix = " --iglob " },
+        },
+      },
+      -- ... also accepts theme settings, for example:
+      -- theme = "dropdown", -- use dropdown theme
+      -- theme = { }, -- use own theme spec
+      -- layout_config = { mirror=true }, -- mirror preview pane
+    },
+  },
 }
 
 -- get git folder
@@ -121,6 +138,7 @@ vim.keymap.set(
   M.grep_string_gitdir,
   { noremap = true, silent = true, desc = "Grep [i]nner [w]ord in git dir" }
 )
+vim.keymap.set("n", "<leader>fg", require("telescope").extensions.live_grep_args.live_grep_args)
 vim.keymap.set({ "n" }, "<leader>fr", builtin.oldfiles, { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<leader>fb", builtin.buffers, { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<leader>fh", builtin.help_tags, { noremap = true, silent = true })

@@ -13,3 +13,10 @@ if (( $+commands[fzf] )); then
 		export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 	fi
 fi
+
+# Inside tmux, home and end keys don't work
+# https://stackoverflow.com/questions/18600188/home-end-keys-do-not-work-in-tmux
+# Binding keys in tmux.conf works in neovim but doesn't in zsh or maybe zsh-vi-mode
+# so we bind them here so it works in zsh as well.
+bindkey "^[OF" end-of-line
+bindkey "^[OH" beginning-of-line

@@ -127,17 +127,17 @@ then
             echo "jq already install at $(which jq). Skipping.."
 fi
 
-if ! command -v gotop &> /dev/null
-then
-    curl -s https://api.github.com/repos/xxxserxxx/gotop/releases/latest \
-        | grep "browser_download_url.*_linux_amd64.tgz" \
-        | cut -d : -f 2,3 \
-        | tr -d \" \
-        | wget -qi - -O - | tar xzf - -C "$INSTALL_DIR/bin"
-            echo "gotop install at $(which gotop)"
-        else
-            echo "gotop already install at $(which gotop). Skipping.."
-fi
+# if ! command -v gotop &> /dev/null
+# then
+#     curl -s https://api.github.com/repos/xxxserxxx/gotop/releases/latest \
+#         | grep "browser_download_url.*_linux_amd64.tgz" \
+#         | cut -d : -f 2,3 \
+#         | tr -d \" \
+#         | wget -qi - -O - | tar xzf - -C "$INSTALL_DIR/bin"
+#             echo "gotop install at $(which gotop)"
+#         else
+#             echo "gotop already install at $(which gotop). Skipping.."
+# fi
 
 
 if ! command -v lazygit &> /dev/null
@@ -154,3 +154,5 @@ fi
 
 cargo install viu # --features=sixel
 cargo install bat
+cargo install bottom
+cargo install du-dust

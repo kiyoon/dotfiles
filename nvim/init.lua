@@ -69,7 +69,7 @@ vim.cmd("source " .. vscodepath)
 
 require "user.menu"
 
--- folding
+-- folding (use nvim-ufo for better control)
 -- vim.cmd [[hi Folded guibg=black ctermbg=black]]
 -- vim.o.foldmethod = "expr"
 -- vim.o.foldcolumn = "auto:9"

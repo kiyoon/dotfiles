@@ -81,8 +81,11 @@ require "user.menu"
 -- vim.cmd [[autocmd BufReadPost,FileReadPost * normal zR]]
 
 vim.cmd [[
-autocmd BufWinLeave ?* mkview
-autocmd BufWinEnter ?* silent! loadview
+augroup AutoView
+  autocmd!
+  autocmd BufWritepre,BufWinLeave ?* silent! mkview
+  autocmd BufWinEnter ?* silent! loadview
+augroup END
 ]]
 
 -- Better Korean mapping in normal mode. It's not perfect

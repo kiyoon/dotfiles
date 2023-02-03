@@ -41,6 +41,7 @@ return {
   },
   {
     "numToStr/Comment.nvim",
+    event = "VeryLazy",
     config = function()
       require("Comment").setup()
     end,
@@ -66,21 +67,46 @@ return {
     },
   },
 
-  { "tpope/vim-surround" },
-  "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
-  { "kana/vim-textobj-user" },
-  { "kana/vim-textobj-entire", dependencies = { "kana/vim-textobj-user" } }, -- vie, vae to select entire buffer (file)
-  { "kana/vim-textobj-fold", dependencies = { "kana/vim-textobj-user" } }, -- viz, vaz to select fold
-  { "glts/vim-textobj-comment", dependencies = { "kana/vim-textobj-user" } }, -- vic, vac
+  {
+    "tpope/vim-surround",
+    event = "VeryLazy",
+  },
+  {
+    "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
+    event = "VeryLazy",
+  },
+  {
+    "kana/vim-textobj-user",
+    event = "VeryLazy",
+  },
+  {
+    "kana/vim-textobj-entire",
+    event = "VeryLazy",
+    dependencies = { "kana/vim-textobj-user" },
+  }, -- vie, vae to select entire buffer (file)
+  {
+    "kana/vim-textobj-fold",
+    event = "VeryLazy",
+    dependencies = { "kana/vim-textobj-user" },
+  }, -- viz, vaz to select fold
+  {
+    "glts/vim-textobj-comment",
+    event = "VeryLazy",
+    dependencies = { "kana/vim-textobj-user" },
+  }, -- vic, vac
 
   {
     "chaoren/vim-wordmotion",
+    event = "VeryLazy",
     -- use init instead of config to set variables before loading the plugin
     init = function()
       vim.g.wordmotion_prefix = "<space>"
     end,
   },
-  "github/copilot.vim",
+  {
+    "github/copilot.vim",
+    event = "VeryLazy",
+  },
   -- "Exafunction/codeium.vim",
   {
     "nvim-lualine/lualine.nvim",
@@ -119,6 +145,7 @@ return {
 
   {
     "lewis6991/gitsigns.nvim",
+    event = "VeryLazy",
     config = function()
       require("gitsigns").setup {
         on_attach = function(bufnr)
@@ -179,6 +206,7 @@ return {
 
   {
     "nvim-tree/nvim-tree.lua",
+    event = "VeryLazy",
     dependencies = {
       "nvim-tree/nvim-web-devicons",
     },
@@ -492,6 +520,7 @@ return {
   },
   {
     "j-hui/fidget.nvim",
+    event = "VeryLazy",
     config = function()
       require("fidget").setup()
     end,
@@ -564,6 +593,7 @@ return {
   -- UI
   {
     "rcarriga/nvim-notify",
+    event = "VeryLazy",
     config = function()
       require("notify").setup {
         stages = "fade_in_slide_out",

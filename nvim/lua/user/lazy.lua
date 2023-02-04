@@ -536,6 +536,7 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-calc",
       "saadparwaiz1/cmp_luasnip",
+      "onsails/lspkind.nvim", -- display icons
     },
     config = function()
       require "user.lsp.cmp"

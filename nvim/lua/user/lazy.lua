@@ -17,7 +17,7 @@ return {
     config = function()
       -- load the colorscheme here
       require "user.tokyonight"
-      vim.cmd [[colorscheme tokyonight-moon]]
+      vim.cmd.colorscheme "tokyonight-moon"
     end,
   },
   -- {
@@ -28,9 +28,10 @@ return {
   --     vim.cmd [[hi clear Folded]]
   --     vim.cmd [[hi! link Folded CursorColumn]]
   --    -- vim.cmd [[hi Folded guibg=black ctermbg=black]]
-  --     vim.cmd [[colorscheme dracula]]
+  --     vim.cmd.colorscheme "dracula"
   --   end,
   -- },
+
   {
     "kiyoon/tmuxsend.vim",
     keys = {
@@ -241,7 +242,7 @@ return {
     end,
   },
 
-  -- Treesitter Better syntax highlighting
+  -- Treesitter: Better syntax highlighting, text objects, refactoring, context
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
@@ -272,6 +273,18 @@ return {
     "ckolkey/ts-node-action",
     -- dependencies = { "nvim-treesitter" },
     opts = {},
+  },
+  {
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    opts = {
+      -- configurations go here
+    },
   },
 
   -- Hop, leap

@@ -1,24 +1,34 @@
 return {
   -- the colorscheme should be available when starting Neovim
+  {
+    -- For treemux
+    "kiyoon/nvim-tree-remote.nvim",
+    cond = false,
+  },
   -- {
+  --   -- For treemux
   --   "folke/tokyonight.nvim",
-  --   lazy = false, -- make sure we load this during startup if it is your main colorscheme
-  --   priority = 1000, -- make sure to load this before all the other start plugins
-  --   config = function()
-  --     -- load the colorscheme here
-  --     require('user.tokyonight')
-  --     vim.cmd([[colorscheme tokyonight-night]])
-  --   end,
+  --   cond = false,
   -- },
   {
-    "Mofiqul/dracula.nvim",
-    lazy = false,
+    "folke/tokyonight.nvim",
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       -- load the colorscheme here
-      vim.cmd [[colorscheme dracula]]
+      require "user.tokyonight"
+      vim.cmd [[colorscheme tokyonight-moon]]
     end,
   },
+  -- {
+  --   "Mofiqul/dracula.nvim",
+  --   lazy = false,
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   config = function()
+  --     -- load the colorscheme here
+  --     vim.cmd [[colorscheme dracula]]
+  --   end,
+  -- },
   {
     "kiyoon/tmuxsend.vim",
     keys = {
@@ -32,7 +42,7 @@ return {
   {
     "kiyoon/jupynium.nvim",
     -- build = "conda run --no-capture-output -n jupynium pip install .",
-    build = "~/bin/miniconda3/envs/jupynium/bin/pip install .[extra]",
+    build = "~/bin/miniconda3/envs/jupynium/bin/pip install .",
     enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
     config = function()
       require "user.jupynium"
@@ -600,16 +610,6 @@ return {
       }
       vim.notify = require "notify"
     end,
-  },
-  {
-    -- For treemux
-    "kiyoon/nvim-tree-remote.nvim",
-    cond = false,
-  },
-  {
-    -- For treemux
-    "folke/tokyonight.nvim",
-    cond = false,
   },
   "folke/lsp-colors.nvim",
   {

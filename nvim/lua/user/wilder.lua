@@ -103,6 +103,7 @@ local wildmenu_renderer = wilder.wildmenu_renderer {
     --accent = wilder.make_hl('WilderAccent', 'Pmenu', {{a = 1}, {a = 1}, {foreground = '#f4468f'}}),
     gradient = gradient,
   },
+  apply_incsearch_fix = true,
 }
 
 wilder.set_option(

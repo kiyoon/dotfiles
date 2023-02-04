@@ -10,7 +10,7 @@ local servers = {
   "vimls",
   "dockerls",
   "grammarly",
-  -- "rust_analyzer", -- use rust-tools.nvim instead
+  -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
 }
 
 local settings = {
@@ -29,9 +29,14 @@ local settings = {
   },
 }
 
+-- List of LSP servers to install, but not necessarily attach to
+-- rust_analyzer is attached by rust-tools.nvim
+local ensure_installed = { unpack(servers) }
+table.insert(ensure_installed, "rust_analyzer")
+
 require("mason").setup(settings)
 require("mason-lspconfig").setup {
-  ensure_installed = servers,
+  ensure_installed = ensure_installed,
   automatic_installation = true,
 }
 

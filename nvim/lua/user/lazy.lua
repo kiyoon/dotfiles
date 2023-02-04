@@ -275,16 +275,78 @@ return {
     opts = {},
   },
   {
-    "utilyre/barbecue.nvim",
-    name = "barbecue",
-    version = "*",
+    "ThePrimeagen/refactoring.nvim",
     dependencies = {
-      "SmiteshP/nvim-navic",
-      "nvim-tree/nvim-web-devicons", -- optional dependency
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
     },
-    opts = {
-      -- configurations go here
+    keys = {
+      {
+        "<space>re",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function')<CR>]],
+        mode = "v",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: [E]xtract function",
+      },
+      {
+        "<space>rf",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function To File')<CR>]],
+        mode = "v",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract function to [F]ile",
+      },
+      {
+        "<space>rv",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>]],
+        mode = "v",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract [V]ariable",
+      },
+      {
+        "<space>ri",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Inline Variable')<CR>]],
+        mode = { "n", "v" },
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: [I]nline variable",
+      },
+      {
+        "<space>rb",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block')<CR>]],
+        mode = "n",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract [B]lock",
+      },
+      {
+        "<space>rbf",
+        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block To File')<CR>]],
+        mode = "n",
+        noremap = true,
+        silent = true,
+        expr = false,
+        desc = "[R]efactor: Extract [B]lock to [F]ile",
+      },
     },
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<space>r"] = { name = "[R]efactor" },
+        }
+      end
+    end,
+    config = function()
+      require("refactoring").setup()
+    end,
   },
 
   -- Hop, leap
@@ -348,6 +410,24 @@ return {
       { "<space><space>.", "<Cmd>ISwapNodeWithRight<CR>", mode = "n", desc = "ISwapNodeWithRight" },
       { "<space><space>,", "<Cmd>ISwapNodeWithLeft<CR>", mode = "n", desc = "ISwapNodeWithLeft" },
     },
+  },
+  {
+    "stevearc/aerial.nvim",
+    config = function()
+      local aerial = require "aerial"
+      aerial.setup {
+        -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+        on_attach = function(bufnr)
+          -- Jump forwards/backwards with '{' and '}'
+          local tstext_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+          local anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+          vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
+          vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
+        end,
+      }
+      -- You probably also want to set a keymap to toggle aerial
+      vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>", { desc = "Aerial toggle" })
+    end,
   },
 
   -- Dashboard
@@ -522,6 +602,18 @@ return {
       }
     end,
   },
+  {
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    opts = {
+      -- configurations go here
+    },
+  },
 
   -- Snippets
   {
@@ -669,80 +761,6 @@ return {
     ft = "markdown",
     -- build = "cd app && yarn install",
     build = ":call mkdp#util#install()",
-  },
-  {
-    "ThePrimeagen/refactoring.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    keys = {
-      {
-        "<space>re",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function')<CR>]],
-        mode = "v",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: [E]xtract function",
-      },
-      {
-        "<space>rf",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function To File')<CR>]],
-        mode = "v",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract function to [F]ile",
-      },
-      {
-        "<space>rv",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>]],
-        mode = "v",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract [V]ariable",
-      },
-      {
-        "<space>ri",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Inline Variable')<CR>]],
-        mode = { "n", "v" },
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: [I]nline variable",
-      },
-      {
-        "<space>rb",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block')<CR>]],
-        mode = "n",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract [B]lock",
-      },
-      {
-        "<space>rbf",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block To File')<CR>]],
-        mode = "n",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract [B]lock to [F]ile",
-      },
-    },
-    init = function()
-      local status, wk = pcall(require, "which-key")
-      if status then
-        wk.register {
-          ["<space>r"] = { name = "[R]efactor" },
-        }
-      end
-    end,
-    config = function()
-      require("refactoring").setup()
-    end,
   },
   {
     "metakirby5/codi.vim",

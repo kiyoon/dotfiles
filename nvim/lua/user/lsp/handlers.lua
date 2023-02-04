@@ -76,6 +76,30 @@ local function lsp_keymaps(bufnr)
   keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
   keymap({ "n", "x", "o", "i" }, "<A-h>", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
+
+  local next_warn = function()
+    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARNING }
+  end
+  local prev_warn = function()
+    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.WARNING }
+  end
+  local next_err = function()
+    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+  end
+  local prev_err = function()
+    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+  end
+  local status, tsrepeat = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
+  if status then
+    next_warn, prev_warn = tsrepeat.make_repeatable_move_pair(next_warn, prev_warn)
+    next_err, prev_err = tsrepeat.make_repeatable_move_pair(next_err, prev_err)
+  end
+
+  keymap({ "n", "x", "o" }, "[w", prev_warn, opts, "Previous [W]arning")
+  keymap({ "n", "x", "o" }, "]w", next_warn, opts, "Next [W]arning")
+  keymap({ "n", "x", "o" }, "[e", prev_err, opts, "Previous [E]rror")
+  keymap({ "n", "x", "o" }, "]e", next_err, opts, "Next [E]rror")
+
   -- keymap("n", "<space>pr", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
   keymap("n", "<space>ps", vim.lsp.buf.signature_help, opts, "[S]ignature Help")
   keymap("i", "<C-h>", vim.lsp.buf.signature_help, opts, "Signature [H]elp")

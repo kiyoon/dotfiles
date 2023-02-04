@@ -519,7 +519,10 @@ return {
   -- Always load mason, mason-lspconfig and nvim-lspconfig in order.
   { "williamboman/mason.nvim" },
   { "williamboman/mason-lspconfig.nvim" },
-  { "neovim/nvim-lspconfig" },
+  {
+    "neovim/nvim-lspconfig",
+    event = "BufReadPre",
+  },
   { "folke/neodev.nvim" },
   {
     "hrsh7th/nvim-cmp",
@@ -606,6 +609,7 @@ return {
     "utilyre/barbecue.nvim",
     name = "barbecue",
     version = "*",
+    -- event = "VeryLazy",
     dependencies = {
       "SmiteshP/nvim-navic",
       "nvim-tree/nvim-web-devicons", -- optional dependency
@@ -628,6 +632,7 @@ return {
   },
   {
     "jose-elias-alvarez/null-ls.nvim",
+    event = "BufReadPre",
     dependencies = {
       "nvim-lua/plenary.nvim",
     },

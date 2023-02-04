@@ -802,13 +802,16 @@ return {
   },
   {
     "luukvbaal/statuscol.nvim",
+    init = function()
+      vim.o.statuscolumn = "%@v:lua.ScSa@%s%T%@v:lua.ScLa@%=%{v:lua.ScLn()}%T%@v:lua.ScFa@ %{%v:lua.ScFc()%} %T"
+    end,
     config = function()
       require("statuscol").setup {
-        setopt = true,
         relculright = true,
         foldfunc = "builtin",
         separator = " ",
-        order = "SNsFs", -- gitsigns, number, fold, separator
+        -- setopt = true,
+        -- order = "SNsFs", -- gitsigns, number, fold, separator
       }
     end,
   },

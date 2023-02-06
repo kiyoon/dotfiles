@@ -50,7 +50,7 @@ return {
     config = function()
       require "user.jupynium"
     end,
-    dev = true,
+    -- dev = true,
   },
   {
     "numToStr/Comment.nvim",
@@ -158,7 +158,7 @@ return {
 
   {
     "lewis6991/gitsigns.nvim",
-    event = "VeryLazy",
+    event = "BufReadPre",
     config = function()
       require("gitsigns").setup {
         on_attach = function(bufnr)
@@ -252,12 +252,13 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    -- dev = true,
+    dev = true,
   },
   { "nvim-treesitter/nvim-treesitter-context" },
   { "nvim-treesitter/playground" },
   {
     "lukas-reineke/indent-blankline.nvim",
+    event = "BufReadPost",
     config = function()
       require "user.indent_blankline"
     end,
@@ -359,6 +360,7 @@ return {
   { "mfussenegger/nvim-treehopper" },
   {
     "ggandor/leap.nvim",
+    event = "VeryLazy",
     dependencies = {
       "tpope/vim-repeat",
     },
@@ -433,6 +435,7 @@ return {
   -- Dashboard
   {
     "goolord/alpha-nvim",
+    event = "VimEnter",
     config = function()
       require "user.alpha"
     end,
@@ -652,6 +655,14 @@ return {
   -- LSP diagnostics
   {
     "folke/trouble.nvim",
+    cmd = { "TroubleToggle", "Trouble" },
+    keys = {
+      { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
+      { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
+      { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
+      { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP references (Trouble)" },
+    },
     config = function()
       require("trouble").setup {
         auto_open = false,
@@ -659,23 +670,6 @@ return {
         auto_preview = true,
         auto_fold = true,
       }
-      -- Lua
-      vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { silent = true, noremap = true })
-      vim.keymap.set(
-        "n",
-        "<leader>xw",
-        "<cmd>TroubleToggle workspace_diagnostics<cr>",
-        { silent = true, noremap = true }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>xd",
-        "<cmd>TroubleToggle document_diagnostics<cr>",
-        { silent = true, noremap = true }
-      )
-      vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { silent = true, noremap = true })
-      vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { silent = true, noremap = true })
-      vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", { silent = true, noremap = true })
     end,
   },
 
@@ -708,6 +702,7 @@ return {
   },
   {
     "RRethy/vim-illuminate",
+    event = "BufReadPost",
     config = function()
       require "user.illuminate"
     end,
@@ -739,20 +734,20 @@ return {
   },
   {
     "folke/todo-comments.nvim",
+    event = "BufReadPost",
     dependencies = "nvim-lua/plenary.nvim",
     config = function()
-      require("todo-comments").setup {
+      local todo_comments = require "todo-comments"
+      todo_comments.setup {
         -- your configuration comes here
         -- or leave it empty to use the default settings
         -- refer to the configuration section below
       }
-      vim.keymap.set("n", "]t", function()
-        require("todo-comments").jump_next()
-      end, { desc = "Next todo comment" })
+      local tstext = require "nvim-treesitter.textobjects.repeatable_move"
+      local next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
+      vim.keymap.set("n", "]t", next_todo, { desc = "Next todo comment" })
 
-      vim.keymap.set("n", "[t", function()
-        require("todo-comments").jump_prev()
-      end, { desc = "Previous todo comment" })
+      vim.keymap.set("n", "[t", prev_todo, { desc = "Previous todo comment" })
 
       -- You can also specify a list of valid jump keywords
 
@@ -875,6 +870,13 @@ return {
     end,
     config = function()
       require "user.ufo"
+    end,
+  },
+  {
+    "dstein64/vim-startuptime",
+    cmd = "StartupTime",
+    config = function()
+      vim.g.startuptime_tries = 10
     end,
   },
 }

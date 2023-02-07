@@ -35,7 +35,6 @@ return {
   --     vim.cmd.colorscheme "dracula"
   --   end,
   -- },
-
   {
     "kiyoon/tmuxsend.vim",
     keys = {
@@ -284,6 +283,9 @@ return {
     "ckolkey/ts-node-action",
     -- dependencies = { "nvim-treesitter" },
     opts = {},
+  },
+  {
+    "RRethy/nvim-treesitter-endwise",
   },
   {
     "ThePrimeagen/refactoring.nvim",

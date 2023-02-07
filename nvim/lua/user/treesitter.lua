@@ -295,6 +295,10 @@ require("nvim-treesitter.configs").setup {
       },
     },
   },
+
+  endwise = {
+    enable = true,
+  },
 }
 
 local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"

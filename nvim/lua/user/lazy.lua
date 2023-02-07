@@ -1,5 +1,5 @@
-local nvim_treesitter_dev = true
-local nvim_treesitter_textobjects_dev = true
+local nvim_treesitter_dev = false
+local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 
 return {

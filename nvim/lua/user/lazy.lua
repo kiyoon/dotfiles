@@ -889,4 +889,12 @@ return {
       vim.g.startuptime_tries = 10
     end,
   },
+  {
+    -- "jk or jj to escape insert mode"
+    "max397574/better-escape.nvim",
+    event = "InsertEnter",
+    config = function()
+      require("better_escape").setup()
+    end,
+  },
 }

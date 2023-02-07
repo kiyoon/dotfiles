@@ -1,3 +1,7 @@
+local nvim_treesitter_dev = true
+local nvim_treesitter_textobjects_dev = true
+local jupynium_dev = false
+
 return {
   -- the colorscheme should be available when starting Neovim
   {
@@ -50,7 +54,7 @@ return {
     config = function()
       require "user.jupynium"
     end,
-    -- dev = true,
+    dev = jupynium_dev,
   },
   {
     "numToStr/Comment.nvim",
@@ -249,10 +253,11 @@ return {
     config = function()
       require "user.treesitter"
     end,
+    dev = nvim_treesitter_dev,
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    dev = true,
+    dev = nvim_treesitter_textobjects_dev,
   },
   { "nvim-treesitter/nvim-treesitter-context" },
   { "nvim-treesitter/playground" },
@@ -279,7 +284,7 @@ return {
     "ThePrimeagen/refactoring.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
+      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
     keys = {
       {
@@ -371,7 +376,7 @@ return {
   {
     "Wansmer/sibling-swap.nvim",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
     config = function()
       require("sibling-swap").setup {
@@ -400,7 +405,7 @@ return {
   {
     "mizlan/iswap.nvim",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
     keys = {
       { "<leader>s", "<Cmd>ISwap<CR>", mode = "n", desc = "ISwap" },

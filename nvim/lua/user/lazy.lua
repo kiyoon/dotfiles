@@ -899,4 +899,5 @@ return {
       require("better_escape").setup()
     end,
   },
+  "Vimjas/vim-python-pep8-indent",
 }

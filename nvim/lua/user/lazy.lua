@@ -85,8 +85,13 @@ return {
   },
 
   {
-    "tpope/vim-surround",
+    -- Similar to tpope/vim-surround
+    -- dsf to delete surrounding function call.
+    "kylechui/nvim-surround",
     event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup()
+    end,
   },
   {
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically

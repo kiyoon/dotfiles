@@ -11,8 +11,10 @@ cmp.setup {
     end,
   },
   mapping = cmp.mapping.preset.insert {
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    -- ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    -- ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
+    ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
 
     -- ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-Space>"] = cmp.mapping(function(fallback)
@@ -78,5 +80,12 @@ cmp.setup {
         latex_symbols = "[Latex]",
       },
     },
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  experimental = {
+    ghost_text = true,
   },
 }

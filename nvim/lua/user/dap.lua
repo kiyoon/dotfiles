@@ -9,7 +9,10 @@ if not dap_ui_status_ok then
 end
 
 -- Path to python with debugpy installed
-require("dap-python").setup "python"
+local status_py, dap_python = pcall(require, "dap-python")
+if status_py then
+  dap_python.setup "python"
+end
 
 dapui.setup {
   expand_lines = true,

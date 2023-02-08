@@ -133,7 +133,7 @@ return {
     "nvim-lualine/lualine.nvim",
     cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
     config = function()
-      require("lualine").setup()
+      require("lualine").setup {}
     end,
   },
 
@@ -253,6 +253,7 @@ return {
   -- Treesitter: Better syntax highlighting, text objects, refactoring, context
   {
     "nvim-treesitter/nvim-treesitter",
+    event = "BufReadPre",
     build = ":TSUpdate",
     config = function()
       require "user.treesitter"
@@ -261,10 +262,17 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    event = "VeryLazy",
     dev = nvim_treesitter_textobjects_dev,
   },
-  { "nvim-treesitter/nvim-treesitter-context" },
-  { "nvim-treesitter/playground" },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = "VeryLazy",
+  },
+  {
+    "nvim-treesitter/playground",
+    cmd = "TSPlaygroundToggle",
+  },
   {
     "lukas-reineke/indent-blankline.nvim",
     event = "BufReadPost",
@@ -276,16 +284,27 @@ return {
   -- { 'RRethy/nvim-treesitter-textsubjects' }
   --
   -- % to match up if, else, etc. Enabled in the treesitter config below
-  { "andymass/vim-matchup" },
-  { "mrjones2014/nvim-ts-rainbow" },
-  { "Wansmer/treesj" },
+  {
+    "andymass/vim-matchup",
+    event = "VeryLazy",
+  },
+  {
+    "mrjones2014/nvim-ts-rainbow",
+    event = "VeryLazy",
+  },
+  {
+    "Wansmer/treesj",
+    event = "VeryLazy",
+  },
   {
     "ckolkey/ts-node-action",
+    event = "VeryLazy",
     -- dependencies = { "nvim-treesitter" },
     opts = {},
   },
   {
     "RRethy/nvim-treesitter-endwise",
+    event = "VeryLazy",
   },
   {
     "ThePrimeagen/refactoring.nvim",
@@ -365,11 +384,15 @@ return {
   -- Hop, leap
   {
     "phaazon/hop.nvim",
+    event = "VeryLazy",
     config = function()
       require "user.hop"
     end,
   },
-  { "mfussenegger/nvim-treehopper" },
+  {
+    "mfussenegger/nvim-treehopper",
+    event = "VeryLazy",
+  },
   {
     "ggandor/leap.nvim",
     event = "VeryLazy",
@@ -427,6 +450,16 @@ return {
   },
   {
     "stevearc/aerial.nvim",
+    -- cmd = "AerialToggle",
+    -- keys = {
+    --   "[r",
+    --   "]r",
+    --   {
+    --     "<leader>a",
+    --     "<Cmd>AerialToggle!<CR>",
+    --     desc = "Aerial toggle",
+    --   },
+    -- },
     config = function()
       local aerial = require "aerial"
       aerial.setup {
@@ -542,7 +575,7 @@ return {
   {
     "hrsh7th/nvim-cmp",
     -- load cmp on InsertEnter
-    -- event = "InsertEnter",
+    event = "InsertEnter",
     -- these dependencies will only be loaded when cmp loads
     -- dependencies are always lazy-loaded unless specified otherwise
     dependencies = {
@@ -602,6 +635,7 @@ return {
   },
   {
     "simrat39/rust-tools.nvim",
+    ft = "rust",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "mfussenegger/nvim-dap",
@@ -639,6 +673,7 @@ return {
   {
     "L3MON4D3/LuaSnip",
     version = "v1.x",
+    event = "InsertEnter",
     dependencies = {
       "rafamadriz/friendly-snippets",
     },
@@ -686,12 +721,26 @@ return {
   },
 
   -- DAP (Debugger)
-  "mfussenegger/nvim-dap",
-  "mfussenegger/nvim-dap-python",
-  "rcarriga/nvim-dap-ui",
-  "Weissle/persistent-breakpoints.nvim",
+  {
+    "mfussenegger/nvim-dap",
+    event = "VeryLazy",
+  },
+  {
+    "mfussenegger/nvim-dap-python",
+    event = "VeryLazy",
+    ft = "python",
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    event = "VeryLazy",
+  },
+  {
+    "Weissle/persistent-breakpoints.nvim",
+    event = "VeryLazy",
+  },
   {
     "theHamsta/nvim-dap-virtual-text",
+    event = "VeryLazy",
     config = function()
       require("nvim-dap-virtual-text").setup()
     end,
@@ -734,6 +783,7 @@ return {
   "folke/lsp-colors.nvim",
   {
     "folke/which-key.nvim",
+    event = "BufReadPost",
     config = function()
       vim.o.timeout = true
       vim.o.timeoutlen = 600
@@ -787,22 +837,22 @@ return {
     end,
     cmd = "Codi",
   },
-  {
-    "glacambre/firenvim",
-    init = function()
-      if vim.fn.exists "g:started_by_firenvim" then
-        vim.o.laststatus = 0
-        vim.cmd [[au BufEnter github.com_*.txt set filetype=markdown]]
-        vim.g.firenvim_config = {
-          globalSettings = {
-            ["<C-w>"] = "noop",
-            ["<C-n>"] = "default",
-          },
-        }
-      end
-    end,
-    build = "firenvim#install(0)",
-  },
+  -- {
+  --   "glacambre/firenvim",
+  --   init = function()
+  --     if vim.fn.exists "g:started_by_firenvim" then
+  --       vim.o.laststatus = 0
+  --       vim.cmd [[au BufEnter github.com_*.txt set filetype=markdown]]
+  --       vim.g.firenvim_config = {
+  --         globalSettings = {
+  --           ["<C-w>"] = "noop",
+  --           ["<C-n>"] = "default",
+  --         },
+  --       }
+  --     end
+  --   end,
+  --   build = "firenvim#install(0)",
+  -- },
   {
     "jackMort/ChatGPT.nvim",
     init = function()
@@ -871,6 +921,7 @@ return {
   {
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
+    event = "VeryLazy",
     init = function()
       vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
       -- vim.o.fillchars = [[foldopen:,foldclose:]]
@@ -899,5 +950,9 @@ return {
       require("better_escape").setup()
     end,
   },
-  "Vimjas/vim-python-pep8-indent",
+  {
+    "Vimjas/vim-python-pep8-indent",
+    ft = "python",
+    event = "VeryLazy",
+  },
 }

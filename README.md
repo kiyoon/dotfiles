@@ -1,6 +1,7 @@
-# dotfiles
+# dotfiles that work without sudo
 
-This is a modern Neovim, Tmux, Zsh configuration that supports installing everything locally without a sudo right. You can enjoy working on a remote SSH server without a root permission, just like you do locally.
+This is a modern Neovim, Tmux, Zsh configuration that supports installing everything locally (i.e. non-system-wide user install, not using sudo).  
+You can enjoy working on a remote SSH server without a root permission, just like you do locally.
 
 If you're on mac, use `brew` to install everything. The scripts assume Linux.
 
@@ -23,6 +24,16 @@ On Linux, you can install locally using:
 ```
 
 This will download the latest appimage for each and extract at `~/.local/bin`.
+
+Install neovim dependencies:  
+```bash
+nvim/install-linux.sh
+```
+
+Install tmux plugins:  
+```bash
+tmux/install-plugins.sh
+```
 
 3. Install zsh, oh-my-zsh
 

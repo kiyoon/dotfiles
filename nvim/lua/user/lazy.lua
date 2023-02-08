@@ -968,6 +968,10 @@ return {
       end
 
       vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
+
+      -- Because we lazy-load on TextYankPost, the above autocmd will not be executed at first.
+      -- So we need to manually call it once.
+      copy()
     end,
   },
 }

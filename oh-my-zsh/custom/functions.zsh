@@ -28,6 +28,12 @@ ghremote() {
 
 dotupdate() {
 	git -C "$DOTFILES_DIR" pull
+	if [ $? -ne 0 ]; then
+		echo "Failed to update dotfiles due to changes locally."
+		echo "To discard local changes and force update, run 'git -C $DOTFILES_DIR stash' and try again"
+		return 1
+	fi
+
 	"$DOTFILES_DIR"/nvim/install-linux.sh
 	nvim --headless '+Lazy update' +qall
 

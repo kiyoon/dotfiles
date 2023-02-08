@@ -93,8 +93,8 @@ You can even use mouse right click.
 - Ctrl+a + U: Update plugins
 - (tmux-yank): Ctrl+a + y: copy bash command line
 - (tmux-yank): Ctrl+a + Y: copy PWD
-- (tmux-side-nvim-tree): Ctrl+a + \<Tab\>: toggle file browser on the side
-- (tmux-side-nvim-tree): Ctrl+a + \<Backspace\>: toggle file browser on the side, and focus on it
+- ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Tab\>: toggle file browser on the side
+- ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Backspace\>: toggle file browser on the side, and focus on it
 
 # Advanced: scripting with tmux
 

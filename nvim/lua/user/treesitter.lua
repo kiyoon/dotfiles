@@ -163,7 +163,7 @@ require("nvim-treesitter.configs").setup {
         ["ia"] = "@parameter.inner",
         ["af"] = "@call.outer",
         ["if"] = "@call.inner",
-        --["ac"] = "@comment.outer",
+        ["a/"] = "@comment.outer",
         --["ic"] = "@comment.outer",
         --["afr"] = "@frame.outer",
         --["ifr"] = "@frame.inner",

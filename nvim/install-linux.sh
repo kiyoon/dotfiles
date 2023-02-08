@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+conda deactivate
+
 LOCALBIN="$HOME/.local/bin"
 
 if ! command -v node &> /dev/null
@@ -7,6 +9,8 @@ then
 	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$HOME/.local" -y
 fi
 
+
+pip3 install --user virtualenv  # for Mason.nvim
 pip3 install --user pynvim
 npm install -g neovim
 

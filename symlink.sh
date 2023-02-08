@@ -15,7 +15,12 @@ ln_sb() {
 	mkdir -p "$dest_dir"
 	if [[ -f "$dest_file" ]] || [[ -d "$dest_file" ]]
 	then
-		mv "$dest_file" "$dest_file"~
+		echo "Backing up $dest_file to ${dest_file}~"
+		if [[ -f "$dest_file"~ ]] || [[ -d "$dest_file"~ ]]
+		then
+			\rm -rf "${dest_file}"~
+		fi
+		mv "$dest_file" "${dest_file}"~
 	fi
 
 	ln -s "$CURRENT_DIR/$file_relpath" "$dest_dir"

@@ -16,9 +16,6 @@ if not tele_status_ok then
   return
 end
 
--- telescope.load_extension('projects')
-telescope.load_extension "jupynium_kernels"
-
 local path_actions = require "telescope_insert_path"
 local trouble = require "trouble.providers.telescope"
 local lga_actions = require "telescope-live-grep-args.actions"

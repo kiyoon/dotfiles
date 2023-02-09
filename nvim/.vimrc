@@ -373,12 +373,22 @@ nnoremap <space>O :call BlankUp(v:count1)<CR>
 nnoremap <space>o :call BlankDown(v:count1)<CR>
 
 " https://vim.fandom.com/wiki/Moving_lines_up_or_down
-nnoremap <A-Down> :m .+1<CR>
-nnoremap <A-Up> :m .-2<CR>
-inoremap <A-Down> <Esc>:m .+1<CR>gi
-inoremap <A-Up> <Esc>:m .-2<CR>gi
-vnoremap <A-Down> :m '>+1<CR>gv
-vnoremap <A-Up> :m '<-2<CR>gv
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+augroup move_lines
+  autocmd!
+  autocmd FileType python nnoremap <A-j> :m .+1<CR>
+  autocmd FileType python nnoremap <A-k> :m .-2<CR>
+  autocmd FileType python inoremap <A-j> <Esc>:m .+1<CR>gi
+  autocmd FileType python inoremap <A-k> <Esc>:m .-2<CR>gi
+  autocmd FileType python vnoremap <A-j> :m '>+1<CR>gv
+  autocmd FileType python vnoremap <A-k> :m '<-2<CR>gv
+augroup END
 
 
 if !exists('*Tj_save_and_exec')

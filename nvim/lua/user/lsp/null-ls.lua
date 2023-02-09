@@ -19,6 +19,7 @@ null_ls.setup {
     formatting.isort,
     formatting.black,
     formatting.stylua,
+    diagnostics.luacheck,
     formatting.google_java_format,
     diagnostics.flake8.with {
       extra_args = {

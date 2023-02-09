@@ -282,7 +282,15 @@ return {
     "lukas-reineke/indent-blankline.nvim",
     event = "BufReadPost",
     config = function()
-      require "user.indent_blankline"
+      vim.opt.list = true
+      --vim.opt.listchars:append "space:⋅"
+      --vim.opt.listchars:append "eol:↴"
+
+      require("indent_blankline").setup {
+        space_char_blankline = " ",
+        show_current_context = true,
+        show_current_context_start = true,
+      }
     end,
   },
   { "kiyoon/treesitter-indent-object.nvim" },
@@ -391,9 +399,16 @@ return {
     event = "VeryLazy",
     dependencies = {
       "tpope/vim-repeat",
+      { "ggandor/flit.nvim", opts = { labeled_modes = "nv" } },
     },
-    config = function()
-      require("leap").add_default_mappings()
+    config = function(_, opts)
+      local leap = require "leap"
+      for k, v in pairs(opts) do
+        leap.opts[k] = v
+      end
+      leap.add_default_mappings()
+      vim.keymap.del({ "x", "o" }, "x")
+      vim.keymap.del({ "x", "o" }, "X")
     end,
   },
   {

@@ -258,6 +258,11 @@ return {
     config = function()
       require "user.treesitter"
     end,
+    dependencies = {
+      "RRethy/nvim-treesitter-endwise",
+      "andymass/vim-matchup",
+      "mrjones2014/nvim-ts-rainbow",
+    },
     dev = nvim_treesitter_dev,
   },
   {
@@ -285,14 +290,6 @@ return {
   --
   -- % to match up if, else, etc. Enabled in the treesitter config below
   {
-    "andymass/vim-matchup",
-    event = "VeryLazy",
-  },
-  {
-    "mrjones2014/nvim-ts-rainbow",
-    event = "VeryLazy",
-  },
-  {
     "Wansmer/treesj",
     event = "VeryLazy",
   },
@@ -301,10 +298,6 @@ return {
     event = "VeryLazy",
     -- dependencies = { "nvim-treesitter" },
     opts = {},
-  },
-  {
-    "RRethy/nvim-treesitter-endwise",
-    event = "VeryLazy",
   },
   {
     "ThePrimeagen/refactoring.nvim",

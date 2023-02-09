@@ -34,13 +34,13 @@ dotupdate() {
 		return 1
 	fi
 
+	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
+
 	"$DOTFILES_DIR"/nvim/install-linux.sh
 	nvim --headless '+Lazy update' +qall
 
 	~/.tmux/plugins/tpm/scripts/install_plugins.sh
 	~/.tmux/plugins/tpm/scripts/update_plugin.sh all
-
-	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
 
 	"$DOTFILES_DIR"/symlink.sh
 

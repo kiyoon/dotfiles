@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-conda deactivate
-
 LOCALBIN="$HOME/.local/bin"
 
 if ! command -v node &> /dev/null

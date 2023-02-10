@@ -8,28 +8,33 @@ local formatting = null_ls.builtins.formatting
 -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
 local diagnostics = null_ls.builtins.diagnostics
 
+local sources = {
+  formatting.prettier.with {
+    extra_filetypes = { "toml" },
+    extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
+  },
+  formatting.isort,
+  formatting.black,
+  formatting.stylua,
+  formatting.google_java_format,
+  diagnostics.flake8.with {
+    extra_args = {
+      -- B905: ignore undefined name errors because pyright handles them
+      -- F401: ignore unused imports because pyright handles them
+      "--extend-ignore=F821,E203,E266,E501,W503,B905,F401",
+      "--max-line-length=88", -- black style
+    },
+  },
+}
+
+if vim.fn.executable "luacheck" == 1 then
+  table.insert(sources, diagnostics.luacheck)
+end
+
 -- https://github.com/prettier-solidity/prettier-plugin-solidity
 null_ls.setup {
   debug = false,
-  sources = {
-    formatting.prettier.with {
-      extra_filetypes = { "toml" },
-      extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
-    },
-    formatting.isort,
-    formatting.black,
-    formatting.stylua,
-    diagnostics.luacheck,
-    formatting.google_java_format,
-    diagnostics.flake8.with {
-      extra_args = {
-        -- B905: ignore undefined name errors because pyright handles them
-        -- F401: ignore unused imports because pyright handles them
-        "--extend-ignore=F821,E203,E266,E501,W503,B905,F401",
-        "--max-line-length=88", -- black style
-      },
-    },
-  },
+  sources = sources,
   -- format on save
   on_attach = function(client, bufnr)
     if client.supports_method "textDocument/formatting" then

@@ -293,19 +293,63 @@ return {
       }
     end,
   },
-  { "kiyoon/treesitter-indent-object.nvim" },
+  {
+    "kiyoon/treesitter-indent-object.nvim",
+    keys = {
+      {
+        "ai",
+        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_outer()<CR>",
+        mode = { "x", "o" },
+        desc = "Select context-aware indent (outer)",
+      },
+      {
+        "aI",
+        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_outer(true)<CR>",
+        mode = { "x", "o" },
+        desc = "Select context-aware indent (outer, line-wise)",
+      },
+      {
+        "ii",
+        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner()<CR>",
+        mode = { "x", "o" },
+        desc = "Select context-aware indent (inner, partial range)",
+      },
+      {
+        "iI",
+        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner(true)<CR>",
+        mode = { "x", "o" },
+        desc = "Select context-aware indent (inner, entire range)",
+      },
+    },
+  },
   -- { 'RRethy/nvim-treesitter-textsubjects' }
   --
   -- % to match up if, else, etc. Enabled in the treesitter config below
   {
     "Wansmer/treesj",
     event = "VeryLazy",
+    config = function()
+      require("treesj").setup { use_default_keymaps = false }
+    end,
+    keys = {
+      { "<space>l", "<cmd>TSJSplit<CR>", desc = "Treesitter Split" },
+      { "<space>h", "<cmd>TSJJoin<CR>", desc = "Treesitter Join" },
+      -- { "<space>g", "<cmd>TSJToggle<CR>", desc = "Treesitter Toggle" },
+    },
   },
   {
     "ckolkey/ts-node-action",
-    event = "VeryLazy",
-    -- dependencies = { "nvim-treesitter" },
-    opts = {},
+    dependencies = {
+      -- "nvim-treesitter",
+      "tpope/vim-repeat",
+    },
+    keys = {
+      {
+        "<space>ta",
+        [[<cmd>lua require("ts-node-action").node_action()<CR>]],
+        desc = "Node [A]ction",
+      },
+    },
   },
   {
     "ThePrimeagen/refactoring.nvim",
@@ -382,17 +426,31 @@ return {
     end,
   },
 
-  -- Hop, leap
-  {
-    "phaazon/hop.nvim",
-    event = "VeryLazy",
-    config = function()
-      require "user.hop"
-    end,
-  },
+  -- Motions
+  -- {
+  --   "phaazon/hop.nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("hop").setup()
+  --     -- require "user.hop"
+  --   end,
+  -- },
   {
     "mfussenegger/nvim-treehopper",
-    event = "VeryLazy",
+    dependencies = {
+      {
+        "phaazon/hop.nvim",
+        config = function()
+          require("hop").setup()
+        end,
+      },
+    },
+    keys = {
+      { "m", "<Cmd>lua require('tsht').nodes()<CR>", mode = "o", desc = "TreeSitter [M]otion" },
+      { "m", ":lua require('tsht').nodes()<CR>", mode = "x", noremap = true, desc = "TreeSitter [M]otion" },
+      { "m", "<Cmd>lua require('tsht').move({ side = 'start' })<CR>", desc = "TreeSitter [M]otion" },
+      { "M", "m", noremap = true, desc = "[M]ark" },
+    },
   },
   {
     "ggandor/leap.nvim",
@@ -448,6 +506,11 @@ return {
     dependencies = {
       { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
+    config = function()
+      require("iswap").setup {
+        move_cursor = true,
+      }
+    end,
     keys = {
       { "<leader>s", "<Cmd>ISwap<CR>", mode = "n", desc = "ISwap" },
       { "<leader>S", "<Cmd>ISwapNode<CR>", mode = "n", desc = "ISwapNode" },

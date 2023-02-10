@@ -339,29 +339,9 @@ vim.keymap.set({ "n", "x", "o" }, "<end>", function()
   ts_repeat_move.repeat_last_move { forward = true, start = false }
 end)
 
-require("iswap").setup {
-  move_cursor = true,
-}
-
-require("treesj").setup { use_default_keymaps = false }
-vim.keymap.set("n", "<space>l", "<cmd>TSJSplit<CR>")
-vim.keymap.set("n", "<space>h", "<cmd>TSJJoin<CR>")
-vim.keymap.set("n", "<space>g", "<cmd>TSJToggle<CR>")
-
-require("treesitter_indent_object").setup()
--- select context-aware indent
-vim.keymap.set({ "x", "o" }, "ai", "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_outer()<CR>")
--- ensure selecting entire line (or just use Vai)
-vim.keymap.set({ "x", "o" }, "aI", "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_outer(true)<CR>")
--- select inner block (only if block, only else block, etc.)
-vim.keymap.set({ "x", "o" }, "ii", "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner()<CR>")
--- select entire inner range (including if, else, etc.)
-vim.keymap.set({ "x", "o" }, "iI", "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner(true)<CR>")
-
-vim.cmd [[
-" Treehopper
-omap     <silent> m :<C-U>lua require('tsht').nodes()<CR>
-xnoremap <silent> m :lua require('tsht').nodes()<CR>
-nmap m <Cmd>lua require('tsht').move({ side = "start" })<CR>
-nnoremap M m	" default m marking is now M
-]]
+local status, wk = pcall(require, "which-key")
+if status then
+  wk.register {
+    ["<space>t"] = { name = "[T]reesitter" },
+  }
+end

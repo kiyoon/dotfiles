@@ -28,10 +28,17 @@ local sources = {
 }
 
 if vim.fn.executable "luacheck" == 1 then
-  table.insert(sources, diagnostics.luacheck)
+  table.insert(
+    sources,
+    diagnostics.luacheck.with {
+      extra_args = {
+        "--globals=vim,describe,it,before_each,after_each",
+      },
+    }
+  )
 end
 
--- https://github.com/prettier-solidity/prettier-plugin-solidity
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 null_ls.setup {
   debug = false,
   sources = sources,
@@ -50,4 +57,14 @@ null_ls.setup {
   end,
 }
 
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+local status, ts_node_action = pcall(require, "ts-node-action")
+if status then
+  null_ls.register {
+    name = "more_actions",
+    method = { require("null-ls").methods.CODE_ACTION },
+    filetypes = { "_all" },
+    generator = {
+      fn = ts_node_action.available_actions,
+    },
+  }
+end

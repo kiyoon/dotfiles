@@ -409,6 +409,9 @@ return {
       leap.add_default_mappings()
       vim.keymap.del({ "x", "o" }, "x")
       vim.keymap.del({ "x", "o" }, "X")
+
+      -- x to delete without yanking
+      vim.keymap.set({ "n", "x" }, "x", [["_x]], { noremap = true })
     end,
   },
   {

@@ -65,6 +65,7 @@
   "promise-async": { "branch": "main", "commit": "7fa127fa80e7d4d447e0e2c78e99af4355f4247b" },
   "refactoring.nvim": { "branch": "master", "commit": "57c32c6b7a211e5a3a5e4ddc4ad2033daff5cf9a" },
   "rust-tools.nvim": { "branch": "master", "commit": "bd1aa99ffb911a1cf99b3fcf3b44c0391c57e3ef" },
+  "sg.nvim": { "branch": "master", "commit": "c5e4ab788efeec9453706a4489bcaeaa867aeeb3" },
   "sibling-swap.nvim": { "branch": "main", "commit": "71eb9daa5233cd576ce8119bc2dbfa67d4d35462" },
   "statuscol.nvim": { "branch": "main", "commit": "c7df5578f84514b3837aeb6b0e2ee7dc95d70f89" },
   "telescope-fzf-native.nvim": { "branch": "main", "commit": "580b6c48651cabb63455e97d7e131ed557b8c7e2" },

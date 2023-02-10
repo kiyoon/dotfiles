@@ -8,12 +8,6 @@ if not dap_ui_status_ok then
   return
 end
 
--- Path to python with debugpy installed
-local status_py, dap_python = pcall(require, "dap-python")
-if status_py then
-  dap_python.setup "python"
-end
-
 dapui.setup {
   expand_lines = true,
   icons = { expanded = "", collapsed = "", circular = "" },

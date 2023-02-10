@@ -24,9 +24,6 @@ require("lazy").setup("user.lazy", {
   },
 })
 
-require "user.lsp"
-require "user.dap"
-
 local vimrcpath = vim.fn.stdpath "config" .. "/.vimrc"
 vim.cmd("source " .. vimrcpath)
 

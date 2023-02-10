@@ -574,15 +574,18 @@ return {
     end,
   },
 
-  -- Mason makes it easier to install language servers
-  -- Always load mason, mason-lspconfig and nvim-lspconfig in order.
-  { "williamboman/mason.nvim" },
-  { "williamboman/mason-lspconfig.nvim" },
   {
     "neovim/nvim-lspconfig",
     event = "BufReadPre",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+      "folke/neodev.nvim",
+    },
+    config = function()
+      require "user.lsp"
+    end,
   },
-  { "folke/neodev.nvim" },
   {
     "hrsh7th/nvim-cmp",
     -- load cmp on InsertEnter
@@ -679,6 +682,20 @@ return {
       -- configurations go here
     },
   },
+  -- {
+  --   -- sourcegraph.com integration
+  --   -- usage:
+  --   -- :edit <sourcegraph url>
+  --   "tjdevries/sg.nvim",
+  --   build = "cargo build --workspace",
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  --   config = function()
+  --     require("sg").setup {
+  --       on_attach = require("user.lsp.handlers").on_attach,
+  --     }
+  --     vim.cmd [[nnoremap <leader>fS <cmd>lua require('sg.telescope').fuzzy_search_results()<CR>]]
+  --   end,
+  -- },
 
   -- Snippets
   {
@@ -735,19 +752,21 @@ return {
   {
     "mfussenegger/nvim-dap",
     event = "VeryLazy",
+    dependencies = {
+      "rcarriga/nvim-dap-ui",
+      "Weissle/persistent-breakpoints.nvim",
+    },
+    config = function()
+      require "user.dap"
+    end,
   },
   {
     "mfussenegger/nvim-dap-python",
-    event = "VeryLazy",
     ft = "python",
-  },
-  {
-    "rcarriga/nvim-dap-ui",
-    event = "VeryLazy",
-  },
-  {
-    "Weissle/persistent-breakpoints.nvim",
-    event = "VeryLazy",
+    config = function()
+      -- Path to python with debugpy installed
+      require("dap-python").setup "python3"
+    end,
   },
   {
     "theHamsta/nvim-dap-virtual-text",
@@ -999,7 +1018,6 @@ return {
   {
     "Vimjas/vim-python-pep8-indent",
     ft = "python",
-    event = "VeryLazy",
   },
   {
     "ojroques/nvim-osc52",

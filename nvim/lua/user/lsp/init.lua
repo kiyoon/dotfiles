@@ -34,6 +34,8 @@ local settings = {
 local ensure_installed = { unpack(servers) }
 table.insert(ensure_installed, "rust_analyzer")
 
+-- Mason makes it easier to install language servers
+-- Always load mason, mason-lspconfig and nvim-lspconfig in order.
 require("mason").setup(settings)
 require("mason-lspconfig").setup {
   ensure_installed = ensure_installed,

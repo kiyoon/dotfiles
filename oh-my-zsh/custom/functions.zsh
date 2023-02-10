@@ -29,8 +29,13 @@ ghremote() {
 dotupdate() {
 	git -C "$DOTFILES_DIR" pull
 	if [ $? -ne 0 ]; then
-		echo "Failed to update dotfiles due to changes locally."
-		echo "To discard local changes and force update, run 'git -C $DOTFILES_DIR stash' and try again"
+		echo
+		print -P "%F{red}Failed to update dotfiles due to local changes.%f\n"
+		print -P "%F{red}To discard local changes and force update, run %f\n"
+		echo
+		echo "git -C $DOTFILES_DIR stash"
+		echo
+		print -P "%F{red}and try again%f\n"
 		return 1
 	fi
 

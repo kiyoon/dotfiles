@@ -20,7 +20,7 @@ return {
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       -- load the colorscheme here
-      require "user.tokyonight"
+      require "kiyoon.tokyonight"
       vim.cmd.colorscheme "tokyonight-moon"
     end,
   },
@@ -51,7 +51,7 @@ return {
     build = "~/bin/miniconda3/envs/jupynium/bin/pip install .",
     enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
     config = function()
-      require "user.jupynium"
+      require "kiyoon.jupynium"
     end,
     dev = jupynium_dev,
   },
@@ -269,7 +269,7 @@ return {
       "NvimTreeOpen",
     },
     config = function()
-      require "user.nvim_tree"
+      require "kiyoon.nvim_tree"
     end,
   },
 
@@ -277,7 +277,7 @@ return {
     "akinsho/bufferline.nvim",
     cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
     config = function()
-      require "user.bufferline"
+      require "kiyoon.bufferline"
     end,
   },
 
@@ -287,7 +287,7 @@ return {
     event = "BufReadPre",
     build = ":TSUpdate",
     config = function()
-      require "user.treesitter"
+      require "kiyoon.treesitter"
     end,
     dependencies = {
       "RRethy/nvim-treesitter-endwise",
@@ -463,7 +463,7 @@ return {
   --   event = "VeryLazy",
   --   config = function()
   --     require("hop").setup()
-  --     -- require "user.hop"
+  --     -- require "kiyoon.hop"
   --   end,
   -- },
   {
@@ -587,7 +587,7 @@ return {
     "goolord/alpha-nvim",
     event = "VimEnter",
     config = function()
-      require "user.alpha"
+      require "kiyoon.alpha"
     end,
   },
 
@@ -596,7 +596,7 @@ return {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
     config = function()
-      require "user.telescope"
+      require "kiyoon.telescope"
     end,
   },
   {
@@ -633,7 +633,7 @@ return {
     },
     event = "CmdlineEnter",
     config = function()
-      require "user.wilder"
+      require "kiyoon.wilder"
     end,
   },
 
@@ -677,7 +677,7 @@ return {
       "folke/neodev.nvim",
     },
     config = function()
-      require "user.lsp"
+      require "kiyoon.lsp"
     end,
   },
   {
@@ -695,7 +695,7 @@ return {
       "onsails/lspkind.nvim", -- display icons
     },
     config = function()
-      require "user.lsp.cmp"
+      require "kiyoon.lsp.cmp"
     end,
   },
   {
@@ -785,7 +785,7 @@ return {
   --   dependencies = { "nvim-lua/plenary.nvim" },
   --   config = function()
   --     require("sg").setup {
-  --       on_attach = require("user.lsp.handlers").on_attach,
+  --       on_attach = require("kiyoon.lsp.handlers").on_attach,
   --     }
   --     vim.cmd [[nnoremap <leader>fS <cmd>lua require('sg.telescope').fuzzy_search_results()<CR>]]
   --   end,
@@ -800,7 +800,7 @@ return {
       "rafamadriz/friendly-snippets",
     },
     config = function()
-      require "user.luasnip"
+      require "kiyoon.luasnip"
     end,
   },
   {
@@ -810,7 +810,7 @@ return {
       "nvim-lua/plenary.nvim",
     },
     config = function()
-      require "user.lsp.null-ls"
+      require "kiyoon.lsp.null-ls"
     end,
   },
   {
@@ -851,7 +851,7 @@ return {
       "Weissle/persistent-breakpoints.nvim",
     },
     config = function()
-      require "user.dap"
+      require "kiyoon.dap"
     end,
   },
   {
@@ -889,7 +889,7 @@ return {
     "RRethy/vim-illuminate",
     event = "BufReadPost",
     config = function()
-      require "user.illuminate"
+      require "kiyoon.illuminate"
     end,
   },
 
@@ -1109,7 +1109,7 @@ return {
       vim.o.foldenable = true
     end,
     config = function()
-      require "user.ufo"
+      require "kiyoon.ufo"
     end,
   },
   {

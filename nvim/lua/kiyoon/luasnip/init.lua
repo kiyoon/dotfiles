@@ -1,6 +1,6 @@
 require("luasnip.loaders.from_vscode").lazy_load()
 
-require "user.luasnip.lua"
+require "kiyoon.luasnip.lua"
 
 local ls = require "luasnip"
 local types = require "luasnip.util.types"

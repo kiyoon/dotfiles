@@ -24,7 +24,7 @@ nvim '+Copilot enable' +q
 After installing dependencies, check health inside nvim:
 
 ```vim
-:checkhealth user
+:checkhealth kiyoon
 ```
 
 ## This config adds these functionalities:

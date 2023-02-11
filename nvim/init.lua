@@ -17,7 +17,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("user.lazy", {
+require("lazy").setup("kiyoon.lazy", {
   dev = {
     path = "~/project",
     -- patterns = { "kiyoon", "nvim-treesitter-textobjects" },
@@ -64,7 +64,7 @@ nmap <leader><leader>g <Cmd>let g:quit_nvim_hand_gesture = 1<CR>
 local vscodepath = vim.fn.stdpath "config" .. "/vscode.vim"
 vim.cmd("source " .. vscodepath)
 
-require "user.menu"
+require "kiyoon.menu"
 
 -- folding (use nvim-ufo for better control)
 -- vim.cmd [[hi Folded guibg=black ctermbg=black]]

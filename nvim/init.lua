@@ -41,16 +41,18 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
+--- NOTE: removed in favour of yanky.nvim
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
-local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
-vim.api.nvim_create_autocmd("TextYankPost", {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = "*",
-})
+-- local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
+-- vim.api.nvim_create_autocmd("TextYankPost", {
+--   callback = function()
+--     vim.highlight.on_yank()
+--   end,
+--   group = highlight_group,
+--   pattern = "*",
+-- })
 
 vim.cmd [[
 " With GUI demo
@@ -92,6 +94,4 @@ vim.o.langmap =
 vim.g.do_filetype_lua = 1
 
 -- splitting doesn't change the scroll
-vim.o.splitkeep = "screen"
-
-vim.keymap.set("n", "<leader>q", require("tmux.copy").sync_registers)
+-- vim.o.splitkeep = "screen"

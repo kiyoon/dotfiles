@@ -231,16 +231,43 @@ return {
 
   {
     "nvim-tree/nvim-tree.lua",
-    event = "VeryLazy",
+    lazy = true,
+    init = function()
+      local function open_nvim_tree(data)
+        -- buffer is a directory
+        local directory = vim.fn.isdirectory(data.file) == 1
+
+        if not directory then
+          return
+        end
+
+        -- change to the directory
+        vim.cmd.cd(data.file)
+
+        -- open the tree
+        require("nvim-tree.api").tree.open()
+      end
+
+      vim.api.nvim_create_augroup("nvim_tree_open", {})
+      vim.api.nvim_create_autocmd({ "VimEnter" }, {
+        callback = open_nvim_tree,
+        group = "nvim_tree_open",
+      })
+    end,
     dependencies = {
       "nvim-tree/nvim-web-devicons",
     },
-    -- keys = {
-    --   "<space>nt",
-    -- },
-    -- cmds = {
-    --   "NvimTreeToggle",
-    -- },
+    keys = {
+      {
+        "<space>nt",
+        "<cmd>NvimTreeToggle<CR>",
+        desc = "Toggle NvimTree",
+      },
+    },
+    cmd = {
+      "NvimTreeToggle",
+      "NvimTreeOpen",
+    },
     config = function()
       require "user.nvim_tree"
     end,

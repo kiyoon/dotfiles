@@ -93,3 +93,5 @@ vim.g.do_filetype_lua = 1
 
 -- splitting doesn't change the scroll
 vim.o.splitkeep = "screen"
+
+vim.keymap.set("n", "<leader>q", require("tmux.copy").sync_registers)

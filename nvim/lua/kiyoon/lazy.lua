@@ -877,7 +877,7 @@ return {
         copy_sync = {
           enable = true,
           sync_clipboard = false,
-          sync_registers = true,
+          sync_registers = false,
         },
         resize = {
           enable_default_keybindings = false,
@@ -1064,12 +1064,12 @@ return {
           -- Toggle DAP (conditional) breakpoint on (Ctrl-)left click
           toggle_breakpoint(args)
         elseif args.button == "m" then
-          c "norm! yy" -- Yank on middle click
+          vim.cmd "norm! yy" -- Yank on middle click
         elseif args.button == "r" then
           if args.clicks == 2 then
-            c "norm! dd" -- Cut on double right click
+            vim.cmd "norm! dd" -- Cut on double right click
           else
-            c "norm! p" -- Paste on right click
+            vim.cmd "norm! p" -- Paste on right click
           end
         end
       end

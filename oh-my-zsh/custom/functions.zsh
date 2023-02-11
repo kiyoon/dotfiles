@@ -1,5 +1,3 @@
-CURRENT_DIR="${0:a:h}"
-DOTFILES_DIR=$(git -C "$CURRENT_DIR" rev-parse --show-toplevel)
 ghremote() {
 	if [ $# -eq 1 ]; then
 		if [[ "$1" = *"/"* ]]; then
@@ -26,11 +24,19 @@ ghremote() {
 }
 
 
+dotfiles_dir() {
+	CURRENT_DIR="${0:a:h}"
+	DOTFILES_DIR=$(git -C "$CURRENT_DIR" rev-parse --show-toplevel)
+	echo "$DOTFILES_DIR"
+}
+
 dotstash() {
+	DOTFILES_DIR=$(dotfiles_dir)
 	git -C "$DOTFILES_DIR" stash
 }
 
 dotupdate() {
+	DOTFILES_DIR=$(dotfiles_dir)
 	git -C "$DOTFILES_DIR" pull
 	if [ $? -ne 0 ]; then
 		echo

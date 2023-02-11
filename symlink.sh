@@ -30,6 +30,7 @@ ln_sb nvim ~/.config
 ln_sb nvim/.vimrc ~
 ln_sb tmux/.tmux.conf ~
 ln_sb oh-my-zsh/.zshrc ~
+ln_sb oh-my-zsh/custom ~/.oh-my-zsh
 ln_sb oh-my-zsh/starship.toml ~/.config
 ln_sb wezterm ~/.config
 ln_sb cargo/config.toml ~/.cargo

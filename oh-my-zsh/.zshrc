@@ -63,7 +63,7 @@ COMPLETION_WAITING_DOTS="true"
 HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
-ZSH_CUSTOM="$HOME/.config/dotfiles/oh-my-zsh/custom"
+# ZSH_CUSTOM="$HOME/.config/dotfiles/oh-my-zsh/custom"
 
 ZVM_INIT_MODE=sourcing
 

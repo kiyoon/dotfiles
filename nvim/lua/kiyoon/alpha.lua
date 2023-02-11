@@ -18,6 +18,8 @@ dashboard.section.header.val = {
   [[\ \_\ \_\ \____\ \____/\ \___/  \ \_\ \_\ \_\ \_\]],
   [[ \/_/\/_/\/____/\/___/  \/__/    \/_/\/_/\/_/\/_/]] .. neovim_version_str,
 }
+
+local plugins_config_path = vim.fn.stdpath "config" .. "/lua/kiyoon/lazy.lua"
 dashboard.section.buttons.val = {
   dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
   dashboard.button("f", "  Find file (\\ff)", ":Telescope find_files hidden=true no_ignore=true<CR>"),
@@ -29,7 +31,8 @@ dashboard.section.buttons.val = {
   dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>ChatGPT<CR>"),
   dashboard.button("l", " " .. " Install language support (:Mason)", ":Mason<CR>"),
   dashboard.button("p", " " .. " Plugins", "<cmd>Lazy<CR>"),
-  dashboard.button("c", " " .. " Neovim config", ":e $MYVIMRC <CR>"),
+  dashboard.button("P", " " .. " Plugins config", ":e " .. plugins_config_path .. "<CR>"),
+  dashboard.button("c", " " .. " Neovim config", ":e $MYVIMRC <CR>"),
   dashboard.button("q", " " .. " Quit", ":qa<CR>"),
 }
 -- local handle = io.popen('fortune')

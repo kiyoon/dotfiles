@@ -21,6 +21,12 @@ nvim '+Copilot setup' +q
 nvim '+Copilot enable' +q
 ```
 
+After installing dependencies, check health inside nvim:
+
+```vim
+:checkhealth user
+```
+
 ## This config adds these functionalities:
 
 ### Custom commands

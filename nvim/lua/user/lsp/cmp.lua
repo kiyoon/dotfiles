@@ -86,6 +86,11 @@ cmp.setup {
     documentation = cmp.config.window.bordered(),
   },
   experimental = {
-    ghost_text = true,
+    ghost_text = {
+      hl_group = "LspCodeLens",
+    },
   },
 }
+
+-- transparent popup
+vim.o.pumblend = 30

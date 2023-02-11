@@ -220,6 +220,8 @@ autocmd FileType sml setl commentstring=(*%s*)
 
 " set foldcolumn automatically if there is at least one fold
 " WARNING: this function causes cursor to flicker when using with folke/which-key.nvim
+" in neovim just set
+" vim.o.foldcolumn = 'auto:3'
 
 if !has('nvim')
   set foldmethod=marker

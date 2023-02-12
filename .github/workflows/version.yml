@@ -1,0 +1,25 @@
+name: Bump version
+
+on:  
+  push:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+jobs:
+  bumpversion:
+    name: Bump version if no commit for 7 days
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check dates difference
+        id: git-check
+        run: |
+          echo "Github last update : " +  `git log -1 --format=%cd$`
+          echo "Now : " +  `date`
+          let now=`date +%s`
+          let backupTime=`git log -1 --format=%cd$ --date=raw | grep -o "^\w*\b"`
+          deltaDays=$((now-backupTime))
+          deltaDays=$((deltaHours/3600/24))
+          echo is_stable="$([ $deltaDays -ge 7 ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
+      - name: Bump version
+        if: steps.git-check.outputs.is_stable == 'true'

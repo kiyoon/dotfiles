@@ -1,4 +1,4 @@
-local nvim_treesitter_dev = false
+local nvim_treesitter_dev = true
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 
@@ -350,6 +350,20 @@ return {
         "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner(true)<CR>",
         mode = { "x", "o" },
         desc = "Select context-aware indent (inner, entire range)",
+      },
+    },
+  },
+  {
+    "danymat/neogen",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    config = true,
+    -- Uncomment next line if you want to follow only stable versions
+    -- version = "*"
+    keys = {
+      {
+        "<space>td",
+        "<cmd>lua require('neogen').generate()<CR>",
+        desc = "Generate [D]ocstring",
       },
     },
   },

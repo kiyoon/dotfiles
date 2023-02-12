@@ -411,6 +411,21 @@ endif
 " Execute this file
 nnoremap <space><space>x <cmd>call Tj_save_and_exec()<CR>
 
+" Execute selection
+if !exists('*Exec_lua_or_vim')
+  function! Exec_lua_or_vim(content) abort
+    if &filetype == 'vim'
+      exec a:content
+    elseif &filetype == 'lua'
+	  let g:exec_lua_or_vim_content = a:content
+	  lua vim.cmd.lua(vim.g.exec_lua_or_vim_content)
+    endif
+
+    return
+  endfunction
+endif
+xnoremap <space><space>x "sy:call Exec_lua_or_vim(@s)<CR>
+
 " Disable continuation of comments
 " It seems like plugins enable this
 " Use autocmd to override plugin
@@ -419,3 +434,4 @@ autocmd BufNewFile,BufRead * setlocal formatoptions-=cro
 " Quickfix
 map <C-Down> <cmd>cn<CR>
 map <C-Up> <cmd>cp<CR>
+

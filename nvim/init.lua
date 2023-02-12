@@ -95,3 +95,11 @@ vim.g.do_filetype_lua = 1
 
 -- splitting doesn't change the scroll
 -- vim.o.splitkeep = "screen"
+
+-- Maybe some plugin is overwriting this
+vim.cmd [[
+augroup AutoView
+  autocmd!
+  autocmd BufWinEnter ?* set foldlevel=99
+augroup END
+]]

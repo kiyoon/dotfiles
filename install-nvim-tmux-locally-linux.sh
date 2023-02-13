@@ -9,8 +9,8 @@
 # export TERMINFO="$HOME/.local/share/terminfo"	# tmux needs this
 
 # neovim latest stable/nightly version
-nvim_tag=stable
-# nvim_tag=nightly
+# nvim_tag=stable
+nvim_tag=nightly
 mkdir ~/.local/bin -p
 cd ~/.local/bin
 curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim.appimage

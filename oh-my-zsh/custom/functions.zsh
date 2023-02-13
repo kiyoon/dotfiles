@@ -58,7 +58,7 @@ dotupdate() {
 	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
 
 	"$DOTFILES_DIR"/nvim/install-linux.sh
-	nvim --headless '+Lazy restore' +qall
+	nvim --headless '+Lazy! restore' +qall
 
 	~/.tmux/plugins/tpm/scripts/install_plugins.sh
 	~/.tmux/plugins/tpm/scripts/update_plugin.sh all

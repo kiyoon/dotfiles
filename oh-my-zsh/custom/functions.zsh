@@ -60,8 +60,8 @@ dotupdate() {
 	"$DOTFILES_DIR"/nvim/install-linux.sh
 	nvim --headless '+Lazy! restore' +qall
 
-	~/.tmux/plugins/tpm/scripts/install_plugins.sh
-	~/.tmux/plugins/tpm/scripts/update_plugin.sh all
+	"$DOTFILES_DIR"/tmux/install-plugins.sh
+	"$DOTFILES_DIR"/tmux/update-plugins.sh
 
 	"$DOTFILES_DIR"/wezterm/terminfo.sh
 

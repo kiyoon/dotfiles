@@ -13,7 +13,7 @@ cmp.setup {
   mapping = cmp.mapping.preset.insert {
     -- ["<C-f>"] = cmp.mapping.scroll_docs(4),
     -- ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
+    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs( -1), { "i", "c" }),
     ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
 
     -- ["<C-Space>"] = cmp.mapping.complete(),
@@ -85,11 +85,13 @@ cmp.setup {
     completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered(),
   },
-  experimental = {
-    ghost_text = {
-      hl_group = "LspCodeLens",
-    },
-  },
+  --- This shows a virtual text similar to copilot
+  --- Good if you don't use copilot but using both isn't possible
+  -- experimental = {
+  --   ghost_text = {
+  --     hl_group = "LspCodeLens",
+  --   },
+  -- },
 }
 
 -- transparent popup

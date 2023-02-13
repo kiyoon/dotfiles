@@ -3,6 +3,13 @@
 This is a modern Neovim, Tmux, Zsh configuration that supports installing everything locally (i.e. non-system-wide user install, not using sudo).  
 You can enjoy working on a remote SSH server without root permission, just like you do locally.
 
+![image](https://user-images.githubusercontent.com/12980409/218476082-8c400daf-7d9d-4d15-bf7a-f6b41d9191d9.png)
+
+![image](https://user-images.githubusercontent.com/12980409/218475937-c9a51b2d-b4d6-499f-8787-012770410209.png)
+
+![image](https://user-images.githubusercontent.com/12980409/218476252-9de93e0c-ddfe-486b-979a-5ded6a9425a9.png)
+
+
 ## Keep it stable!
 
 This repository includes a Github Actions that automatically checks if the commit hasn't been made for 1 week.  

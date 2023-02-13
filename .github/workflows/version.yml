@@ -43,6 +43,8 @@ jobs:
           then
             NEW_VERSION='v0.1.0'
           fi
+
+          # push: make sure Settings -> Actions -> General -> Workflow permission -> Read and write permission is set.
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
           git tag -d stable || true

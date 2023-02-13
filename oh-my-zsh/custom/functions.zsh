@@ -1,4 +1,4 @@
-CURRENT_DIR="${0:a:h}"
+DOTFILES_OHMYZSH_CUSTOM_DIR="${0:a:h}"
 
 ghremote() {
 	if [ $# -eq 1 ]; then
@@ -27,7 +27,7 @@ ghremote() {
 
 
 dotfiles_dir() {
-	DOTFILES_DIR=$(git -C "$CURRENT_DIR" rev-parse --show-toplevel)
+	DOTFILES_DIR=$(git -C "$DOTFILES_OHMYZSH_CUSTOM_DIR" rev-parse --show-toplevel)
 	echo "$DOTFILES_DIR"
 }
 
@@ -42,12 +42,12 @@ dotupdate() {
 	git -C "$DOTFILES_DIR" pull
 	if [ $? -ne 0 ]; then
 		echo
-		print -P "%F{red}Failed to update dotfiles due to local changes.%f\n"
-		print -P "%F{red}To discard local changes and force update, run %f\n"
+		print -P "%F{red}Failed to update dotfiles due to local changes.%f"
+		print -P "%F{red}To discard local changes and force update, run %f"
 		echo
 		echo "dotstash"
 		echo
-		print -P "%F{red}and try again%f\n"
+		print -P "%F{red}and try again%f"
 		return 1
 	fi
 

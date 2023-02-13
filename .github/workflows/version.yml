@@ -33,6 +33,7 @@ jobs:
         if: steps.git-check.outputs.is_stable == 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
           NEW_VERSION=`git describe --tags --abbrev=0 --match 'v*' | awk -F. '{OFS="."; $NF+=1; print $0}'`
           if [[ -z $NEW_VERSION ]]

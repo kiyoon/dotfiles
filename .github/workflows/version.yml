@@ -30,7 +30,7 @@ jobs:
             deltaDays=$((now-backupTime))
             deltaDays=$((deltaHours/3600/24))
             echo "Days since the last commit: $deltaDays"
-            echo is_stable="$([ $deltaDays -le 7 ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
+            echo is_stable="$([ $deltaDays -lt 7 ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
           fi
 
       - name: Bump version

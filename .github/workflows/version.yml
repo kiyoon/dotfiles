@@ -38,10 +38,11 @@ jobs:
         shell: bash
         run: |
           CURRENT_VERSION=$(git describe --tags --abbrev=0 --match 'v*' 2> /dev/null || true)
-          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{OFS="."; $NF+=1; print $0}')
-          if [[ -z $NEW_VERSION ]]
+          if [[ -z $CURRENT_VERSION ]]
           then
             NEW_VERSION='v0.1.0'
+          else
+            NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{OFS="."; $NF+=1; print $0}')
           fi
 
           # push: make sure Settings -> Actions -> General -> Workflow permission -> Read and write permission is set.

@@ -38,20 +38,8 @@ jobs:
         if: steps.git-check.outputs.is_stable == 'true'
         shell: bash
         run: |
-          CURRENT_VERSION=$(git describe --tags --abbrev=0 --match 'v*' 2> /dev/null || true)
-          if [[ -z $CURRENT_VERSION ]]
-          then
-            NEW_VERSION='v0.1.0'
-          else
-            NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{OFS="."; $NF+=1; print $0}')
-          fi
-
           # push: make sure Settings -> Actions -> General -> Workflow permission -> Read and write permission is set.
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
-          git tag -d stable || true
-          git push origin :stable || true
-          git tag -a stable -m "Last Stable Release"
-          git push origin stable
-          git tag -a "$NEW_VERSION" -m "No commits for 7 days"
-          git push origin "$NEW_VERSION"
+
+          bash bump_version.sh

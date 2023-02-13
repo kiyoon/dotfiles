@@ -5,6 +5,8 @@ You can enjoy working on a remote SSH server without a root permission, just lik
 
 If you're on mac, use `brew` to install everything. The scripts assume Linux.
 
+You can refer to README in each directory for details of each program!
+
 ## Steps
 
 1. Install dotfiles

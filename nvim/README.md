@@ -14,6 +14,7 @@ Optionally,
 
 ```bash
 sudo apt install xclip		# neovim, tmux clipboard support
+sudo apt install lua-check	# linter for lua
 
 # Github Copilot
 nvim --headless +'Lazy install' +qall

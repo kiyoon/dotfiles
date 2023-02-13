@@ -9,7 +9,7 @@ on:
 
 jobs:
   bumpversion:
-    name: Bump version if no commit for 7 days
+    name: Bump version if no commit for 3 days
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
             deltaDays=$((now-backupTime))
             deltaDays=$((deltaHours/3600/24))
             echo "Days since the last commit: $deltaDays"
-            echo is_stable="$([ $deltaDays -ge 7 ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
+            echo is_stable="$([ $deltaDays -ge 3 ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
           fi
 
       - name: Bump version
@@ -42,4 +42,4 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
 
-          bash bump_version.sh
+          bash bump_version.sh 'No commits for more than 3 days'

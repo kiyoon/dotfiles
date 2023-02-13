@@ -53,6 +53,7 @@
   "nvim-tree-remote.nvim": { "branch": "master", "commit": "294432a0e8a1f09be4db0a07029b2d1489a28d2f" },
   "nvim-tree.lua": { "branch": "master", "commit": "36e29c3a95ae606449f6616a0d8ab7247af807dc" },
   "nvim-treehopper": { "branch": "master", "commit": "54d6646809d82da0c5d864fb3126ab1961a11f48" },
+  "nvim-treesitter": { "branch": "master", "commit": "2c2430d42f30d1aef8715aed933272c9a6898f4e" },
   "nvim-treesitter-context": { "branch": "master", "commit": "cacee4828152dd3a83736169ae61bbcd29a3d213" },
   "nvim-treesitter-endwise": { "branch": "master", "commit": "0cf4601c330cf724769a2394df555a57d5fd3f34" },
   "nvim-treesitter-textobjects": { "branch": "master", "commit": "13edf91f47c91b390bb00e1df2f7cc1ca250af3a" },

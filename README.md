@@ -58,5 +58,7 @@ See [oh-my-zsh/README.md](oh-my-zsh/README.md)
 
 ```zsh
 # WARNING: This includes calling ./symlink.sh so the dotfile symlinks will be updated.
-dotupdate
+dotupdate			# Use if you want to update to the latest commit
+dotstable			# Use if you want to use the stable tag
+dotupdate <tag>		# Specify the tag/commit you want to use
 ```

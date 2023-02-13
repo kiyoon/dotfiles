@@ -37,6 +37,7 @@ dotstash() {
 }
 
 dotupdate() {
+	checkout="$1"
 	DOTFILES_DIR=$(dotfiles_dir)
 	git -C "$DOTFILES_DIR" pull
 	if [ $? -ne 0 ]; then
@@ -48,6 +49,10 @@ dotupdate() {
 		echo
 		print -P "%F{red}and try again%f\n"
 		return 1
+	fi
+
+	if [ -n "$checkout" ]; then
+		git -C "$DOTFILES_DIR" checkout "$checkout"
 	fi
 
 	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
@@ -63,6 +68,10 @@ dotupdate() {
 	"$DOTFILES_DIR"/symlink.sh
 
 	omz reload
+}
+
+dotstable() {
+	dotupdate stable
 }
 
 license() {

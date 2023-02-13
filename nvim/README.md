@@ -21,6 +21,18 @@ nvim '+Copilot setup' +q
 nvim '+Copilot enable' +q
 ```
 
+It is recommended to use the `stable` tag of this repo.
+
+```bash
+git checkout stable
+```
+
+It is recommended to use plugin versions that match the `lazy-lock.json` file.
+
+```bash
+nvim --headless +'Lazy restore' +qall
+```
+
 After installing dependencies, check health inside nvim:
 
 ```vim

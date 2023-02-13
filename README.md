@@ -16,21 +16,24 @@ git clone https://github.com/kiyoon/dotfiles
 
 2. Install neovim and tmux
 
+You need Neovim v0.9.0. The fold column will look ugly in v0.8.x.
+
 On Linux, you can install locally using:
 
 ```bash
 ./install-nvim-tmux-locally-linux.sh
-./wezterm/terminfo.sh	# if you're using wezterm you need this terminfo database
 ```
 
 This will download the latest appimage for each and extract at `~/.local/bin`.
 
-Install neovim dependencies:  
+Install neovim dependencies:
+
 ```bash
 nvim/install-linux.sh
 ```
 
-Install tmux plugins:  
+Install tmux plugins:
+
 ```bash
 tmux/install-plugins.sh
 ```

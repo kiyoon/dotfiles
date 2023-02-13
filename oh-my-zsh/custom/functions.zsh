@@ -58,7 +58,7 @@ dotupdate() {
 	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
 
 	"$DOTFILES_DIR"/nvim/install-linux.sh
-	nvim --headless '+Lazy! restore' +qall
+	nvim +"lua require('lazy').restore({wait=true})" +qa
 
 	"$DOTFILES_DIR"/tmux/install-plugins.sh
 	"$DOTFILES_DIR"/tmux/update-plugins.sh

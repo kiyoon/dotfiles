@@ -17,7 +17,7 @@ sudo apt install xclip		# neovim, tmux clipboard support
 sudo apt install lua-check	# linter for lua
 
 # Github Copilot
-nvim --headless +'Lazy! install' +qall
+nvim +"lua require('lazy').install({wait=true})" +qa
 nvim '+Copilot setup' +q
 nvim '+Copilot enable' +q
 ```
@@ -31,7 +31,7 @@ git checkout stable
 It is recommended to use plugin versions that match the `lazy-lock.json` file.
 
 ```bash
-nvim --headless +'Lazy! restore' +qall
+nvim +"lua require('lazy').restore({wait=true})" +qa
 ```
 
 After installing dependencies, check health inside nvim:

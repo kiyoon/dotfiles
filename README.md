@@ -54,6 +54,12 @@ In order to try the stable version, just run `dotstable` after setting up the zs
 ```bash
 cd ~/.config	# it doesn't have to be here. Just install anywhere
 git clone https://github.com/kiyoon/dotfiles
+
+# WARNING: ./symlink.sh will override existing dotfiles without validation (but will create a backup).
+# The old dotfiles will be moved with '~' suffix.
+# Use with care if you configured something manually.
+cd dotfiles
+./symlink.sh
 ```
 
 2. Install neovim and tmux
@@ -84,12 +90,9 @@ tmux/install-plugins.sh
 
 See [oh-my-zsh/README.md](oh-my-zsh/README.md)
 
-4. Symlink dotfiles and install others
+4. Symlink dotfiles again and install others
 
 ```bash
-# WARNING: ./symlink.sh will override existing dotfiles without validation (but will create a backup).
-# The old dotfiles will be moved with '~' suffix.
-# Use with care if you configured something manually.
 ./symlink.sh
 ./install-nerdfont.sh
 ```

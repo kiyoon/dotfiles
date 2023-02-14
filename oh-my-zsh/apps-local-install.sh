@@ -156,3 +156,4 @@ cargo install viu # --features=sixel
 cargo install bat
 cargo install bottom
 cargo install du-dust
+cargo install procs

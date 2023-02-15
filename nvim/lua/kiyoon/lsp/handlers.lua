@@ -1,6 +1,5 @@
-local no_formatting_servers = {
-  "tsserver",
-  "lua_ls",
+local servers_use_formatting = {
+  -- "lua_ls",
 }
 
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
@@ -121,9 +120,13 @@ local function lsp_keymaps(bufnr)
 end
 
 M.on_attach = function(client, bufnr)
-  for _, server in pairs(no_formatting_servers) do
+  -- Disable LSP formatting for most servers
+  -- LSP is slow to initialise, and using their formatting can result in reverting the changes.
+  -- Annoying especially when you format on save, and save a document very quick before the LSP is initialised.
+  client.server_capabilities.documentFormattingProvider = false
+  for _, server in pairs(servers_use_formatting) do
     if client.name == server then
-      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentFormattingProvider = true
       break
     end
   end

@@ -1,4 +1,7 @@
-local M = {}
+local no_formatting_servers = {
+  "tsserver",
+  "lua_ls",
+}
 
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 
@@ -118,12 +121,11 @@ local function lsp_keymaps(bufnr)
 end
 
 M.on_attach = function(client, bufnr)
-  if client.name == "tsserver" then
-    client.server_capabilities.documentFormattingProvider = false
-  end
-
-  if client.name == "sumneko_lua" then
-    client.server_capabilities.documentFormattingProvider = false
+  for _, server in pairs(no_formatting_servers) do
+    if client.name == server then
+      client.server_capabilities.documentFormattingProvider = false
+      break
+    end
   end
 
   lsp_keymaps(bufnr)

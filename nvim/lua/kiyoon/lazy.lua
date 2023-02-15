@@ -38,11 +38,31 @@ return {
   {
     "kiyoon/tmuxsend.vim",
     keys = {
-      { "-",        "<Plug>(tmuxsend-smart)",      mode = { "n", "x" },                              desc = "Send to tmux (smart)" },
-      { "_",        "<Plug>(tmuxsend-plain)",      mode = { "n", "x" },                              desc = "Send to tmux (plain)" },
-      { "<space>-", "<Plug>(tmuxsend-uid-smart)",  mode = { "n", "x" },                              desc = "Send to tmux w/ pane uid (smart)" },
-      { "<space>_", "<Plug>(tmuxsend-uid-plain)",  mode = { "n", "x" },                              desc = "Send to tmux w/ pane uid (plain)" },
-      { "<C-_>",    "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x", desc = "Yank to tmux buffer" } },
+      {
+        "-",
+        "<Plug>(tmuxsend-smart)",
+        mode = { "n", "x" },
+        desc = "Send to tmux (smart)",
+      },
+      {
+        "_",
+        "<Plug>(tmuxsend-plain)",
+        mode = { "n", "x" },
+        desc = "Send to tmux (plain)",
+      },
+      {
+        "<space>-",
+        "<Plug>(tmuxsend-uid-smart)",
+        mode = { "n", "x" },
+        desc = "Send to tmux w/ pane uid (smart)",
+      },
+      {
+        "<space>_",
+        "<Plug>(tmuxsend-uid-plain)",
+        mode = { "n", "x" },
+        desc = "Send to tmux w/ pane uid (plain)",
+      },
+      { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x", desc = "Yank to tmux buffer" } },
     },
   },
   {
@@ -78,7 +98,7 @@ return {
     -- <space>ssip to substitute word from paragraph
     "svermeulen/vim-subversive",
     keys = {
-      { "<space>s",  "<plug>(SubversiveSubstituteRange)",     mode = { "n", "x" } },
+      { "<space>s", "<plug>(SubversiveSubstituteRange)", mode = { "n", "x" } },
       { "<space>ss", "<plug>(SubversiveSubstituteWordRange)", mode = { "n" } },
     },
   },
@@ -151,24 +171,6 @@ return {
     },
     cmd = { "DiffviewOpen", "DiffviewClose" },
   },
-
-  {
-    "smjonas/inc-rename.nvim",
-    keys = {
-      {
-        "<space>pr",
-        function()
-          return ":IncRename " .. vim.fn.expand "<cword>"
-        end,
-        expr = true,
-        desc = "LSP (R)ename",
-      },
-    },
-    config = function()
-      require("inc_rename").setup()
-    end,
-  },
-
   {
     "lewis6991/gitsigns.nvim",
     event = "BufReadPre",
@@ -379,7 +381,7 @@ return {
     end,
     keys = {
       { "<space>l", "<cmd>TSJSplit<CR>", desc = "Treesitter Split" },
-      { "<space>h", "<cmd>TSJJoin<CR>",  desc = "Treesitter Join" },
+      { "<space>h", "<cmd>TSJJoin<CR>", desc = "Treesitter Join" },
       -- { "<space>g", "<cmd>TSJToggle<CR>", desc = "Treesitter Toggle" },
     },
   },
@@ -492,10 +494,21 @@ return {
       },
     },
     keys = {
-      { "m", "<Cmd>lua require('tsht').nodes()<CR>",                  mode = "o",                  desc = "TreeSitter [M]otion" },
-      { "m", ":lua require('tsht').nodes()<CR>",                      mode = "x",                  noremap = true,              desc = "TreeSitter [M]otion" },
+      {
+        "m",
+        "<Cmd>lua require('tsht').nodes()<CR>",
+        mode = "o",
+        desc = "TreeSitter [M]otion",
+      },
+      {
+        "m",
+        ":lua require('tsht').nodes()<CR>",
+        mode = "x",
+        noremap = true,
+        desc = "TreeSitter [M]otion",
+      },
       { "m", "<Cmd>lua require('tsht').move({ side = 'start' })<CR>", desc = "TreeSitter [M]otion" },
-      { "M", "m",                                                     noremap = true,              desc = "[M]ark" },
+      { "M", "m", noremap = true, desc = "[M]ark" },
     },
   },
   {
@@ -558,14 +571,14 @@ return {
       }
     end,
     keys = {
-      { "<leader>s",         "<Cmd>ISwap<CR>",              mode = "n", desc = "ISwap" },
-      { "<leader>S",         "<Cmd>ISwapNode<CR>",          mode = "n", desc = "ISwapNode" },
-      { "<leader><leader>s", "<Cmd>ISwapWith<CR>",          mode = "n", desc = "ISwapWith" },
-      { "<leader><leader>S", "<Cmd>ISwapNodeWith<CR>",      mode = "n", desc = "ISwapNodeWith" },
-      { "<space>.",          "<Cmd>ISwapWithRight<CR>",     mode = "n", desc = "ISwapWithRight" },
-      { "<space>,",          "<Cmd>ISwapWithLeft<CR>",      mode = "n", desc = "ISwapWithLeft" },
-      { "<space><space>.",   "<Cmd>ISwapNodeWithRight<CR>", mode = "n", desc = "ISwapNodeWithRight" },
-      { "<space><space>,",   "<Cmd>ISwapNodeWithLeft<CR>",  mode = "n", desc = "ISwapNodeWithLeft" },
+      { "<leader>s", "<Cmd>ISwap<CR>", mode = "n", desc = "ISwap" },
+      { "<leader>S", "<Cmd>ISwapNode<CR>", mode = "n", desc = "ISwapNode" },
+      { "<leader><leader>s", "<Cmd>ISwapWith<CR>", mode = "n", desc = "ISwapWith" },
+      { "<leader><leader>S", "<Cmd>ISwapNodeWith<CR>", mode = "n", desc = "ISwapNodeWith" },
+      { "<space>.", "<Cmd>ISwapWithRight<CR>", mode = "n", desc = "ISwapWithRight" },
+      { "<space>,", "<Cmd>ISwapWithLeft<CR>", mode = "n", desc = "ISwapWithLeft" },
+      { "<space><space>.", "<Cmd>ISwapNodeWithRight<CR>", mode = "n", desc = "ISwapNodeWithRight" },
+      { "<space><space>,", "<Cmd>ISwapNodeWithLeft<CR>", mode = "n", desc = "ISwapNodeWithLeft" },
     },
   },
   {
@@ -835,16 +848,33 @@ return {
     end,
   },
 
+  {
+    "smjonas/inc-rename.nvim",
+    keys = {
+      {
+        "<space>pr",
+        function()
+          return ":IncRename " .. vim.fn.expand "<cword>"
+        end,
+        expr = true,
+        desc = "LSP (R)ename",
+      },
+    },
+    config = function()
+      require("inc_rename").setup()
+    end,
+  },
+
   -- LSP diagnostics
   {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
     keys = {
-      { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",  desc = "Document Diagnostics (Trouble)" },
+      { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
       { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
-      { "<leader>xl", "<cmd>TroubleToggle loclist<cr>",               desc = "Location List (Trouble)" },
-      { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>",              desc = "Quickfix List (Trouble)" },
-      { "gR",         "<cmd>TroubleToggle lsp_references<cr>",        desc = "LSP references (Trouble)" },
+      { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
+      { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP references (Trouble)" },
     },
     config = function()
       require("trouble").setup {
@@ -1033,7 +1063,7 @@ return {
       "ChatGPTRunCustomCodeAction",
     },
     keys = {
-      { "<leader>cg", "<cmd>ChatGPT<CR>",      mode = { "n", "x" }, desc = "ChatGPT" },
+      { "<leader>cg", "<cmd>ChatGPT<CR>", mode = { "n", "x" }, desc = "ChatGPT" },
       {
         "<leader>ce",
         "<cmd>ChatGPTEditWithInstructions<CR>",

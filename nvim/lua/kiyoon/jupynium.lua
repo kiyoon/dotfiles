@@ -4,8 +4,9 @@ if not status_ok then
 end
 
 jupynium.setup {
-  python_host = "~/bin/miniconda3/envs/jupynium/bin/python",
-  jupyter_command = "~/bin/miniconda3/bin/jupyter",
+  python_host = { "conda", "run", "--no-capture-output", "-n", "jupynium", "python" },
+  -- jupyter_command = "~/bin/miniconda3/bin/jupyter",
+  jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
 
   -- Open the Jupynium server if it is not already running
   -- which means that it will open the Selenium browser when you open this file.

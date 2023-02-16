@@ -280,20 +280,6 @@ if !has('nvim')
   let fold_blacklist = ['fern']
   autocmd CursorHold,BufWinEnter ?* if index(fold_blacklist, &ft) < 0 | call HasFolds() | endif
 
-  " restore the cursor position
-  function! ResCur()
-	  if line("'\"") <= line("$")
-		  normal! g`"
-		  return 1
-	  endif
-  endfunction
-
-  augroup resCur
-	  autocmd!
-	  autocmd BufWinEnter * call ResCur()
-  augroup END
-
-
   " match behaviour of Y with C and D
   nnoremap Y y$
   vnoremap Y $y
@@ -303,6 +289,18 @@ if !has('nvim')
   autocmd InsertLeave * set nopaste
 endif
 
+" restore the cursor position
+function! ResCur()
+  if line("'\"") <= line("$")
+    normal! g`"
+    return 1
+  endif
+endfunction
+
+augroup resCur
+  autocmd!
+  autocmd BufWinEnter * call ResCur()
+augroup END
 
 " Select last pasted
 " https://vim.fandom.com/wiki/Selecting_your_pasted_text

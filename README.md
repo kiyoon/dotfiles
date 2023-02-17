@@ -87,13 +87,13 @@ tmux/install-plugins.sh
 
 3. Install zsh, oh-my-zsh
 
-See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
-
 ```bash
 oh-my-zsh/zsh-local-install.sh
 oh-my-zsh/apps-local-install.sh
 oh-my-zsh/launch-zsh-in-bash.sh
 ```
+
+See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
 
 4. Install others
 

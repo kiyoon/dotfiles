@@ -85,7 +85,6 @@ require("nvim-treesitter.configs").setup {
   -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
 
   highlight = {
-    -- `false` will disable the whole extension
     enable = true,
 
     -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
@@ -107,7 +106,7 @@ require("nvim-treesitter.configs").setup {
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
     -- Kiyoon note: it enables additional highlighting such as `git commit`
-    additional_vim_regex_highlighting = true,
+    additional_vim_regex_highlighting = { "gitcommit" },
   },
 
   rainbow = {

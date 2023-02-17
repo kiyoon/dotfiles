@@ -37,7 +37,7 @@ require("nvim-treesitter.configs").setup {
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = "gnn", -- set to `false` to disable one of the mappings
+      init_selection = false, -- set to `false` to disable one of the mappings
       node_incremental = "<cr>",
       scope_incremental = "grc",
       node_decremental = "<bs>",
@@ -68,7 +68,8 @@ require("nvim-treesitter.configs").setup {
     "latex",
     "markdown",
     "php",
-    -- "gitignore", "sql",  -- requires treesitter-CLI
+    "gitignore",
+    "sql",
   },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)

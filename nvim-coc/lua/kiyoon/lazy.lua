@@ -47,13 +47,8 @@ return {
 		end,
 	},
 	{
-		-- Similar to tpope/vim-surround
-		-- dsf to delete surrounding function call.
-		"kylechui/nvim-surround",
+		"tpope/vim-surround",
 		event = "VeryLazy",
-		config = function()
-			require("nvim-surround").setup()
-		end,
 	},
 	{
 		"chaoren/vim-wordmotion",

@@ -492,7 +492,33 @@ return {
       require("refactoring").setup()
     end,
   },
-
+  {
+    "abecodes/tabout.nvim",
+    event = "InsertEnter",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("tabout").setup {
+        tabkey = "<Tab>",
+        backwards_tabkey = "<S-Tab>",
+        act_as_tab = true,
+        act_as_shift_tab = false,
+        enable_backwards = true,
+        completion = false,
+        tabouts = {
+          { open = "'", close = "'" },
+          { open = '"', close = '"' },
+          { open = "`", close = "`" },
+          { open = "(", close = ")" },
+          { open = "[", close = "]" },
+          { open = "{", close = "}" },
+        },
+        ignore_beginning = true,
+        exclude = {},
+      }
+    end,
+  },
   -- Motions
   -- {
   --   "phaazon/hop.nvim",
@@ -1194,6 +1220,12 @@ return {
     event = "InsertEnter",
     config = function()
       require("better_escape").setup()
+    end,
+  },
+  {
+    "windwp/nvim-autopairs",
+    config = function()
+      require("nvim-autopairs").setup {}
     end,
   },
 }

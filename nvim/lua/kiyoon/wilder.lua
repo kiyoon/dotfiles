@@ -89,7 +89,7 @@ local popupmenu_renderer = wilder.popupmenu_renderer(wilder.popupmenu_border_the
     wilder.popupmenu_scrollbar(),
   },
   highlights = {
-    --accent = wilder.make_hl('WilderAccent', 'Pmenu', {{a = 1}, {a = 1}, {foreground = '#f4468f'}}),
+    -- accent = wilder.make_hl("WilderAccent", "Pmenu", { { a = 1 }, { a = 1 }, { foreground = "#f4468f" } }),
     gradient = gradient,
   },
 })
@@ -100,7 +100,7 @@ local wildmenu_renderer = wilder.wildmenu_renderer {
   left = { " ", wilder.wildmenu_spinner(), " " },
   right = { " ", wilder.wildmenu_index() },
   highlights = {
-    --accent = wilder.make_hl('WilderAccent', 'Pmenu', {{a = 1}, {a = 1}, {foreground = '#f4468f'}}),
+    -- accent = wilder.make_hl("WilderAccent", "Pmenu", { { a = 1 }, { a = 1 }, { foreground = "#f4468f" } }),
     gradient = gradient,
   },
   apply_incsearch_fix = true,

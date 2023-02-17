@@ -9,7 +9,6 @@ You can enjoy working on a remote SSH server without root permission, just like 
 
 ![image](https://user-images.githubusercontent.com/12980409/218476252-9de93e0c-ddfe-486b-979a-5ded6a9425a9.png)
 
-
 ## Keep it stable!
 
 This repository includes a Github Actions that automatically checks if the commit hasn't been made for 1 week.  
@@ -88,12 +87,20 @@ tmux/install-plugins.sh
 
 3. Install zsh, oh-my-zsh
 
-See [oh-my-zsh/README.md](oh-my-zsh/README.md)
-
-4. Symlink dotfiles again and install others
+See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
 
 ```bash
+oh-my-zsh/zsh-local-install.sh
+oh-my-zsh/apps-local-install.sh
+oh-my-zsh/launch-zsh-in-bash.sh
+```
+
+4. Install others
+
+```bash
+# You might want to symlink dotfiles again in case some scripts overrode them
 ./symlink.sh
+# You only need to install it to the local computer, not in SSH host computer.
 ./install-nerdfont.sh
 ```
 

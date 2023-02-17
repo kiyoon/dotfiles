@@ -109,7 +109,7 @@ M.grep_string_gitdir = function()
 end
 
 -- vim.keymap.set({ "n" }, "<leader>ff", builtin.find_files, { noremap = true, silent = true })
-vim.keymap.set({ "i" }, "<C-t>", builtin.git_files, { noremap = true, silent = true })
+-- vim.keymap.set({ "i" }, "<C-t>", builtin.git_files, { noremap = true, silent = true })
 vim.keymap.set(
 	{ "n" },
 	"<leader>ff",

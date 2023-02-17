@@ -1,6 +1,6 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local jupynium_dev = true
+local jupynium_dev = false
 
 return {
   -- the colorscheme should be available when starting Neovim

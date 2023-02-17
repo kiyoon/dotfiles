@@ -40,13 +40,13 @@ dashboard.section.buttons.val = {
 -- handle:close()
 -- dashboard.section.footer.val = fortune
 
-local function footer()
-  return {
-    "https://github.com/kiyoon/dotfiles",
-  }
-end
-
-dashboard.section.footer.val = footer()
+-- local function footer()
+--   return {
+--     "https://github.com/kiyoon/dotfiles",
+--   }
+-- end
+--
+-- dashboard.section.footer.val = footer()
 
 dashboard.section.footer.opts.hl = "Type"
 dashboard.section.header.opts.hl = "Include"
@@ -57,3 +57,16 @@ dashboard.config.opts.noautocmd = true
 vim.cmd [[autocmd User AlphaReady echo 'ready']]
 
 alpha.setup(dashboard.config)
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "LazyVimStarted",
+  callback = function()
+    local stats = require("lazy").stats()
+    local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+    dashboard.section.footer.val = {
+      "https://github.com/kiyoon/dotfiles",
+      "⚡ Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms",
+    }
+    pcall(vim.cmd.AlphaRedraw)
+  end,
+})

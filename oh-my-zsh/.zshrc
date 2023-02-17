@@ -73,7 +73,7 @@ ZVM_INIT_MODE=sourcing
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-	git
+	git-open
 	# vi-mode
 	zsh-vi-mode
 #	zsh-autosuggestions

@@ -15,6 +15,12 @@ This repository includes a Github Actions that automatically checks if the commi
 If it has not been updated for 1 week, we consider that commit to be 'stable' and automatically bump version with `stable` tag.  
 In order to try the stable version, just run `dotstable` after setting up the zsh. This will also pull neovim plugin versions that have been used for the stable commit.
 
+Also, it has three versions of vim.
+
+- `vi` to run fully-featured bleeding-edge configuration of neovim.
+- `vic` to run neovim with stable and mild configuration using CoC. It's a balance between the two, and should be used when the first option is broken.
+- `\vi` to run original vim with no plugins (only simple `.vimrc`)
+
 ## Features
 
 ### Zsh

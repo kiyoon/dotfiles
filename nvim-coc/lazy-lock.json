@@ -7,7 +7,6 @@
   "lazy.nvim": { "branch": "main", "commit": "8186cc5db31bd5968b5be838a30c4cf1465cb3f9" },
   "lualine.nvim": { "branch": "master", "commit": "e99d733e0213ceb8f548ae6551b04ae32e590c80" },
   "nvim-osc52": { "branch": "main", "commit": "358a2b4804c5f35b9ab6975cf68611afcbbc9b0d" },
-  "nvim-surround": { "branch": "main", "commit": "90821ad682aac189cd0a38fd83fc96f0cbcc5d29" },
   "plenary.nvim": { "branch": "master", "commit": "9a0d3bf7b832818c042aaf30f692b081ddd58bd9" },
   "telescope-fzf-native.nvim": { "branch": "main", "commit": "580b6c48651cabb63455e97d7e131ed557b8c7e2" },
   "telescope-insert-path.nvim": { "branch": "master", "commit": "e12249db169087295b4df212a82cb05a38dfb43d" },
@@ -17,6 +16,7 @@
   "tmuxsend.vim": { "branch": "master", "commit": "aa43bd4906e7893bd832e9b5ce818da897c174e6" },
   "tokyonight.nvim": { "branch": "main", "commit": "a0abe53df53616d13da327636cb0bcac3ea7f5af" },
   "vim-python-pep8-indent": { "branch": "master", "commit": "60ba5e11a61618c0344e2db190210145083c91f8" },
+  "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" },
   "vim-wordmotion": { "branch": "master", "commit": "5dd613ed68a0ecf0fc6c11cd4098c03583786bf0" },
   "wilder.nvim": { "branch": "master", "commit": "679f348dc90d80ff9ba0e7c470c40a4d038dcecf" },
   "yanky.nvim": { "branch": "main", "commit": "14b9c4cc572c3be5cf5b0a678e7ac240f08a8681" }

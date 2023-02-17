@@ -70,7 +70,6 @@ return {
 	-- "Exafunction/codeium.vim",
 	{
 		"nvim-lualine/lualine.nvim",
-		cond = (vim.fn.exists("g:started_by_firenvim") or vim.fn.exists("g:vscode")) == 0,
 		config = function()
 			require("lualine").setup({})
 		end,
@@ -79,6 +78,7 @@ return {
 	{
 		"nvim-telescope/telescope.nvim",
 		branch = "0.1.x",
+		dependencies = "nvim-lua/plenary.nvim",
 		config = function()
 			require("kiyoon.telescope")
 		end,

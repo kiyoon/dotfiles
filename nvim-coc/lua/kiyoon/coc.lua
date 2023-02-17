@@ -27,11 +27,7 @@ vim.cmd([[
   nmap <silent> <M-l> <Plug>(coc-diagnostic-next)
   nmap <silent> <M-h> <Plug>(coc-diagnostic-prev)
   " Use <c-space> to trigger completion.
-  if has('nvim')
   inoremap <silent><expr> <c-space> coc#refresh()
-  else
-  inoremap <silent><expr> <c-@> coc#refresh()
-  endif
   " Remap keys for gotos
   nmap <silent> gd <Plug>(coc-definition)
   nmap <silent> gy <Plug>(coc-type-definition)
@@ -41,23 +37,23 @@ vim.cmd([[
   nmap <silent> ge :call CocAction('jumpDefinition', 'tabe')<CR>
   " Use Tab
   au filetype python nmap <C-i> <cmd>CocCommand pyright.organizeimports<CR>
-  nmap <leader>rn <Plug>(coc-rename)
+  nmap <space>pr <Plug>(coc-rename)
 
   " coc-snippets
   " Use <C-l> for trigger snippet expand.
-  imap <C-l> <Plug>(coc-snippets-expand)
+  imap <A-l> <Plug>(coc-snippets-expand)
 
   " Use <C-j> for select text for visual placeholder of snippet.
-  vmap <C-j> <Plug>(coc-snippets-select)
+  vmap <A-j> <Plug>(coc-snippets-select)
 
-  " Use <C-j> for jump to next placeholder, it's default of coc.nvim
-  let g:coc_snippet_next = '<c-j>'
+  " Use <A-j> for jump to next placeholder, it's default of coc.nvim
+  let g:coc_snippet_next = '<A-j>'
 
-  " Use <C-k> for jump to previous placeholder, it's default of coc.nvim
-  let g:coc_snippet_prev = '<c-k>'
+  " Use <A-k> for jump to previous placeholder, it's default of coc.nvim
+  let g:coc_snippet_prev = '<A-k>'
 
-  " Use <C-j> for both expand and jump (make expand higher priority.)
-  imap <C-j> <Plug>(coc-snippets-expand-jump)
+  " Use <A-j> for both expand and jump (make expand higher priority.)
+  imap <A-j> <Plug>(coc-snippets-expand-jump)
 
   " Use <leader>x for convert visual selected code to snippet
   xmap <leader>x  <Plug>(coc-convert-snippet)

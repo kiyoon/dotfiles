@@ -126,6 +126,7 @@ return {
 		cond = vim.g.vscode == nil,
 		init = function()
 			-- vim.cmd [[ let b:coc_suggest_disable = 1 ]]
+			vim.g.coc_data_home = vim.fn.stdpath("data") .. "/coc"
 		end,
 		config = function()
 			require("kiyoon.coc")

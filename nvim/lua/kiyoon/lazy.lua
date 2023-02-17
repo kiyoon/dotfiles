@@ -1,6 +1,6 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local jupynium_dev = false
+local jupynium_dev = true
 
 return {
   -- the colorscheme should be available when starting Neovim
@@ -689,7 +689,7 @@ return {
     cond = vim.g.vscode == nil,
     init = function()
       vim.cmd [[ let b:coc_suggest_disable = 1 ]]
-      -- vim.cmd [[ autocmd FileType json let b:coc_suggest_disable = 0 ]]
+      vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
     end,
     config = function()
       vim.cmd [[

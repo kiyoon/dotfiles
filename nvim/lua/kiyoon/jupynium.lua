@@ -31,4 +31,6 @@ jupynium.setup {
     enable = false,
     file_pattern = { "*.ju.*" },
   },
+
+  auto_close_tab = true,
 }

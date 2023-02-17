@@ -82,6 +82,8 @@ return {
       require("Comment").setup()
     end,
   },
+
+  ---Python
   {
     "wookayin/vim-autoimport",
     ft = { "python" },
@@ -90,6 +92,23 @@ return {
       { "<M-CR>", "<Esc>:ImportSymbol<CR>a", mode = "i" },
     },
   },
+  {
+    "Vimjas/vim-python-pep8-indent",
+    ft = "python",
+  },
+  {
+    "metakirby5/codi.vim",
+    init = function()
+      vim.g["codi#interpreters"] = {
+        python = {
+          bin = "python3",
+        },
+      }
+      vim.g["codi#virtual_text_pos"] = "right_align"
+    end,
+    cmd = "Codi",
+  },
+
   {
     -- <space>siwie to substitute word from entire buffer
     -- <space>siwip to substitute word from paragraph
@@ -914,6 +933,7 @@ return {
     end,
   },
 
+  ---Yank
   {
     "aserowy/tmux.nvim",
     event = "VeryLazy",
@@ -927,14 +947,51 @@ return {
     end,
   },
   {
+    "ojroques/nvim-osc52",
+    event = "TextYankPost",
+    config = function()
+      -- Every time you yank to + register, copy it to system clipboard using OSC52.
+      -- Use a terminal that supports OSC52,
+      -- then the clipboard copy will work even from remote SSH to local machine.
+      local function copy()
+        if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
+          require("osc52").copy_register "+"
+        end
+      end
+
+      vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
+
+      -- Because we lazy-load on TextYankPost, the above autocmd will not be executed at first.
+      -- So we need to manually call it once.
+      copy()
+    end,
+  },
+
+  -- UI
+  {
     "RRethy/vim-illuminate",
     event = "BufReadPost",
     config = function()
       require "kiyoon.illuminate"
     end,
   },
-
-  -- UI
+  {
+    "kevinhwang91/nvim-ufo",
+    dependencies = "kevinhwang91/promise-async",
+    event = "VeryLazy",
+    init = function()
+      vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+      -- vim.o.fillchars = [[foldopen:,foldclose:]]
+      vim.o.foldcolumn = "auto:1" -- '0' is not bad
+      vim.o.foldminlines = 25
+      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+    end,
+    config = function()
+      require "kiyoon.ufo"
+    end,
+  },
   {
     "rcarriga/nvim-notify",
     event = "VeryLazy",
@@ -1007,18 +1064,6 @@ return {
     ft = "markdown",
     -- build = "cd app && yarn install",
     build = ":call mkdp#util#install()",
-  },
-  {
-    "metakirby5/codi.vim",
-    init = function()
-      vim.g["codi#interpreters"] = {
-        python = {
-          bin = "python3",
-        },
-      }
-      vim.g["codi#virtual_text_pos"] = "right_align"
-    end,
-    cmd = "Codi",
   },
   -- {
   --   "glacambre/firenvim",
@@ -1137,23 +1182,6 @@ return {
     },
   },
   {
-    "kevinhwang91/nvim-ufo",
-    dependencies = "kevinhwang91/promise-async",
-    event = "VeryLazy",
-    init = function()
-      vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
-      -- vim.o.fillchars = [[foldopen:,foldclose:]]
-      vim.o.foldcolumn = "auto:1" -- '0' is not bad
-      vim.o.foldminlines = 25
-      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-      vim.o.foldlevelstart = 99
-      vim.o.foldenable = true
-    end,
-    config = function()
-      require "kiyoon.ufo"
-    end,
-  },
-  {
     "dstein64/vim-startuptime",
     cmd = "StartupTime",
     config = function()
@@ -1166,30 +1194,6 @@ return {
     event = "InsertEnter",
     config = function()
       require("better_escape").setup()
-    end,
-  },
-  {
-    "Vimjas/vim-python-pep8-indent",
-    ft = "python",
-  },
-  {
-    "ojroques/nvim-osc52",
-    event = "TextYankPost",
-    config = function()
-      -- Every time you yank to + register, copy it to system clipboard using OSC52.
-      -- Use a terminal that supports OSC52,
-      -- then the clipboard copy will work even from remote SSH to local machine.
-      local function copy()
-        if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
-          require("osc52").copy_register "+"
-        end
-      end
-
-      vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
-
-      -- Because we lazy-load on TextYankPost, the above autocmd will not be executed at first.
-      -- So we need to manually call it once.
-      copy()
     end,
   },
 }

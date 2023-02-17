@@ -28,6 +28,7 @@ ln_sb() {
 
 ln_sb nvim ~/.config
 ln_sb nvim/.vimrc ~
+ln_sb nvim-coc ~/.config
 ln_sb tmux/.tmux.conf ~
 ln_sb oh-my-zsh/.zshrc ~
 ln_sb oh-my-zsh/custom ~/.oh-my-zsh

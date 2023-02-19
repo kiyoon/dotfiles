@@ -254,28 +254,28 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     lazy = true,
-    init = function()
-      local function open_nvim_tree(data)
-        -- buffer is a directory
-        local directory = vim.fn.isdirectory(data.file) == 1
-
-        if not directory then
-          return
-        end
-
-        -- change to the directory
-        vim.cmd.cd(data.file)
-
-        -- open the tree
-        require("nvim-tree.api").tree.open()
-      end
-
-      vim.api.nvim_create_augroup("nvim_tree_open", {})
-      vim.api.nvim_create_autocmd({ "VimEnter" }, {
-        callback = open_nvim_tree,
-        group = "nvim_tree_open",
-      })
-    end,
+    -- init = function()
+    --   local function open_nvim_tree(data)
+    --     -- buffer is a directory
+    --     local directory = vim.fn.isdirectory(data.file) == 1
+    --
+    --     if not directory then
+    --       return
+    --     end
+    --
+    --     -- change to the directory
+    --     vim.cmd.cd(data.file)
+    --
+    --     -- open the tree
+    --     require("nvim-tree.api").tree.open()
+    --   end
+    --
+    --   vim.api.nvim_create_augroup("nvim_tree_open", {})
+    --   vim.api.nvim_create_autocmd({ "VimEnter" }, {
+    --     callback = open_nvim_tree,
+    --     group = "nvim_tree_open",
+    --   })
+    -- end,
     dependencies = {
       "nvim-tree/nvim-web-devicons",
     },
@@ -1292,6 +1292,28 @@ return {
       vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
         select_ease.select_node { queries = queries, direction = "next" }
       end, {})
+    end,
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+      "MunifTanjim/nui.nvim",
+    },
+    init = function()
+      vim.g.neo_tree_remove_legacy_commands = 1
+    end,
+    cmd = "Neotree",
+    keys = {
+      { "<space>nn", "<cmd>Neotree<CR>", mode = { "n", "x" }, desc = "[N]eotree" },
+    },
+  },
+  {
+    "stevearc/oil.nvim",
+    config = function()
+      require("oil").setup()
     end,
   },
 }

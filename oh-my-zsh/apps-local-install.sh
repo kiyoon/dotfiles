@@ -20,10 +20,16 @@ then
 fi
 
 ##### zoxide
-curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+if ! command -v zoxide &> /dev/null
+then
+	curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+fi
 
 ##### fzf
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+if ! command -v fzf &> /dev/null
+then
+	git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+fi
 
 ##### Starship prompt
 if ! command -v starship &> /dev/null

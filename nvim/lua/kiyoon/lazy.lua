@@ -2,6 +2,8 @@ local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 
+local icons = require "kiyoon.icons"
+
 return {
   -- the colorscheme should be available when starting Neovim
   {
@@ -173,13 +175,6 @@ return {
     end,
   },
   -- "Exafunction/codeium.vim",
-  {
-    "nvim-lualine/lualine.nvim",
-    cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
-    config = function()
-      require("lualine").setup {}
-    end,
-  },
 
   {
     "sindrets/diffview.nvim",
@@ -297,10 +292,37 @@ return {
 
   {
     "akinsho/bufferline.nvim",
-    cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
-    config = function()
-      require "kiyoon.bufferline"
-    end,
+    event = "VeryLazy",
+    keys = {
+      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
+      { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
+    },
+    opts = {
+      options = {
+        right_mouse_command = "", -- can be a string | function, see "Mouse actions"
+        diagnostics = "nvim_lsp",
+        always_show_bufferline = false,
+        diagnostics_indicator = function(_, _, diag)
+          local ret = (diag.error and icons.diagnostics.Error .. diag.error .. " " or "")
+            .. (diag.warning and icons.diagnostics.Warn .. diag.warning or "")
+          return vim.trim(ret)
+        end,
+        offsets = {
+          {
+            filetype = "neo-tree",
+            text = "Neo-tree",
+            highlight = "Directory",
+            text_align = "left",
+          },
+          {
+            filetype = "NvimTree",
+            text = "Nvim Tree",
+            highlight = "Directory",
+            text_align = "left",
+          },
+        },
+      },
+    },
   },
 
   -- Treesitter: Better syntax highlighting, text objects, refactoring, context
@@ -313,7 +335,20 @@ return {
     end,
     dependencies = {
       "RRethy/nvim-treesitter-endwise",
-      "andymass/vim-matchup",
+      {
+        "andymass/vim-matchup",
+        init = function()
+          --- Without this, lualine will flicker when matching offscreen
+          vim.g.matchup_matchparen_offscreen = { method = "popup" }
+          -- vim.g.matchup_matchparen_deferred = 1
+          -- vim.g.matchup_matchparen_deferred_show_delay = 100
+          -- vim.g.matchup_matchparen_deferred_hide_delay = 400
+          -- vim.g.matchup_matchparen_hi_surround_always = 1
+          -- vim.g.matchup_matchparen_hi_offscreen = 1
+          -- vim.g.matchup_matchparen_hi_offscreen_always = 1
+          -- vim.g.matchup_matchparen_hi_offscreen_cmd = "echohl WarningMsg | echon 'Matched offscreen' | echohl None"
+        end,
+      },
       "mrjones2014/nvim-ts-rainbow",
     },
     dev = nvim_treesitter_dev,
@@ -836,17 +871,34 @@ return {
     end,
   },
   {
-    "utilyre/barbecue.nvim",
-    name = "barbecue",
-    version = "*",
-    -- event = "VeryLazy",
-    dependencies = {
-      "SmiteshP/nvim-navic",
-      "nvim-tree/nvim-web-devicons", -- optional dependency
-    },
-    opts = {
-      -- configurations go here
-    },
+    "SmiteshP/nvim-navic",
+    lazy = true,
+    init = function()
+      vim.g.navic_silence = true
+      vim.api.nvim_create_augroup("LspAttach_navic", {})
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = "LspAttach_navic",
+        callback = function(args)
+          if not (args.data and args.data.client_id) then
+            return
+          end
+
+          local bufnr = args.buf
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client.server_capabilities.documentSymbolProvider then
+            require("nvim-navic").attach(client, bufnr)
+          end
+        end,
+      })
+    end,
+    opts = function()
+      return {
+        separator = " ",
+        highlight = true,
+        depth_limit = 5,
+        icons = icons.kinds,
+      }
+    end,
   },
   -- {
   --   -- sourcegraph.com integration
@@ -993,14 +1045,139 @@ return {
     end,
   },
 
-  -- UI
+  --- UI
+  -- better vim.notify()
   {
-    "RRethy/vim-illuminate",
-    event = "BufReadPost",
-    config = function()
-      require "kiyoon.illuminate"
+    "rcarriga/nvim-notify",
+    event = "VeryLazy",
+    keys = {
+      {
+        "<leader>un",
+        function()
+          require("notify").dismiss { silent = true, pending = true }
+        end,
+        desc = "Delete all Notifications",
+      },
+    },
+    opts = {
+      stages = "fade_in_slide_out",
+      timeout = 3000,
+      max_height = function()
+        return math.floor(vim.o.lines * 0.75)
+      end,
+      max_width = function()
+        return math.floor(vim.o.columns * 0.75)
+      end,
+    },
+    config = function(_, opts)
+      require("notify").setup(opts)
+      vim.notify = require "notify"
     end,
   },
+
+  -- better vim.ui
+  {
+    "stevearc/dressing.nvim",
+    lazy = true,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load { plugins = { "dressing.nvim" } }
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load { plugins = { "dressing.nvim" } }
+        return vim.ui.input(...)
+      end
+    end,
+  },
+  -- Settings from LazyVim
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    opts = function(plugin)
+      local function fg(name)
+        return function()
+          ---@type {foreground?:number}?
+          local hl = vim.api.nvim_get_hl_by_name(name, true)
+          return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
+        end
+      end
+
+      return {
+        options = {
+          theme = "auto",
+          globalstatus = true,
+          disabled_filetypes = { statusline = { "dashboard", "lazy", "alpha" } },
+        },
+        sections = {
+          lualine_a = { "mode" },
+          lualine_b = { "branch" },
+          lualine_c = {
+            {
+              "diagnostics",
+              symbols = {
+                error = icons.diagnostics.Error,
+                warn = icons.diagnostics.Warn,
+                info = icons.diagnostics.Info,
+                hint = icons.diagnostics.Hint,
+              },
+            },
+            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+            { "filename", path = 1, symbols = { modified = "  ", readonly = "", unnamed = "" } },
+            -- stylua: ignore
+            {
+              function() return require("nvim-navic").get_location() end,
+              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
+            },
+          },
+          lualine_x = {
+            -- stylua: ignore
+            {
+              function() return require("noice").api.status.command.get() end,
+              cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+              color = fg("Statement")
+            },
+            -- stylua: ignore
+            {
+              function() return require("noice").api.status.mode.get() end,
+              cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
+              color = fg("Constant") ,
+            },
+            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg "Special" },
+            {
+              "diff",
+              symbols = {
+                added = icons.git.added,
+                modified = icons.git.modified,
+                removed = icons.git.removed,
+              },
+            },
+          },
+          lualine_y = {
+            { "progress", separator = " ", padding = { left = 1, right = 0 } },
+            { "location", padding = { left = 0, right = 1 } },
+          },
+          -- lualine_z = {
+          --   function()
+          --     return " " .. os.date "%R"
+          --   end,
+          -- },
+        },
+        extensions = { "neo-tree" },
+      }
+    end,
+  },
+  -- {
+  --   "nvim-lualine/lualine.nvim",
+  --   cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
+  --   config = function()
+  --     require("lualine").setup {
+  --       globalstatus = true,
+  --     }
+  --   end,
+  -- },
   {
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
@@ -1019,34 +1196,12 @@ return {
     end,
   },
   {
-    "rcarriga/nvim-notify",
-    event = "VeryLazy",
+    "RRethy/vim-illuminate",
+    event = "BufReadPost",
     config = function()
-      require("notify").setup {
-        stages = "fade_in_slide_out",
-      }
-      vim.notify = require "notify"
+      require "kiyoon.illuminate"
     end,
-    keys = {
-      {
-        "<leader>un",
-        function()
-          require("notify").dismiss { silent = true, pending = true }
-        end,
-        desc = "Delete all Notifications",
-      },
-    },
-    opts = {
-      timeout = 3000,
-      max_height = function()
-        return math.floor(vim.o.lines * 0.75)
-      end,
-      max_width = function()
-        return math.floor(vim.o.columns * 0.75)
-      end,
-    },
   },
-  "folke/lsp-colors.nvim",
   {
     "folke/which-key.nvim",
     event = "BufReadPost",

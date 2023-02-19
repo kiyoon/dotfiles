@@ -17,6 +17,7 @@ if (( $+commands[nvim] )); then
 	alias vim='TERM=wezterm nvim'
 	alias vimdiff='TERM=wezterm nvim -d'
 	alias vic='TERM=wezterm NVIM_APPNAME=nvim-coc nvim'
+	alias lazyvim='TERM=wezterm NVIM_APPNAME=nvim-lazyvim nvim'
 	alias svi='sudoedit'
 	alias nvim='TERM=wezterm nvim'
 	alias diffview='TERM=wezterm nvim +DiffviewOpen'

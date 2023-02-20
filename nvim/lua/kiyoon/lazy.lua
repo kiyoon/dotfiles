@@ -72,6 +72,7 @@ return {
     -- build = "conda run --no-capture-output -n jupynium pip install .",
     build = "~/bin/miniconda3/envs/jupynium/bin/pip install .",
     enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
+    ft = { "python", "markdown" },
     config = function()
       require "kiyoon.jupynium"
     end,
@@ -79,7 +80,11 @@ return {
   },
   {
     "numToStr/Comment.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
+    keys = {
+      { "gc", mode = { "n", "x", "o" }, desc = "Comment / uncomment lines" },
+      { "gb", mode = { "n", "x", "o" }, desc = "Comment / uncomment a block" },
+    },
     config = function()
       require("Comment").setup()
     end,
@@ -138,22 +143,27 @@ return {
     event = "VeryLazy",
   },
   {
-    "kana/vim-textobj-user",
-    event = "VeryLazy",
-  },
-  {
     "kana/vim-textobj-entire",
-    event = "VeryLazy",
+    keys = {
+      { "ie", mode = { "o", "x" }, desc = "Select entire buffer (file)" },
+      { "ae", mode = { "o", "x" }, desc = "Select entire buffer (file)" },
+    },
     dependencies = { "kana/vim-textobj-user" },
   }, -- vie, vae to select entire buffer (file)
   {
     "kana/vim-textobj-fold",
-    event = "VeryLazy",
+    keys = {
+      { "iz", mode = { "o", "x" }, desc = "Select fold" },
+      { "az", mode = { "o", "x" }, desc = "Select fold" },
+    },
     dependencies = { "kana/vim-textobj-user" },
   }, -- viz, vaz to select fold
   {
     "glts/vim-textobj-comment",
-    event = "VeryLazy",
+    keys = {
+      { "ic", mode = { "o", "x" }, desc = "Select comment block" },
+      { "ac", mode = { "o", "x" }, desc = "Select comment block" },
+    },
     dependencies = { "kana/vim-textobj-user" },
   }, -- vic, vac
 
@@ -187,7 +197,7 @@ return {
   },
   {
     "lewis6991/gitsigns.nvim",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("gitsigns").setup {
         on_attach = function(bufnr)
@@ -328,7 +338,7 @@ return {
   -- Treesitter: Better syntax highlighting, text objects, refactoring, context
   {
     "nvim-treesitter/nvim-treesitter",
-    event = "BufReadPre",
+    event = { "BufReadPost", "BufNewFile" },
     build = ":TSUpdate",
     config = function()
       require "kiyoon.treesitter"
@@ -360,7 +370,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-context",
-    event = "VeryLazy",
+    event = { "BufReadPost", "BufNewFile" },
   },
   {
     "nvim-treesitter/playground",
@@ -429,15 +439,14 @@ return {
   -- % to match up if, else, etc. Enabled in the treesitter config below
   {
     "Wansmer/treesj",
-    event = "VeryLazy",
-    config = function()
-      require("treesj").setup { use_default_keymaps = false }
-    end,
     keys = {
       { "<space>l", "<cmd>TSJSplit<CR>", desc = "Treesitter Split" },
       { "<space>h", "<cmd>TSJJoin<CR>", desc = "Treesitter Join" },
       -- { "<space>g", "<cmd>TSJToggle<CR>", desc = "Treesitter Toggle" },
     },
+    config = function()
+      require("treesj").setup { use_default_keymaps = false }
+    end,
   },
   {
     "ckolkey/ts-node-action",
@@ -593,10 +602,13 @@ return {
   },
   {
     "ggandor/leap.nvim",
-    event = "VeryLazy",
+    keys = {
+      { "s", mode = { "n", "x", "o" }, desc = "Leap forward to" },
+      { "S", mode = { "n", "x", "o" }, desc = "Leap backward to" },
+      { "gs", mode = { "n", "x", "o" }, desc = "Leap from windows" },
+    },
     dependencies = {
       "tpope/vim-repeat",
-      { "ggandor/flit.nvim", opts = { labeled_modes = "nv" } },
     },
     config = function(_, opts)
       local leap = require "leap"
@@ -610,6 +622,18 @@ return {
       -- x to delete without yanking
       vim.keymap.set({ "n", "x" }, "x", [["_x]], { noremap = true })
     end,
+  },
+  {
+    "ggandor/flit.nvim",
+    keys = function()
+      ---@type LazyKeys[]
+      local ret = {}
+      for _, key in ipairs { "f", "F", "t", "T" } do
+        ret[#ret + 1] = { key, mode = { "n", "x", "o" }, desc = key }
+      end
+      return ret
+    end,
+    opts = { labeled_modes = "nv" },
   },
   {
     "Wansmer/sibling-swap.nvim",
@@ -663,6 +687,7 @@ return {
   },
   {
     "stevearc/aerial.nvim",
+    event = "BufReadPre",
     -- cmd = "AerialToggle",
     -- keys = {
     --   "[r",
@@ -702,26 +727,27 @@ return {
   -- Telescope
   {
     "nvim-telescope/telescope.nvim",
+    lazy = true,
     branch = "0.1.x",
+    dependencies = {
+      {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
+        enabled = vim.fn.executable "make" == 1,
+        config = function()
+          require("telescope").load_extension "fzf"
+        end,
+      },
+      { "kiyoon/telescope-insert-path.nvim" },
+      {
+        "nvim-telescope/telescope-live-grep-args.nvim",
+        config = function()
+          require("telescope").load_extension "live_grep_args"
+        end,
+      },
+    },
     config = function()
       require "kiyoon.telescope"
-    end,
-  },
-  {
-    "nvim-telescope/telescope-fzf-native.nvim",
-    build = "make",
-    enabled = vim.fn.executable "make" == 1,
-    config = function()
-      require("telescope").load_extension "fzf"
-    end,
-  },
-
-  { "kiyoon/telescope-insert-path.nvim" },
-
-  {
-    "nvim-telescope/telescope-live-grep-args.nvim",
-    config = function()
-      require("telescope").load_extension "live_grep_args"
     end,
   },
 
@@ -748,6 +774,8 @@ return {
     "neoclide/coc.nvim",
     branch = "release",
     cond = vim.g.vscode == nil,
+    -- event = "BufReadPre",
+    ft = "python",
     init = function()
       vim.cmd [[ let b:coc_suggest_disable = 1 ]]
       vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
@@ -774,7 +802,7 @@ return {
 
   {
     "neovim/nvim-lspconfig",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     cmd = {
       "Mason",
     },
@@ -789,10 +817,7 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    -- load cmp on InsertEnter
     event = "InsertEnter",
-    -- these dependencies will only be loaded when cmp loads
-    -- dependencies are always lazy-loaded unless specified otherwise
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
@@ -807,7 +832,7 @@ return {
   },
   {
     "lvimuser/lsp-inlayhints.nvim",
-    -- lazy = false,
+    event = "LSPAttach",
     config = function()
       vim.cmd [[hi link LspInlayHint Comment]]
       -- vim.cmd [[hi LspInlayHint guifg=#d8d8d8 guibg=#3a3a3a]]
@@ -830,6 +855,7 @@ return {
   },
   {
     "ray-x/lsp_signature.nvim",
+    event = "LSPAttach",
     config = function()
       local cfg = {
         on_attach = function(client, bufnr)
@@ -929,7 +955,7 @@ return {
   },
   {
     "jose-elias-alvarez/null-ls.nvim",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
@@ -939,7 +965,7 @@ return {
   },
   {
     "j-hui/fidget.nvim",
-    event = "VeryLazy",
+    event = "LSPAttach",
     config = function()
       require("fidget").setup()
     end,
@@ -966,6 +992,7 @@ return {
   {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
+    opts = { use_diagnostic_signs = true },
     keys = {
       { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
       { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
@@ -1014,7 +1041,19 @@ return {
   ---Yank
   {
     "aserowy/tmux.nvim",
-    event = "VeryLazy",
+    keys = {
+      "<C-h>",
+      "<C-j>",
+      "<C-k>",
+      "<C-l>",
+      "<C-n>",
+      "<C-p>",
+      "p",
+      "P",
+      "=p",
+      "=P",
+      { "y", mode = { "x", "o", "s" } },
+    },
     dependencies = {
       "gbprod/yanky.nvim",
       "nvim-telescope/telescope.nvim",
@@ -1197,14 +1236,14 @@ return {
   },
   {
     "RRethy/vim-illuminate",
-    event = "BufReadPost",
+    event = { "BufReadPost", "BufNewFile" },
     config = function()
       require "kiyoon.illuminate"
     end,
   },
   {
     "folke/which-key.nvim",
-    event = "BufReadPost",
+    event = "VeryLazy",
     config = function()
       vim.o.timeout = true
       vim.o.timeoutlen = 600
@@ -1217,7 +1256,8 @@ return {
   },
   {
     "folke/todo-comments.nvim",
-    event = "BufReadPost",
+    cmd = { "TodoTrouble", "TodoTelescope" },
+    event = { "BufReadPost", "BufNewFile" },
     dependencies = "nvim-lua/plenary.nvim",
     config = function()
       local todo_comments = require "todo-comments"
@@ -1475,5 +1515,16 @@ return {
     config = function()
       require("oil").setup()
     end,
+  },
+  -- search/replace in multiple files
+  {
+    "windwp/nvim-spectre",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- stylua: ignore
+    keys = {
+      { "<leader>sr", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
+    },
   },
 }

@@ -80,6 +80,15 @@ local function pair(pair_begin, pair_end, expand_func, ...)
   )
 end
 
+-- Same as pair, but with a comma after the closing pair
+local function pair_comma(pair_begin, pair_end, expand_func, ...)
+  return s(
+    { trig = pair_begin .. ",", wordTrig = false },
+    { t { pair_begin }, i(1), t { pair_end .. "," } },
+    { condition = part(expand_func, part(..., pair_begin, pair_end)) }
+  )
+end
+
 ls.add_snippets(nil, {
   all = {
     s({
@@ -91,12 +100,22 @@ ls.add_snippets(nil, {
     }),
     -- Autopairs
     pair("(", ")", neg, char_count_same),
+    pair_comma("(", ")", neg, char_count_same),
     pair("{", "}", neg, char_count_same),
+    pair_comma("{", "}", neg, char_count_same),
     pair("[", "]", neg, char_count_same),
+    pair_comma("[", "]", neg, char_count_same),
     pair("<", ">", neg, char_count_same),
+    pair_comma("<", ">", neg, char_count_same),
     pair("'", "'", neg, even_count),
+    pair_comma("'", "'", neg, even_count),
     pair('"', '"', neg, even_count),
+    pair_comma('"', '"', neg, even_count),
     pair("`", "`", neg, even_count),
-    s({ trig = "{,", wordTrig = false, hidden = true }, { t { "{", "\t" }, i(1), t { "", "}" } }),
+    pair_comma("`", "`", neg, even_count),
+    s({ trig = "{}", wordTrig = false, hidden = true }, { t { "{", "\t" }, i(1), t { "", "}" } }),
+    s({ trig = "{},", wordTrig = false, hidden = true }, { t { "{", "\t" }, i(1), t { "", "}," } }),
+    s({ trig = "()", wordTrig = false, hidden = true }, { t { "(", "\t" }, i(1), t { "", ")" } }),
+    s({ trig = "(),", wordTrig = false, hidden = true }, { t { "(", "\t" }, i(1), t { "", ")," } }),
   },
 })

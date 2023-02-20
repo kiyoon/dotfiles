@@ -2,6 +2,8 @@ local servers_use_formatting = {
   -- "lua_ls",
 }
 
+local M = {}
+
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 
 if status_cmp_ok then

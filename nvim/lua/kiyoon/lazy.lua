@@ -1380,7 +1380,12 @@ return {
   {
     "windwp/nvim-autopairs",
     config = function()
-      require("nvim-autopairs").setup {}
+      require("nvim-autopairs").setup {
+        -- Disable auto fast wrap
+        enable_afterquote = false,
+        -- <A-e> to manually trigger fast wrap
+        fast_wrap = {},
+      }
     end,
   },
   {

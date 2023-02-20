@@ -4,14 +4,7 @@ I develop often on remote servers that I don't have `sudo` permission. This awes
 
 ## Setup
 
-Install zsh (with root):
-
-```bash
-sudo apt install zsh
-chsh -s $(which zsh)
-```
-
-Install zsh locally (if you can't `sudo apt install zsh`):
+Install zsh locally. (`sudo apt install zsh` may install an old version)
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/zsh-local-install.sh)"

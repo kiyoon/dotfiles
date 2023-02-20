@@ -1013,10 +1013,24 @@ return {
   -- DAP (Debugger)
   {
     "mfussenegger/nvim-dap",
-    event = "VeryLazy",
+    keys = {
+      -- Save breakpoints to file automatically.
+      { "<space>db", "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<cr>" },
+      { "<space>dB", "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>" },
+      { "<space>dC", "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>" },
+      { "<space>dc", ":lua require'dap'.continue()<CR>" },
+      { "<space>dn", ":lua require'dap'.step_over()<CR>" },
+      { "<space>ds", ":lua require'dap'.step_into()<CR>" },
+      { "<space>du", ":lua require'dap'.step_out()<CR>" },
+      { "<space>dr", ":lua require'dap'.repl.open()<CR>" },
+      { "<space>dl", ":lua require'dap'.run_last()<CR>" },
+      { "<space>di", ":lua require'dapui'.toggle()<CR>" },
+      { "<space>dt", ":lua require'dap'.disconnect()<CR>" },
+    },
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "Weissle/persistent-breakpoints.nvim",
+      "theHamsta/nvim-dap-virtual-text",
     },
     config = function()
       require "kiyoon.dap"
@@ -1028,13 +1042,6 @@ return {
     config = function()
       -- Path to python with debugpy installed
       require("dap-python").setup "python3"
-    end,
-  },
-  {
-    "theHamsta/nvim-dap-virtual-text",
-    event = "VeryLazy",
-    config = function()
-      require("nvim-dap-virtual-text").setup()
     end,
   },
 

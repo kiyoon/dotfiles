@@ -344,6 +344,10 @@ return {
       require "kiyoon.treesitter"
     end,
     dependencies = {
+      {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        dev = nvim_treesitter_textobjects_dev,
+      },
       "RRethy/nvim-treesitter-endwise",
       {
         "andymass/vim-matchup",
@@ -362,11 +366,6 @@ return {
       "mrjones2014/nvim-ts-rainbow",
     },
     dev = nvim_treesitter_dev,
-  },
-  {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    event = "VeryLazy",
-    dev = nvim_treesitter_textobjects_dev,
   },
   {
     "nvim-treesitter/nvim-treesitter-context",
@@ -1227,7 +1226,7 @@ return {
   {
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
-    event = "VeryLazy",
+    event = { "BufReadPost", "BufNewFile" },
     init = function()
       vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
       -- vim.o.fillchars = [[foldopen:,foldclose:]]
@@ -1437,7 +1436,14 @@ return {
   -- },
   {
     "ziontee113/SelectEase",
-    event = "VeryLazy",
+    keys = {
+      { "<C-A-k>", mode = { "n", "s", "i" } },
+      { "<C-A-j>", mode = { "n", "s", "i" } },
+      { "<C-A-h>", mode = { "n", "s", "i" } },
+      { "<C-A-l>", mode = { "n", "s", "i" } },
+      { "<C-A-n>", mode = { "n", "s", "i" } },
+      { "<C-A-p>", mode = { "n", "s", "i" } },
+    },
     config = function()
       local select_ease = require "SelectEase"
 

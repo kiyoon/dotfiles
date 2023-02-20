@@ -1059,6 +1059,11 @@ return {
       "=p",
       "=P",
       { "y", mode = { "x", "o", "s" } },
+      { "d", mode = { "x", "o", "s" } },
+      { "c", mode = { "x", "o", "s" } },
+      { "Y", mode = { "n", "x", "o", "s" } },
+      { "D", mode = { "n", "x", "o", "s" } },
+      { "C", mode = { "n", "x", "o", "s" } },
     },
     dependencies = {
       "gbprod/yanky.nvim",
@@ -1067,6 +1072,8 @@ return {
     },
     config = function()
       require "kiyoon.tmux-yanky"
+      -- After initialising yanky, this mapping gets lost so we do this here.
+      vim.cmd [[nnoremap Y y$]]
     end,
   },
   {

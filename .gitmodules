@@ -13,3 +13,12 @@
 [submodule "oh-my-zsh/custom/plugins/git-open"]
 	path = oh-my-zsh/custom/plugins/git-open
 	url = https://github.com/paulirish/git-open
+[submodule "oh-my-zsh/custom/plugins/zsh-history-substring-search"]
+	path = oh-my-zsh/custom/plugins/zsh-history-substring-search
+	url = https://github.com/zsh-users/zsh-history-substring-search
+[submodule "oh-my-zsh/custom/plugins/zsh-autocomplete"]
+	path = oh-my-zsh/custom/plugins/zsh-autocomplete
+	url = https://github.com/marlonrichert/zsh-autocomplete
+[submodule "oh-my-zsh/custom/plugins/fzf-tab"]
+	path = oh-my-zsh/custom/plugins/fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab

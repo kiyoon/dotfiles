@@ -73,11 +73,13 @@ ZVM_INIT_MODE=sourcing
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+	fzf-tab
 	git-open
 	# vi-mode
 	zsh-vi-mode
-#	zsh-autosuggestions
+	zsh-autosuggestions
 	zsh-syntax-highlighting
+	zsh-history-substring-search
 	conda-zsh-completion
 	web-search				# google, ddg, ...
 	copypath
@@ -109,6 +111,9 @@ VI_MODE_SET_CURSOR=true
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
+
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 export MANPATH="/usr/local/man:$MANPATH"
 

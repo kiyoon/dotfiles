@@ -50,7 +50,7 @@ Also, it has three versions of vim.
 - Linux x86-64, Windows WSL2 (Mac support planned. You just need dependency install script to use `brew`)
 - Neovim v0.9.0 (or at least v0.8.0)
 - Tmux v3.3a-ish
-- Zsh v5.9-ish
+- Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
 ## Steps
 

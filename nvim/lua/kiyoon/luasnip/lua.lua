@@ -3,8 +3,11 @@ local fmt = require("luasnip.extras.fmt").fmt
 local extras = require "luasnip.extras"
 local l = extras.lambda
 local i = ls.insert_node
+local c = ls.choice_node
 
 local s = ls.snippet
+local sn = ls.snippet_node
+local t = ls.text_node
 
 -- require snippets
 ls.add_snippets("lua", {
@@ -20,9 +23,6 @@ ls.add_snippets("lua", {
       }
     )
   ),
-})
-
-ls.add_snippets("lua", {
   s(
     "prq",
     fmt(
@@ -39,9 +39,6 @@ ls.add_snippets("lua", {
       }
     )
   ),
-})
-
-ls.add_snippets("lua", {
   s(
     "pinsp",
     fmt(
@@ -53,10 +50,7 @@ ls.add_snippets("lua", {
       }
     )
   ),
-})
-
--- add which-key.nvim names
-ls.add_snippets("lua", {
+  -- add which-key.nvim names
   s(
     "wk",
     fmt(
@@ -74,4 +68,15 @@ ls.add_snippets("lua", {
       }
     )
   ),
+  s("fo", {
+    t "for ",
+    c(1, {
+      sn(nil, { i(1, "k"), t ", ", i(2, "v"), t " in ", t "pairs", t "(", i(3), t ")" }),
+      sn(nil, { i(1, "k"), t ", ", i(2, "v"), t " in ", t "ipairs", t "(", i(3), t ")" }),
+      sn(nil, { i(1, "i"), t " = ", i(2), t ", ", i(3) }),
+    }),
+    t { " do", "\t" },
+    i(0),
+    t { "", "end" },
+  }),
 })

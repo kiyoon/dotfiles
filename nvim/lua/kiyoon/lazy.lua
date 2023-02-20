@@ -1377,17 +1377,17 @@ return {
       require("better_escape").setup()
     end,
   },
-  {
-    "windwp/nvim-autopairs",
-    config = function()
-      require("nvim-autopairs").setup {
-        -- Disable auto fast wrap
-        enable_afterquote = false,
-        -- <A-e> to manually trigger fast wrap
-        fast_wrap = {},
-      }
-    end,
-  },
+  -- {
+  --   "windwp/nvim-autopairs",
+  --   config = function()
+  --     require("nvim-autopairs").setup {
+  --       -- Disable auto fast wrap
+  --       enable_afterquote = false,
+  --       -- <A-e> to manually trigger fast wrap
+  --       fast_wrap = {},
+  --     }
+  --   end,
+  -- },
   {
     "ziontee113/SelectEase",
     event = "VeryLazy",

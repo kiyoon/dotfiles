@@ -750,22 +750,6 @@ return {
     end,
   },
 
-  -- Beautiful command menu
-  {
-    "gelguy/wilder.nvim",
-    build = ":UpdateRemotePlugins",
-    dependencies = {
-      {
-        "romgrk/fzy-lua-native",
-        build = "make",
-      },
-    },
-    event = "CmdlineEnter",
-    config = function()
-      require "kiyoon.wilder"
-    end,
-  },
-
   -- LSP
   -- CoC supports out-of-the-box features like inlay hints
   -- which isn't possible with native LSP yet.
@@ -940,18 +924,6 @@ return {
   --   end,
   -- },
 
-  -- Snippets
-  {
-    "L3MON4D3/LuaSnip",
-    version = "v1.x",
-    event = "InsertEnter",
-    dependencies = {
-      "rafamadriz/friendly-snippets",
-    },
-    config = function()
-      require "kiyoon.luasnip"
-    end,
-  },
   {
     "jose-elias-alvarez/null-ls.nvim",
     event = { "BufReadPre", "BufNewFile" },
@@ -1006,6 +978,19 @@ return {
         auto_preview = true,
         auto_fold = true,
       }
+    end,
+  },
+
+  -- Snippets
+  {
+    "L3MON4D3/LuaSnip",
+    version = "v1.x",
+    event = "InsertEnter",
+    dependencies = {
+      "rafamadriz/friendly-snippets",
+    },
+    config = function()
+      require "kiyoon.luasnip"
     end,
   },
 
@@ -1098,6 +1083,21 @@ return {
   },
 
   --- UI
+  -- Beautiful command menu
+  {
+    "gelguy/wilder.nvim",
+    build = ":UpdateRemotePlugins",
+    dependencies = {
+      {
+        "romgrk/fzy-lua-native",
+        build = "make",
+      },
+    },
+    event = "CmdlineEnter",
+    config = function()
+      require "kiyoon.wilder"
+    end,
+  },
   -- better vim.notify()
   {
     "rcarriga/nvim-notify",

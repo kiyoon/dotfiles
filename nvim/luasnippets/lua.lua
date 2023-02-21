@@ -10,7 +10,7 @@ local sn = ls.snippet_node
 local t = ls.text_node
 
 -- require snippets
-ls.add_snippets("lua", {
+return {
   s(
     "rq",
     fmt(
@@ -79,4 +79,4 @@ ls.add_snippets("lua", {
     i(0),
     t { "", "end" },
   }),
-})
+}

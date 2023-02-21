@@ -1433,12 +1433,40 @@ return {
   -- {
   --   "windwp/nvim-autopairs",
   --   config = function()
-  --     require("nvim-autopairs").setup {
+  --     local ap = require "nvim-autopairs"
+  --     local Rule = require "nvim-autopairs.rule"
+  --     ap.setup {
   --       -- Disable auto fast wrap
   --       enable_afterquote = false,
   --       -- <A-e> to manually trigger fast wrap
   --       fast_wrap = {},
   --     }
+  --
+  --     local function manual_trigger(opening, closing)
+  --       local rule
+  --       if ap.get_rule(opening)[1] == nil then
+  --         rule = ap.get_rule(opening)
+  --       else
+  --         rule = ap.get_rule(opening)[1]
+  --       end
+  --       rule:use_key("<m-p>"):replace_endpair(function()
+  --         -- repeat the number of characters in the closing pair
+  --         return closing .. string.rep("<left>", #closing)
+  --       end)
+  --     end
+  --     local function delete_on_key(opening, closing)
+  --       ap.add_rule(Rule(opening, closing):use_key("<m-d>"):replace_endpair(function()
+  --         return string.rep("<right><bs>", #closing)
+  --       end))
+  --     end
+  --     -- manual_trigger("'", "',")
+  --     -- delete_on_key("'", "',")
+  --     manual_trigger("{", "}")
+  --     -- delete_on_key("{", "}")
+  --     -- manual_trigger("(", ")")
+  --     -- delete_on_key("(", ")")
+  --     -- manual_trigger("[", "]")
+  --     -- delete_on_key("[", "]")
   --   end,
   -- },
   {

@@ -1,6 +1,3 @@
--- nvim-tree recommends disabling netrw, VIM's built-in file explorer
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 vim.g.python3_host_prog = "/usr/bin/python3"
 -- vim.g.python3_host_prog = "~/bin/miniconda3/envs/nvim/bin/python3"
 
@@ -21,6 +18,22 @@ require("lazy").setup("kiyoon.lazy", {
   dev = {
     path = "~/project",
     -- patterns = { "kiyoon", "nvim-treesitter-textobjects" },
+  },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        -- List of default plugins can be found here
+        -- https://github.com/neovim/neovim/tree/master/runtime/plugin
+        "gzip",
+        "matchit", -- Extended %. replaced by vim-matchup
+        "matchparen", -- Highlight matching paren. replaced by vim-matchup
+        "netrwPlugin", -- File browser. replaced by nvim-tree, neo-tree, oil.nvim
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
+    },
   },
 })
 

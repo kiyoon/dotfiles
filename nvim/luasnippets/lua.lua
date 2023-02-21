@@ -79,4 +79,31 @@ return {
     i(0),
     t { "", "end" },
   }),
+  -- lazy.nvim
+  s("cfun", {
+    t { "config = function()", "\t" },
+    i(1),
+    t { "", "end," },
+    i(0),
+  }),
+  s("ifun", {
+    t { "init = function()", "\t" },
+    i(1),
+    t { "", "end," },
+    i(0),
+  }),
+  s("depe", {
+    t { "dependencies = {", "\t" },
+    i(1),
+    t { "", "}," },
+    i(0),
+  }),
+  s('{""}', {
+    t { "{", '\t"' },
+    c(1, {
+      sn(nil, { i(1, " "), t { '"', "}" } }),
+      sn(nil, { i(1, " "), t { '"', "}," } }),
+    }),
+    i(0),
+  }),
 }

@@ -65,7 +65,9 @@ HIST_STAMPS="yyyy-mm-dd"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM="$HOME/.config/dotfiles/oh-my-zsh/custom"
 
-# ZVM_INIT_MODE=sourcing
+# If you don't do this it will be initialised after everything.
+# Can be a problem with custom mappings, like zsh-history-substring-search with Up/Down arrows.
+ZVM_INIT_MODE=sourcing
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -75,12 +77,12 @@ HIST_STAMPS="yyyy-mm-dd"
 plugins=(
 	fzf-tab
 	git-open
+	zsh-vi-mode
 	# vi-mode
 	zsh-autosuggestions
 	# zsh-syntax-highlighting
 	fast-syntax-highlighting
 	zsh-history-substring-search
-	zsh-vi-mode
 	conda-zsh-completion
 	web-search				# google, ddg, ...
 	copypath
@@ -106,27 +108,29 @@ plugins=(
 	ripgrep
 )
 
-VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
-VI_MODE_SET_CURSOR=true
+# VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false
+# VI_MODE_SET_CURSOR=true
 
-# source $ZSH/oh-my-zsh.sh
+# Must set this before ZVM is sourced. (i.e. before oh-my-zsh.sh)
+# It will be overridden by custom/env.zsh
+export EDITOR='nvim'
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='TERM=wezterm nvim'
+# else
+#   export EDITOR='TERM=wezterm nvim'
+# fi
+
+source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-# bindkey '^[[A' history-substring-search-up
-# bindkey '^[[B' history-substring-search-down
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nvim'
-else
-  export EDITOR='nvim'
-fi
 
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
@@ -156,9 +160,9 @@ unset __conda_setup
 # <<< conda initialize <<<
 #
 
-source $ZSH/oh-my-zsh.sh
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
+# source $ZSH/oh-my-zsh.sh
+# bindkey '^[[A' history-substring-search-up
+# bindkey '^[[B' history-substring-search-down
 
 if (( $+commands[starship] )); then
 	eval "$(starship init zsh)"

@@ -65,7 +65,7 @@ HIST_STAMPS="yyyy-mm-dd"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM="$HOME/.config/dotfiles/oh-my-zsh/custom"
 
-ZVM_INIT_MODE=sourcing
+# ZVM_INIT_MODE=sourcing
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -76,10 +76,11 @@ plugins=(
 	fzf-tab
 	git-open
 	# vi-mode
-	zsh-vi-mode
 	zsh-autosuggestions
-	zsh-syntax-highlighting
+	# zsh-syntax-highlighting
+	fast-syntax-highlighting
 	zsh-history-substring-search
+	zsh-vi-mode
 	conda-zsh-completion
 	web-search				# google, ddg, ...
 	copypath
@@ -108,12 +109,12 @@ plugins=(
 VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 VI_MODE_SET_CURSOR=true
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
+# bindkey '^[[A' history-substring-search-up
+# bindkey '^[[B' history-substring-search-down
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -154,6 +155,10 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 #
+
+source $ZSH/oh-my-zsh.sh
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 if (( $+commands[starship] )); then
 	eval "$(starship init zsh)"

@@ -1,3 +1,5 @@
+--- NOTE: I keep all plugins in one file, because I often want to disable half of them when I debug what plugin broke my config.
+
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
@@ -5,17 +7,11 @@ local jupynium_dev = false
 local icons = require "kiyoon.icons"
 
 return {
-  -- the colorscheme should be available when starting Neovim
   {
     -- For treemux
     "kiyoon/nvim-tree-remote.nvim",
     cond = false,
   },
-  -- {
-  --   -- For treemux
-  --   "folke/tokyonight.nvim",
-  --   cond = false,
-  -- },
   {
     "folke/tokyonight.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
@@ -67,30 +63,8 @@ return {
       { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x", desc = "Yank to tmux buffer" } },
     },
   },
-  {
-    "kiyoon/jupynium.nvim",
-    -- build = "conda run --no-capture-output -n jupynium pip install .",
-    build = "~/bin/miniconda3/envs/jupynium/bin/pip install .",
-    enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
-    ft = { "python", "markdown" },
-    config = function()
-      require "kiyoon.jupynium"
-    end,
-    dev = jupynium_dev,
-  },
-  {
-    "numToStr/Comment.nvim",
-    -- event = "VeryLazy",
-    keys = {
-      { "gc", mode = { "n", "x", "o" }, desc = "Comment / uncomment lines" },
-      { "gb", mode = { "n", "x", "o" }, desc = "Comment / uncomment a block" },
-    },
-    config = function()
-      require("Comment").setup()
-    end,
-  },
 
-  ---Python
+  --- NOTE: Python
   {
     "wookayin/vim-autoimport",
     ft = { "python" },
@@ -105,6 +79,7 @@ return {
   },
   {
     "metakirby5/codi.vim",
+    cmd = "Codi",
     init = function()
       vim.g["codi#interpreters"] = {
         python = {
@@ -113,9 +88,28 @@ return {
       }
       vim.g["codi#virtual_text_pos"] = "right_align"
     end,
-    cmd = "Codi",
+  },
+  {
+    "kiyoon/jupynium.nvim",
+    -- build = "conda run --no-capture-output -n jupynium pip install .",
+    build = "~/bin/miniconda3/envs/jupynium/bin/pip install .",
+    enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
+    ft = { "python", "markdown" },
+    config = function()
+      require "kiyoon.jupynium"
+    end,
+    dev = jupynium_dev,
   },
 
+  --- NOTE: Coding
+  {
+    -- "jk or jj to escape insert mode"
+    "max397574/better-escape.nvim",
+    event = "InsertEnter",
+    config = function()
+      require("better_escape").setup()
+    end,
+  },
   {
     -- <space>siwie to substitute word from entire buffer
     -- <space>siwip to substitute word from paragraph
@@ -136,6 +130,65 @@ return {
     event = "VeryLazy",
     config = function()
       require("nvim-surround").setup()
+    end,
+  },
+  {
+    -- I don't use autopairs. I only need this for fast-wrap.
+    -- <A-e> in insert mode to add closing pair without moving cursor
+    -- Similar to nvim-surround, but works in insert mode
+    "windwp/nvim-autopairs",
+    keys = {
+      { "<m-e>", mode = "i" },
+    },
+    config = function()
+      local ap = require "nvim-autopairs"
+      ap.setup {
+        -- Disable auto fast wrap
+        enable_afterquote = false,
+        -- <A-e> to manually trigger fast wrap
+        fast_wrap = {},
+      }
+
+      -- Remove all autopair rules, but keep the fast wrap
+      local function manual_trigger(opening, closing)
+        local rule
+        if ap.get_rule(opening)[1] == nil then
+          rule = ap.get_rule(opening)
+        else
+          rule = ap.get_rule(opening)[1]
+        end
+        print(vim.inspect(rule))
+        rule:use_key("<m-p>"):replace_endpair(function()
+          -- repeat the number of characters in the closing pair
+          return closing .. string.rep("<left>", #closing)
+        end)
+      end
+      manual_trigger("'", "'")
+      manual_trigger('"', '"')
+      manual_trigger("`", "`")
+      manual_trigger("{", "}")
+      manual_trigger("(", ")")
+      manual_trigger("[", "]")
+      -- local Rule = require "nvim-autopairs.rule"
+      -- local function delete_on_key(opening, closing)
+      --   ap.add_rule(Rule(opening, closing):use_key("<m-d>"):replace_endpair(function()
+      --     return string.rep("<right><bs>", #closing)
+      --   end))
+      -- end
+      -- delete_on_key("'", "',")
+      -- delete_on_key("{", "}")
+      -- delete_on_key("(", ")")
+      -- delete_on_key("[", "]")
+    end,
+  },
+  {
+    "numToStr/Comment.nvim",
+    keys = {
+      { "gc", mode = { "n", "x", "o" }, desc = "Comment / uncomment lines" },
+      { "gb", mode = { "n", "x", "o" }, desc = "Comment / uncomment a block" },
+    },
+    config = function()
+      require("Comment").setup()
     end,
   },
   {
@@ -175,6 +228,58 @@ return {
       vim.g.wordmotion_prefix = "<space>"
     end,
   },
+  ---Yank
+  {
+    "aserowy/tmux.nvim",
+    keys = {
+      "<C-h>",
+      "<C-j>",
+      "<C-k>",
+      "<C-l>",
+      "<C-n>",
+      "<C-p>",
+      "p",
+      "P",
+      "=p",
+      "=P",
+      { "y", mode = { "x", "o", "s" } },
+      { "d", mode = { "x", "o", "s" } },
+      { "c", mode = { "x", "o", "s" } },
+      { "Y", mode = { "n", "x", "o", "s" } },
+      { "D", mode = { "n", "x", "o", "s" } },
+      { "C", mode = { "n", "x", "o", "s" } },
+    },
+    dependencies = {
+      "gbprod/yanky.nvim",
+      "nvim-telescope/telescope.nvim",
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require "kiyoon.tmux-yanky"
+      -- After initialising yanky, this mapping gets lost so we do this here.
+      vim.cmd [[nnoremap Y y$]]
+    end,
+  },
+  {
+    "ojroques/nvim-osc52",
+    event = "TextYankPost",
+    config = function()
+      -- Every time you yank to + register, copy it to system clipboard using OSC52.
+      -- Use a terminal that supports OSC52,
+      -- then the clipboard copy will work even from remote SSH to local machine.
+      local function copy()
+        if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
+          require("osc52").copy_register "+"
+        end
+      end
+
+      vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
+
+      -- Because we lazy-load on TextYankPost, the above autocmd will not be executed at first.
+      -- So we need to manually call it once.
+      copy()
+    end,
+  },
   {
     "github/copilot.vim",
     event = "InsertEnter",
@@ -185,7 +290,51 @@ return {
     end,
   },
   -- "Exafunction/codeium.vim",
+  {
+    "jackMort/ChatGPT.nvim",
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<leader>c"] = { name = "ChatGPT" },
+        }
+      end
+    end,
+    config = function()
+      require("chatgpt").setup {
+        -- optional configuration
+      }
+    end,
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cmd = {
+      "ChatGPT",
+      "ChatGPTEditWithInstructions",
+      "ChatGPTActAs",
+      "ChatGPTRunCustomCodeAction",
+    },
+    keys = {
+      { "<leader>cg", "<cmd>ChatGPT<CR>", mode = { "n", "x" }, desc = "ChatGPT" },
+      {
+        "<leader>ce",
+        "<cmd>ChatGPTEditWithInstructions<CR>",
+        mode = { "n", "x" },
+        desc = "ChatGPT Edit With Instructions",
+      },
+      { "<leader>ca", "<cmd>ChatGPTActAs<CR>", mode = { "n", "x" }, desc = "ChatGPT Act As" },
+      {
+        "<leader>cc",
+        "<cmd>ChatGPTRunCustomCodeAction<CR>",
+        mode = { "n", "x" },
+        desc = "ChatGPT Run Custom Code Action",
+      },
+    },
+  },
 
+  --- NOTE: Git
   {
     "sindrets/diffview.nvim",
     keys = {
@@ -198,64 +347,10 @@ return {
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      require("gitsigns").setup {
-        on_attach = function(bufnr)
-          local gs = package.loaded.gitsigns
-          local tstext = require "nvim-treesitter.textobjects.repeatable_move"
-
-          local function map(mode, l, r, opts)
-            opts = opts or {}
-            opts.buffer = bufnr
-            vim.keymap.set(mode, l, r, opts)
-          end
-
-          local next_hunk, prev_hunk = tstext.make_repeatable_move_pair(gs.next_hunk, gs.prev_hunk)
-          -- Navigation
-          map("n", "]h", function()
-            if vim.wo.diff then
-              return "]h"
-            end
-            vim.schedule(function()
-              next_hunk()
-            end)
-            return "<Ignore>"
-          end, { expr = true })
-
-          map("n", "[h", function()
-            if vim.wo.diff then
-              return "[h"
-            end
-            vim.schedule(function()
-              prev_hunk()
-            end)
-            return "<Ignore>"
-          end, { expr = true })
-
-          -- Actions
-          map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>")
-          map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
-          map("n", "<leader>hS", gs.stage_buffer)
-          map("n", "<leader>hu", gs.undo_stage_hunk)
-          map("n", "<leader>hR", gs.reset_buffer)
-          map("n", "<leader>hp", gs.preview_hunk)
-          map("n", "<leader>hb", function()
-            gs.blame_line { full = true }
-          end)
-          map("n", "<leader>tb", gs.toggle_current_line_blame)
-          map("n", "<leader>hd", gs.diffthis)
-          map("n", "<leader>hD", function()
-            gs.diffthis "~"
-          end)
-          map("n", "<leader>td", gs.toggle_deleted)
-
-          -- Text object
-          map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
-        end,
-      }
-    end,
+    opts = require "kiyoon.gitsigns_opts",
   },
 
+  --- NOTE: File tree
   {
     "nvim-tree/nvim-tree.lua",
     lazy = true,
@@ -299,43 +394,30 @@ return {
       require "kiyoon.nvim_tree"
     end,
   },
-
   {
-    "akinsho/bufferline.nvim",
-    event = "VeryLazy",
-    keys = {
-      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
-      { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+      "MunifTanjim/nui.nvim",
     },
-    opts = {
-      options = {
-        right_mouse_command = "", -- can be a string | function, see "Mouse actions"
-        diagnostics = "nvim_lsp",
-        always_show_bufferline = false,
-        diagnostics_indicator = function(_, _, diag)
-          local ret = (diag.error and icons.diagnostics.Error .. diag.error .. " " or "")
-            .. (diag.warning and icons.diagnostics.Warn .. diag.warning or "")
-          return vim.trim(ret)
-        end,
-        offsets = {
-          {
-            filetype = "neo-tree",
-            text = "Neo-tree",
-            highlight = "Directory",
-            text_align = "left",
-          },
-          {
-            filetype = "NvimTree",
-            text = "Nvim Tree",
-            highlight = "Directory",
-            text_align = "left",
-          },
-        },
-      },
+    init = function()
+      vim.g.neo_tree_remove_legacy_commands = 1
+    end,
+    cmd = "Neotree",
+    keys = {
+      { "<space>nn", "<cmd>Neotree<CR>", mode = { "n", "x" }, desc = "[N]eotree" },
     },
   },
+  {
+    "stevearc/oil.nvim",
+    config = function()
+      require("oil").setup()
+    end,
+  },
 
-  -- Treesitter: Better syntax highlighting, text objects, refactoring, context
+  --- NOTE: Treesitter: Better syntax highlighting, text objects, refactoring, context
   {
     "nvim-treesitter/nvim-treesitter",
     event = { "BufReadPost", "BufNewFile" },
@@ -353,14 +435,8 @@ return {
         "andymass/vim-matchup",
         init = function()
           --- Without this, lualine will flicker when matching offscreen
+          --- Maybe it happens when cmdheight is set to 0
           vim.g.matchup_matchparen_offscreen = { method = "popup" }
-          -- vim.g.matchup_matchparen_deferred = 1
-          -- vim.g.matchup_matchparen_deferred_show_delay = 100
-          -- vim.g.matchup_matchparen_deferred_hide_delay = 400
-          -- vim.g.matchup_matchparen_hi_surround_always = 1
-          -- vim.g.matchup_matchparen_hi_offscreen = 1
-          -- vim.g.matchup_matchparen_hi_offscreen_always = 1
-          -- vim.g.matchup_matchparen_hi_offscreen_cmd = "echohl WarningMsg | echon 'Matched offscreen' | echohl None"
         end,
       },
       "mrjones2014/nvim-ts-rainbow",
@@ -467,62 +543,7 @@ return {
       "nvim-lua/plenary.nvim",
       { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
-    keys = {
-      {
-        "<space>re",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function')<CR>]],
-        mode = "v",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: [E]xtract function",
-      },
-      {
-        "<space>rf",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Function To File')<CR>]],
-        mode = "v",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract function to [F]ile",
-      },
-      {
-        "<space>rv",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>]],
-        mode = "v",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract [V]ariable",
-      },
-      {
-        "<space>ri",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Inline Variable')<CR>]],
-        mode = { "n", "v" },
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: [I]nline variable",
-      },
-      {
-        "<space>rb",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block')<CR>]],
-        mode = "n",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract [B]lock",
-      },
-      {
-        "<space>rbf",
-        [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Block To File')<CR>]],
-        mode = "n",
-        noremap = true,
-        silent = true,
-        expr = false,
-        desc = "[R]efactor: Extract [B]lock to [F]ile",
-      },
-    },
+    keys = require "kiyoon.refactoring_keys",
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
@@ -560,6 +581,79 @@ return {
         ignore_beginning = true,
         exclude = {},
       }
+    end,
+  },
+  {
+    "ziontee113/SelectEase",
+    keys = {
+      { "<C-A-k>", mode = { "n", "s", "i" } },
+      { "<C-A-j>", mode = { "n", "s", "i" } },
+      { "<C-A-h>", mode = { "n", "s", "i" } },
+      { "<C-A-l>", mode = { "n", "s", "i" } },
+      { "<C-A-n>", mode = { "n", "s", "i" } },
+      { "<C-A-p>", mode = { "n", "s", "i" } },
+    },
+    config = function()
+      local select_ease = require "SelectEase"
+
+      local lua_query = [[
+          ;; query
+          ((identifier) @cap)
+          ("string_content" @cap)
+          ((true) @cap)
+          ((false) @cap)
+          ]]
+      local python_query = [[
+          ;; query
+          ((identifier) @cap)
+          ((string) @cap)
+          ]]
+
+      local queries = {
+        lua = lua_query,
+        python = python_query,
+      }
+
+      vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
+        select_ease.select_node {
+          queries = queries,
+          direction = "previous",
+          vertical_drill_jump = true,
+          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
+        }
+      end, {})
+      vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
+        select_ease.select_node {
+          queries = queries,
+          direction = "next",
+          vertical_drill_jump = true,
+          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
+        }
+      end, {})
+      vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
+        select_ease.select_node {
+          queries = queries,
+          direction = "previous",
+          current_line_only = true,
+          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
+        }
+      end, {})
+      vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
+        select_ease.select_node {
+          queries = queries,
+          direction = "next",
+          current_line_only = true,
+          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
+        }
+      end, {})
+
+      -- previous / next node that matches query
+      vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
+        select_ease.select_node { queries = queries, direction = "previous" }
+      end, {})
+      vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
+        select_ease.select_node { queries = queries, direction = "next" }
+      end, {})
     end,
   },
   -- Motions
@@ -714,15 +808,6 @@ return {
     end,
   },
 
-  -- Dashboard
-  {
-    "goolord/alpha-nvim",
-    event = "VimEnter",
-    config = function()
-      require "kiyoon.alpha"
-    end,
-  },
-
   -- Telescope
   {
     "nvim-telescope/telescope.nvim",
@@ -753,7 +838,8 @@ return {
     end,
   },
 
-  -- LSP
+  --- NOTE: LSP
+  --
   -- CoC supports out-of-the-box features like inlay hints
   -- which isn't possible with native LSP yet.
   {
@@ -770,18 +856,6 @@ return {
       vim.cmd [[
         hi link CocInlayHint Comment
         call coc#add_extension('coc-pyright')
-        " CocUninstall coc-sh
-        " CocUninstall coc-clangd
-        " CocUninstall coc-vimlsp
-        " CocUninstall coc-java
-        " CocUninstall coc-html
-        " CocUninstall coc-css
-        " CocUninstall coc-json
-        " CocUninstall coc-yaml
-        " CocUninstall coc-markdownlint
-        " CocUninstall coc-sumneko-lua
-        " CocUninstall coc-snippets
-        " CocUninstall coc-actions
       ]]
     end,
   },
@@ -820,23 +894,7 @@ return {
     "lvimuser/lsp-inlayhints.nvim",
     event = "LSPAttach",
     config = function()
-      vim.cmd [[hi link LspInlayHint Comment]]
-      -- vim.cmd [[hi LspInlayHint guifg=#d8d8d8 guibg=#3a3a3a]]
-      require("lsp-inlayhints").setup()
-
-      vim.api.nvim_create_augroup("LspAttach_inlayhints", {})
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = "LspAttach_inlayhints",
-        callback = function(args)
-          if not (args.data and args.data.client_id) then
-            return
-          end
-
-          local bufnr = args.buf
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          require("lsp-inlayhints").on_attach(client, bufnr)
-        end,
-      })
+      require "kiyoon.lsp-inlayhints"
     end,
   },
   {
@@ -852,10 +910,10 @@ return {
             },
           }, bufnr)
         end,
-        debug = true, -- set to true to enable debug logging
-        log_path = vim.fn.stdpath "cache" .. "/lsp_signature.log", -- log dir when debug is on
+        -- debug = true, -- set to true to enable debug logging
+        -- log_path = vim.fn.stdpath "cache" .. "/lsp_signature.log", -- log dir when debug is on
         -- default is  ~/.cache/nvim/lsp_signature.log
-        verbose = true, -- show debug line number
+        -- verbose = true, -- show debug line number
       }
       require("lsp_signature").setup(cfg)
     end,
@@ -882,6 +940,7 @@ return {
       }
     end,
   },
+  -- Show current context in lualine (statusline)
   {
     "SmiteshP/nvim-navic",
     lazy = true,
@@ -927,6 +986,7 @@ return {
   --   end,
   -- },
 
+  -- Formatting and linting
   {
     "jose-elias-alvarez/null-ls.nvim",
     event = { "BufReadPre", "BufNewFile" },
@@ -940,9 +1000,7 @@ return {
   {
     "j-hui/fidget.nvim",
     event = "LSPAttach",
-    config = function()
-      require("fidget").setup()
-    end,
+    config = true,
   },
 
   {
@@ -957,16 +1015,20 @@ return {
         desc = "LSP (R)ename",
       },
     },
-    config = function()
-      require("inc_rename").setup()
-    end,
+    config = true,
   },
 
   -- LSP diagnostics
   {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
-    opts = { use_diagnostic_signs = true },
+    opts = {
+      use_diagnostic_signs = true,
+      auto_open = false,
+      auto_close = true,
+      auto_preview = true,
+      auto_fold = true,
+    },
     keys = {
       { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
       { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
@@ -974,30 +1036,9 @@ return {
       { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
       { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP references (Trouble)" },
     },
-    config = function()
-      require("trouble").setup {
-        auto_open = false,
-        auto_close = true,
-        auto_preview = true,
-        auto_fold = true,
-      }
-    end,
   },
 
-  -- Snippets
-  {
-    "L3MON4D3/LuaSnip",
-    version = "v1.x",
-    event = "InsertEnter",
-    dependencies = {
-      "rafamadriz/friendly-snippets",
-    },
-    config = function()
-      require "kiyoon.luasnip"
-    end,
-  },
-
-  -- DAP (Debugger)
+  --- NOTE: DAP (Debugger)
   {
     "mfussenegger/nvim-dap",
     keys = {
@@ -1032,60 +1073,21 @@ return {
     end,
   },
 
-  ---Yank
+  -- Snippets
   {
-    "aserowy/tmux.nvim",
-    keys = {
-      "<C-h>",
-      "<C-j>",
-      "<C-k>",
-      "<C-l>",
-      "<C-n>",
-      "<C-p>",
-      "p",
-      "P",
-      "=p",
-      "=P",
-      { "y", mode = { "x", "o", "s" } },
-      { "d", mode = { "x", "o", "s" } },
-      { "c", mode = { "x", "o", "s" } },
-      { "Y", mode = { "n", "x", "o", "s" } },
-      { "D", mode = { "n", "x", "o", "s" } },
-      { "C", mode = { "n", "x", "o", "s" } },
-    },
+    "L3MON4D3/LuaSnip",
+    version = "v1.x",
+    event = "InsertEnter",
     dependencies = {
-      "gbprod/yanky.nvim",
-      "nvim-telescope/telescope.nvim",
-      "nvim-lua/plenary.nvim",
+      "rafamadriz/friendly-snippets",
     },
     config = function()
-      require "kiyoon.tmux-yanky"
-      -- After initialising yanky, this mapping gets lost so we do this here.
-      vim.cmd [[nnoremap Y y$]]
-    end,
-  },
-  {
-    "ojroques/nvim-osc52",
-    event = "TextYankPost",
-    config = function()
-      -- Every time you yank to + register, copy it to system clipboard using OSC52.
-      -- Use a terminal that supports OSC52,
-      -- then the clipboard copy will work even from remote SSH to local machine.
-      local function copy()
-        if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
-          require("osc52").copy_register "+"
-        end
-      end
-
-      vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
-
-      -- Because we lazy-load on TextYankPost, the above autocmd will not be executed at first.
-      -- So we need to manually call it once.
-      copy()
+      require "kiyoon.luasnip"
     end,
   },
 
-  --- UI
+  --- NOTE: UI
+  --
   -- Beautiful command menu
   {
     "gelguy/wilder.nvim",
@@ -1152,87 +1154,18 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     opts = function(plugin)
-      local function fg(name)
-        return function()
-          ---@type {foreground?:number}?
-          local hl = vim.api.nvim_get_hl_by_name(name, true)
-          return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
-        end
-      end
-
-      return {
-        options = {
-          theme = "auto",
-          globalstatus = true,
-          disabled_filetypes = { statusline = { "dashboard", "lazy", "alpha" } },
-        },
-        sections = {
-          lualine_a = { "mode" },
-          lualine_b = { "branch" },
-          lualine_c = {
-            {
-              "diagnostics",
-              symbols = {
-                error = icons.diagnostics.Error,
-                warn = icons.diagnostics.Warn,
-                info = icons.diagnostics.Info,
-                hint = icons.diagnostics.Hint,
-              },
-            },
-            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-            { "filename", path = 1, symbols = { modified = "  ", readonly = "", unnamed = "" } },
-            -- stylua: ignore
-            {
-              function() return require("nvim-navic").get_location() end,
-              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
-            },
-          },
-          lualine_x = {
-            -- stylua: ignore
-            {
-              function() return require("noice").api.status.command.get() end,
-              cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-              color = fg("Statement")
-            },
-            -- stylua: ignore
-            {
-              function() return require("noice").api.status.mode.get() end,
-              cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = fg("Constant") ,
-            },
-            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg "Special" },
-            {
-              "diff",
-              symbols = {
-                added = icons.git.added,
-                modified = icons.git.modified,
-                removed = icons.git.removed,
-              },
-            },
-          },
-          lualine_y = {
-            { "progress", separator = " ", padding = { left = 1, right = 0 } },
-            { "location", padding = { left = 0, right = 1 } },
-          },
-          -- lualine_z = {
-          --   function()
-          --     return " " .. os.date "%R"
-          --   end,
-          -- },
-        },
-        extensions = { "neo-tree" },
-      }
+      return require "kiyoon.lualine_opts"
     end,
   },
-  -- {
-  --   "nvim-lualine/lualine.nvim",
-  --   cond = (vim.fn.exists "g:started_by_firenvim" or vim.fn.exists "g:vscode") == 0,
-  --   config = function()
-  --     require("lualine").setup {
-  --       globalstatus = true,
-  --     }
-  --   end,
-  -- },
+  {
+    "akinsho/bufferline.nvim",
+    event = "VeryLazy",
+    keys = {
+      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
+      { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
+    },
+    opts = require "kiyoon.bufferline_opts",
+  },
   {
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
@@ -1255,19 +1188,6 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       require "kiyoon.illuminate"
-    end,
-  },
-  {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    config = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 600
-      require("which-key").setup {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      }
     end,
   },
   {
@@ -1295,7 +1215,63 @@ return {
       -- end, { desc = "Next error/warning todo comment" })
     end,
   },
+  -- Dashboard
+  {
+    "goolord/alpha-nvim",
+    event = "VimEnter",
+    config = function()
+      require "kiyoon.alpha"
+    end,
+  },
+  {
+    "luukvbaal/statuscol.nvim",
+    init = function()
+      vim.o.statuscolumn = "%@v:lua.ScSa@%s%T%@v:lua.ScLa@%{%v:lua.ScLn()%}%T%@v:lua.ScFa@ %{%v:lua.ScFc()%} %T"
+    end,
+    config = function()
+      require "kiyoon.statuscol"
+    end,
+  },
 
+  --- NOTE: Utils
+  {
+    "dstein64/vim-startuptime",
+    cmd = "StartupTime",
+    config = function()
+      vim.g.startuptime_tries = 10
+    end,
+  },
+  {
+    "mbbill/undotree",
+    cmd = "UndotreeToggle",
+    keys = {
+      { "<space>u", "<cmd>UndotreeToggle<CR>", mode = { "n", "x" }, desc = "Undotree Toggle" },
+    },
+  },
+  -- search/replace in multiple files
+  {
+    "windwp/nvim-spectre",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- stylua: ignore
+    keys = {
+      { "<leader>sr", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
+    },
+  },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    config = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 600
+      require("which-key").setup {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    end,
+  },
   {
     "iamcco/markdown-preview.nvim",
     ft = "markdown",
@@ -1318,264 +1294,4 @@ return {
   --   end,
   --   build = "firenvim#install(0)",
   -- },
-  {
-    "jackMort/ChatGPT.nvim",
-    init = function()
-      local status, wk = pcall(require, "which-key")
-      if status then
-        wk.register {
-          ["<leader>c"] = { name = "ChatGPT" },
-        }
-      end
-    end,
-    config = function()
-      require("chatgpt").setup {
-        -- optional configuration
-      }
-    end,
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-    },
-    cmd = {
-      "ChatGPT",
-      "ChatGPTEditWithInstructions",
-      "ChatGPTActAs",
-      "ChatGPTRunCustomCodeAction",
-    },
-    keys = {
-      { "<leader>cg", "<cmd>ChatGPT<CR>", mode = { "n", "x" }, desc = "ChatGPT" },
-      {
-        "<leader>ce",
-        "<cmd>ChatGPTEditWithInstructions<CR>",
-        mode = { "n", "x" },
-        desc = "ChatGPT Edit With Instructions",
-      },
-      { "<leader>ca", "<cmd>ChatGPTActAs<CR>", mode = { "n", "x" }, desc = "ChatGPT Act As" },
-      {
-        "<leader>cc",
-        "<cmd>ChatGPTRunCustomCodeAction<CR>",
-        mode = { "n", "x" },
-        desc = "ChatGPT Run Custom Code Action",
-      },
-    },
-  },
-  {
-    "luukvbaal/statuscol.nvim",
-    init = function()
-      vim.o.statuscolumn = "%@v:lua.ScSa@%s%T%@v:lua.ScLa@%{%v:lua.ScLn()%}%T%@v:lua.ScFa@ %{%v:lua.ScFc()%} %T"
-    end,
-    config = function()
-      -- functions modified from statuscol.nvim
-      --- Toggle a (conditional) DAP breakpoint.
-      local function toggle_breakpoint(args)
-        local status, persistent_breakpoints_api = pcall(require, "persistent-breakpoints.api")
-        if not status then
-          return
-        end
-        if args.mods:find "c" then
-          persistent_breakpoints_api.set_conditional_breakpoint()
-        else
-          persistent_breakpoints_api.toggle_breakpoint()
-        end
-      end
-
-      --- Handler for clicking the line number.
-      local function lnum_click(args)
-        if args.button == "l" then
-          -- Toggle DAP (conditional) breakpoint on (Ctrl-)left click
-          toggle_breakpoint(args)
-        elseif args.button == "m" then
-          vim.cmd "norm! yy" -- Yank on middle click
-        elseif args.button == "r" then
-          if args.clicks == 2 then
-            vim.cmd "norm! dd" -- Cut on double right click
-          else
-            vim.cmd "norm! p" -- Paste on right click
-          end
-        end
-      end
-
-      require("statuscol").setup {
-        relculright = true,
-        foldfunc = "builtin",
-        separator = " ",
-        Lnum = lnum_click,
-        DapBreakpointRejected = toggle_breakpoint,
-        DapBreakpoint = toggle_breakpoint,
-        DapBreakpointCondition = toggle_breakpoint,
-        -- when manually setting vim.o.statuscolumn, you shouldn't set below.
-        -- setopt = true,
-        -- order = "SNsFs", -- gitsigns, number, fold, separator
-      }
-    end,
-  },
-  {
-    "mbbill/undotree",
-    cmd = "UndotreeToggle",
-    keys = {
-      { "<space>u", "<cmd>UndotreeToggle<CR>", mode = { "n", "x" }, desc = "Undotree Toggle" },
-    },
-  },
-  {
-    "dstein64/vim-startuptime",
-    cmd = "StartupTime",
-    config = function()
-      vim.g.startuptime_tries = 10
-    end,
-  },
-  {
-    -- "jk or jj to escape insert mode"
-    "max397574/better-escape.nvim",
-    event = "InsertEnter",
-    config = function()
-      require("better_escape").setup()
-    end,
-  },
-  -- {
-  --   "windwp/nvim-autopairs",
-  --   config = function()
-  --     local ap = require "nvim-autopairs"
-  --     local Rule = require "nvim-autopairs.rule"
-  --     ap.setup {
-  --       -- Disable auto fast wrap
-  --       enable_afterquote = false,
-  --       -- <A-e> to manually trigger fast wrap
-  --       fast_wrap = {},
-  --     }
-  --
-  --     local function manual_trigger(opening, closing)
-  --       local rule
-  --       if ap.get_rule(opening)[1] == nil then
-  --         rule = ap.get_rule(opening)
-  --       else
-  --         rule = ap.get_rule(opening)[1]
-  --       end
-  --       rule:use_key("<m-p>"):replace_endpair(function()
-  --         -- repeat the number of characters in the closing pair
-  --         return closing .. string.rep("<left>", #closing)
-  --       end)
-  --     end
-  --     local function delete_on_key(opening, closing)
-  --       ap.add_rule(Rule(opening, closing):use_key("<m-d>"):replace_endpair(function()
-  --         return string.rep("<right><bs>", #closing)
-  --       end))
-  --     end
-  --     -- manual_trigger("'", "',")
-  --     -- delete_on_key("'", "',")
-  --     manual_trigger("{", "}")
-  --     -- delete_on_key("{", "}")
-  --     -- manual_trigger("(", ")")
-  --     -- delete_on_key("(", ")")
-  --     -- manual_trigger("[", "]")
-  --     -- delete_on_key("[", "]")
-  --   end,
-  -- },
-  {
-    "ziontee113/SelectEase",
-    keys = {
-      { "<C-A-k>", mode = { "n", "s", "i" } },
-      { "<C-A-j>", mode = { "n", "s", "i" } },
-      { "<C-A-h>", mode = { "n", "s", "i" } },
-      { "<C-A-l>", mode = { "n", "s", "i" } },
-      { "<C-A-n>", mode = { "n", "s", "i" } },
-      { "<C-A-p>", mode = { "n", "s", "i" } },
-    },
-    config = function()
-      local select_ease = require "SelectEase"
-
-      local lua_query = [[
-          ;; query
-          ((identifier) @cap)
-          ("string_content" @cap)
-          ((true) @cap)
-          ((false) @cap)
-          ]]
-      local python_query = [[
-          ;; query
-          ((identifier) @cap)
-          ((string) @cap)
-          ]]
-
-      local queries = {
-        lua = lua_query,
-        python = python_query,
-      }
-
-      vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
-        select_ease.select_node {
-          queries = queries,
-          direction = "previous",
-          vertical_drill_jump = true,
-          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
-      end, {})
-      vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
-        select_ease.select_node {
-          queries = queries,
-          direction = "next",
-          vertical_drill_jump = true,
-          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
-      end, {})
-      vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
-        select_ease.select_node {
-          queries = queries,
-          direction = "previous",
-          current_line_only = true,
-          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
-      end, {})
-      vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
-        select_ease.select_node {
-          queries = queries,
-          direction = "next",
-          current_line_only = true,
-          -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
-      end, {})
-
-      -- previous / next node that matches query
-      vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
-        select_ease.select_node { queries = queries, direction = "previous" }
-      end, {})
-      vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
-        select_ease.select_node { queries = queries, direction = "next" }
-      end, {})
-    end,
-  },
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-      "MunifTanjim/nui.nvim",
-    },
-    init = function()
-      vim.g.neo_tree_remove_legacy_commands = 1
-    end,
-    cmd = "Neotree",
-    keys = {
-      { "<space>nn", "<cmd>Neotree<CR>", mode = { "n", "x" }, desc = "[N]eotree" },
-    },
-  },
-  {
-    "stevearc/oil.nvim",
-    config = function()
-      require("oil").setup()
-    end,
-  },
-  -- search/replace in multiple files
-  {
-    "windwp/nvim-spectre",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    -- stylua: ignore
-    keys = {
-      { "<leader>sr", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
-    },
-  },
 }

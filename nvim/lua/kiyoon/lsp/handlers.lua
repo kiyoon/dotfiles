@@ -109,8 +109,8 @@ local function lsp_keymaps(bufnr)
   keymap("i", "<C-h>", vim.lsp.buf.signature_help, opts, "Signature [H]elp")
   keymap("n", "<space>pq", vim.diagnostic.setqflist, opts, "Set [Q]uickfix List")
 
-  if vim.o.filetype == "python" then
-    keymap("n", "<Tab>", "<cmd>PyrightOrganizeImports<cr>", opts)
+  if vim.bo.filetype == "python" then
+    keymap("n", "<space>po", "<cmd>PyrightOrganizeImports<cr>", opts, "[O]rganise Imports (python)")
   end
 
   local status, wk = pcall(require, "which-key")

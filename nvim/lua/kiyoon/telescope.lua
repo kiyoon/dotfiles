@@ -58,7 +58,7 @@ telescope.setup {
           vim.fn.jobstart({
             "viu",
             "-w",
-            "40",
+            "60",
             "-b",
             filepath,
           }, {

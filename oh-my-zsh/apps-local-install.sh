@@ -169,3 +169,4 @@ cargo install bat
 cargo install bottom
 cargo install du-dust
 cargo install procs
+cargo install csvlens

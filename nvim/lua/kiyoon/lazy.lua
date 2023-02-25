@@ -100,6 +100,22 @@ return {
     end,
     dev = jupynium_dev,
   },
+  {
+    "lkhphuc/jupyter-kernel.nvim",
+    opts = {
+      inspect = {
+        -- opts for vim.lsp.util.open_floating_preview
+        window = {
+          max_width = 84,
+        },
+      },
+      -- time to wait for kernel's response in seconds
+      timeout = 0.5,
+    },
+    cmd = "JupyterAttach",
+    build = ":UpdateRemotePlugins",
+    keys = { { "<leader>k", "<Cmd>JupyterInspect<CR>", desc = "Inspect object in kernel" } },
+  },
 
   --- NOTE: Coding
   {
@@ -817,6 +833,49 @@ return {
     lazy = true,
     cmd = { "Telescope" },
     branch = "0.1.x",
+    keys = {
+      {
+        "<leader>ff",
+        "<cmd>lua require('telescope.builtin').git_files()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]uzzy [F]ind Git [F]iles",
+      },
+      {
+        "<leader>fW",
+        "<cmd>lua require('telescope.builtin').live_grep()<cr>",
+        noremap = true,
+        silent = true,
+      },
+      { "<leader>fw", "<cmd>lua require('kiyoon.telescope').live_grep_gitdir()<cr>", noremap = true, silent = true },
+      {
+        "<leader>fiw",
+        "<cmd>lua require('kiyoon.telescope').grep_string_gitdir()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "Grep [i]nner [w]ord in git dir",
+      },
+      { "<leader>fg", "<cmd>require('telescope').extensions.live_grep_args.live_grep_args()<cr>" },
+      { "<leader>fr", "<cmd>lua require('telescope.builtin').oldfiles()<cr>", noremap = true, silent = true },
+      { "<leader>fb", "<cmd>require('telescope.builtin').buffers()<cr>", noremap = true, silent = true },
+      { "<leader>fh", "<cmd>require('telescope.builtin').help_tags()<cr>", noremap = true, silent = true },
+      {
+        "<leader>fs",
+        "<cmd>require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]uzzy [S]earch Current Buffer",
+      },
+    },
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<leader>f"] = { name = "Telescope [F]uzzy [F]inder" },
+          ["<leader>fi"] = { name = "[I]nner" },
+        }
+      end
+    end,
     dependencies = {
       {
         "nvim-telescope/telescope-fzf-native.nvim",

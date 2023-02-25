@@ -120,39 +120,4 @@ M.grep_string_gitdir = function()
   end
 end
 
--- vim.keymap.set({ "n" }, "<leader>ff", builtin.find_files, { noremap = true, silent = true })
--- vim.keymap.set({ "i" }, "<C-t>", builtin.git_files, { noremap = true, silent = true })
-vim.keymap.set(
-  { "n" },
-  "<leader>ff",
-  builtin.git_files,
-  { noremap = true, silent = true, desc = "[F]uzzy [F]ind Git [F]iles" }
-)
-vim.keymap.set({ "n" }, "<leader>fW", builtin.live_grep, { noremap = true, silent = true })
-vim.keymap.set({ "n" }, "<leader>fw", M.live_grep_gitdir, { noremap = true, silent = true })
-vim.keymap.set(
-  { "n" },
-  "<leader>fiw",
-  M.grep_string_gitdir,
-  { noremap = true, silent = true, desc = "Grep [i]nner [w]ord in git dir" }
-)
-vim.keymap.set("n", "<leader>fg", require("telescope").extensions.live_grep_args.live_grep_args)
-vim.keymap.set({ "n" }, "<leader>fr", builtin.oldfiles, { noremap = true, silent = true })
-vim.keymap.set({ "n" }, "<leader>fb", builtin.buffers, { noremap = true, silent = true })
-vim.keymap.set({ "n" }, "<leader>fh", builtin.help_tags, { noremap = true, silent = true })
-vim.keymap.set(
-  { "n" },
-  "<leader>fs",
-  builtin.current_buffer_fuzzy_find,
-  { noremap = true, silent = true, desc = "[F]uzzy [S]earch Current Buffer" }
-)
-
-local status, wk = pcall(require, "which-key")
-if status then
-  wk.register {
-    ["<leader>f"] = { name = "Telescope [F]uzzy [F]inder" },
-    ["<leader>fi"] = { name = "[I]nner" },
-  }
-end
-
 return M

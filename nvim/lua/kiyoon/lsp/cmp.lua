@@ -13,7 +13,7 @@ cmp.setup {
   mapping = cmp.mapping.preset.insert {
     -- ["<C-f>"] = cmp.mapping.scroll_docs(4),
     -- ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs( -1), { "i", "c" }),
+    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
     ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
 
     -- ["<C-Space>"] = cmp.mapping.complete(),
@@ -48,6 +48,7 @@ cmp.setup {
     -- end, { "i", "s" }),
   },
   sources = {
+    { name = "jupyter" },
     { name = "nvim_lsp" },
     { name = "luasnip" },
     { name = "path" },

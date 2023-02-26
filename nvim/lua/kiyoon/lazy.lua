@@ -108,23 +108,6 @@ return {
     end,
     dev = jupynium_dev,
   },
-  {
-    "lkhphuc/jupyter-kernel.nvim",
-    opts = {
-      inspect = {
-        -- opts for vim.lsp.util.open_floating_preview
-        window = {
-          max_width = 84,
-        },
-      },
-      -- time to wait for kernel's response in seconds
-      timeout = 0.5,
-    },
-    branch = "cmp",
-    cmd = "JupyterAttach",
-    build = ":UpdateRemotePlugins",
-    keys = { { "<leader>k", "<Cmd>JupyterInspect<CR>", desc = "Inspect object in kernel" } },
-  },
 
   --- NOTE: Coding
   {
@@ -962,7 +945,7 @@ return {
       "onsails/lspkind.nvim", -- display icons
     },
     config = function()
-      require "kiyoon.lsp.cmp"
+      require "kiyoon.cmp"
     end,
   },
   {

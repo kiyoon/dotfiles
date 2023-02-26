@@ -78,8 +78,8 @@ nmap <leader>g <Cmd>call system("docker run --gpus all --rm --device=/dev/video0
 nmap <leader><leader>g <Cmd>let g:quit_nvim_hand_gesture = 1<CR>
 ]]
 
-local vscodepath = vim.fn.stdpath "config" .. "/vscode.vim"
-vim.cmd("source " .. vscodepath)
+-- local vscodepath = vim.fn.stdpath "config" .. "/vscode.vim"
+-- vim.cmd("source " .. vscodepath)
 
 require "kiyoon.menu"
 

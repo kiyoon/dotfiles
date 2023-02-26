@@ -91,12 +91,20 @@ return {
   },
   {
     "kiyoon/jupynium.nvim",
-    -- build = "conda run --no-capture-output -n jupynium pip install .",
-    build = "~/bin/miniconda3/envs/jupynium/bin/pip install .",
+    build = "conda run --no-capture-output -n jupynium pip install .",
     enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
     ft = { "python", "markdown" },
     config = function()
-      require "kiyoon.jupynium"
+      local jupynium_conda_env
+      if jupynium_dev then
+        jupynium_conda_env = "jupynium_dev"
+      else
+        jupynium_conda_env = "jupynium"
+      end
+      require("jupynium").setup {
+        python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
+        jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
+      }
     end,
     dev = jupynium_dev,
   },
@@ -112,6 +120,7 @@ return {
       -- time to wait for kernel's response in seconds
       timeout = 0.5,
     },
+    branch = "cmp",
     cmd = "JupyterAttach",
     build = ":UpdateRemotePlugins",
     keys = { { "<leader>k", "<Cmd>JupyterInspect<CR>", desc = "Inspect object in kernel" } },
@@ -252,6 +261,10 @@ return {
       "<C-j>",
       "<C-k>",
       "<C-l>",
+      { "<C-A-i>", [[<cmd>lua require("tmux").resize_top()<cr>]] },
+      { "<C-A-u>", [[<cmd>lua require("tmux").resize_bottom()<cr>]] },
+      { "<C-A-y>", [[<cmd>lua require("tmux").resize_left()<cr>]] },
+      { "<C-A-o>", [[<cmd>lua require("tmux").resize_right()<cr>]] },
       "<C-n>",
       "<C-p>",
       "p",
@@ -939,7 +952,7 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    -- event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",

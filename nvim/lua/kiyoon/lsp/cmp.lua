@@ -49,11 +49,11 @@ cmp.setup {
   },
   sources = {
     { name = "jupyter" },
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "path" },
-    { name = "buffer" },
-    { name = "calc" },
+    -- { name = "nvim_lsp" },
+    -- { name = "luasnip" },
+    -- { name = "path" },
+    -- { name = "buffer" },
+    -- { name = "calc" },
   },
   sorting = {
     comparators = {

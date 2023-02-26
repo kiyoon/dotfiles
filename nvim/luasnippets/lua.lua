@@ -50,6 +50,17 @@ return {
       }
     )
   ),
+  s(
+    "pprint",
+    fmt(
+      [[
+      vim.pretty_print({1})
+    ]],
+      {
+        i(1, "data"),
+      }
+    )
+  ),
   -- add which-key.nvim names
   s(
     "wk",

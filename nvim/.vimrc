@@ -68,11 +68,12 @@ if !has('nvim')
   set timeoutlen=10000  " leader key timeout = 10s
 endif
 
-" map common mistakes: :W, :Q, :Wq, :WQ 
+" map common mistakes: :W, :Q, :Wq, :WQ, q:
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>write<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>write<bang> <args> | quit
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>write<bang> <args> | quit
 command! -bang Q quit<bang>
+nmap q: :q
 
 
 """""""""""""""""

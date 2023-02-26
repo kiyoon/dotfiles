@@ -119,3 +119,13 @@ vim.g.do_filetype_lua = 1
 --   autocmd BufWinEnter ?* set foldlevel=99
 -- augroup END
 -- ]]
+
+local function open_messages_in_buffer(args)
+  vim.cmd "botright copen"
+  vim.cmd [[set modifiable]]
+  -- vim.cmd "normal! G"
+  vim.cmd "put = execute('messages')"
+  vim.cmd [[set nomodifiable]]
+end
+
+vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})

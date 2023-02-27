@@ -384,12 +384,12 @@ vnoremap <A-Up> :m '<-2<CR>gv=gv
 
 augroup move_lines
   autocmd!
-  autocmd FileType python nnoremap <A-Up> :m .+1<CR>
-  autocmd FileType python nnoremap <A-Down> :m .-2<CR>
-  autocmd FileType python inoremap <A-Up> <Esc>:m .+1<CR>gi
-  autocmd FileType python inoremap <A-Down> <Esc>:m .-2<CR>gi
-  autocmd FileType python vnoremap <A-Up> :m '>+1<CR>gv
-  autocmd FileType python vnoremap <A-Down> :m '<-2<CR>gv
+  autocmd FileType python nnoremap <A-Down> :m .+1<CR>
+  autocmd FileType python nnoremap <A-Up> :m .-2<CR>
+  autocmd FileType python inoremap <A-Down> <Esc>:m .+1<CR>gi
+  autocmd FileType python inoremap <A-Up> <Esc>:m .-2<CR>gi
+  autocmd FileType python vnoremap <A-Down> :m '>+1<CR>gv
+  autocmd FileType python vnoremap <A-Up> :m '<-2<CR>gv
 augroup END
 
 

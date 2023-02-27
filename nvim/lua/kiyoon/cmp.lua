@@ -3,6 +3,7 @@ local cmp = require "cmp"
 local cmp_buffer = require "cmp_buffer"
 local luasnip = require "luasnip"
 local lspkind = require "lspkind"
+local compare = cmp.config.compare
 
 cmp.setup {
   snippet = {
@@ -11,10 +12,10 @@ cmp.setup {
     end,
   },
   mapping = cmp.mapping.preset.insert {
-    -- ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    -- ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
-    ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    -- ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
+    -- ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
 
     -- ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-Space>"] = cmp.mapping(function(fallback)
@@ -48,17 +49,27 @@ cmp.setup {
     -- end, { "i", "s" }),
   },
   sources = {
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "path" },
-    { name = "buffer" },
-    { name = "calc" },
+    { name = "jupynium", priority = 1000 },
+    { name = "nvim_lsp", priority = 500 },
+    { name = "luasnip", priority = 10 },
+    { name = "path", priority = 9 },
+    { name = "buffer", priority = 5 },
+    { name = "calc", priority = 3 },
   },
   sorting = {
+    priority_weight = 1.0,
     comparators = {
-      function(...)
-        return cmp_buffer:compare_locality(...)
-      end,
+      compare.recently_used,
+      compare.score,
+      compare.locality,
+      compare.offset,
+      compare.kind,
+      compare.sort_text,
+      compare.length,
+      compare.order,
+      -- function(...)
+      --   return cmp_buffer:compare_locality(...)
+      -- end,
     },
   },
   formatting = {
@@ -78,6 +89,7 @@ cmp.setup {
         luasnip = "[LuaSnip]",
         nvim_lua = "[Lua]",
         latex_symbols = "[Latex]",
+        jupynium = "[Jupynium]",
       },
     },
   },

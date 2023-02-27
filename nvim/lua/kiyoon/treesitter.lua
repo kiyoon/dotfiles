@@ -67,6 +67,7 @@ require("nvim-treesitter.configs").setup {
     "cmake",
     "latex",
     "markdown",
+    "markdown_inline",
     "php",
     "gitignore",
     "sql",

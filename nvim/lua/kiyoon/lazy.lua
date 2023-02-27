@@ -2,7 +2,7 @@
 
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local jupynium_dev = false
+local jupynium_dev = true
 
 local icons = require "kiyoon.icons"
 
@@ -103,6 +103,10 @@ return {
       require("jupynium").setup {
         python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
+        syntax_highlight = {
+          enable = true,
+        },
+        -- shortsighted = true,
       }
     end,
     dev = jupynium_dev,

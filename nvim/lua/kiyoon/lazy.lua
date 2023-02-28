@@ -106,7 +106,7 @@ return {
         syntax_highlight = {
           enable = true,
         },
-        -- shortsighted = true,
+        shortsighted = true,
       }
 
       -- vim.cmd [[hi! link JupyniumMagicCommand CursorLine]]

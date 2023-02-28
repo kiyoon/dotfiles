@@ -1,3 +1,5 @@
+local builtin = require "statuscol.builtin"
+
 -- functions modified from statuscol.nvim
 --- Toggle a (conditional) DAP breakpoint.
 local function toggle_breakpoint(args)
@@ -30,13 +32,15 @@ end
 
 require("statuscol").setup {
   relculright = true,
-  foldfunc = "builtin",
-  separator = " ",
-  Lnum = lnum_click,
-  DapBreakpointRejected = toggle_breakpoint,
-  DapBreakpoint = toggle_breakpoint,
-  DapBreakpointCondition = toggle_breakpoint,
-  -- when manually setting vim.o.statuscolumn, you shouldn't set below.
-  -- setopt = true,
-  -- order = "SNsFs", -- gitsigns, number, fold, separator
+  segments = {
+    { text = { "%s" }, click = "v:lua.ScSa" },
+    { text = { builtin.lnumfunc }, click = "v:lua.ScLa" },
+    { text = { " ", builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+  },
+  clickhandlers = {
+    Lnum = lnum_click,
+    DapBreakpointRejected = toggle_breakpoint,
+    DapBreakpoint = toggle_breakpoint,
+    DapBreakpointCondition = toggle_breakpoint,
+  },
 }

@@ -65,10 +65,6 @@ dap.listeners.before.event_exited["dapui_config"] = function()
   dapui.close()
 end
 
-require("persistent-breakpoints").setup {
-  load_breakpoints_event = { "BufReadPost" },
-}
-
 require("nvim-dap-virtual-text").setup()
 
 local status, wk = pcall(require, "which-key")

@@ -108,6 +108,8 @@ return {
         },
         -- shortsighted = true,
       }
+
+      -- vim.cmd [[hi! link JupyniumMagicCommand CursorLine]]
     end,
     dev = jupynium_dev,
   },
@@ -1118,11 +1120,19 @@ return {
     },
     dependencies = {
       "rcarriga/nvim-dap-ui",
-      "Weissle/persistent-breakpoints.nvim",
       "theHamsta/nvim-dap-virtual-text",
     },
     config = function()
       require "kiyoon.dap"
+    end,
+  },
+  {
+    "Weissle/persistent-breakpoints.nvim",
+    event = "BufReadPost",
+    config = function()
+      require("persistent-breakpoints").setup {
+        load_breakpoints_event = { "BufReadPost" },
+      }
     end,
   },
   {
@@ -1286,9 +1296,6 @@ return {
   },
   {
     "luukvbaal/statuscol.nvim",
-    init = function()
-      vim.o.statuscolumn = "%@v:lua.ScSa@%s%T%@v:lua.ScLa@%{%v:lua.ScLn()%}%T%@v:lua.ScFa@ %{%v:lua.ScFc()%} %T"
-    end,
     config = function()
       require "kiyoon.statuscol"
     end,

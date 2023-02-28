@@ -103,10 +103,10 @@ return {
       require("jupynium").setup {
         python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
-        syntax_highlight = {
-          enable = true,
-        },
-        shortsighted = true,
+        -- syntax_highlight = {
+        --   enable = false,
+        -- },
+        -- shortsighted = true,
       }
 
       -- vim.cmd [[hi! link JupyniumMagicCommand CursorLine]]

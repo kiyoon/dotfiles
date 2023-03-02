@@ -69,7 +69,19 @@ cd dotfiles
 ./symlink.sh
 ```
 
-2. Install neovim and tmux
+2. Install zsh, oh-my-zsh
+
+```bash
+oh-my-zsh/zsh-local-install.sh
+oh-my-zsh/apps-local-install.sh
+oh-my-zsh/launch-zsh-in-bash.sh
+```
+
+Open your terminal again and you'll see you're running zsh.
+
+See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
+
+3. Install neovim and tmux
 
 You need Neovim v0.9.0. The fold column will look ugly in v0.8.x.
 
@@ -92,16 +104,6 @@ Install tmux plugins:
 ```bash
 tmux/install-plugins.sh
 ```
-
-3. Install zsh, oh-my-zsh
-
-```bash
-oh-my-zsh/zsh-local-install.sh
-oh-my-zsh/apps-local-install.sh
-oh-my-zsh/launch-zsh-in-bash.sh
-```
-
-See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
 
 4. Install others
 

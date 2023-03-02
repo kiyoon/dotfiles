@@ -63,7 +63,7 @@ COMPLETION_WAITING_DOTS="true"
 HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM="$HOME/.config/dotfiles/oh-my-zsh/custom"
+ZSH_CUSTOM="$HOME/.config/oh-my-zsh/custom"
 
 # If you don't do this it will be initialised after everything.
 # Can be a problem with custom mappings, like zsh-history-substring-search with Up/Down arrows.

@@ -22,7 +22,7 @@ bindkey "^[OF" end-of-line
 bindkey "^[OH" beginning-of-line
 
 # https://unix.stackexchange.com/questions/90853/how-can-i-run-ssh-add-automatically-without-a-password-prompt
-# if [ -z "$SSH_AUTH_SOCK" ] ; then
-#   eval $(ssh-agent -s)
-#   ssh-add
-# fi
+if [ -z "$SSH_AUTH_SOCK" ] ; then
+  eval $(ssh-agent -s)
+  # ssh-add
+fi

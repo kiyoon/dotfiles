@@ -20,3 +20,6 @@ fi
 # so we bind them here so it works in zsh as well.
 bindkey "^[OF" end-of-line
 bindkey "^[OH" beginning-of-line
+
+
+eval $(ssh-agent)

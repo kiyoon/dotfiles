@@ -75,6 +75,7 @@ cd dotfiles
 oh-my-zsh/zsh-local-install.sh
 oh-my-zsh/apps-local-install.sh
 oh-my-zsh/launch-zsh-in-bash.sh
+git submodule update --init --remote  # Install and update all zsh plugins
 ```
 
 Open your terminal again and you'll see you're running zsh.

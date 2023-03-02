@@ -36,6 +36,23 @@ dotstash() {
 	git -C "$DOTFILES_DIR" stash
 }
 
+dotinstall() {
+	DOTFILES_DIR=$(dotfiles_dir)
+	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
+
+	"$DOTFILES_DIR"/nvim/install-linux.sh
+	nvim +"lua require('lazy').restore({wait=true})" +qa
+
+	"$DOTFILES_DIR"/tmux/install-plugins.sh
+	"$DOTFILES_DIR"/tmux/update-plugins.sh
+
+	"$DOTFILES_DIR"/wezterm/terminfo.sh
+
+	"$DOTFILES_DIR"/symlink.sh
+
+	omz reload
+}
+
 dotupdate() {
 	checkout="$1"
 	DOTFILES_DIR=$(dotfiles_dir)
@@ -56,19 +73,8 @@ dotupdate() {
 		git -C "$DOTFILES_DIR" checkout "$checkout"
 	fi
 
-	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
-
-	"$DOTFILES_DIR"/nvim/install-linux.sh
-	nvim +"lua require('lazy').restore({wait=true})" +qa
-
-	"$DOTFILES_DIR"/tmux/install-plugins.sh
-	"$DOTFILES_DIR"/tmux/update-plugins.sh
-
-	"$DOTFILES_DIR"/wezterm/terminfo.sh
-
-	"$DOTFILES_DIR"/symlink.sh
-
 	omz reload
+	dotinstall
 }
 
 dotstable() {

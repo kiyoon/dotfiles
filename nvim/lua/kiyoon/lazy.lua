@@ -957,7 +957,7 @@ return {
     "lvimuser/lsp-inlayhints.nvim",
     event = "LSPAttach",
     config = function()
-      require "kiyoon.lsp-inlayhints"
+      require "kiyoon.lsp.inlayhints"
     end,
   },
   {
@@ -1099,6 +1099,14 @@ return {
       { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
       { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP references (Trouble)" },
     },
+  },
+  {
+    "kosayoda/nvim-lightbulb",
+    event = "BufRead",
+    config = function()
+      require("nvim-lightbulb").setup { autocmd = { enabled = true } }
+      -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
+    end,
   },
 
   --- NOTE: DAP (Debugger)

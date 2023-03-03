@@ -57,14 +57,15 @@ null_ls.setup {
   end,
 }
 
-local status, ts_node_action = pcall(require, "ts-node-action")
-if status then
-  null_ls.register {
-    name = "more_actions",
-    method = { require("null-ls").methods.CODE_ACTION },
-    filetypes = { "_all" },
-    generator = {
-      fn = ts_node_action.available_actions,
-    },
-  }
-end
+--- Add ts-node-action to code action.
+-- local status, ts_node_action = pcall(require, "ts-node-action")
+-- if status then
+--   null_ls.register {
+--     name = "more_actions",
+--     method = { require("null-ls").methods.CODE_ACTION },
+--     filetypes = { "_all" },
+--     generator = {
+--       fn = ts_node_action.available_actions,
+--     },
+--   }
+-- end

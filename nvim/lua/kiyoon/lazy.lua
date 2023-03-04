@@ -1109,6 +1109,13 @@ return {
       -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
     end,
   },
+  {
+    "weilbith/nvim-code-action-menu",
+    cmd = "CodeActionMenu",
+    keys = {
+      { "<space>pa", "<cmd>CodeActionMenu<cr>", desc = "Code [A]ction" },
+    },
+  },
 
   --- NOTE: DAP (Debugger)
   {
@@ -1354,12 +1361,6 @@ return {
     ft = "markdown",
     -- build = "cd app && yarn install",
     build = ":call mkdp#util#install()",
-  },
-  {
-    "goerz/jupytext.vim",
-    init = function()
-      vim.g.jupytext_fmt = "py:percent"
-    end,
   },
   -- {
   --   "glacambre/firenvim",

@@ -77,7 +77,8 @@ local function lsp_keymaps(bufnr)
   keymap("n", "<space>pf", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", opts, "Format")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
-  keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
+  -- Use weilbith/nvim-code-action-menu
+  -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
   keymap({ "n", "x", "o", "i" }, "<A-h>", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
 

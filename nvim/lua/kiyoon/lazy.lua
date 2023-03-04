@@ -103,6 +103,7 @@ return {
       require("jupynium").setup {
         python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
+        -- firefox_profiles_ini_path = "~/snap/firefox/common/.mozilla/firefox/profiles.ini",
         -- syntax_highlight = {
         --   enable = false,
         -- },
@@ -1353,6 +1354,12 @@ return {
     ft = "markdown",
     -- build = "cd app && yarn install",
     build = ":call mkdp#util#install()",
+  },
+  {
+    "goerz/jupytext.vim",
+    init = function()
+      vim.g.jupytext_fmt = "py:percent"
+    end,
   },
   -- {
   --   "glacambre/firenvim",

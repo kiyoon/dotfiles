@@ -3,6 +3,16 @@ if not null_ls_status_ok then
   return
 end
 
+local ft_format_on_save = {
+  "python",
+  "lua",
+  "javascript",
+  -- "markdown",
+  -- "json",
+  -- "yaml",
+  -- "toml",
+}
+
 -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
 local formatting = null_ls.builtins.formatting
 -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
@@ -44,6 +54,12 @@ null_ls.setup {
   sources = sources,
   -- format on save
   on_attach = function(client, bufnr)
+    -- check filetype for bufnr
+    local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
+    if not vim.tbl_contains(ft_format_on_save, filetype) then
+      return
+    end
+
     if client.supports_method "textDocument/formatting" then
       vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
       vim.api.nvim_create_autocmd("BufWritePre", {

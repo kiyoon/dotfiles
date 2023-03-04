@@ -24,14 +24,14 @@ require("lazy").setup("kiyoon.lazy", {
       disabled_plugins = {
         -- List of default plugins can be found here
         -- https://github.com/neovim/neovim/tree/master/runtime/plugin
-        "gzip",
         "matchit", -- Extended %. replaced by vim-matchup
         "matchparen", -- Highlight matching paren. replaced by vim-matchup
         "netrwPlugin", -- File browser. replaced by nvim-tree, neo-tree, oil.nvim
-        "tarPlugin",
         "tohtml",
         "tutor",
-        "zipPlugin",
+        -- "tarPlugin",
+        -- "gzip",
+        -- "zipPlugin",
       },
     },
   },

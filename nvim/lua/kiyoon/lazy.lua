@@ -1105,7 +1105,15 @@ return {
     "kosayoda/nvim-lightbulb",
     event = "BufRead",
     config = function()
-      require("nvim-lightbulb").setup { autocmd = { enabled = true } }
+      require("nvim-lightbulb").setup {
+        sign = {
+          enabled = true,
+          priority = 20, -- higher than LSP diagnostics
+        },
+        autocmd = {
+          enabled = true,
+        },
+      }
       -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
     end,
   },

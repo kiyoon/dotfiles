@@ -66,3 +66,6 @@ After installing dependencies, check health inside nvim:
 - `10@q`: run macro @q 10 times.
 - Choose block with `<C-v>` and press `<S-i>`. It will add the change to all the lines selected.
 - Alt + key in insert / visual mode to perform normal mode action (just like ESC + key)
+- `:g/pattern/command`: apply command at found patterns (`:v` to inverse)
+  - [https://vim.fandom.com/wiki/Power_of_g](https://vim.fandom.com/wiki/Power_of_g)
+

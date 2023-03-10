@@ -29,7 +29,7 @@ jobs:
             now=$(date +%s)
             backupTime=$(git log -1 --format=%cd$ --date=raw | grep -o "^\w*\b")
             deltaDays=$((now-backupTime))
-            deltaDays=$((deltaHours/3600/24))
+            deltaDays=$((deltaDays/3600/24))
             echo "Days since the last commit: $deltaDays"
             echo is_stable="$([ $deltaDays -ge 3 ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
           fi

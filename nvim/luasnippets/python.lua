@@ -7,9 +7,9 @@ local t = ls.text_node
 return {
   -- Jupynium markdown cell
   s("md", {
-    t { [["""%%]], "" },
+    t { "# %% [md]", [["""]], "" },
     i(1),
-    t { "", [[%%"""]], "" },
+    t { "", [["""]], "" },
     i(0),
   }),
 }

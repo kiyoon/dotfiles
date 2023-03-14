@@ -2,7 +2,7 @@
 
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local jupynium_dev = false
+local jupynium_dev = true
 
 local icons = require "kiyoon.icons"
 
@@ -21,6 +21,15 @@ return {
       vim.cmd.colorscheme "tokyonight"
     end,
   },
+  -- {
+  --   "rebelot/kanagawa.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require "kiyoon.kanagawa"
+  --     vim.cmd.colorscheme "kanagawa-wave"
+  --   end,
+  -- },
   -- {
   --   "Mofiqul/dracula.nvim",
   --   lazy = false,
@@ -1386,4 +1395,24 @@ return {
   --   end,
   --   build = "firenvim#install(0)",
   -- },
+  {
+    "kiyoon/haskell-scope-highlighting.nvim",
+    ft = "haskell",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    dev = true,
+    init = function()
+      vim.cmd [[autocmd FileType haskell syntax off]]
+      -- vim.cmd [[autocmd FileType haskell TSDisable highlight]]
+      vim.cmd [[autocmd FileType haskell IlluminatePauseBuf]]
+      local i = 1
+      repeat
+        -- orange = #dc9271
+        local color =
+          string.format("%d guifg=#%02x%02x%02x", i, 220 - (i * 20) % 220, 92 - (i * 20) % 92, 72 + (i * 20) % 184)
+        vim.cmd("hi HaskellVariableDeclaredWithinParent" .. color)
+        vim.cmd("hi HaskellParentScope" .. i .. " guibg=#2d353b")
+        i = i + 1
+      until i > 10
+    end,
+  },
 }

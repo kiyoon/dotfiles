@@ -4,6 +4,10 @@ export MANPATH="$HOME/.local/share/man:$MANPATH"
 
 export TERMINFO="$HOME/.local/share/terminfo"  # tmux needs this
 
+if (( $+commands[nvim] )); then
+	export SUDO_EDITOR="$commands[nvim]"
+fi
+
 # setup fzf Ctrl+t and Alt+c
 if (( $+commands[fzf] )); then
 	if (( $+commands[fd] )); then

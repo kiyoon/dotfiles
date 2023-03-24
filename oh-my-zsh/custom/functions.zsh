@@ -73,7 +73,8 @@ dotupdate() {
 		git -C "$DOTFILES_DIR" checkout "$checkout"
 	fi
 
-	omz reload
+	# omz reload
+	source ~/.zshrc
 	dotinstall
 }
 

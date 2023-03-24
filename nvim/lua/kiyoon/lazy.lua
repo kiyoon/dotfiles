@@ -2,7 +2,7 @@
 
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local jupynium_dev = true
+local jupynium_dev = false
 
 local icons = require "kiyoon.icons"
 
@@ -940,8 +940,13 @@ return {
       "Mason",
     },
     dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      {
+        "williamboman/mason.nvim",
+        dependencies = {
+          "williamboman/mason-lspconfig.nvim",
+        },
+        build = ":MasonUpdate",
+      },
       "folke/neodev.nvim",
     },
     config = function()

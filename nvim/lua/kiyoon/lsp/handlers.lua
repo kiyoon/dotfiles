@@ -74,7 +74,6 @@ local function lsp_keymaps(bufnr)
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
   keymap("n", "gl", vim.diagnostic.open_float, opts, "Show Diagnostics")
-  keymap("n", "<space>pf", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", opts, "Format")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
   -- Use weilbith/nvim-code-action-menu
@@ -112,13 +111,6 @@ local function lsp_keymaps(bufnr)
 
   if vim.bo.filetype == "python" then
     keymap("n", "<space>po", "<cmd>PyrightOrganizeImports<cr>", opts, "[O]rganise Imports (python)")
-  end
-
-  local status, wk = pcall(require, "which-key")
-  if status then
-    wk.register {
-      ["<space>p"] = { name = "LS[P] (language server)" },
-    }
   end
 end
 

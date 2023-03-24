@@ -73,6 +73,8 @@ null_ls.setup {
   end,
 }
 
+vim.keymap.set("n", "<space>pf", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", { desc = "Format" })
+
 --- Add ts-node-action to code action.
 -- local status, ts_node_action = pcall(require, "ts-node-action")
 -- if status then

@@ -75,3 +75,10 @@ for _, server in pairs(servers) do
 
   lspconfig[server].setup(opts)
 end
+
+local status, wk = pcall(require, "which-key")
+if status then
+  wk.register {
+    ["<space>p"] = { name = "LS[P] (language server)" },
+  }
+end

@@ -1204,7 +1204,7 @@ return {
     dependencies = {
       {
         "romgrk/fzy-lua-native",
-        build = "make",
+        -- build = "make",
       },
     },
     event = "CmdlineEnter",
@@ -1419,5 +1419,9 @@ return {
         i = i + 1
       until i > 10
     end,
+  },
+  {
+    "mechatroner/rainbow_csv",
+    ft = "csv",
   },
 }

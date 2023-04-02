@@ -31,6 +31,16 @@ then
 	npm install -g prettier
 fi
 
+if [[ ! -d "$HOME/.local/lib/node_modules/prettier-plugin-toml" ]]
+then
+	npm install -g prettier-plugin-toml
+fi
+
+if [[ ! -d "$HOME/.local/lib/node_modules/prettier-plugin-sh" ]]
+then
+	npm install -g prettier-plugin-sh
+fi
+
 if ! command -v tree-sitter &> /dev/null
 then
 	npm install -g tree-sitter-cli

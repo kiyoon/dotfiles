@@ -7,6 +7,7 @@ local ft_format_on_save = {
   "python",
   "lua",
   "javascript",
+  "sh",
   -- "markdown",
   -- "json",
   -- "yaml",
@@ -20,7 +21,7 @@ local diagnostics = null_ls.builtins.diagnostics
 
 local sources = {
   formatting.prettier.with {
-    extra_filetypes = { "toml" },
+    extra_filetypes = { "toml", "sh" },
     extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
   },
   formatting.isort,

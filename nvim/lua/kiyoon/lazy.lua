@@ -907,6 +907,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     cmd = {
       "Mason",
+      "MasonUpdate",
     },
     dependencies = {
       {

@@ -179,7 +179,6 @@ require("nvim-treesitter.configs").setup {
         --["isc"] = "@scopename.inner",
         ["as"] = { query = "@scope", query_group = "locals" },
         ["is"] = "@statement.outer",
-        ["ar"] = { query = "@start", query_group = "aerial" },
       },
       -- You can choose the select mode (default is charwise 'v')
       --
@@ -325,6 +324,7 @@ vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
 -- vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
 
 -- Make builtin f, F, t, T also repeatable with ; and ,
+-- Disabled in favour of ggandor/flit.nvim
 -- vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f)
 -- vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F)
 -- vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t)

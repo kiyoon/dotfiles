@@ -8,11 +8,6 @@ local icons = require "kiyoon.icons"
 
 return {
   {
-    -- For treemux
-    "kiyoon/nvim-tree-remote.nvim",
-    cond = false,
-  },
-  {
     "folke/tokyonight.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
@@ -21,26 +16,6 @@ return {
       vim.cmd.colorscheme "tokyonight"
     end,
   },
-  -- {
-  --   "rebelot/kanagawa.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   config = function()
-  --     require "kiyoon.kanagawa"
-  --     vim.cmd.colorscheme "kanagawa-wave"
-  --   end,
-  -- },
-  -- {
-  --   "Mofiqul/dracula.nvim",
-  --   lazy = false,
-  --   priority = 1000, -- make sure to load this before all the other start plugins
-  --   config = function()
-  --     vim.cmd [[hi clear Folded]]
-  --     vim.cmd [[hi! link Folded CursorColumn]]
-  --    -- vim.cmd [[hi Folded guibg=black ctermbg=black]]
-  --     vim.cmd.colorscheme "dracula"
-  --   end,
-  -- },
   {
     "kiyoon/tmuxsend.vim",
     keys = {
@@ -113,13 +88,7 @@ return {
         python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
         -- firefox_profiles_ini_path = "~/snap/firefox/common/.mozilla/firefox/profiles.ini",
-        -- syntax_highlight = {
-        --   enable = false,
-        -- },
-        -- shortsighted = true,
       }
-
-      -- vim.cmd [[hi! link JupyniumMagicCommand CursorLine]]
     end,
     dev = jupynium_dev,
   },
@@ -192,16 +161,6 @@ return {
       manual_trigger("{", "}")
       manual_trigger("(", ")")
       manual_trigger("[", "]")
-      -- local Rule = require "nvim-autopairs.rule"
-      -- local function delete_on_key(opening, closing)
-      --   ap.add_rule(Rule(opening, closing):use_key("<m-d>"):replace_endpair(function()
-      --     return string.rep("<right><bs>", #closing)
-      --   end))
-      -- end
-      -- delete_on_key("'", "',")
-      -- delete_on_key("{", "}")
-      -- delete_on_key("(", ")")
-      -- delete_on_key("[", "]")
     end,
   },
   {
@@ -316,6 +275,7 @@ return {
       vim.cmd [[imap <silent><script><expr> <C-s> copilot#Accept("")]]
     end,
   },
+  -- Free copilot alternative
   -- "Exafunction/codeium.vim",
   {
     "jackMort/ChatGPT.nvim",
@@ -539,8 +499,6 @@ return {
       },
     },
   },
-  -- { 'RRethy/nvim-treesitter-textsubjects' }
-  --
   -- % to match up if, else, etc. Enabled in the treesitter config below
   {
     "Wansmer/treesj",
@@ -686,15 +644,7 @@ return {
       end, {})
     end,
   },
-  -- Motions
-  -- {
-  --   "phaazon/hop.nvim",
-  --   event = "VeryLazy",
-  --   config = function()
-  --     require("hop").setup()
-  --     -- require "kiyoon.hop"
-  --   end,
-  -- },
+  -- NOTE: Motions
   {
     "mfussenegger/nvim-treehopper",
     dependencies = {
@@ -808,35 +758,25 @@ return {
       { "<space><space>,", "<Cmd>ISwapNodeWithLeft<CR>", mode = "n", desc = "ISwapNodeWithLeft" },
     },
   },
-  {
-    "stevearc/aerial.nvim",
-    event = "BufReadPre",
-    -- cmd = "AerialToggle",
-    -- keys = {
-    --   "[r",
-    --   "]r",
-    --   {
-    --     "<leader>a",
-    --     "<Cmd>AerialToggle!<CR>",
-    --     desc = "Aerial toggle",
-    --   },
-    -- },
-    config = function()
-      local aerial = require "aerial"
-      aerial.setup {
-        -- optionally use on_attach to set keymaps when aerial has attached to a buffer
-        on_attach = function(bufnr)
-          -- Jump forwards/backwards with '{' and '}'
-          local tstext_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
-          local anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
-          vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
-          vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
-        end,
-      }
-      -- You probably also want to set a keymap to toggle aerial
-      vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>", { desc = "Aerial toggle" })
-    end,
-  },
+  -- {
+  --   "stevearc/aerial.nvim",
+  --   event = "BufReadPre",
+  --   config = function()
+  --     local aerial = require "aerial"
+  --     aerial.setup {
+  --       -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+  --       on_attach = function(bufnr)
+  --         -- Jump forwards/backwards with '{' and '}'
+  --         local tstext_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+  --         local anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+  --         vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
+  --         vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
+  --       end,
+  --     }
+  --     -- You probably also want to set a keymap to toggle aerial
+  --     vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>", { desc = "Aerial toggle" })
+  --   end,
+  -- },
 
   -- Telescope
   {
@@ -857,19 +797,48 @@ return {
         "<cmd>lua require('telescope.builtin').live_grep()<cr>",
         noremap = true,
         silent = true,
+        desc = "[F]ind [W]ord",
       },
-      { "<leader>fw", "<cmd>lua require('kiyoon.telescope').live_grep_gitdir()<cr>", noremap = true, silent = true },
+      {
+        "<leader>fw",
+        "<cmd>lua require('kiyoon.telescope').live_grep_gitdir()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]ind [W]ord in git dir",
+      },
       {
         "<leader>fiw",
         "<cmd>lua require('kiyoon.telescope').grep_string_gitdir()<cr>",
         noremap = true,
         silent = true,
-        desc = "Grep [i]nner [w]ord in git dir",
+        desc = "[F]ind [i]nner [w]ord in git dir",
       },
-      { "<leader>fg", "<cmd>require('telescope').extensions.live_grep_args.live_grep_args()<cr>" },
-      { "<leader>fr", "<cmd>lua require('telescope.builtin').oldfiles()<cr>", noremap = true, silent = true },
-      { "<leader>fb", "<cmd>require('telescope.builtin').buffers()<cr>", noremap = true, silent = true },
-      { "<leader>fh", "<cmd>require('telescope.builtin').help_tags()<cr>", noremap = true, silent = true },
+      {
+        "<leader>fg",
+        "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<cr>",
+        desc = "Live grep with args",
+      },
+      {
+        "<leader>fr",
+        "<cmd>lua require('telescope.builtin').oldfiles()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]ind [R]ecent files",
+      },
+      {
+        "<leader>fb",
+        "<cmd>lua require('telescope.builtin').buffers()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]ind [B]uffers",
+      },
+      {
+        "<leader>fh",
+        "<cmd>lua require('telescope.builtin').help_tags()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]ind in vim [H]elp",
+      },
       {
         "<leader>fs",
         "<cmd>require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
@@ -1049,20 +1018,6 @@ return {
       }
     end,
   },
-  -- {
-  --   -- sourcegraph.com integration
-  --   -- usage:
-  --   -- :edit <sourcegraph url>
-  --   "tjdevries/sg.nvim",
-  --   build = "cargo build --workspace",
-  --   dependencies = { "nvim-lua/plenary.nvim" },
-  --   config = function()
-  --     require("sg").setup {
-  --       on_attach = require("kiyoon.lsp.handlers").on_attach,
-  --     }
-  --     vim.cmd [[nnoremap <leader>fS <cmd>lua require('sg.telescope').fuzzy_search_results()<CR>]]
-  --   end,
-  -- },
 
   -- Formatting and linting
   {
@@ -1114,6 +1069,14 @@ return {
       { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
       { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP references (Trouble)" },
     },
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<leader>x"] = { name = "Trouble" },
+        }
+      end
+    end,
   },
   {
     "kosayoda/nvim-lightbulb",
@@ -1384,44 +1347,14 @@ return {
     -- build = "cd app && yarn install",
     build = ":call mkdp#util#install()",
   },
-  -- {
-  --   "glacambre/firenvim",
-  --   init = function()
-  --     if vim.fn.exists "g:started_by_firenvim" then
-  --       vim.o.laststatus = 0
-  --       vim.cmd [[au BufEnter github.com_*.txt set filetype=markdown]]
-  --       vim.g.firenvim_config = {
-  --         globalSettings = {
-  --           ["<C-w>"] = "noop",
-  --           ["<C-n>"] = "default",
-  --         },
-  --       }
-  --     end
-  --   end,
-  --   build = "firenvim#install(0)",
-  -- },
-  {
-    "kiyoon/haskell-scope-highlighting.nvim",
-    ft = "haskell",
-    dependencies = "nvim-treesitter/nvim-treesitter",
-    dev = true,
-    init = function()
-      vim.cmd [[autocmd FileType haskell syntax off]]
-      -- vim.cmd [[autocmd FileType haskell TSDisable highlight]]
-      vim.cmd [[autocmd FileType haskell IlluminatePauseBuf]]
-      local i = 1
-      repeat
-        -- orange = #dc9271
-        local color =
-          string.format("%d guifg=#%02x%02x%02x", i, 220 - (i * 20) % 220, 92 - (i * 20) % 92, 72 + (i * 20) % 184)
-        vim.cmd("hi HaskellVariableDeclaredWithinParent" .. color)
-        vim.cmd("hi HaskellParentScope" .. i .. " guibg=#2d353b")
-        i = i + 1
-      until i > 10
-    end,
-  },
   {
     "mechatroner/rainbow_csv",
     ft = "csv",
+  },
+  -- NOTE: for kiyoon/treemux
+  -- You need to have them installed but not using them with `cond = false`
+  {
+    "kiyoon/nvim-tree-remote.nvim",
+    cond = false,
   },
 }

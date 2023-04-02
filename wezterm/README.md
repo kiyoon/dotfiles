@@ -14,6 +14,7 @@ Use [nautilus-open-any-terminal](https://github.com/Stunkymonkey/nautilus-open-a
 sudo apt update && sudo apt install -y python3-nautilus
 pip install --user nautilus-open-any-terminal
 nautilus -q
+glib-compile-schemas ~/.local/share/glib-2.0/schemas/
 gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal wezterm
 gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
 ```

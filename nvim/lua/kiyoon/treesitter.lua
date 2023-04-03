@@ -207,6 +207,7 @@ require("nvim-treesitter.configs").setup {
         [")a"] = "@parameter.inner",
         [")b"] = "@block.outer",
         [")l"] = "@class.outer",
+        [")s"] = "@statement.outer",
       },
       swap_previous = {
         ["(m"] = "@function.outer",
@@ -214,6 +215,7 @@ require("nvim-treesitter.configs").setup {
         ["(a"] = "@parameter.inner",
         ["(b"] = "@block.outer",
         ["(l"] = "@class.outer",
+        ["(s"] = "@statement.outer",
       },
     },
     move = {

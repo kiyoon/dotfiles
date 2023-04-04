@@ -909,13 +909,13 @@ return {
       "Mason",
       "MasonUpdate",
     },
+    build = ":MasonUpdate",
     dependencies = {
       {
         "williamboman/mason.nvim",
         dependencies = {
           "williamboman/mason-lspconfig.nvim",
         },
-        build = ":MasonUpdate",
       },
       "folke/neodev.nvim",
     },

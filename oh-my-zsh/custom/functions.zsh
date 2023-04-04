@@ -57,7 +57,6 @@ dotupdate() {
 	checkout="$1"
 	DOTFILES_DIR=$(dotfiles_dir)
 	git -C "$DOTFILES_DIR" pull
-	git -C "$DOTFILES_DIR" submodule update --init --remote 
 	if [ $? -ne 0 ]; then
 		echo
 		print -P "%F{red}Failed to update dotfiles due to local changes.%f"
@@ -68,6 +67,7 @@ dotupdate() {
 		print -P "%F{red}and try again%f"
 		return 1
 	fi
+	git -C "$DOTFILES_DIR" submodule update --init --remote 
 
 	if [ -n "$checkout" ]; then
 		git -C "$DOTFILES_DIR" checkout "$checkout"

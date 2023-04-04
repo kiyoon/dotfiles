@@ -54,7 +54,7 @@ return {
     "pprint",
     fmt(
       [[
-      vim.pretty_print({1})
+      vim.print({1})
     ]],
       {
         i(1, "data"),

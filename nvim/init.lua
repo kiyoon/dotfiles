@@ -14,6 +14,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Load plugin specs from `~/.config/nvim/lua/kiyoon/lazy.lua`
 require("lazy").setup("kiyoon.lazy", {
   dev = {
     path = "~/project",
@@ -37,6 +38,7 @@ require("lazy").setup("kiyoon.lazy", {
   },
 })
 
+-- Source .vimrc
 local vimrcpath = vim.fn.stdpath "config" .. "/.vimrc"
 vim.cmd("source " .. vimrcpath)
 
@@ -46,7 +48,8 @@ vim.o.cursorline = true
 vim.o.inccommand = "split"
 vim.o.updatetime = 500
 
--- vim.o.cmdheight = 0  -- This may cause lualine to flicker
+-- This may cause lualine to flicker
+-- vim.o.cmdheight = 0
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
   pattern = { "gitcommit", "markdown" },
@@ -78,9 +81,7 @@ nmap <leader>g <Cmd>call system("docker run --gpus all --rm --device=/dev/video0
 nmap <leader><leader>g <Cmd>let g:quit_nvim_hand_gesture = 1<CR>
 ]]
 
--- local vscodepath = vim.fn.stdpath "config" .. "/vscode.vim"
--- vim.cmd("source " .. vscodepath)
-
+-- Configure context menu on right click
 require "kiyoon.menu"
 
 -- folding (use nvim-ufo for better control)
@@ -120,6 +121,8 @@ vim.g.do_filetype_lua = 1
 -- augroup END
 -- ]]
 
+-- Add :Messages command to open messages in a buffer. Useful for debugging.
+-- Better than the default :messages
 local function open_messages_in_buffer(args)
   if Bufnr_messages == nil or vim.fn.bufexists(Bufnr_messages) == 0 then
     -- Create a temporary buffer

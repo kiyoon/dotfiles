@@ -14,27 +14,7 @@ return {
     "Vimjas/vim-python-pep8-indent",
     ft = "python",
   },
-  {
-    "metakirby5/codi.vim",
-    cmd = "Codi",
-    init = function()
-      vim.g["codi#interpreters"] = {
-        python = {
-          bin = "python3",
-        },
-      }
-      vim.g["codi#virtual_text_pos"] = "right_align"
-    end,
-  },
   --- NOTE: Coding
-  {
-    -- "jk or jj to escape insert mode"
-    "max397574/better-escape.nvim",
-    event = "InsertEnter",
-    config = function()
-      require("better_escape").setup()
-    end,
-  },
   {
     -- <space>siwie to substitute word from entire buffer
     -- <space>siwip to substitute word from paragraph
@@ -58,65 +38,6 @@ return {
     end,
   },
   {
-    -- I don't use autopairs. I only need this for fast-wrap.
-    -- <A-e> in insert mode to add closing pair without moving cursor
-    -- Similar to nvim-surround, but works in insert mode
-    "windwp/nvim-autopairs",
-    keys = {
-      { "<m-e>", mode = "i" },
-    },
-    config = function()
-      local ap = require "nvim-autopairs"
-      ap.setup {
-        -- Disable auto fast wrap
-        enable_afterquote = false,
-        -- <A-e> to manually trigger fast wrap
-        fast_wrap = {},
-      }
-
-      -- Remove all autopair rules, but keep the fast wrap
-      local function manual_trigger(opening, closing)
-        local rule
-        if ap.get_rule(opening)[1] == nil then
-          rule = ap.get_rule(opening)
-        else
-          rule = ap.get_rule(opening)[1]
-        end
-        print(vim.inspect(rule))
-        rule:use_key("<m-p>"):replace_endpair(function()
-          -- repeat the number of characters in the closing pair
-          return closing .. string.rep("<left>", #closing)
-        end)
-      end
-      manual_trigger("'", "'")
-      manual_trigger('"', '"')
-      manual_trigger("`", "`")
-      manual_trigger("{", "}")
-      manual_trigger("(", ")")
-      manual_trigger("[", "]")
-      -- local Rule = require "nvim-autopairs.rule"
-      -- local function delete_on_key(opening, closing)
-      --   ap.add_rule(Rule(opening, closing):use_key("<m-d>"):replace_endpair(function()
-      --     return string.rep("<right><bs>", #closing)
-      --   end))
-      -- end
-      -- delete_on_key("'", "',")
-      -- delete_on_key("{", "}")
-      -- delete_on_key("(", ")")
-      -- delete_on_key("[", "]")
-    end,
-  },
-  -- {
-  --   "numToStr/Comment.nvim",
-  --   keys = {
-  --     { "gc", mode = { "n", "x", "o" }, desc = "Comment / uncomment lines" },
-  --     { "gb", mode = { "n", "x", "o" }, desc = "Comment / uncomment a block" },
-  --   },
-  --   config = function()
-  --     require("Comment").setup()
-  --   end,
-  -- },
-  {
     "kana/vim-textobj-entire",
     keys = {
       { "ie", mode = { "o", "x" }, desc = "Select entire buffer (file)" },
@@ -124,14 +45,6 @@ return {
     },
     dependencies = { "kana/vim-textobj-user" },
   }, -- vie, vae to select entire buffer (file)
-  {
-    "kana/vim-textobj-fold",
-    keys = {
-      { "iz", mode = { "o", "x" }, desc = "Select fold" },
-      { "az", mode = { "o", "x" }, desc = "Select fold" },
-    },
-    dependencies = { "kana/vim-textobj-user" },
-  }, -- viz, vaz to select fold
   {
     "glts/vim-textobj-comment",
     keys = {
@@ -341,7 +254,7 @@ return {
   {
     "Wansmer/sibling-swap.nvim",
     dependencies = {
-      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
+      { "nvim-treesitter/nvim-treesitter" },
     },
     config = function()
       require("sibling-swap").setup {
@@ -370,7 +283,7 @@ return {
   {
     "mizlan/iswap.nvim",
     dependencies = {
-      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
+      { "nvim-treesitter/nvim-treesitter" },
     },
     config = function()
       require("iswap").setup {
@@ -391,16 +304,6 @@ return {
   {
     "stevearc/aerial.nvim",
     event = "BufReadPre",
-    -- cmd = "AerialToggle",
-    -- keys = {
-    --   "[r",
-    --   "]r",
-    --   {
-    --     "<leader>a",
-    --     "<Cmd>AerialToggle!<CR>",
-    --     desc = "Aerial toggle",
-    --   },
-    -- },
     config = function()
       local aerial = require "aerial"
       aerial.setup {
@@ -427,7 +330,7 @@ return {
       "rafamadriz/friendly-snippets",
     },
     config = function()
-      require "kiyoon.luasnip"
+      require "kiyoon-vscode.luasnip"
     end,
   },
 }

@@ -33,7 +33,8 @@ M.setup = function()
     },
     update_in_insert = true,
     underline = true,
-    severity_sort = true,
+    -- This will cover the DAP breakpoints
+    -- severity_sort = true,
     float = {
       focusable = true,
       style = "minimal",

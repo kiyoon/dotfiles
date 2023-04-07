@@ -10,7 +10,8 @@
 
 # neovim latest stable/nightly version
 # nvim_tag=stable
-nvim_tag=nightly
+# nvim_tag=nightly
+nvim_tag=v0.9.0
 mkdir ~/.local/bin -p
 cd ~/.local/bin
 curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim.appimage
@@ -24,11 +25,11 @@ rm -rf squashfs-root
 mkdir ~/.local/bin -p
 cd ~/.local/bin
 curl -s https://api.github.com/repos/kiyoon/tmux-appimage/releases/latest \
-| grep "browser_download_url.*appimage" \
-| cut -d : -f 2,3 \
-| tr -d \" \
-| wget -qi - \
-&& chmod +x tmux.appimage
+  | grep "browser_download_url.*appimage" \
+  | cut -d : -f 2,3 \
+  | tr -d \" \
+  | wget -qi - \
+  && chmod +x tmux.appimage
 ./tmux.appimage --appimage-extract
 rsync -a squashfs-root/usr/ ~/.local/
 rm tmux.appimage

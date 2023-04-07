@@ -50,3 +50,12 @@ vim.cmd [[
 	omap gc  <Plug>VSCodeCommentary
 	nmap gcc <Plug>VSCodeCommentaryLine
 ]]
+
+-- Recognise Jupyter notebook files as python files
+vim.filetype.add {
+  pattern = {
+    [".*%.ipynb.*"] = "python",
+    -- uses lua pattern matching
+    -- rathen than naive matching
+  },
+}

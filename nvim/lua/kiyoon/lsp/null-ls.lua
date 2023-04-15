@@ -7,7 +7,6 @@ local ft_format_on_save = {
   "python",
   "lua",
   "javascript",
-  "sh",
   -- "markdown",
   -- "json",
   -- "yaml",
@@ -23,11 +22,6 @@ local sources = {
   formatting.prettier.with {
     extra_filetypes = { "toml" },
     extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
-  },
-  formatting.prettier.with {
-    -- prettier-plugin-sh configuration. It's a wrapper around shfmt.
-    filetypes = { "sh" }, -- shfmt breaks zsh scripts, only use it for bash.
-    extra_args = { "--no-semi", "--use-tabs" },
   },
   formatting.isort,
   formatting.black,

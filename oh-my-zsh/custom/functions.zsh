@@ -92,3 +92,25 @@ license() {
 
 	curl -s "https://api.github.com/licenses/$1" | jq -r '.body'
 }
+
+is_gpg_cached() {
+	# https://unix.stackexchange.com/questions/71135/how-can-i-find-out-what-keys-gpg-agent-has-cached-like-how-ssh-add-l-shows-yo
+
+	subkeygrip=$(gpg --list-secret-keys --with-keygrip | grep ssb -A1 | grep Keygrip | awk '{print $3}')
+	if [ -z "$subkeygrip" ]; then
+		echo "nogpg"
+		return 1
+	fi
+
+	cached=$(gpg-connect-agent 'keyinfo --list' /bye | grep "$subkeygrip" | awk '{print $7}')
+	if [ "$cached" = "1" ]; then
+		echo "true"
+		return 0
+	elif [ "$cached" = "-" ]; then
+		echo "false"
+		return 0
+	else
+		echo "nogpg"
+		return 1
+	fi
+}

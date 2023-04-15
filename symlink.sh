@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Same as ln -sb (backup if file exists)
 # but mac compatible
@@ -13,11 +13,9 @@ ln_sb() {
 	dest_file="$dest_dir/$basename"
 
 	mkdir -p "$dest_dir"
-	if [[ -f "$dest_file" ]] || [[ -d "$dest_file" ]]
-	then
+	if [[ -f "$dest_file" ]] || [[ -d "$dest_file" ]]; then
 		echo "Backing up $dest_file to ${dest_file}~"
-		if [[ -f "$dest_file"~ ]] || [[ -d "$dest_file"~ ]]
-		then
+		if [[ -f "$dest_file"~ ]] || [[ -d "$dest_file"~ ]]; then
 			\rm -rf "${dest_file}"~
 		fi
 		mv "$dest_file" "${dest_file}"~

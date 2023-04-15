@@ -21,9 +21,10 @@ local diagnostics = null_ls.builtins.diagnostics
 
 local sources = {
   formatting.prettier.with {
-    extra_filetypes = { "toml", "sh" },
+    extra_filetypes = { "toml" },
     extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
   },
+  formatting.shfmt,
   formatting.isort,
   formatting.black,
   formatting.stylua,

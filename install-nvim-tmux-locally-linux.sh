@@ -24,12 +24,12 @@ rm -rf squashfs-root
 # tmux latest version
 mkdir ~/.local/bin -p
 cd ~/.local/bin
-curl -s https://api.github.com/repos/kiyoon/tmux-appimage/releases/latest \
-  | grep "browser_download_url.*appimage" \
-  | cut -d : -f 2,3 \
-  | tr -d \" \
-  | wget -qi - \
-  && chmod +x tmux.appimage
+curl -s https://api.github.com/repos/kiyoon/tmux-appimage/releases/latest |
+	grep "browser_download_url.*appimage" |
+	cut -d : -f 2,3 |
+	tr -d \" |
+	wget -qi - &&
+	chmod +x tmux.appimage
 ./tmux.appimage --appimage-extract
 rsync -a squashfs-root/usr/ ~/.local/
 rm tmux.appimage

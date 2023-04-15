@@ -25,7 +25,6 @@ ghremote() {
 	fi
 }
 
-
 dotfiles_dir() {
 	DOTFILES_DIR=$(git -C "$DOTFILES_OHMYZSH_CUSTOM_DIR" rev-parse --show-toplevel)
 	echo "$DOTFILES_DIR"
@@ -67,7 +66,7 @@ dotupdate() {
 		print -P "%F{red}and try again%f"
 		return 1
 	fi
-	git -C "$DOTFILES_DIR" submodule update --init --remote 
+	git -C "$DOTFILES_DIR" submodule update --init --remote
 
 	if [ -n "$checkout" ]; then
 		git -C "$DOTFILES_DIR" checkout "$checkout"

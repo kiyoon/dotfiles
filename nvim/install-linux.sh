@@ -2,7 +2,7 @@
 
 LOCALBIN="$HOME/.local/bin"
 
-if ! command -v node &>/dev/null; then
+if ! command -v node &> /dev/null; then
 	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$HOME/.local" -y
 fi
 
@@ -19,11 +19,11 @@ pip3 install --user flake8
 # Formatter
 pip3 install --user black
 
-if ! command -v stylua &>/dev/null; then
+if ! command -v stylua &> /dev/null; then
 	npm install -g @johnnymorganz/stylua-bin
 fi
 
-if ! command -v prettier &>/dev/null; then
+if ! command -v prettier &> /dev/null; then
 	npm install -g prettier
 fi
 
@@ -31,39 +31,31 @@ if [[ ! -d "$HOME/.local/lib/node_modules/prettier-plugin-toml" ]]; then
 	npm install -g prettier-plugin-toml
 fi
 
-if ! command -v shfmt &>/dev/null; then
-	echo "shfmt could not be found. Installing on $LOCALBIN"
-	curl -s https://api.github.com/repos/mvdan/sh/releases/latest |
-		grep "browser_download_url.*_linux_amd64" |
-		cut -d : -f 2,3 |
-		tr -d \" |
-		wget -qi - -O "$LOCALBIN/shfmt" &&
-		chmod +x "$LOCALBIN/shfmt"
-else
-	echo "shfmt found at $(which shfmt). Skipping installation."
+if [[ ! -d "$HOME/.local/lib/node_modules/prettier-plugin-sh" ]]; then
+	npm install -g prettier-plugin-sh
 fi
 
-if ! command -v tree-sitter &>/dev/null; then
+if ! command -v tree-sitter &> /dev/null; then
 	npm install -g tree-sitter-cli
 fi
 
 # wilder.nvim, telescope.nvim
-if ! command -v fd &>/dev/null; then
+if ! command -v fd &> /dev/null; then
 	npm install -g fd-find
 fi
 
 # ripgrep for telescope.nvim
 
-if ! command -v rg &>/dev/null; then
+if ! command -v rg &> /dev/null; then
 	echo "ripgrep (rg) could not be found. Installing on $LOCALBIN"
 	TEMPDIR=$(mktemp -d)
 	mkdir -p "$LOCALBIN"
 	mkdir -p $TEMPDIR
-	curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest |
-		grep "browser_download_url.*-x86_64-unknown-linux-musl.tar.gz" |
-		cut -d : -f 2,3 |
-		tr -d \" |
-		wget -qi - -O - | tar -xz --strip-components=1 -C $TEMPDIR
+	curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest \
+		| grep "browser_download_url.*-x86_64-unknown-linux-musl.tar.gz" \
+		| cut -d : -f 2,3 \
+		| tr -d \" \
+		| wget -qi - -O - | tar -xz --strip-components=1 -C $TEMPDIR
 	mv $TEMPDIR/rg "$LOCALBIN"
 	rm -rf $TEMPDIR
 else

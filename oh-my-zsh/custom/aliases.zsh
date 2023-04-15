@@ -1,8 +1,8 @@
-if (($ + commands[bat])); then
+if (($+commands[bat])); then
 	alias cat='bat'
 fi
 
-if (($ + commands[exa])); then
+if (($+commands[exa])); then
 	alias ls='exa --icons'
 	alias ll='exa -alF --icons'
 	alias la='exa -a --icons'
@@ -10,7 +10,7 @@ if (($ + commands[exa])); then
 	alias lg='exa --git-ignore --icons'
 fi
 
-if (($ + commands[nvim])); then
+if (($+commands[nvim])); then
 	alias v='TERM=wezterm nvim'
 	alias vi='TERM=wezterm nvim'
 	alias vim='TERM=wezterm nvim'
@@ -23,7 +23,7 @@ if (($ + commands[nvim])); then
 	alias dv='TERM=wezterm nvim +DiffviewOpen'
 fi
 
-if (($ + commands[gh])); then
+if (($+commands[gh])); then
 	alias ghr='gh repo'
 	alias ghb='gh browse'
 	alias ghc='gh repo clone'

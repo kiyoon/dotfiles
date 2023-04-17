@@ -152,6 +152,10 @@ if ! command -v ai &>/dev/null; then
 	npm install -g @builder.io/ai-shell
 fi
 
+if ! command -v aicommits &>/dev/null; then
+	npm install -g aicommits
+fi
+
 cargo install viu # --features=sixel
 cargo install bat
 cargo install bottom

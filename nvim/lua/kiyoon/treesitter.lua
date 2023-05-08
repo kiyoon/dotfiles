@@ -189,6 +189,7 @@ require("nvim-treesitter.configs").setup {
       -- and should return the mode ('v', 'V', or '<c-v>') or a table
       -- mapping query_strings to modes.
       selection_modes = treesitter_selection_mode,
+      -- selection_modes = { ["@function.outer"] = "V" },
       -- if you set this to `true` (default is `false`) then any textobject is
       -- extended to include preceding or succeeding whitespace. succeeding
       -- whitespace has priority in order to act similarly to eg the built-in

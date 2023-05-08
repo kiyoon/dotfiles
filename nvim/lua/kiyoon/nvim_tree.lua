@@ -4,7 +4,33 @@ if not config_status_ok then
   return
 end
 
+local function nvim_tree_on_attach(bufnr)
+  local api = require "nvim-tree.api"
+
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+
+  api.config.mappings.default_on_attach(bufnr)
+
+  vim.keymap.set("n", "u", api.tree.change_root_to_parent, opts "Up")
+  vim.keymap.set("n", "<F1>", api.node.show_info_popup, opts "Info")
+  vim.keymap.set("n", "l", api.node.open.edit, opts "Open")
+  vim.keymap.set("n", "<CR>", api.node.open.edit, opts "Open")
+  vim.keymap.set("n", "o", api.node.open.edit, opts "Open")
+  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts "Close Directory")
+  vim.keymap.set("n", "v", api.node.open.vertical, opts "Open: Vertical Split")
+
+  vim.keymap.set("n", "-", "", { buffer = bufnr })
+  vim.keymap.del("n", "-", { buffer = bufnr })
+  vim.keymap.set("n", "<C-k>", "", { buffer = bufnr })
+  vim.keymap.del("n", "<C-k>", { buffer = bufnr })
+  vim.keymap.set("n", "O", "", { buffer = bufnr })
+  vim.keymap.del("n", "O", { buffer = bufnr })
+end
+
 nvim_tree.setup {
+  on_attach = nvim_tree_on_attach,
   update_focused_file = {
     enable = true,
     update_cwd = true,
@@ -50,20 +76,6 @@ nvim_tree.setup {
   view = {
     width = 30,
     side = "left",
-    mappings = {
-      list = {
-        { key = "u", action = "dir_up" },
-        { key = "<F1>", action = "toggle_file_info" },
-        { key = { "l", "<CR>", "o" }, action = "edit" },
-        { key = "h", action = "close_node" },
-        { key = "v", action = "vsplit" },
-      },
-    },
-  },
-  remove_keymaps = {
-    "-",
-    "<C-k>",
-    "O",
   },
   filters = {
     custom = { ".git" },

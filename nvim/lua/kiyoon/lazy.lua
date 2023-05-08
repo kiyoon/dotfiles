@@ -2,7 +2,7 @@
 
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local jupynium_dev = false
+local jupynium_dev = true
 
 local icons = require "kiyoon.icons"
 

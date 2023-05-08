@@ -18,6 +18,36 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local function nvim_tree_on_attach(bufnr)
+  local api = require "nvim-tree.api"
+  local nt_remote = require "nvim_tree_remote"
+
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+
+  api.config.mappings.default_on_attach(bufnr)
+
+  vim.keymap.set("n", "u", api.tree.change_root_to_node, opts "Dir up")
+  vim.keymap.set("n", "<F1>", api.node.show_info_popup, opts "Show info popup")
+  vim.keymap.set("n", "l", nt_remote.tabnew, opts "Open in treemux")
+  vim.keymap.set("n", "<CR>", nt_remote.tabnew, opts "Open in treemux")
+  vim.keymap.set("n", "<C-t>", nt_remote.tabnew, opts "Open in treemux")
+  vim.keymap.set("n", "<2-LeftMouse>", nt_remote.tabnew, opts "Open in treemux")
+  vim.keymap.set("n", "h", api.tree.close, opts "Close node")
+  vim.keymap.set("n", "v", nt_remote.vsplit, opts "Vsplit in treemux")
+  vim.keymap.set("n", "<C-v>", nt_remote.vsplit, opts "Vsplit in treemux")
+  vim.keymap.set("n", "<C-x>", nt_remote.split, opts "Split in treemux")
+  vim.keymap.set("n", "o", nt_remote.tabnew_main_pane, opts "Open in treemux without tmux split")
+
+  vim.keymap.set("n", "-", "", { buffer = bufnr })
+  vim.keymap.del("n", "-", { buffer = bufnr })
+  vim.keymap.set("n", "<C-k>", "", { buffer = bufnr })
+  vim.keymap.del("n", "<C-k>", { buffer = bufnr })
+  vim.keymap.set("n", "O", "", { buffer = bufnr })
+  vim.keymap.del("n", "O", { buffer = bufnr })
+end
+
 require("lazy").setup({
   {
     "kiyoon/tmuxsend.vim",
@@ -36,9 +66,8 @@ require("lazy").setup({
     "nvim-tree/nvim-tree.lua",
     config = function()
       local nvim_tree = require "nvim-tree"
-      local nt_remote = require "nvim_tree_remote"
-
       nvim_tree.setup {
+        on_attach = nvim_tree_on_attach,
         update_focused_file = {
           enable = true,
           update_cwd = true,
@@ -84,26 +113,6 @@ require("lazy").setup({
         view = {
           width = 30,
           side = "left",
-          mappings = {
-            list = {
-              { key = "u", action = "dir_up" },
-              { key = "<F1>", action = "toggle_file_info" },
-              {
-                key = { "l", "<CR>", "<C-t>", "<2-LeftMouse>" },
-                action = "remote_tabnew",
-                action_cb = nt_remote.tabnew,
-              },
-              { key = "h", action = "close_node" },
-              { key = { "v", "<C-v>" }, action = "remote_vsplit", action_cb = nt_remote.vsplit },
-              { key = "<C-x>", action = "remote_split", action_cb = nt_remote.split },
-              { key = "o", action = "remote_tabnew_main_pane", action_cb = nt_remote.tabnew_main_pane },
-            },
-          },
-        },
-        remove_keymaps = {
-          "-",
-          "<C-k>",
-          "O",
         },
         filters = {
           custom = { ".git" },

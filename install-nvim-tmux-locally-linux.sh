@@ -11,7 +11,7 @@
 # neovim latest stable/nightly version
 # nvim_tag=stable
 # nvim_tag=nightly
-nvim_tag=v0.9.0
+nvim_tag=v0.9.1
 mkdir ~/.local/bin -p
 cd ~/.local/bin
 curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim.appimage

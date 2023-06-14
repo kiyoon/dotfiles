@@ -173,6 +173,12 @@ return {
       require("Comment").setup()
     end,
   },
+  -- {
+  --   "echasnovski/mini.comment",
+  --   config = function()
+  --     require("mini.comment").setup()
+  --   end,
+  -- },
   {
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
     event = "VeryLazy",
@@ -1035,6 +1041,7 @@ return {
     "j-hui/fidget.nvim",
     event = "LSPAttach",
     config = true,
+    tag = "legacy",
   },
 
   {

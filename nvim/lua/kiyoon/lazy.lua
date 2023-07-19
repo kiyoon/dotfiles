@@ -85,6 +85,7 @@ return {
         jupynium_conda_env = "jupynium"
       end
       require("jupynium").setup {
+        default_notebook_URL = "localhost:8888/nbclassic",
         python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
         -- firefox_profiles_ini_path = "~/snap/firefox/common/.mozilla/firefox/profiles.ini",
@@ -435,7 +436,49 @@ return {
           vim.g.matchup_matchparen_offscreen = { method = "popup" }
         end,
       },
-      "mrjones2014/nvim-ts-rainbow",
+      {
+        "HiPhish/rainbow-delimiters.nvim",
+        config = function()
+          -- https://github.com/ayamir/nvimdots/pull/868/files
+          local function init_strategy(check_lines)
+            return function()
+              local errors = 200
+              vim.treesitter.get_parser():for_each_tree(function(lt)
+                if lt:root():has_error() and errors >= 0 then
+                  errors = errors - 1
+                end
+              end)
+              if errors < 0 then
+                return nil
+              end
+              return (check_lines and vim.fn.line "$" > 450) and require("rainbow-delimiters").strategy["global"]
+                or require("rainbow-delimiters").strategy["local"]
+            end
+          end
+
+          vim.g.rainbow_delimiters = {
+            strategy = {
+              [""] = init_strategy(false),
+              c = init_strategy(true),
+              cpp = init_strategy(true),
+            },
+            query = {
+              [""] = "rainbow-delimiters",
+              latex = "rainbow-blocks",
+              javascript = "rainbow-delimiters-ract",
+            },
+            highlight = {
+              "RainbowDelimiterRed",
+              "RainbowDelimiterOrange",
+              "RainbowDelimiterYellow",
+              "RainbowDelimiterGreen",
+              "RainbowDelimiterBlue",
+              "RainbowDelimiterCyan",
+              "RainbowDelimiterViolet",
+            },
+          }
+        end,
+      },
     },
     dev = nvim_treesitter_dev,
   },

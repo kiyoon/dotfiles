@@ -32,12 +32,46 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
   return newVirtText
 end
 
+local ufo = require "ufo"
+local function get_cell_folds(bufnr)
+  local function handleFallbackException(err, providerName)
+    if type(err) == "string" and err:match "UfoFallbackException" then
+      return ufo.getFolds(bufnr, providerName)
+    else
+      return require("promise").reject(err)
+    end
+  end
+  return ufo
+    .getFolds(bufnr, "lsp")
+    :catch(function(err)
+      return handleFallbackException(err, "treesitter")
+    end)
+    :catch(function(err)
+      return handleFallbackException(err, "indent")
+    end)
+    :thenCall(function(ufo_folds)
+      local ok, jupynium = pcall(require, "jupynium")
+      if ok then
+        for _, fold in ipairs(jupynium.get_folds()) do
+          table.insert(ufo_folds, fold)
+        end
+      end
+      print(vim.inspect(ufo_folds))
+      return ufo_folds
+    end)
+end
+
+local ftMap = {
+  python = get_cell_folds,
+}
+
 -- Option 3: treesitter as a main provider instead
 -- Only depend on `nvim-treesitter/queries/filetype/folds.scm`,
 -- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
-require("ufo").setup {
+ufo.setup {
   fold_virt_text_handler = handler,
   provider_selector = function(bufnr, filetype, buftype)
-    return { "treesitter", "indent" }
+    -- return { "treesitter", "indent" }
+    return ftMap[filetype]
   end,
 }

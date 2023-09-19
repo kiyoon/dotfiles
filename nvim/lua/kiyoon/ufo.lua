@@ -61,17 +61,15 @@ local function get_cell_folds(bufnr)
     end)
 end
 
-local ftMap = {
-  python = get_cell_folds,
-}
-
 -- Option 3: treesitter as a main provider instead
 -- Only depend on `nvim-treesitter/queries/filetype/folds.scm`,
 -- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
 ufo.setup {
   fold_virt_text_handler = handler,
   provider_selector = function(bufnr, filetype, buftype)
-    -- return { "treesitter", "indent" }
-    return ftMap[filetype]
+    if filetype == "python" then
+      return get_cell_folds
+    end
+    return { "treesitter", "indent" }
   end,
 }

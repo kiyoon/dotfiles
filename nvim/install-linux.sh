@@ -14,7 +14,8 @@ npm install -g neovim
 pip3 install --user debugpy
 
 # Lint
-pip3 install --user flake8
+# pip3 install --user flake8
+pip3 install --user ruff
 
 # Formatter
 pip3 install --user black

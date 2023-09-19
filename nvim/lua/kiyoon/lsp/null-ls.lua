@@ -27,15 +27,24 @@ local sources = {
   formatting.black,
   formatting.stylua,
   formatting.google_java_format,
-  diagnostics.flake8.with {
+  diagnostics.ruff.with {
     extra_args = {
+      -- F821: ignore undefined name errors because pyright handles them
       -- B905: ignore undefined name errors because pyright handles them
       -- F401: ignore unused imports because pyright handles them
       -- F841: ignore unused variables because pyright handles them
-      "--extend-ignore=F821,E203,E266,E501,W503,B905,F401,F841",
-      "--max-line-length=88", -- black style
+      "--extend-ignore=F821,B905,F401,F841",
     },
   },
+  -- diagnostics.flake8.with {
+  --   extra_args = {
+  --     -- B905: ignore undefined name errors because pyright handles them
+  --     -- F401: ignore unused imports because pyright handles them
+  --     -- F841: ignore unused variables because pyright handles them
+  --     "--extend-ignore=F821,E203,E266,E501,W503,B905,F401,F841",
+  --     "--max-line-length=88", -- black style
+  --   },
+  -- },
 }
 
 if vim.fn.executable "luacheck" == 1 then

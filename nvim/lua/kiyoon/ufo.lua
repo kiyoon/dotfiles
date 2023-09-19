@@ -56,7 +56,7 @@ local function get_cell_folds(bufnr)
           table.insert(ufo_folds, fold)
         end
       end
-      print(vim.inspect(ufo_folds))
+      -- print(vim.inspect(ufo_folds))
       return ufo_folds
     end)
 end

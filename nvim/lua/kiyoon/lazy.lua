@@ -150,7 +150,6 @@ return {
         else
           rule = ap.get_rule(opening)[1]
         end
-        print(vim.inspect(rule))
         rule:use_key("<m-p>"):replace_endpair(function()
           -- repeat the number of characters in the closing pair
           return closing .. string.rep("<left>", #closing)

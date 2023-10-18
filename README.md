@@ -113,6 +113,8 @@ tmux/install-plugins.sh
 ./symlink.sh
 # You only need to install it to the local computer, not in SSH host computer.
 ./install-nerdfont.sh
+# If you're using wezterm (recommended), install terminfo
+wezterm/terminfo.sh
 ```
 
 5. Install / Update dotfiles, apps, plugins etc.

@@ -961,7 +961,8 @@ return {
   -- which isn't possible with native LSP yet.
   {
     "neoclide/coc.nvim",
-    branch = "release",
+    -- branch = "release",
+    commit = "bbaa1d5d1ff3cbd9d26bb37cfda1a990494c4043",
     cond = vim.g.vscode == nil,
     -- event = "BufReadPre",
     ft = "python",

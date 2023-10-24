@@ -44,6 +44,7 @@ fi
 if ! command -v rustup &>/dev/null; then
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 fi
+source ~/.bashrc
 
 if ! command -v fd &>/dev/null; then
 	npm install -g fd-find

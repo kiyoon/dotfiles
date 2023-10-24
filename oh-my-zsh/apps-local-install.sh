@@ -30,29 +30,28 @@ fi
 
 ##### Starship prompt
 if ! command -v starship &>/dev/null; then
-	sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$HOME/.local/bin" -y
+	sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$INSTALL_DIR/bin" -y
 fi
 
 pip3 install --user pygments # colorize (ccat)
 pip3 install --user thefuck  # fix last command
 
-if ! command -v npm &>/dev/null; then
-	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$HOME/.local" -y
+if ! command -v "$INSTALL_DIR/bin/npm" &>/dev/null; then
+	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 fi
 
 # rustup, cargo
 if ! command -v rustup &>/dev/null; then
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 fi
-source ~/.bashrc
 
 if ! command -v fd &>/dev/null; then
-	npm install -g fd-find
+	"$INSTALL_DIR/bin/npm" install -g fd-find
 fi
 
 if ! command -v tig &>/dev/null; then
-	if [ -z "$HOME/.local/include/ncurses/curses.h" ]; then
-		echo "Ncurses not found in $HOME/.local/include"
+	if [ -z "$INSTALL_DIR/include/ncurses/curses.h" ]; then
+		echo "Ncurses not found in $INSTALL_DIR/include"
 		echo "It should have been installed with zsh-local-install.sh"
 		echo "Skipping installing tig."
 	else
@@ -91,7 +90,7 @@ if ! command -v exa &>/dev/null; then
 	mv "$TEMPDIR/completions/exa.zsh" "$INSTALL_DIR/share/zsh/site-functions/_exa"
 
 	# Exa with git support
-	cargo install exa
+	~/.cargo/bin/cargo install exa
 
 	echo "exa install at $(which exa)"
 	\rm -rf "$TEMPDIR"
@@ -150,16 +149,16 @@ else
 fi
 
 if ! command -v ai &>/dev/null; then
-	npm install -g @builder.io/ai-shell
+	"$INSTALL_DIR/bin/npm" install -g @builder.io/ai-shell
 fi
 
 if ! command -v aicommits &>/dev/null; then
-	npm install -g aicommits
+	"$INSTALL_DIR/bin/npm" install -g aicommits
 fi
 
-cargo install viu # --features=sixel
-cargo install bat
-cargo install bottom
-cargo install du-dust
-cargo install procs
-cargo install csvlens
+~/.cargo/bin/cargo install viu # --features=sixel
+~/.cargo/bin/cargo install bat
+~/.cargo/bin/cargo install bottom
+~/.cargo/bin/cargo install du-dust
+~/.cargo/bin/cargo install procs
+~/.cargo/bin/cargo install csvlens

@@ -5,6 +5,7 @@ local servers_use_formatting = {
 local M = {}
 
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+local icons = require "kiyoon.icons"
 
 if status_cmp_ok then
   M.capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -15,10 +16,10 @@ end
 M.setup = function()
   local signs = {
 
-    { name = "DiagnosticSignError", text = "" },
-    { name = "DiagnosticSignWarn", text = "" },
-    { name = "DiagnosticSignHint", text = "" },
-    { name = "DiagnosticSignInfo", text = "" },
+    { name = "DiagnosticSignError", text = icons.diagnostics.Error },
+    { name = "DiagnosticSignWarn", text = icons.diagnostics.Warn },
+    { name = "DiagnosticSignHint", text = icons.diagnostics.Hint },
+    { name = "DiagnosticSignInfo", text = icons.diagnostics.Info },
   }
 
   for _, sign in ipairs(signs) do

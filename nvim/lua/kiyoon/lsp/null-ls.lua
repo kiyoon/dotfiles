@@ -23,7 +23,11 @@ local sources = {
     extra_filetypes = { "toml" },
     extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
   },
-  formatting.isort,
+  formatting.isort.with {
+    extra_args = {
+      "--profile=black",
+    },
+  },
   formatting.black,
   formatting.stylua,
   formatting.google_java_format,

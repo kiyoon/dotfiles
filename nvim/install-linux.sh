@@ -18,6 +18,7 @@ pip3 install --user debugpy
 pip3 install --user ruff
 
 # Formatter
+pip3 install --user isort 
 pip3 install --user black
 
 if ! command -v stylua &> /dev/null; then

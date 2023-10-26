@@ -9,7 +9,7 @@ local servers = {
   "yamlls",
   "vimls",
   "dockerls",
-  "grammarly",
+  -- "grammarly",
   -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
 }
 

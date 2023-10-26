@@ -1,8 +1,6 @@
 local nvim_tree = require "nvim-tree"
-local config_status_ok, nvim_tree_config = pcall(require, "nvim-tree.config")
-if not config_status_ok then
-  return
-end
+
+local icons = require "kiyoon.icons"
 
 local function nvim_tree_on_attach(bufnr)
   local api = require "nvim-tree.api"
@@ -67,10 +65,10 @@ nvim_tree.setup {
     enable = true,
     show_on_dirs = true,
     icons = {
-      hint = "",
-      info = "",
-      warning = "",
-      error = "",
+      hint = icons.Hint,
+      info = icons.Info,
+      warning = icons.Warn,
+      error = icons.Error,
     },
   },
   view = {

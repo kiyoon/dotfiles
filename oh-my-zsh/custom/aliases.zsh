@@ -30,6 +30,9 @@ if (($+commands[gh])); then
 	ghck() {
 		gh repo clone kiyoon/$1
 	}
+	ghci() {
+		gh repo clone Innerverz-AI/$1
+	}
 fi
 
 if (($+commands[conda])); then

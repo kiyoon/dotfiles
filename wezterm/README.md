@@ -18,3 +18,9 @@ glib-compile-schemas ~/.local/share/glib-2.0/schemas/
 gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal wezterm
 gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
 ```
+
+UPDATE: The keybindings may not work. On Ubuntu, use this command.
+
+```bash
+sudo update-alternatives --config x-terminal-emulator
+```

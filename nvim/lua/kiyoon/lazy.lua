@@ -973,11 +973,11 @@ return {
     ft = "python",
     init = function()
       vim.cmd [[ let b:coc_suggest_disable = 1 ]]
+      vim.cmd [[ hi link CocInlayHint Comment ]]
       vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
     end,
     config = function()
       vim.cmd [[
-        hi link CocInlayHint Comment
         call coc#add_extension('coc-pyright')
       ]]
     end,

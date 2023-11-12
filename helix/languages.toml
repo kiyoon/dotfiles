@@ -1,0 +1,35 @@
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+config = { settings = { python = { analysis = { autoImportCompletions = true, typeCheckingMode = "off", autoSearchPaths = true, useLibraryCodeForTypes = true, diagnosticMode = "openFilesOnly" } } } }
+
+[language-server.ruff-lsp]
+command = "ruff-lsp"
+
+[[language]]
+name = "python"
+scope = "source.python"
+injection-regex = "python"
+auto-format = true
+formatter = { command = "black", args = ["-", "-q"] }
+file-types = [
+  "py",
+  "pyi",
+  "py3",
+  "pyw",
+  "ptl",
+  ".pythonstartup",
+  ".pythonrc",
+  "SConstruct",
+]
+shebangs = ["python"]
+roots = [
+  "setup.py",
+  "setup.cfg",
+  "pyproject.toml",
+  "pyrightconfig.json",
+  "Poetry.lock",
+]
+comment-token = "#"
+language-servers = ["pyright", "ruff-lsp"]
+indent = { tab-width = 4, unit = "    " }

@@ -1,5 +1,6 @@
 local servers_use_formatting = {
   -- "lua_ls",
+  "ruff_lsp",
 }
 
 local M = {}
@@ -123,6 +124,7 @@ M.on_attach = function(client, bufnr)
   client.server_capabilities.documentFormattingProvider = false
   for _, server in pairs(servers_use_formatting) do
     if client.name == server then
+      print(client.name)
       client.server_capabilities.documentFormattingProvider = true
       break
     end

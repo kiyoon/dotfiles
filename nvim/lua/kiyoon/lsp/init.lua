@@ -4,6 +4,7 @@ local servers = {
   "html",
   "tsserver",
   "pyright",
+  -- "ruff_lsp",
   "bashls",
   "jsonls",
   "yamlls",
@@ -69,8 +70,6 @@ for _, server in pairs(servers) do
   if require_ok then
     opts = vim.tbl_deep_extend("force", conf_opts, opts)
     -- opts = conf_opts
-  else
-    opts = {}
   end
 
   lspconfig[server].setup(opts)

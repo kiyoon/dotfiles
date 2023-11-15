@@ -389,7 +389,7 @@ return {
   },
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
+    branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
@@ -400,7 +400,7 @@ return {
     end,
     cmd = "Neotree",
     keys = {
-      { "<space>nn", "<cmd>Neotree<CR>", mode = { "n", "x" }, desc = "[N]eotree" },
+      { "<space>nn", "<cmd>Neotree toggle<CR>", mode = { "n", "x" }, desc = "[N]eotree toggle" },
     },
   },
   {

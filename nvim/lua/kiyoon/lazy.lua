@@ -1444,4 +1444,13 @@ return {
     "kiyoon/nvim-tree-remote.nvim",
     cond = false,
   },
+  {
+    "andythigpen/nvim-coverage",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require("coverage").setup()
+    end,
+  },
 }

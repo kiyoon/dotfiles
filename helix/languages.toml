@@ -6,12 +6,16 @@ config = { settings = { python = { analysis = { autoImportCompletions = true, ty
 [language-server.ruff-lsp]
 command = "ruff-lsp"
 
+[language-server.ruff-lsp.config]
+documentFormatting = true 
+settings.run = "onSave"
+
 [[language]]
 name = "python"
 scope = "source.python"
 injection-regex = "python"
 auto-format = true
-formatter = { command = "black", args = ["-", "-q"] }
+# formatter = { command = "black", args = ["-", "-q"] }
 file-types = [
   "py",
   "pyi",
@@ -31,5 +35,8 @@ roots = [
   "Poetry.lock",
 ]
 comment-token = "#"
-language-servers = ["pyright", "ruff-lsp"]
+language-servers = [
+  { name = "ruff-lsp", only-features = [ "format", "diagnostics" ] },
+  { name = "pyright", except-features = [ "format" ] },
+]
 indent = { tab-width = 4, unit = "    " }

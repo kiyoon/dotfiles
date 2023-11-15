@@ -1119,8 +1119,7 @@ return {
   {
     "j-hui/fidget.nvim",
     event = "LSPAttach",
-    config = true,
-    tag = "legacy",
+    opts = {},
   },
 
   {
@@ -1235,7 +1234,7 @@ return {
   -- Snippets
   {
     "L3MON4D3/LuaSnip",
-    version = "v1.x",
+    version = "v2.x",
     event = "InsertEnter",
     dependencies = {
       "rafamadriz/friendly-snippets",

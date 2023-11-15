@@ -23,10 +23,11 @@ local plugins_config_path = vim.fn.stdpath "config" .. "/lua/kiyoon/lazy.lua"
 dashboard.section.buttons.val = {
   dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
   dashboard.button("f", "  Find file (\\ff)", ":Telescope find_files hidden=true no_ignore=true<CR>"),
-  dashboard.button("F", "  Find git file (\\fg)", ":Telescope git_files<CR>"),
+  dashboard.button("F", "  Find git file (\\fF)", ":Telescope git_files<CR>"),
   dashboard.button("r", "  Recently opened files (\\fr)", "<cmd>Telescope oldfiles<CR>"),
   -- dashboard.button("p", " " .. " Recent projects", ":lua require('telescope').extensions.projects.projects()<CR>"),
   dashboard.button("w", "  Find word (\\fw)", "<cmd>Telescope live_grep<cr>"),
+  dashboard.button("g", "  Find word with args (\\fg)", "<cmd>Telescope live_grep_args<cr>"),
   dashboard.button("d", " " .. " Diff view (\\dv)", "<cmd>DiffviewOpen<CR>"),
   dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>ChatGPT<CR>"),
   dashboard.button("l", " " .. " Install language support (:Mason)", ":Mason<CR>"),

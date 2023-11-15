@@ -866,11 +866,18 @@ return {
     branch = "0.1.x",
     keys = {
       {
-        "<leader>ff",
+        "<leader>fF",
         "<cmd>lua require('telescope.builtin').git_files()<cr>",
         noremap = true,
         silent = true,
         desc = "[F]uzzy [F]ind Git [F]iles",
+      },
+      {
+        "<leader>ff",
+        "<cmd>lua require('telescope.builtin').find_files()<cr>",
+        noremap = true,
+        silent = true,
+        desc = "[F]uzzy [F]ind [F]iles",
       },
       {
         "<leader>fW",
@@ -921,7 +928,7 @@ return {
       },
       {
         "<leader>fs",
-        "<cmd>require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+        "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
         noremap = true,
         silent = true,
         desc = "[F]uzzy [S]earch Current Buffer",
@@ -950,9 +957,6 @@ return {
       { "kiyoon/telescope-insert-path.nvim" },
       {
         "nvim-telescope/telescope-live-grep-args.nvim",
-        config = function()
-          require("telescope").load_extension "live_grep_args"
-        end,
       },
     },
     config = function()

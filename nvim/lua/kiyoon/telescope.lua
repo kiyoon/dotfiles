@@ -64,7 +64,7 @@ telescope.setup {
       -- define mappings, e.g.
       mappings = { -- extend mappings
         i = {
-          ["<C-k>"] = lga_actions.quote_prompt(),
+          ["<C-y>"] = lga_actions.quote_prompt(),
           ["<C-i>"] = lga_actions.quote_prompt { postfix = " --iglob " },
         },
       },
@@ -75,6 +75,9 @@ telescope.setup {
     },
   },
 }
+
+-- This has to be loaded after telescope.setup, otherwise the keymaps don't get set
+telescope.load_extension "live_grep_args"
 
 -- get git folder
 local function get_git_dir()

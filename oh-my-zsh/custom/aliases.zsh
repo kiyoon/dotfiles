@@ -28,10 +28,12 @@ if (($+commands[gh])); then
 	alias ghb='gh browse'
 	alias ghc='gh repo clone'
 	ghck() {
-		gh repo clone kiyoon/$1
+		# ${@:2} = slice from second to the last
+		gh repo clone kiyoon/$1 ${@:2}
 	}
 	ghci() {
-		gh repo clone Innerverz-AI/$1
+		# ${@:2} = slice from second to the last
+		gh repo clone Innerverz-AI/$1 ${@:2}
 	}
 fi
 

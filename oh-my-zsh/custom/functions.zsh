@@ -37,6 +37,7 @@ dotstash() {
 
 dotinstall() {
 	DOTFILES_DIR=$(dotfiles_dir)
+	"$DOTFILES_DIR"/install-nvim-tmux-locally-linux.sh
 	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
 
 	"$DOTFILES_DIR"/nvim/install-linux.sh

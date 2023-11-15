@@ -162,3 +162,10 @@ fi
 ~/.cargo/bin/cargo install du-dust
 ~/.cargo/bin/cargo install procs
 ~/.cargo/bin/cargo install csvlens
+
+if ! command -v hx &>/dev/null; then
+	wget https://github.com/helix-editor/helix/releases/download/23.10/helix-23.10-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"
+	chmod +x "$INSTALL_DIR/bin/hx"
+else
+	echo "hx already install at $(which hx). Skipping.."
+fi

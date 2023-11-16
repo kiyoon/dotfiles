@@ -55,6 +55,7 @@ return {
       { "<M-CR>", ":ImportSymbol<CR>" },
       { "<M-CR>", "<Esc>:ImportSymbol<CR>a", mode = "i" },
     },
+    dev = true,
   },
   {
     "Vimjas/vim-python-pep8-indent",

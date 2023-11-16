@@ -31,7 +31,7 @@ dashboard.section.buttons.val = {
   dashboard.button(
     "w",
     "  Find word in git dir (\\fw)",
-    "<cmd>lua require'kiyoon.telescope'.live_grep_gitdir()<cr>"
+    "<cmd>lua require'telescope'<cr><cmd>lua require'kiyoon.telescope'.live_grep_gitdir()<cr>"
   ),
   dashboard.button("d", " " .. " Diff view (\\dv)", "<cmd>DiffviewOpen<CR>"),
   dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>ChatGPT<CR>"),

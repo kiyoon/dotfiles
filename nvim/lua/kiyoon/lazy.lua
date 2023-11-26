@@ -49,7 +49,7 @@ return {
 
   --- NOTE: Python
   {
-    "wookayin/vim-autoimport",
+    "kiyoon/vim-autoimport",
     ft = { "python" },
     keys = {
       { "<M-CR>", ":ImportSymbol<CR>" },
@@ -668,7 +668,7 @@ return {
       local lua_query = [[
           ;; query
           ((identifier) @cap)
-          ("string_content" @cap)
+          ((string_content) @cap)
           ((true) @cap)
           ((false) @cap)
           ]]

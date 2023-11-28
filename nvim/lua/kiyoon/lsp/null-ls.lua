@@ -137,14 +137,19 @@ null_ls.setup {
         group = augroup,
         buffer = bufnr,
         callback = function()
-          vim.lsp.buf.format { bufnr = bufnr }
+          vim.lsp.buf.format { bufnr = bufnr, timeout_ms = 2000 }
         end,
       })
     end
   end,
 }
 
-vim.keymap.set("n", "<space>pf", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", { desc = "Format" })
+vim.keymap.set(
+  "n",
+  "<space>pf",
+  "<cmd>lua vim.lsp.buf.format{ async = true, timeout_ms = 2000 }<cr>",
+  { desc = "Format" }
+)
 
 --- Add ts-node-action to code action.
 -- local status, ts_node_action = pcall(require, "ts-node-action")

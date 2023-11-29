@@ -12,4 +12,9 @@ return {
     t { "", [["""]], "" },
     i(0),
   }),
+
+  -- logger
+  s("logger", {
+    t { "import logging", "logger = logging.getLogger(__name__)" },
+  }),
 }

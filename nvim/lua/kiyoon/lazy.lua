@@ -341,6 +341,20 @@ return {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     opts = require "kiyoon.gitsigns_opts",
+    -- add at least one keys so that which-key can register the leader key
+    keys = {
+      {
+        "<leader>hb",
+      },
+    },
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<leader>h"] = { name = "Gitsigns" },
+        }
+      end
+    end,
   },
 
   --- NOTE: File tree

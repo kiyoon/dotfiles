@@ -992,8 +992,6 @@ return {
     "neoclide/coc.nvim",
     -- branch = "release",
     commit = "bbaa1d5d1ff3cbd9d26bb37cfda1a990494c4043",
-    cond = vim.g.vscode == nil,
-    -- event = "BufReadPre",
     ft = "python",
     init = function()
       vim.cmd [[ let b:coc_suggest_disable = 1 ]]
@@ -1001,6 +999,11 @@ return {
       vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
     end,
     config = function()
+      -- adding this option on both init and config
+      -- because sometimes (e.g. opening file using telescope from alpha.nvim init screen)
+      -- the config is not loaded
+      vim.cmd [[ let b:coc_suggest_disable = 1 ]]
+
       vim.cmd [[
         call coc#add_extension('coc-pyright')
       ]]

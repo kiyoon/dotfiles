@@ -112,6 +112,8 @@ if ! command -v gh &>/dev/null; then
 else
 	echo "gh already install at $(which gh). Skipping.."
 fi
+gh extension install github/gh-copilot
+gh extension upgrade gh-copilot
 
 if ! command -v jq &>/dev/null; then
 	curl -s https://api.github.com/repos/stedolan/jq/releases/latest |

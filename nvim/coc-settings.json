@@ -2,6 +2,7 @@
   "sumneko-lua.enableNvimLuaDev": true,
   "Lua.telemetry.enable": false,
   "signature.enable": false,
+  "suggest.autoTrigger": "none",
   "pyright.disableCompletion": true,
   "pyright.disableDiagnostics": true,
   "pyright.disableDocumentation": true,

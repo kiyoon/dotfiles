@@ -115,3 +115,10 @@ is_gpg_cached() {
 		return 1
 	fi
 }
+
+override_term_program() {
+	# Force resetting TERM_PROGRAM to wezterm
+	# This is required to view images over ssh
+	export TERM_PROGRAM=WezTerm
+	export TERM_PROGRAM_VERSION=20230712-072601-f4abf8fd
+}

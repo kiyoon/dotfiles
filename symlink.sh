@@ -37,3 +37,4 @@ ln_sb wezterm ~/.config
 ln_sb cargo/config.toml ~/.cargo
 ln_sb conda/.condarc ~
 ln_sb helix ~/.config
+ln_sb ranger ~/.config

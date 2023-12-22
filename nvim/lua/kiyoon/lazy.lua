@@ -56,10 +56,10 @@ return {
       { "<M-CR>", "<Esc>:ImportSymbol<CR>a", mode = "i" },
     },
   },
-  {
-    "Vimjas/vim-python-pep8-indent",
-    ft = "python",
-  },
+  -- {
+  --   "Vimjas/vim-python-pep8-indent",
+  --   ft = "python",
+  -- },
   {
     "metakirby5/codi.vim",
     cmd = "Codi",

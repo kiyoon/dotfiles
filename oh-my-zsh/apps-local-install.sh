@@ -161,10 +161,6 @@ if ! command -v ai &>/dev/null; then
 	"$INSTALL_DIR/bin/npm" install -g @builder.io/ai-shell
 fi
 
-if ! command -v aicommits &>/dev/null; then
-	"$INSTALL_DIR/bin/npm" install -g aicommits
-fi
-
 ~/.cargo/bin/cargo install viu # --features=sixel
 ~/.cargo/bin/cargo install bat
 ~/.cargo/bin/cargo install bottom

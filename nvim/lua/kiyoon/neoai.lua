@@ -1,13 +1,14 @@
 local conventional_commit_prompt = function(language)
   local prompt = [[
-    Generate a concise git commit message written in present tense for the following code diff with the given specifications below:
-    ```
-    ]] .. vim.fn.system "git diff --cached" .. [[
-    ```
+    Generate a concise git commit message written in present tense for the following specifications and code diff:
     Message language: ]] .. language .. [[
     Do not wrap your message in quotes.
     Commit message must be a maximum of 75 characters.
     Exclude anything unnecessary such as translation. Your entire response will be passed directly into git commit.
+    Code diff:
+    ```
+    ]] .. vim.fn.system "git diff --cached" .. [[
+    ```
 
     The output response must be in format:
       <type>(<optional scope>): <commit message>

@@ -326,8 +326,27 @@ return {
       },
     },
   },
+  {
+    "Bryley/neoai.nvim",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+    },
+    config = function()
+      require("neoai").setup {
+        models = {
+          {
+            name = "openai",
+            model = "gpt-4",
+            params = nil,
+          },
+        },
+      }
+      require "kiyoon.neoai"
+    end,
+  },
 
   --- NOTE: Git
+
   {
     "sindrets/diffview.nvim",
     keys = {

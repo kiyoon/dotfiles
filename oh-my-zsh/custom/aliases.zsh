@@ -11,16 +11,15 @@ if (($+commands[exa])); then
 fi
 
 if (($+commands[nvim])); then
-	alias v='TERM=wezterm nvim'
-	alias vi='TERM=wezterm nvim'
-	alias vim='TERM=wezterm nvim'
-	alias vimdiff='TERM=wezterm nvim -d'
-	alias vic='TERM=wezterm NVIM_APPNAME=nvim-coc nvim'
-	alias lazyvim='TERM=wezterm NVIM_APPNAME=nvim-lazyvim nvim'
+	alias v='nvim'
+	alias vi='nvim'
+	alias vim='nvim'
+	alias vimdiff='nvim -d'
+	alias vic='NVIM_APPNAME=nvim-coc nvim'
+	alias lazyvim='NVIM_APPNAME=nvim-lazyvim nvim'
 	alias svi='sudoedit'
-	alias nvim='TERM=wezterm nvim'
-	alias diffview='TERM=wezterm nvim +DiffviewOpen'
-	alias dv='TERM=wezterm nvim +DiffviewOpen'
+	alias diffview='nvim +DiffviewOpen'
+	alias dv='nvim +DiffviewOpen'
 fi
 
 if (($+commands[gh])); then

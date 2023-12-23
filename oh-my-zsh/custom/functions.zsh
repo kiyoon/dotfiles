@@ -122,3 +122,23 @@ override_term_program() {
 	export TERM_PROGRAM=WezTerm
 	export TERM_PROGRAM_VERSION=20230712-072601-f4abf8fd
 }
+
+t() {
+	# 1. If inside tmux
+	# Save current directory to /tmp/t_pwd.txt 
+	# and detach from tmux
+
+	# 2. If not inside tmux
+	# If /tmp/t_pwd.txt exists, cd to that directory
+
+	if [ -n "$TMUX" ]; then
+		tmpdir=$(dirname $(mktemp -u))
+		echo "$(pwd)" > $tmpdir/t_pwd.txt
+		tmux detach
+	else
+		if [ -f /tmp/t_pwd.txt ]; then
+			cd "$(cat /tmp/t_pwd.txt)"
+		fi
+	fi
+
+}

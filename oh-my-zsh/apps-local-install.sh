@@ -36,6 +36,7 @@ fi
 pip3 install --user pygments # colorize (ccat)
 pip3 install --user thefuck  # fix last command
 pip3 install --user ranger-fm
+pip3 install --user pillow   # my custom ranger viu image viewer uses this
 
 if ! command -v "$INSTALL_DIR/bin/npm" &>/dev/null; then
 	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y

@@ -37,11 +37,9 @@ if (($+commands[gh])); then
 	}
 fi
 
-if (($+commands[conda])); then
-	alias ca='conda activate'
-	alias cda='conda deactivate'
-	alias cc='conda create -n'
-fi
+alias ca='conda activate'
+alias cda='conda deactivate'
+alias cc='conda create -n'
 
 alias src='omz reload'
 alias ns='nvidia-smi'

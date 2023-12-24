@@ -331,6 +331,24 @@ return {
     dependencies = {
       "MunifTanjim/nui.nvim",
     },
+    cmd = {
+      "NeoAI",
+      "NeoAIOpen",
+      "NeoAIClose",
+      "NeoAIToggle",
+      "NeoAIContext",
+      "NeoAIContextOpen",
+      "NeoAIContextClose",
+      "NeoAIInject",
+      "NeoAIInjectCode",
+      "NeoAIInjectContext",
+      "NeoAIInjectContextCode",
+      "InjectCommitMessage",
+      "TextifyCommitMessage",
+    },
+    keys = {
+      { "<space>as", mode = { "x" }, desc = "summarize text" },
+    },
     config = function()
       require("neoai").setup {
         models = {
@@ -338,6 +356,21 @@ return {
             name = "openai",
             model = "gpt-4",
             params = nil,
+          },
+        },
+        shortcuts = {
+          {
+            name = "textify",
+            key = "<space>as",
+            desc = "fix text with AI",
+            use_context = true,
+            prompt = [[
+                Please rewrite the text to make it more readable, clear,
+                concise, and fix any grammatical, punctuation, or spelling
+                errors
+            ]],
+            modes = { "x" },
+            strip_function = nil,
           },
         },
       }

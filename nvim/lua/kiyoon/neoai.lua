@@ -95,7 +95,7 @@ local inject_commit_message = function()
   }, function(language)
     if language ~= nil then
       local prompt = conventional_commit_prompt(language)
-      require("neoai").context_inject(prompt, nil, -1, -1) -- line -1 means first line (why though?)
+      require("neoai").inject(prompt, nil, -1) -- line -1 means first line (why though?)
     end
   end)
 end

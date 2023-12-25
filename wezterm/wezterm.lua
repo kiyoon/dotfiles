@@ -18,6 +18,8 @@ local config = {
 			action = wezterm.action.DisableDefaultAssignment,
 		},
 	},
+
+	term = "wezterm",
 }
 
 config.hyperlink_rules = wezterm.default_hyperlink_rules()

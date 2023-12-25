@@ -9,6 +9,9 @@ local function treesitter_selection_mode(info)
   if starts_with(info["query_string"], "@function.") then
     return "V"
   end
+  if starts_with(info["query_string"], "@class.") then
+    return "V"
+  end
   return "v"
 end
 

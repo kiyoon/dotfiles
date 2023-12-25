@@ -434,3 +434,4 @@ autocmd BufNewFile,BufRead * setlocal formatoptions-=cro
 map <C-Down> <cmd>cn<CR>
 map <C-Up> <cmd>cp<CR>
 
+map <space>y "+y

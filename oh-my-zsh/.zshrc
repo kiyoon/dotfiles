@@ -68,6 +68,12 @@ ZSH_CUSTOM="$HOME/.config/oh-my-zsh/custom"
 # If you don't do this it will be initialised after everything.
 # Can be a problem with custom mappings, like zsh-history-substring-search with Up/Down arrows.
 ZVM_INIT_MODE=sourcing
+# The plugin will auto execute this zvm_config function
+zvm_config() {
+	if [[ $TERM == "wezterm" ]]; then
+		ZVM_TERM=xterm-256color
+	fi
+}
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/

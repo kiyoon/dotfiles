@@ -1542,4 +1542,12 @@ return {
       require("coverage").setup()
     end,
   },
+  {
+    "stevearc/overseer.nvim",
+    cmd = {
+      "OverseerRun",
+      "OverseerToggle",
+    },
+    opts = {},
+  },
 }

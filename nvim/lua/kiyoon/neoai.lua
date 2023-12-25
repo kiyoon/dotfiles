@@ -1,4 +1,10 @@
 local conventional_commit_prompt = function(language)
+  local gitdiff = vim.fn.system "git diff --cached"
+
+  if string.len(gitdiff) > 25000 then
+    gitdiff = gitdiff:sub(1, 25000)
+  end
+
   local prompt = [[
     Generate a concise git commit message written in present tense for the following specifications and code diff:
     Message language: ]] .. language .. [[
@@ -7,7 +13,7 @@ local conventional_commit_prompt = function(language)
     Exclude anything unnecessary such as translation. Your entire response will be passed directly into git commit.
     Code diff:
     ```
-    ]] .. vim.fn.system "git diff --cached" .. [[
+    ]] .. gitdiff .. [[
     ```
 
     The output response must be in format:

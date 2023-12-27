@@ -78,6 +78,9 @@ oh-my-zsh/launch-zsh-in-bash.sh
 git submodule update --init --remote  # Install and update all zsh plugins
 ```
 
+NOTE: some steps like `apps-local-install.sh` may not work from the first run, because they break with missing dependencies easily.  
+Kindly try it again after re-opening your terminal, if some error occurs.
+
 Open your terminal again and you'll see you're running zsh.
 
 See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.

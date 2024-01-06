@@ -1243,7 +1243,13 @@ return {
           prepend_args = { "--profile", "black" },
         },
         prettier = {
-          prepend_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
+          prepend_args = {
+            "--no-semi",
+            "--single-quote",
+            "--jsx-single-quote",
+            "--plugin",
+            vim.fn.expand "$HOME/.local/lib/node_modules/prettier-plugin-toml/lib/index.cjs",
+          },
         },
       },
     },

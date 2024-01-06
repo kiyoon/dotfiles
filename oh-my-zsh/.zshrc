@@ -112,6 +112,7 @@ plugins=(
 	zoxide
 	thefuck
 	ripgrep
+	fd
 )
 
 # VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false

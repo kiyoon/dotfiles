@@ -1,5 +1,6 @@
 -- nvim-cmp setup
 local cmp = require "cmp"
+local types = require "cmp.types"
 local cmp_buffer = require "cmp_buffer"
 local luasnip = require "luasnip"
 local lspkind = require "lspkind"
@@ -11,7 +12,19 @@ cmp.setup {
       luasnip.lsp_expand(args.body)
     end,
   },
-  mapping = cmp.mapping.preset.insert {
+  mapping = {
+    ["<C-n>"] = {
+      i = cmp.mapping.select_next_item { behavior = types.cmp.SelectBehavior.Insert },
+    },
+    ["<C-p>"] = {
+      i = cmp.mapping.select_prev_item { behavior = types.cmp.SelectBehavior.Insert },
+    },
+    ["<C-y>"] = {
+      i = cmp.mapping.confirm { select = false },
+    },
+    ["<C-e>"] = {
+      i = cmp.mapping.abort(),
+    },
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
     -- ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),

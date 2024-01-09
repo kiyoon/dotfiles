@@ -48,14 +48,14 @@ return {
   },
 
   --- NOTE: Python
-  {
-    "kiyoon/vim-autoimport",
-    ft = { "python" },
-    keys = {
-      { "<M-CR>", ":ImportSymbol<CR>" },
-      { "<M-CR>", "<Esc>:ImportSymbol<CR>a", mode = "i" },
-    },
-  },
+  -- {
+  --   "kiyoon/vim-autoimport",
+  --   ft = { "python" },
+  --   keys = {
+  --     { "<M-CR>", ":ImportSymbol<CR>" },
+  --     { "<M-CR>", "<Esc>:ImportSymbol<CR>a", mode = "i" },
+  --   },
+  -- },
   -- {
   --   "Vimjas/vim-python-pep8-indent",
   --   ft = "python",

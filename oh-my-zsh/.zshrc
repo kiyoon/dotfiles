@@ -113,6 +113,7 @@ plugins=(
 	thefuck
 	ripgrep
 	fd
+	poetry
 )
 
 # VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false

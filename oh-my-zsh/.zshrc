@@ -71,6 +71,7 @@ ZVM_INIT_MODE=sourcing
 # The plugin will auto execute this zvm_config function
 zvm_config() {
 	if [[ $TERM == "wezterm" ]]; then
+		# ZVM doesn't understand wezterm for cursor shape yet
 		ZVM_TERM=xterm-256color
 	fi
 }
@@ -153,16 +154,27 @@ export ARCHFLAGS="-arch x86_64"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+if [[ -d "$HOME/bin/miniconda3" ]]; then
+	MINICONDA_PATH="$HOME/bin/miniconda3"
+elif [[ -d "$HOME/miniconda3" ]]; then
+	MINICONDA_PATH="$HOME/miniconda3"
+elif [[ -d "/usr/local/Caskroom/miniconda/base" ]]; then
+	# Mac Homebrew
+	MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"
+fi
+
+echo $MINICONDA_PATH
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$("$HOME/bin/miniconda3/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$("$MINICONDA_PATH/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "$HOME/bin/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "$HOME/bin/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "$MINICONDA_PATH/etc/profile.d/conda.sh" ]; then
+        . "$MINICONDA_PATH/etc/profile.d/conda.sh"
     else
-        export PATH="$HOME/bin/miniconda3/bin:$PATH"
+        export PATH="$MINICONDA_PATH/bin:$PATH"
     fi
 fi
 unset __conda_setup

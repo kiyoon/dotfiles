@@ -2,7 +2,9 @@ export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
 export MANPATH="$HOME/.local/share/man:$MANPATH"
 
-export TERMINFO="$HOME/.local/share/terminfo" # tmux needs this
+if [[ $OSTYPE == "linux-gnu"* ]]; then
+	export TERMINFO="$HOME/.local/share/terminfo" # tmux needs this
+fi
 export BAT_THEME="Dracula"
 
 if (($+commands[nvim])); then
@@ -27,8 +29,16 @@ bindkey "^[OF" end-of-line
 bindkey "^[OH" beginning-of-line
 
 # https://stackoverflow.com/questions/41287226/ssh-asking-every-single-time-for-passphrase
-if ! pidof /usr/bin/ssh-agent >/dev/null; then
-  ssh-agent -t 3h > ~/.ssh/.agent.pid
+
+
+if [[ $OSTYPE == "darwin"* ]]; then
+	if ! pgrep ssh-agent >/dev/null; then
+	  ssh-agent -t 3h > ~/.ssh/.agent.pid
+	fi
+else
+	if ! pidof /usr/bin/ssh-agent >/dev/null; then
+	  ssh-agent -t 3h > ~/.ssh/.agent.pid
+	fi
 fi
 source ~/.ssh/.agent.pid >&/dev/null
 

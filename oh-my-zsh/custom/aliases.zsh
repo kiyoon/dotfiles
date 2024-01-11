@@ -34,6 +34,10 @@ if (($+commands[gh])); then
 		# ${@:2} = slice from second to the last
 		gh repo clone Innerverz-AI/$1 ${@:2}
 	}
+	ghcd() {
+		# ${@:2} = slice from second to the last
+		gh repo clone deargen/$1 ${@:2}
+	}
 fi
 
 alias ca='conda activate'

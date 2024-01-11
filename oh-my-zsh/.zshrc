@@ -163,8 +163,6 @@ elif [[ -d "/usr/local/Caskroom/miniconda/base" ]]; then
 	MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"
 fi
 
-echo $MINICONDA_PATH
-
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$("$MINICONDA_PATH/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"

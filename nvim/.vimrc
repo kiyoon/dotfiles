@@ -431,7 +431,7 @@ xnoremap <space><space>x "sy:call Exec_lua_or_vim(@s)<CR>
 autocmd BufNewFile,BufRead * setlocal formatoptions-=cro
 
 " Quickfix
-map <C-Down> <cmd>cn<CR>
-map <C-Up> <cmd>cp<CR>
+nmap <A-j> <cmd>cn<CR>
+nmap <A-k> <cmd>cp<CR>
 
 map <space>y "+y

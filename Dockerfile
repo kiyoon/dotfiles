@@ -64,13 +64,17 @@ RUN ln -s /usr/local/bin/zsh /bin
 
 # Make 10 users with UID 1000 to 1009 because we don't know who's using it as of yet.
 RUN /bin/bash -c 'for i in {1000..1009}; do adduser --disabled-password --gecos "" --home /home/docker --shell /bin/zsh docker$i && adduser docker$i sudo && adduser docker$i docker1000; done'
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%sudo ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+
 
 ENV HOME /home/docker
 ENV DOTFILES_PATH $HOME/.config/dotfiles
 ADD . $DOTFILES_PATH
 RUN chmod 777 /home/docker -R
 RUN chown docker1000:docker1000 /home/docker -R
+
+SHELL ["/bin/bash", "-c"]
 
 USER docker1000
 ENV ZSH $HOME/.oh-my-zsh
@@ -84,12 +88,11 @@ RUN $DOTFILES_PATH/symlink.sh
 RUN $DOTFILES_PATH/install-nvim-tmux-locally-linux.sh
 RUN $DOTFILES_PATH/wezterm/terminfo.sh
 
-RUN curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+RUN $DOTFILES_PATH/oh-my-zsh/install-installers.sh
+ENV PATH $HOME/.cargo/bin:$PATH
 RUN $DOTFILES_PATH/oh-my-zsh/apps-local-install.sh
 
-RUN source $HOME/.cargo/env
-RUN $DOTFILES_PATH/oh-my-zsh/apps-local-install.sh
+RUN $DOTFILES_PATH/nvim/install-linux.sh
 
 
 

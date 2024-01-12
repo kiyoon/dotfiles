@@ -10,12 +10,11 @@ if [[ $OSTYPE == "darwin"* ]]; then
 else
 	##### conda
 	if ! command -v conda &>/dev/null; then
-		wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-		CONDADIR="$HOME/bin/miniconda3"
 		mkdir -p "$HOME/bin"
-		bash Miniconda3-latest-Linux-x86_64.sh -b -p "$CONDADIR"
-		rm Miniconda3-latest-Linux-x86_64.sh
-		$CONDADIR/bin/conda init
+		wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$HOME/bin"
+		CONDADIR="$HOME/bin/miniconda3"
+		bash "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh" -b -p "$CONDADIR"
+		rm "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh"
 	fi
 fi
 

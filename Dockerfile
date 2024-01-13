@@ -63,6 +63,7 @@ RUN for i in {1000..1020}; do adduser --disabled-password --gecos "" --home /hom
 
 RUN adduser --disabled-password --gecos "" linuxbrew
 RUN echo "linuxbrew ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN for i in {1000..1020}; do adduser docker$i linuxbrew; done
 USER linuxbrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
@@ -81,7 +82,7 @@ RUN sudo chown docker1000:docker1000 /home/docker -R
 
 USER docker1000
 ENV ZSH $HOME/.oh-my-zsh
-ENV PATH $HOME/.local/bin:$PATH
+ENV PATH /home/linuxbrew/.linuxbrew/bin:$HOME/.local/bin:$PATH
 ENV INSTALL_DIR $HOME/.local
 
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc

@@ -47,15 +47,6 @@ RUN git lfs install
 
 RUN sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "/usr/bin" -y
 RUN curl -sL install-node.vercel.app/lts | bash -s -- --prefix=/usr/local -y
-RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-ENV PATH /home/linuxbrew/.linuxbrew/bin:$PATH
-ENV HOMEBREW_NO_AUTO_UPDATE=1
-
-RUN brew install zsh
-RUN ln -s /home/linuxbrew/.linuxbrew/bin/zsh /bin
-RUN brew install ripgrep exa bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix neovim tmux
-
 # RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
 #     && bash Miniconda3-latest-Linux-x86_64.sh -b \
 #     && rm Miniconda3-latest-Linux-x86_64.sh
@@ -70,12 +61,22 @@ RUN for i in {1000..1020}; do adduser --disabled-password --gecos "" --home /hom
     && adduser docker$i sudo && adduser docker$i docker1000 \
 	&& echo "docker$i ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; done
 
+RUN adduser --disabled-password --gecos "" linuxbrew
+USER linuxbrew
+RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+ENV PATH /home/linuxbrew/.linuxbrew/bin:$PATH
+ENV HOMEBREW_NO_AUTO_UPDATE=1
+
+RUN brew install zsh
+RUN sudo ln -s /home/linuxbrew/.linuxbrew/bin/zsh /bin
+RUN brew install ripgrep exa bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix neovim tmux
 
 ENV HOME /home/docker
 ENV DOTFILES_PATH $HOME/.config/dotfiles
 ADD . $DOTFILES_PATH
-RUN chmod 777 /home/docker -R
-RUN chown docker1000:docker1000 /home/docker -R
+RUN sudo chmod 777 /home/docker -R
+RUN sudo chown docker1000:docker1000 /home/docker -R
 
 USER docker1000
 ENV ZSH $HOME/.oh-my-zsh

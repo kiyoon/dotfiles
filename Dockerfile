@@ -65,7 +65,7 @@ RUN brew install ripgrep exa bat fd zoxide fzf pipx thefuck tig gh jq viu bottom
 # SHELL ["/root/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
 # RUN conda init bash
 
-# Make 10 users with UID 1000 to 1020 because we don't know who's using it as of yet.
+# Make 20 users with UID 1000 to 1020 because we don't know who's using it as of yet.
 RUN for i in {1000..1020}; do adduser --disabled-password --gecos "" --home /home/docker --shell /bin/zsh docker$i \
     && adduser docker$i sudo && adduser docker$i docker1000 \
 	&& echo "docker$i ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; done
@@ -121,15 +121,12 @@ RUN chmod 777 /home/docker/bin -R
 RUN chmod 755 /home/docker/.oh-my-zsh -R
 RUN sudo chown root:root /home/docker/.oh-my-zsh -R
 
+# RUN source activate main
+# RUN mkdir /app/
+# ADD requirements.txt /app/
+# RUN pip --no-cache-dir install -r /app/requirements.txt
+# ADD . /app/
+# RUN pip --no-cache-dir install -e /app/
 
-#
-#
-#
-# # RUN source activate main
-# # RUN mkdir /app/
-# # ADD requirements.txt /app/
-# # RUN pip --no-cache-dir install -r /app/requirements.txt
-# # ADD . /app/
-# # RUN pip --no-cache-dir install -e /app/
-
+WORKDIR /home/docker
 ENTRYPOINT ["/bin/zsh"]

@@ -62,6 +62,7 @@ RUN for i in {1000..1020}; do adduser --disabled-password --gecos "" --home /hom
 	&& echo "docker$i ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; done
 
 RUN adduser --disabled-password --gecos "" linuxbrew
+RUN echo "linuxbrew ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; done
 USER linuxbrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 

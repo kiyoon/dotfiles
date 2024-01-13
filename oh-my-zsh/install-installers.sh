@@ -18,11 +18,11 @@ else
 	fi
 fi
 
-if ! command -v "$INSTALL_DIR/bin/npm" &>/dev/null; then
+if ! command -v npm &>/dev/null; then
 	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 fi
 
 # rustup, cargo
-if ! command -v rustup &>/dev/null; then
+if ! command -v rustc &>/dev/null; then
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 fi

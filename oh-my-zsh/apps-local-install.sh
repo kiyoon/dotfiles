@@ -80,7 +80,7 @@ else
 	pip3 install --user "$TEMPDIR"
 
 	if ! command -v fd &>/dev/null; then
-		"$INSTALL_DIR/bin/npm" install -g fd-find
+		npm install -g fd-find
 	fi
 
 	if ! command -v tig &>/dev/null; then
@@ -173,11 +173,13 @@ else
 	fi
 
 	if ! command -v ai &>/dev/null; then
-		"$INSTALL_DIR/bin/npm" install -g @builder.io/ai-shell
+		npm install -g @builder.io/ai-shell
 	fi
 
+	if ! command -v bat &> /dev/null; then
+		cargo install bat
+	fi
 	cargo install viu # --features=sixel
-	cargo install bat
 	cargo install bottom
 	cargo install du-dust
 	cargo install procs

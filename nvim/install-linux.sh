@@ -60,4 +60,6 @@ else
 	echo "ripgrep found at $(which rg). Skipping installation."
 fi
 
-cargo install viu
+if ! command -v viu &> /dev/null; then
+	cargo install viu
+fi

@@ -1,4 +1,5 @@
 FROM --platform=linux/amd64 nvidia/cuda:12.1.1-base-ubuntu22.04
+LABEL org.opencontainers.image.source="https://github.com/kiyoon/dotfiles"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -8,24 +9,25 @@ RUN apt update
 RUN apt upgrade -y
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		apt-utils \
-        build-essential \
-        pkg-config \
-        rsync \
-        software-properties-common \
-        unzip \
-        zip \
-        zlib1g-dev \
-        wget \
+		build-essential \
+		pkg-config \
+		rsync \
+		software-properties-common \
+		unzip \
+		zip \
+		zlib1g-dev \
+		wget \
 		curl \
-        git \
+		git \
 		git-lfs \
 		vim-gtk \
 		virtualenv \
 		tzdata \
-        libgl1-mesa-glx \
+		libgl1-mesa-glx \
 		sudo \
-		libncurses-dev \
-        && \
+		locales \
+		cargo \
+		&& \
 	apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -34,24 +36,25 @@ ENV PATH /usr/local/cuda/bin:$PATH
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# Korean support
+# RUN localedef -f UTF-8 -i ko_KR ko_KR.UTF-8
+# ENV LC_ALL ko_KR.UTF-8
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV PYTHONIOENCODING=utf-8
+
 RUN git lfs install
 
-### Install zsh 5.9 (apt install zsh version may be outdated)
-ENV ZSH_SRC_NAME $HOME/bin/zsh.tar.xz
-ENV ZSH_PACK_DIR $HOME/bin/zsh
-ENV ZSH_LINK "https://sourceforge.net/projects/zsh/files/latest/download"
+RUN sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "/usr/bin" -y
+RUN curl -sL install-node.vercel.app/lts | bash -s -- --prefix=/usr/local -y
+RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-RUN mkdir -p "$ZSH_PACK_DIR"
-RUN curl -Lo "$ZSH_SRC_NAME" "$ZSH_LINK"
+ENV PATH /home/linuxbrew/.linuxbrew/bin:$PATH
+ENV HOMEBREW_NO_AUTO_UPDATE=1
 
-RUN tar xJvf "$ZSH_SRC_NAME" -C "$ZSH_PACK_DIR" --strip-components 1
-
-RUN $ZSH_PACK_DIR/configure --without-tcsetpgrp
-RUN make -j && make install
-
-RUN \rm "$ZSH_SRC_NAME"
-RUN \rm -rf "$ZSH_PACK_DIR"
-RUN ln -s /usr/local/bin/zsh /bin
+RUN brew install zsh
+RUN ln -s /home/linuxbrew/.linuxbrew/bin/zsh /bin
+RUN brew install ripgrep exa bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix neovim tmux
 
 # RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
 #     && bash Miniconda3-latest-Linux-x86_64.sh -b \
@@ -62,10 +65,10 @@ RUN ln -s /usr/local/bin/zsh /bin
 # SHELL ["/root/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
 # RUN conda init bash
 
-# Make 10 users with UID 1000 to 1009 because we don't know who's using it as of yet.
-RUN /bin/bash -c 'for i in {1000..1009}; do adduser --disabled-password --gecos "" --home /home/docker --shell /bin/zsh docker$i && adduser docker$i sudo && adduser docker$i docker1000; done'
-RUN echo '%sudo ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers
-
+# Make 10 users with UID 1000 to 1020 because we don't know who's using it as of yet.
+RUN for i in {1000..1020}; do adduser --disabled-password --gecos "" --home /home/docker --shell /bin/zsh docker$i \
+    && adduser docker$i sudo && adduser docker$i docker1000 \
+	&& echo "docker$i ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; done
 
 
 ENV HOME /home/docker
@@ -74,33 +77,59 @@ ADD . $DOTFILES_PATH
 RUN chmod 777 /home/docker -R
 RUN chown docker1000:docker1000 /home/docker -R
 
-SHELL ["/bin/bash", "-c"]
-
 USER docker1000
 ENV ZSH $HOME/.oh-my-zsh
 ENV PATH $HOME/.local/bin:$PATH
 ENV INSTALL_DIR $HOME/.local
 
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
-# RUN chmod 755 $ZSH -R
+RUN chmod 755 $ZSH -R
 
 RUN $DOTFILES_PATH/symlink.sh
-RUN $DOTFILES_PATH/install-nvim-tmux-locally-linux.sh
 RUN $DOTFILES_PATH/wezterm/terminfo.sh
 
 RUN $DOTFILES_PATH/oh-my-zsh/install-installers.sh
 ENV PATH $HOME/.cargo/bin:$PATH
-RUN $DOTFILES_PATH/oh-my-zsh/apps-local-install.sh
+# RUN $DOTFILES_PATH/oh-my-zsh/apps-local-install.sh
 
 RUN $DOTFILES_PATH/nvim/install-linux.sh
+RUN $DOTFILES_PATH/tmux/install-plugins.sh
+RUN nvim +"lua require('lazy').restore({wait=true})" +qa
+RUN nvim -u $DOTFILES_PATH/nvim/treemux_init.lua +"lua require('lazy').restore({wait=true})" +qa
+RUN nvim a.py +"CocInstall -sync coc-pyright" +qa
+RUN nvim a.py +TSUpdateSync +qa
+
+RUN zoxide add /home/docker/.config
+RUN zoxide add /home/docker/.local/share/nvim
+RUN zoxide add /home/docker/.local/share/nvim/lazy
+RUN zoxide add /home/docker/.config/dotfiles
+RUN zoxide add /home/docker/.config/dotfiles/nvim
+RUN zoxide add /home/docker/.config/dotfiles/nvim/lua/kiyoon
+RUN zoxide add /home/docker/.config/dotfiles/tmux
+RUN zoxide add /home/docker/.config/dotfiles/oh-my-zsh
+RUN zoxide add /home/docker/.config/dotfiles/oh-my-zsh/custom/plugins
+
+RUN chmod 777 /home/docker/.local -R
+RUN chmod 777 /home/docker/.conda -R
+RUN chmod 777 /home/docker/.cache -R
+RUN chmod 777 /home/docker/.config -R
+RUN chmod 777 /home/docker/.cargo -R
+RUN chmod 777 /home/docker/.npm -R
+RUN chmod 777 /home/docker/.terminfo -R
+RUN chmod 777 /home/docker/.tmux -R
+RUN chmod 777 /home/docker/bin -R
+RUN chmod 755 /home/docker/.oh-my-zsh -R
+RUN sudo chown root:root /home/docker/.oh-my-zsh -R
 
 
+#
+#
+#
+# # RUN source activate main
+# # RUN mkdir /app/
+# # ADD requirements.txt /app/
+# # RUN pip --no-cache-dir install -r /app/requirements.txt
+# # ADD . /app/
+# # RUN pip --no-cache-dir install -e /app/
 
-# RUN source activate main
-# RUN mkdir /app/
-# ADD requirements.txt /app/
-# RUN pip --no-cache-dir install -r /app/requirements.txt
-# ADD . /app/
-# RUN pip --no-cache-dir install -e /app/
-
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/zsh"]

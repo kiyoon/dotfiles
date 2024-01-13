@@ -76,8 +76,9 @@ require("nvim-treesitter.configs").setup {
     "sql",
   },
 
-  -- Install parsers synchronously (only applied to `ensure_installed`)
-  sync_install = false,
+  -- Install parsers synchronously only in headless (only applied to `ensure_installed`)
+  -- https://github.com/nvim-treesitter/nvim-treesitter/issues/3579
+  sync_install = #vim.api.nvim_list_uis() == 0,
 
   -- Automatically install missing parsers when entering buffer
   -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally

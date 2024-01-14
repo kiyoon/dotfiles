@@ -20,6 +20,7 @@ local python_import_as = {
   np = "numpy",
   pd = "pandas",
   plt = "matplotlib.pyplot",
+  o3d = "open3d",
 }
 
 local python_import_from = {

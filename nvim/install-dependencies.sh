@@ -7,7 +7,7 @@ if command -v brew &> /dev/null; then
 		npm install -g neovim
 
 		# DAP
-		pipx install debugpy
+		pip3 install --user debugpy
 
 		# Lint
 		pipx install ruff

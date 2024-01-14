@@ -13,16 +13,11 @@ if [[ $OSTYPE == "darwin"* ]]; then
 		sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 	fi
 
-	##### zoxide
 	brew install zoxide
 	brew install fzf
 	brew install pipx
 	brew install thefuck
-
-	##### Starship prompt
-	if ! command -v starship &>/dev/null; then
-		sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$INSTALL_DIR/bin" -y
-	fi
+	brew install starship
 
 	pip3 install --user pygments # colorize (ccat)
 	pip3 install --user pillow   # my custom ranger viu image viewer uses this

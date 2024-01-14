@@ -93,8 +93,8 @@ RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck
 # Neovim dependencies
 RUN pip3 install --user virtualenv # for Mason.nvim
 RUN pip3 install --user pynvim
+RUN pip3 install --user debugpy
 RUN npm install -g neovim
-RUN pipx install debugpy
 
 # NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with `symlink.sh`.
 COPY --chown=docker1000:docker1000 ./tmux/.tmux.conf $HOME

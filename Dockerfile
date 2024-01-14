@@ -47,14 +47,6 @@ RUN git lfs install
 
 RUN sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "/usr/bin" -y
 RUN curl -sL install-node.vercel.app/lts | bash -s -- --prefix=/usr/local -y
-# RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-#     && bash Miniconda3-latest-Linux-x86_64.sh -b \
-#     && rm Miniconda3-latest-Linux-x86_64.sh
-#
-# SHELL ["/root/miniconda3/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
-# RUN conda create -n main python=3.11 -y
-# SHELL ["/root/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
-# RUN conda init bash
 
 # Make 20 users with UID 1000 to 1020 because we don't know who's using it as of yet.
 RUN for i in {1000..1020}; do adduser --disabled-password --gecos "" --home /home/docker --shell /bin/zsh docker$i \
@@ -74,61 +66,79 @@ RUN brew install zsh
 RUN sudo ln -s /home/linuxbrew/.linuxbrew/bin/zsh /bin
 RUN brew install ripgrep exa bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix neovim tmux
 
-ENV HOME /home/docker
-ENV DOTFILES_PATH $HOME/.config/dotfiles
-ADD . $DOTFILES_PATH
 RUN sudo chmod 777 /home/docker -R
 RUN sudo chown docker1000:docker1000 /home/docker -R
 
 USER docker1000
+ENV HOME /home/docker
+ENV DOTFILES_PATH $HOME/.config/dotfiles
 ENV ZSH $HOME/.oh-my-zsh
-ENV PATH /home/linuxbrew/.linuxbrew/bin:$HOME/.local/bin:$PATH
+ENV PATH /home/linuxbrew/.linuxbrew/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH
 ENV INSTALL_DIR $HOME/.local
+
+RUN mkdir -p "$HOME/bin"
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$HOME/bin" \
+	&& bash "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh" -b -p "$HOME/bin/miniconda3" \ 
+	&& rm "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh"
+RUN chmod 777 $HOME/bin -R
+# SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
+# RUN conda create -n main python=3.11 -y
+# SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
+# RUN conda init bash
+
+# NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with `symlink.sh`.
+COPY --chown=docker1000:docker1000 ./tmux/.tmux.conf $HOME
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
+    && tmux start-server \
+    && tmux new-session -d \
+	&& ~/.tmux/plugins/tpm/scripts/install_plugins.sh \
+    && chmod 777 $HOME/.tmux -R
 
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 RUN chmod 755 $ZSH -R
+RUN sudo chown root:root /home/docker/.oh-my-zsh -R
 
-RUN $DOTFILES_PATH/symlink.sh
-RUN $DOTFILES_PATH/wezterm/terminfo.sh
+RUN tempfile=$(mktemp) \
+	&& curl -o $tempfile https://raw.githubusercontent.com/wez/wezterm/master/termwiz/data/wezterm.terminfo \
+	&& tic -x -o ~/.local/share/terminfo $tempfile \
+	&& tic -x -o ~/.terminfo $tempfile \
+	&& rm $tempfile \
+	&& chmod 777 $HOME/.terminfo -R
 
-RUN $DOTFILES_PATH/oh-my-zsh/install-installers.sh
-ENV PATH $HOME/.cargo/bin:$PATH
-# RUN $DOTFILES_PATH/oh-my-zsh/apps-local-install.sh
-
-RUN $DOTFILES_PATH/nvim/install-linux.sh
-RUN $DOTFILES_PATH/tmux/install-plugins.sh
+COPY --chown=docker1000:docker1000 ./nvim $HOME/.config/nvim
+RUN $HOME/.config/nvim/install-linux.sh
 RUN nvim +"lua require('lazy').restore({wait=true})" +qa
 RUN nvim -u $DOTFILES_PATH/nvim/treemux_init.lua +"lua require('lazy').restore({wait=true})" +qa
 RUN nvim a.py +"CocInstall -sync coc-pyright" +qa
 RUN nvim a.py +TSUpdateSync +qa
 
-RUN zoxide add /home/docker/.config
-RUN zoxide add /home/docker/.local/share/nvim
-RUN zoxide add /home/docker/.local/share/nvim/lazy
-RUN zoxide add /home/docker/.config/dotfiles
-RUN zoxide add /home/docker/.config/dotfiles/nvim
-RUN zoxide add /home/docker/.config/dotfiles/nvim/lua/kiyoon
-RUN zoxide add /home/docker/.config/dotfiles/tmux
-RUN zoxide add /home/docker/.config/dotfiles/oh-my-zsh
-RUN zoxide add /home/docker/.config/dotfiles/oh-my-zsh/custom/plugins
+COPY --chown=docker1000:docker1000 . $DOTFILES_PATH
+RUN chmod 777 $HOME/.config -R
 
-RUN chmod 777 /home/docker/.local -R
-RUN chmod 777 /home/docker/.conda -R
-RUN chmod 777 /home/docker/.cache -R
-RUN chmod 777 /home/docker/.config -R
-RUN chmod 777 /home/docker/.cargo -R
-RUN chmod 777 /home/docker/.npm -R
-RUN chmod 777 /home/docker/.terminfo -R
-RUN chmod 777 /home/docker/.tmux -R
-RUN chmod 777 /home/docker/bin -R
-RUN chmod 755 /home/docker/.oh-my-zsh -R
-RUN sudo chown root:root /home/docker/.oh-my-zsh -R
+RUN $DOTFILES_PATH/symlink.sh
+
+RUN zoxide add $HOME/.config
+RUN zoxide add $HOME/.local/share/nvim
+RUN zoxide add $HOME/.local/share/nvim/lazy
+RUN zoxide add $HOME/.config/dotfiles
+RUN zoxide add $HOME/.config/dotfiles/nvim
+RUN zoxide add $HOME/.config/dotfiles/nvim/lua/kiyoon
+RUN zoxide add $HOME/.config/dotfiles/tmux
+RUN zoxide add $HOME/.config/dotfiles/oh-my-zsh
+RUN zoxide add $HOME/.config/dotfiles/oh-my-zsh/custom/plugins
+
+RUN chmod 777 $HOME/.local -R
+RUN chmod 777 $HOME/.conda -R
+RUN chmod 777 $HOME/.cache -R
+RUN chmod 777 $HOME/.config -R
+RUN chmod 777 $HOME/.cargo -R
+RUN chmod 777 $HOME/.npm -R
 
 # RUN source activate main
 # RUN mkdir /app/
-# ADD requirements.txt /app/
+# COPY requirements.txt /app/
 # RUN pip --no-cache-dir install -r /app/requirements.txt
-# ADD . /app/
+# COPY . /app/
 # RUN pip --no-cache-dir install -e /app/
 
 WORKDIR /home/docker

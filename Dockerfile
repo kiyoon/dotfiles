@@ -60,13 +60,11 @@ USER linuxbrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 ENV PATH /home/linuxbrew/.linuxbrew/bin:$PATH
+RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/linuxbrew/.profile
 ENV HOMEBREW_NO_AUTO_UPDATE=1
 
-RUN brew install zsh
+RUN brew install zsh && brew cleanup
 RUN sudo ln -s /home/linuxbrew/.linuxbrew/bin/zsh /bin
-RUN brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix \
-    neovim tmux tree-sitter stylua prettier ruff isort black \
-	&& brew cleanup
 
 RUN sudo chmod 777 /home/docker -R
 RUN sudo chown docker1000:docker1000 /home/docker -R
@@ -87,6 +85,10 @@ RUN chmod 777 $HOME/bin -R
 # RUN conda create -n main python=3.11 -y
 # SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
 # RUN conda init bash
+
+RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix \
+    neovim tmux tree-sitter stylua prettier ruff isort black \
+	&& sudo -i -u linuxbrew brew cleanup
 
 # Neovim dependencies
 RUN pip3 install --user virtualenv # for Mason.nvim

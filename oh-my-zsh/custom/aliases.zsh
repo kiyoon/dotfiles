@@ -2,12 +2,12 @@ if (($+commands[bat])); then
 	alias cat='bat'
 fi
 
-if (($+commands[exa])); then
-	alias ls='exa --icons'
-	alias ll='exa -alF --icons'
-	alias la='exa -a --icons'
-	alias l='exa -F --icons'
-	alias lg='exa --git-ignore --icons'
+if (($+commands[eza])); then
+	alias ls='eza --icons'
+	alias ll='eza -alF --icons'
+	alias la='eza -a --icons'
+	alias l='eza -F --icons'
+	alias lg='eza --git-ignore --icons'
 fi
 
 if (($+commands[nvim])); then

@@ -64,7 +64,9 @@ ENV HOMEBREW_NO_AUTO_UPDATE=1
 
 RUN brew install zsh
 RUN sudo ln -s /home/linuxbrew/.linuxbrew/bin/zsh /bin
-RUN brew install ripgrep exa bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix neovim tmux
+RUN brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix \
+    neovim tmux tree-sitter stylua prettier ruff isort black \
+	&& brew cleanup
 
 RUN sudo chmod 777 /home/docker -R
 RUN sudo chown docker1000:docker1000 /home/docker -R
@@ -86,6 +88,12 @@ RUN chmod 777 $HOME/bin -R
 # SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
 # RUN conda init bash
 
+# Neovim dependencies
+RUN pip3 install --user virtualenv # for Mason.nvim
+RUN pip3 install --user pynvim
+RUN npm install -g neovim
+RUN pipx install debugpy
+
 # NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with `symlink.sh`.
 COPY --chown=docker1000:docker1000 ./tmux/.tmux.conf $HOME
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
@@ -106,7 +114,6 @@ RUN tempfile=$(mktemp) \
 	&& chmod 777 $HOME/.terminfo -R
 
 COPY --chown=docker1000:docker1000 ./nvim $HOME/.config/nvim
-RUN $HOME/.config/nvim/install-linux.sh
 RUN nvim +"lua require('lazy').restore({wait=true})" +qa
 RUN nvim -u $DOTFILES_PATH/nvim/treemux_init.lua +"lua require('lazy').restore({wait=true})" +qa
 RUN nvim a.py +"CocInstall -sync coc-pyright" +qa

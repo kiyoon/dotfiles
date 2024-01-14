@@ -102,7 +102,7 @@ This will download the latest appimage for each and extract at `~/.local/bin`.
 Install neovim dependencies:
 
 ```bash
-nvim/install-linux.sh
+nvim/install-dependencies.sh
 ```
 
 Install tmux plugins:

@@ -34,7 +34,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 
 	brew install fd
 	brew install tig
-	brew install exa
+	brew install eza
 
 	brew install gh
 	gh extension install github/gh-copilot
@@ -110,26 +110,13 @@ else
 		echo "tig already install at $(which tig). Skipping.."
 	fi
 
-	if ! command -v exa &>/dev/null; then
-		TEMPDIR=$(mktemp -d)
-		curl -s https://api.github.com/repos/ogham/exa/releases/latest |
-			grep "browser_download_url.*exa-linux-x86_64-musl-v" |
-			cut -d : -f 2,3 |
-			tr -d \" |
-			wget -qi - -O $TEMPDIR/exa.zip
-		unzip "$TEMPDIR/exa.zip" -d $TEMPDIR
-		# mv "$TEMPDIR/bin/"* "$INSTALL_DIR/bin"
-		mv "$TEMPDIR/man/"*.1 "$INSTALL_DIR/share/man/man1"
-		mv "$TEMPDIR/man/"*.5 "$INSTALL_DIR/share/man/man5"
-		mv "$TEMPDIR/completions/exa.zsh" "$INSTALL_DIR/share/zsh/site-functions/_exa"
+	if ! command -v eza &>/dev/null; then
+		cargo install eza
+		wget https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza -P "$INSTALL_DIR/share/zsh/site-functions"
 
-		# Exa with git support
-		~/.cargo/bin/cargo install exa
-
-		echo "exa install at $(which exa)"
-		\rm -rf "$TEMPDIR"
+		echo "eza install at $(which eza)"
 	else
-		echo "exa already install at $(which exa). Skipping.."
+		echo "eza already install at $(which eza). Skipping.."
 	fi
 
 	if ! command -v gh &>/dev/null; then

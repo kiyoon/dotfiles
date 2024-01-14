@@ -1,10 +1,41 @@
 #!/usr/bin/env bash
 
-LOCALBIN="$HOME/.local/bin"
+if command -v brew &> /dev/null; then
+	if command -v pipx &> /dev/null; then
+		pip3 install --user virtualenv # for Mason.nvim
+		pip3 install --user pynvim
+		npm install -g neovim
 
-if ! command -v node &> /dev/null; then
-	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$HOME/.local" -y
+		# DAP
+		pipx install debugpy
+
+		# Lint
+		pipx install ruff
+
+		# Formatter
+		pipx install isort
+		pipx install black
+		brew install stylua
+		brew install prettier
+
+		brew install tree-sitter
+
+		# wilder.nvim, telescope.nvim
+		brew install fd
+
+		# ripgrep for telescope.nvim
+		brew install ripgrep
+		brew install viu
+		exit 0
+	fi
 fi
+
+if [[ $OSTYPE == "darwin"* ]]; then
+	echo "MacOS detected but either brew or pipx is not installed. Exiting."
+	exit 1
+fi
+
+LOCALBIN="$HOME/.local/bin"
 
 pip3 install --user virtualenv # for Mason.nvim
 pip3 install --user pynvim

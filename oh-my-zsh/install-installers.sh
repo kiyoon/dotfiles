@@ -5,8 +5,8 @@
 INSTALL_DIR="$HOME/.local"
 
 if [[ $OSTYPE == "darwin"* ]]; then
-	##### conda
 	brew install --cask miniconda
+	brew install node
 else
 	##### conda
 	if ! command -v conda &>/dev/null; then
@@ -16,11 +16,12 @@ else
 		bash "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh" -b -p "$CONDADIR"
 		rm "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh"
 	fi
+
+	if ! command -v npm &>/dev/null; then
+		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
+	fi
 fi
 
-if ! command -v npm &>/dev/null; then
-	curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
-fi
 
 # rustup, cargo
 if ! command -v rustc &>/dev/null; then

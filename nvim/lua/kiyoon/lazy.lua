@@ -43,7 +43,7 @@ return {
         mode = { "n", "x" },
         desc = "Send to tmux w/ pane uid (plain)",
       },
-      { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x", desc = "Yank to tmux buffer" } },
+      { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" }, desc = "Yank to tmux buffer" },
     },
   },
 
@@ -1601,5 +1601,14 @@ return {
       "OverseerToggle",
     },
     opts = {},
+  },
+  {
+    "lifthrasiir/hangeul.vim",
+    init = function()
+      vim.cmd [[let hangeul_enabled = 1]]
+    end,
+    config = function()
+      vim.keymap.set("i", "<C-h>", "<Plug>HanMode", { noremap = false, silent = true })
+    end,
   },
 }

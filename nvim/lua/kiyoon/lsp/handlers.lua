@@ -109,7 +109,7 @@ local function lsp_keymaps(bufnr)
 
   -- keymap("n", "<space>pr", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
   keymap("n", "<space>ps", vim.lsp.buf.signature_help, opts, "[S]ignature Help")
-  keymap("i", "<C-h>", vim.lsp.buf.signature_help, opts, "Signature [H]elp")
+  -- keymap("i", "<C-h>", vim.lsp.buf.signature_help, opts, "Signature [H]elp")
   keymap("n", "<space>pq", vim.diagnostic.setqflist, opts, "Set [Q]uickfix List")
 
   if vim.bo.filetype == "python" then

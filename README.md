@@ -102,7 +102,7 @@ This will download the latest appimage for each and extract at `~/.local/bin`.
 Install neovim dependencies:
 
 ```bash
-nvim/install-linux.sh
+nvim/install-dependencies.sh
 ```
 
 Install tmux plugins:
@@ -129,4 +129,18 @@ wezterm/terminfo.sh
 dotupdate			# Use if you want to update to the latest commit
 dotstable			# Use if you want to use the stable tag
 dotupdate <tag>		# Specify the tag/commit you want to use
+```
+
+## Docker
+
+You can use the provided Dockerfile that has everything installed.
+
+```bash
+docker pull ghcr.io/kiyoon/dotfiles
+docker run -it --rm \
+    -u $UID:$UID \
+    -e TERM=$TERM \
+    -e TERM_PROGRAM=$TERM_PROGRAM \
+    -e TERM_PROGRAM_VERSION=$TERM_PROGRAM_VERSION \
+    ghcr.io/kiyoon/dotfiles
 ```

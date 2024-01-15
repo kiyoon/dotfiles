@@ -20,6 +20,7 @@ local python_import_as = {
   np = "numpy",
   pd = "pandas",
   plt = "matplotlib.pyplot",
+  o3d = "open3d",
 }
 
 local python_import_from = {
@@ -200,12 +201,161 @@ local python_import_from = {
   TypeAlias = "typing",
   TypeGuard = "typing",
 
+  setup = "setuptools",
+
   nn = "torch",
   Image = "PIL",
   ImageDraw = "PIL",
   ImageFont = "PIL",
   ImageOps = "PIL",
 }
+
+local python_keywords = {
+  "False",
+  "None",
+  "True",
+  "and",
+  "as",
+  "assert",
+  "async",
+  "await",
+  "break",
+  "class",
+  "continue",
+  "def",
+  "del",
+  "elif",
+  "else",
+  "except",
+  "finally",
+  "for",
+  "from",
+  "global",
+  "if",
+  "import",
+  "in",
+  "is",
+  "lambda",
+  "nonlocal",
+  "not",
+  "or",
+  "pass",
+  "raise",
+  "return",
+  "try",
+  "while",
+  "with",
+  "yield",
+  "NotImplemented",
+}
+
+-- not a keyword, but a builtin
+-- https://docs.python.org/3/library/functions.html
+local python_builtins = {
+  "abs",
+  "aiter",
+  "all",
+  "anext",
+  "any",
+  "ascii",
+  "bin",
+  "bool",
+  "breakpoint",
+  "bytearray",
+  "bytes",
+  "callable",
+  "chr",
+  "classmethod",
+  "compile",
+  "complex",
+  "delattr",
+  "dict",
+  "dir",
+  "divmod",
+  "enumerate",
+  "eval",
+  "exec",
+  "filter",
+  "float",
+  "format",
+  "frozenset",
+  "getattr",
+  "globals",
+  "hasattr",
+  "hash",
+  "help",
+  "hex",
+  "id",
+  "input",
+  "int",
+  "isinstance",
+  "issubclass",
+  "iter",
+  "len",
+  "list",
+  "locals",
+  "map",
+  "max",
+  "memoryview",
+  "min",
+  "next",
+  "object",
+  "oct",
+  "open",
+  "ord",
+  "pow",
+  "print",
+  "property",
+  "range",
+  "repr",
+  "reversed",
+  "round",
+  "set",
+  "setattr",
+  "slice",
+  "sorted",
+  "staticmethod",
+  "str",
+  "sum",
+  "super",
+  "tuple",
+  "type",
+  "vars",
+  "zip",
+  "__import__",
+  "_",
+}
+
+local ban_from_import = {}
+for _, v in ipairs(python_keywords) do
+  ban_from_import[v] = true
+end
+for _, v in ipairs(python_builtins) do
+  ban_from_import[v] = true
+end
+
+local function get_current_word()
+  local line = vim.fn.getline "."
+  local col = vim.fn.col "."
+  local mode = vim.fn.mode "."
+  if mode == "i" then
+    -- insert mode has cursor one char to the right
+    col = col - 1
+  end
+  local finish = line:find("[^a-zA-Z0-9_]", col)
+  -- look forward
+  while finish == col do
+    col = col + 1
+    finish = line:find("[^a-zA-Z0-9_]", col)
+  end
+
+  if finish == nil then
+    finish = #line + 1
+  end
+  local start = vim.fn.match(line:sub(1, col), [[\k*$]])
+  print(start, finish)
+  return line:sub(start + 1, finish - 1)
+end
 
 local function get_python_import(statement)
   if statement == nil then
@@ -224,18 +374,29 @@ local function get_python_import(statement)
 end
 
 local function add_python_import(module)
+  -- strip
+  module = module:match "^%s*(.*)%s*$"
+  if module == "" then
+    return nil
+  end
+  if ban_from_import[module] then
+    return nil
+  end
+
   local line_number = find_first_python_empty_line_or_import()
   if line_number == nil then
     line_number = 1
   end
 
-  vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, { get_python_import(module) })
+  local import_statement = get_python_import(module)
+  vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, { import_statement })
 
-  return line_number
+  return line_number, import_statement
 end
 
 local function add_python_import_current_word()
-  local module = vim.fn.expand "<cword>"
+  local module = get_current_word()
+  -- local module = vim.fn.expand "<cword>"
   return add_python_import(module)
 end
 
@@ -250,21 +411,41 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "python",
   callback = function()
     vim.keymap.set("n", "<leader>i", function()
-      local line_number = add_python_import_current_word()
-      vim.cmd([[normal! ]] .. line_number .. [[G0]])
+      local line_number, _ = add_python_import_current_word()
+      if line_number ~= nil then
+        vim.cmd([[normal! ]] .. line_number .. [[G0]])
+      end
     end, { silent = true, desc = "Add python import and move cursor" })
     vim.keymap.set("x", "<leader>i", function()
-      local line_number = add_python_import_current_selection()
-      vim.cmd([[normal! ]] .. line_number .. [[G0]])
+      local line_number, _ = add_python_import_current_selection()
+      if line_number ~= nil then
+        vim.cmd([[normal! ]] .. line_number .. [[G0]])
+      end
     end, { silent = true, desc = "Add python import and move cursor" })
 
     vim.keymap.set({ "n", "i" }, "<M-CR>", function()
-      add_python_import_current_word()
-      vim.notify("Added python import: " .. vim.fn.expand "<cword>")
+      local line_number, import_statement = add_python_import_current_word()
+      if line_number ~= nil then
+        vim.notify(import_statement, "info", {
+          title = "Python import added",
+          on_open = function(win)
+            local buf = vim.api.nvim_win_get_buf(win)
+            vim.api.nvim_buf_set_option(buf, "filetype", "python")
+          end,
+        })
+      end
     end, { silent = true, desc = "Add python import" })
     vim.keymap.set("x", "<M-CR>", function()
-      add_python_import_current_selection()
-      vim.notify("Added python import: " .. vim.fn.getreg "s")
+      local line_number, import_statement = add_python_import_current_selection()
+      if line_number ~= nil then
+        vim.notify(import_statement, "info", {
+          title = "Python import added",
+          on_open = function(win)
+            local buf = vim.api.nvim_win_get_buf(win)
+            vim.api.nvim_buf_set_option(buf, "filetype", "python")
+          end,
+        })
+      end
     end, { silent = true, desc = "Add python import" })
   end,
 })

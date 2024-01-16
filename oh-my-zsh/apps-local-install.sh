@@ -21,6 +21,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 
 	pip3 install --user pygments # colorize (ccat)
 	pip3 install --user pillow   # my custom ranger viu image viewer uses this
+	pip3 install --user virtualenvwrapper
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)
@@ -68,6 +69,7 @@ else
 	pip3 install --user pygments # colorize (ccat)
 	pip3 install --user thefuck  # fix last command
 	pip3 install --user pillow   # my custom ranger viu image viewer uses this
+	pip3 install --user virtualenvwrapper
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)

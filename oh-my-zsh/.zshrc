@@ -114,7 +114,7 @@ plugins=(
 	thefuck
 	ripgrep
 	fd
-	poetry
+	virtualenvwrapper
 )
 
 # VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false

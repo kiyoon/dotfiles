@@ -41,3 +41,17 @@ source ~/.ssh/.agent.pid >&/dev/null
 # 	eval $(ssh-agent -s)
 # 	# ssh-add
 # fi
+
+# NOTE: virtualenvwrapper settings.
+# mkvirtualenv <name>
+# mkvirtualenv <name> -p <python3>
+# workon <name>
+# deactivate
+# rmvirtualenv <name>
+# lsvirtualenv
+# lssitepackages
+# It will automatically activate the virtualenv when you cd into a git repo with the same name as the virtualenv
+# or when you cd into a directory with a .venv file in it.
+
+export WORKON_HOME=~/.virtualenvs
+export VIRTUALENVWRAPPER_PYTHON="$(which python3)"  # Usage of python3

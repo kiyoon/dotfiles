@@ -20,6 +20,8 @@ local config = {
 	},
 
 	term = "wezterm",
+
+	enable_kitty_graphics = true,
 }
 
 config.hyperlink_rules = wezterm.default_hyperlink_rules()

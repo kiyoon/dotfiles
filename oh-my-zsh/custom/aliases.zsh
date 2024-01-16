@@ -44,6 +44,11 @@ alias ca='conda activate'
 alias cda='conda deactivate'
 alias cc='conda create -n'
 
+# virtualenvwrapper
+alias a='workon'
+alias da='deactivate'
+alias vc='mkvirtualenv'
+
 alias src='omz reload'
 alias ns='nvidia-smi'
 alias rb='gio trash'

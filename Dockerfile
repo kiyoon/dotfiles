@@ -59,7 +59,7 @@ RUN for i in {1000..1020}; do adduser docker$i linuxbrew; done
 USER linuxbrew
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-ENV PATH /home/linuxbrew/.linuxbrew/bin:$PATH
+ENV PATH $PATH:/home/linuxbrew/.linuxbrew/bin
 RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/linuxbrew/.profile
 ENV HOMEBREW_NO_AUTO_UPDATE=1
 
@@ -73,7 +73,8 @@ USER docker1000
 ENV HOME /home/docker
 ENV DOTFILES_PATH $HOME/.config/dotfiles
 ENV ZSH $HOME/.oh-my-zsh
-ENV PATH /home/linuxbrew/.linuxbrew/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH
+ENV PATH $HOME/.cargo/bin:$HOME/.local/bin:$PATH:/home/linuxbrew/.linuxbrew/bin
+ENV LD_LIBRARY_PATH $HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew/lib
 ENV INSTALL_DIR $HOME/.local
 
 RUN mkdir -p "$HOME/bin"

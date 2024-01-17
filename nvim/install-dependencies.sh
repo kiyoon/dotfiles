@@ -100,17 +100,22 @@ if ! command -v viu &> /dev/null; then
 fi
 
 # molten.nvim
+# We need to extract the AppImage because the luarocks magick (bundled in this dotfiles)
+# requires the shared libraries.
 if ! command -v magick &> /dev/null; then
 	echo "ImageMagick could not be found. Installing in $LOCALBIN"
-	mkdir -p "$LOCALBIN"
+	mkdir -p ~/.local
 	curl -s https://api.github.com/repos/ImageMagick/ImageMagick/releases/latest \
 		| grep "browser_download_url.*ImageMagick--gcc-x86_64.AppImage" \
 		| cut -d : -f 2,3 \
 		| tr -d \" \
-		| wget -qi - -O $LOCALBIN/magick
-	chmod +x "$LOCALBIN/magick"
-	rm -rf $TEMPDIR
+		| wget -qi - -O magick.appimage
+	chmod +x magick.appimage
+	./magick.appimage --appimage-extract
+	rsync -a squashfs-root/usr/ ~/.local/
+	rm magick.appimage
+	rm -rf squashfs-root
 else
 	echo "ImageMagick found at $(which magick). Skipping installation."
 fi
-pip install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+pip3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip

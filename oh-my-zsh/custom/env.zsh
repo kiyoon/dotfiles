@@ -1,5 +1,6 @@
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/home/linuxbrew/.linuxbrew/bin:$PATH"
-export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
+# We don't want linuxbrew python to be used as default python, so we add it to the end of the path.
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:/home/linuxbrew/.linuxbrew/bin"
+export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew/lib"
 export MANPATH="$HOME/.local/share/man:$MANPATH"
 
 if [[ $OSTYPE == "linux-gnu"* ]]; then

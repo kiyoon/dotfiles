@@ -1,6 +1,6 @@
-local ffi = require("ffi")
+local ffi = require "ffi"
 local lib
-ffi.cdef([[  typedef void MagickWand;
+ffi.cdef [[  typedef void MagickWand;
   typedef void PixelWand;
 
   typedef int MagickBooleanType;
@@ -114,11 +114,14 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageDepth(MagickWand *,const unsigned long);
   unsigned long MagickGetImageDepth(MagickWand *);
 
-]])
+]]
 local get_flags
 get_flags = function()
-  local proc = io.popen("pkg-config --cflags --libs MagickWand", "r")
-  local flags = proc:read("*a")
+  local proc = io.popen(
+    'PKG_CONFIG_PATH="$HOME/.local/lib/pkgconfig:/home/linuxbrew/.linuxbrew/lib/pkgconfig:$PKG_CONFIG_PATH" pkg-config --cflags --libs MagickWand',
+    "r"
+  )
+  local flags = proc:read "*a"
   get_flags = function()
     return flags
   end
@@ -129,20 +132,22 @@ local get_filters
 get_filters = function()
   local suffixes = {
     "magick/resample.h",
-    "MagickCore/resample.h"
+    "MagickCore/resample.h",
   }
   local prefixes = {
     "/usr/include/ImageMagick",
     "/usr/local/include/ImageMagick",
+    vim.fn.expand "$HOME" .. "/.local/include/ImageMagick",
+    "/home/linuxbrew/.linuxbrew/include/ImageMagick",
     unpack((function()
-      local _accum_0 = { }
+      local _accum_0 = {}
       local _len_0 = 1
-      for p in get_flags():gmatch("-I([^%s]+)") do
+      for p in get_flags():gmatch "-I([^%s]+)" do
         _accum_0[_len_0] = p
         _len_0 = _len_0 + 1
       end
       return _accum_0
-    end)())
+    end)()),
   }
   for _index_0 = 1, #prefixes do
     local p = prefixes[_index_0]
@@ -154,14 +159,14 @@ get_filters = function()
         if f then
           local content
           do
-            local _with_0 = f:read("*a")
+            local _with_0 = f:read "*a"
             f:close()
             content = _with_0
           end
-          local filter_types = content:match("(typedef enum.-FilterTypes?;)")
+          local filter_types = content:match "(typedef enum.-FilterTypes?;)"
           if filter_types then
             ffi.cdef(filter_types)
-            if filter_types:match("FilterTypes;") then
+            if filter_types:match "FilterTypes;" then
               return "FilterTypes"
             end
             return "FilterType"
@@ -191,7 +196,7 @@ local try_to_load
 try_to_load = function(...)
   local out
   local _list_0 = {
-    ...
+    ...,
   }
   for _index_0 = 1, #_list_0 do
     local _continue_0 = false
@@ -199,7 +204,7 @@ try_to_load = function(...)
       local name = _list_0[_index_0]
       if "function" == type(name) then
         name = name()
-        if not (name) then
+        if not name then
           _continue_0 = true
           break
         end
@@ -218,7 +223,7 @@ try_to_load = function(...)
   return error("Failed to load ImageMagick (" .. tostring(...) .. ")")
 end
 lib = try_to_load("MagickWand", function()
-  local lname = get_flags():match("-l(MagickWand[^%s]*)")
+  local lname = get_flags():match "-l(MagickWand[^%s]*)"
   local suffix
   if ffi.os == "OSX" then
     suffix = ".dylib"
@@ -232,5 +237,5 @@ end)
 return {
   lib = lib,
   can_resize = can_resize,
-  get_filter = get_filter
+  get_filter = get_filter,
 }

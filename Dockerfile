@@ -87,13 +87,13 @@ RUN chmod 777 $HOME/bin -R
 # RUN conda init bash
 
 RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix \
-    neovim tmux tree-sitter stylua prettier ruff isort black \
+    neovim tmux tree-sitter stylua prettier ruff isort black imagemagick \
 	&& sudo -i -u linuxbrew brew cleanup
 
 # Neovim dependencies
 RUN pip3 install --user virtualenv # for Mason.nvim
-RUN pip3 install --user pynvim
 RUN pip3 install --user debugpy
+RUN pip3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 RUN npm install -g neovim
 
 # NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with `symlink.sh`.

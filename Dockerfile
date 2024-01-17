@@ -92,6 +92,7 @@ RUN sudo -i -u linuxbrew brew install neovim tmux tree-sitter stylua prettier ru
 
 # Neovim dependencies
 RUN pip3 install --user virtualenv # for Mason.nvim
+RUN pip3 install --user virtualenvwrapper
 RUN pip3 install --user debugpy
 RUN pip3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 RUN npm install -g neovim
@@ -121,20 +122,30 @@ RUN nvim -u $DOTFILES_PATH/nvim/treemux_init.lua +"lua require('lazy').restore({
 RUN nvim a.py +"CocInstall -sync coc-pyright" +qa
 RUN nvim a.py +TSUpdateSync +qa
 
-COPY --chown=docker1000:docker1000 . $DOTFILES_PATH
+COPY --chown=docker1000:docker1000 ./ranger $DOTFILES_PATH/ranger
+COPY --chown=docker1000:docker1000 ./nvim-coc $DOTFILES_PATH/nvim-coc
+COPY --chown=docker1000:docker1000 ./nvim-lazyvim $DOTFILES_PATH/nvim-lazyvim
+COPY --chown=docker1000:docker1000 ./helix $DOTFILES_PATH/helix
+COPY --chown=docker1000:docker1000 ./conda $DOTFILES_PATH/conda
+COPY --chown=docker1000:docker1000 ./cargo $DOTFILES_PATH/cargo
+COPY --chown=docker1000:docker1000 ./wezterm $DOTFILES_PATH/wezterm
+COPY --chown=docker1000:docker1000 ./symlink.sh $DOTFILES_PATH/symlink.sh
+COPY --chown=docker1000:docker1000 ./nvim $DOTFILES_PATH/nvim
+COPY --chown=docker1000:docker1000 ./tmux $DOTFILES_PATH/tmux
+COPY --chown=docker1000:docker1000 ./oh-my-zsh $DOTFILES_PATH/oh-my-zsh
 RUN chmod 777 $HOME/.config -R
 
 RUN $DOTFILES_PATH/symlink.sh
 
-RUN zoxide add $HOME/.config
-RUN zoxide add $HOME/.local/share/nvim
-RUN zoxide add $HOME/.local/share/nvim/lazy
-RUN zoxide add $HOME/.config/dotfiles
-RUN zoxide add $HOME/.config/dotfiles/nvim
-RUN zoxide add $HOME/.config/dotfiles/nvim/lua/kiyoon
-RUN zoxide add $HOME/.config/dotfiles/tmux
-RUN zoxide add $HOME/.config/dotfiles/oh-my-zsh
-RUN zoxide add $HOME/.config/dotfiles/oh-my-zsh/custom/plugins
+RUN zoxide add $HOME/.config \
+    && zoxide add $HOME/.local/share/nvim \
+	&& zoxide add $HOME/.local/share/nvim/lazy \
+	&& zoxide add $HOME/.config/dotfiles \
+	&& zoxide add $HOME/.config/dotfiles/nvim \
+	&& zoxide add $HOME/.config/dotfiles/nvim/lua/kiyoon \
+	&& zoxide add $HOME/.config/dotfiles/tmux \
+	&& zoxide add $HOME/.config/dotfiles/oh-my-zsh \
+	&& zoxide add $HOME/.config/dotfiles/oh-my-zsh/custom/plugins
 
 RUN chmod 777 $HOME/.local -R
 RUN chmod 777 $HOME/.conda -R
@@ -142,6 +153,7 @@ RUN chmod 777 $HOME/.cache -R
 RUN chmod 777 $HOME/.config -R
 RUN chmod 777 $HOME/.cargo -R
 RUN chmod 777 $HOME/.npm -R
+# RUN sudo chmod 755 /home/linuxbrew -R
 
 # RUN source activate main
 # RUN mkdir /app/

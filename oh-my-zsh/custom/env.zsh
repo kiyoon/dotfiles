@@ -54,4 +54,4 @@ source ~/.ssh/.agent.pid >&/dev/null
 # or when you cd into a directory with a .venv file in it.
 
 export WORKON_HOME=~/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON="$(which python3)"  # Usage of python3
+export VIRTUALENVWRAPPER_PYTHON="/usr/bin/python3"  # Usage of python3

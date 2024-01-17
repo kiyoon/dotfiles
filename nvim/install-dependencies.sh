@@ -26,6 +26,11 @@ if command -v brew &> /dev/null; then
 		# ripgrep for telescope.nvim
 		brew install ripgrep
 		brew install viu
+
+		# molten.nvim
+		brew install imagemagick
+		pip install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+
 		exit 0
 	fi
 fi
@@ -76,10 +81,9 @@ fi
 # ripgrep for telescope.nvim
 
 if ! command -v rg &> /dev/null; then
-	echo "ripgrep (rg) could not be found. Installing on $LOCALBIN"
+	echo "ripgrep (rg) could not be found. Installing in $LOCALBIN"
 	TEMPDIR=$(mktemp -d)
 	mkdir -p "$LOCALBIN"
-	mkdir -p $TEMPDIR
 	curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest \
 		| grep "browser_download_url.*-x86_64-unknown-linux-musl.tar.gz" \
 		| cut -d : -f 2,3 \
@@ -94,3 +98,19 @@ fi
 if ! command -v viu &> /dev/null; then
 	cargo install viu
 fi
+
+# molten.nvim
+if ! command -v magick &> /dev/null; then
+	echo "ImageMagick could not be found. Installing in $LOCALBIN"
+	mkdir -p "$LOCALBIN"
+	curl -s https://api.github.com/repos/ImageMagick/ImageMagick/releases/latest \
+		| grep "browser_download_url.*ImageMagick--gcc-x86_64.AppImage" \
+		| cut -d : -f 2,3 \
+		| tr -d \" \
+		| wget -qi - -O $LOCALBIN/magick
+	chmod +x "$LOCALBIN/magick"
+	rm -rf $TEMPDIR
+else
+	echo "ImageMagick found at $(which magick). Skipping installation."
+fi
+pip install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip

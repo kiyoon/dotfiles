@@ -155,12 +155,12 @@ export ARCHFLAGS="-arch x86_64"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 if [[ -d "$HOME/bin/miniconda3" ]]; then
-	MINICONDA_PATH="$HOME/bin/miniconda3"
+	export MINICONDA_PATH="$HOME/bin/miniconda3"
 elif [[ -d "$HOME/miniconda3" ]]; then
-	MINICONDA_PATH="$HOME/miniconda3"
+	export MINICONDA_PATH="$HOME/miniconda3"
 elif [[ -d "/usr/local/Caskroom/miniconda/base" ]]; then
 	# Mac Homebrew
-	MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"
+	export MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"
 fi
 
 # >>> conda initialize >>>

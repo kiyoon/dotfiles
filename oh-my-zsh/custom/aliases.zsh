@@ -47,7 +47,25 @@ alias cc='conda create -n'
 # virtualenvwrapper
 alias a='workon'
 alias da='deactivate'
-alias vc='mkvirtualenv'
+vc() {
+	if [[ $# -eq 0 ]]; then
+		echo "Usage: vc <virtualenv_name> [python_version]"
+		echo "Use python from conda environment to create virtualenv"
+		echo "If python_version is not given, use default python"
+		echo "Otherwise, use conda environment named python_version"
+		echo "If the conda environment does not exist, create it with python version given"
+		return
+	fi
+
+	if [[ $# -eq 1 ]]; then
+		mkvirtualenv $1
+	else
+		if [[ ! -d "$MINICONDA_PATH/envs/$2" ]]; then
+			conda create -n $2 python=$2 -y
+		fi
+		mkvirtualenv -p "$MINICONDA_PATH/envs/$2/bin/python" "$1"
+	fi
+}
 
 alias src='omz reload'
 alias ns='nvidia-smi'

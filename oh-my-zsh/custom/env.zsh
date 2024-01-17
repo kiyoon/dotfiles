@@ -32,7 +32,7 @@ bindkey "^[OH" beginning-of-line
 # https://stackoverflow.com/questions/41287226/ssh-asking-every-single-time-for-passphrase
 
 
-if ! pidof /usr/bin/ssh-agent >/dev/null; then
+if ! pgrep -u $UID ssh-agent >/dev/null; then
   ssh-agent -t 3h > ~/.ssh/.agent.pid
 fi
 source ~/.ssh/.agent.pid >&/dev/null

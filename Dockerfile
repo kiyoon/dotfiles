@@ -86,9 +86,9 @@ RUN chmod 777 $HOME/bin -R
 # SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
 # RUN conda init bash
 
-RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix \
-    neovim tmux tree-sitter stylua prettier ruff isort black imagemagick \
-	&& sudo -i -u linuxbrew brew cleanup
+# NOTE: error: too many open files if we install all of them at once
+RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix
+RUN sudo -i -u linuxbrew brew install neovim tmux tree-sitter stylua prettier ruff isort black imagemagick
 
 # Neovim dependencies
 RUN pip3 install --user virtualenv # for Mason.nvim

@@ -6,7 +6,6 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	INSTALL_DIR="$HOME/.local"
 
 	brew install wget
-	brew install pidof
 
 	##### oh-my-zsh
 	if [ ! -d "$HOME/.oh-my-zsh" ]; then

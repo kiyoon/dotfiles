@@ -142,4 +142,8 @@ end
 
 vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})
 
+-- only filetype specific mappings
+-- autocmd
+
 require "kiyoon.python_import"
+require "wookayin.python_keymaps"

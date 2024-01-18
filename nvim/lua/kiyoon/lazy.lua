@@ -1671,4 +1671,9 @@ return {
       }, -- render image files as images when opened
     },
   },
+  {
+    -- required for wookayin/dotfiles, the python keymaps
+    -- which is in kiyoon/python_utils.lua
+    "tpope/vim-repeat",
+  },
 }

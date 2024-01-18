@@ -17,4 +17,28 @@ return {
   s("logger", {
     t { "import logging", "logger = logging.getLogger(__name__)" },
   }),
+  s("logmain", {
+    t {
+      "import logging",
+      "",
+      "logger = logging.getLogger(__name__)",
+      "",
+      "",
+      [[def main():]],
+      "\t",
+    },
+    i(1, "pass"),
+    t {
+      "",
+      "",
+      "",
+      [[if __name__ == "__main__":]],
+      "\ttry:",
+      "\t\tmain()",
+      "\texcept Exception:",
+      "\t\t" .. [[logger.exception("Exception occurred")]],
+      "",
+    },
+    i(0),
+  }),
 }

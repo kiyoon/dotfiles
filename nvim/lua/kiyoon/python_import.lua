@@ -255,6 +255,7 @@ vim.api.nvim_create_autocmd("FileType", {
       ImageDraw = "PIL",
       ImageFont = "PIL",
       ImageOps = "PIL",
+      tqdm = "tqdm",
     }
 
     local python_keywords = {

@@ -1,3 +1,27 @@
+if [[ -d "$HOME/bin/miniconda3" ]]; then
+	export MINICONDA_PATH="$HOME/bin/miniconda3"
+elif [[ -d "$HOME/miniconda3" ]]; then
+	export MINICONDA_PATH="$HOME/miniconda3"
+elif [[ -d "/usr/local/Caskroom/miniconda/base" ]]; then
+	# Mac Homebrew
+	export MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"
+fi
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$("$MINICONDA_PATH/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "$MINICONDA_PATH/etc/profile.d/conda.sh" ]; then
+        . "$MINICONDA_PATH/etc/profile.d/conda.sh"
+    else
+        export PATH="$MINICONDA_PATH/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+#
 # We don't want linuxbrew python to be used as default python, so we add it to the end of the path.
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:/home/linuxbrew/.linuxbrew/bin"
 export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew/lib"
@@ -30,18 +54,10 @@ bindkey "^[OF" end-of-line
 bindkey "^[OH" beginning-of-line
 
 # https://stackoverflow.com/questions/41287226/ssh-asking-every-single-time-for-passphrase
-
-
 if ! pgrep -u $UID ssh-agent >/dev/null; then
   ssh-agent -t 3h > ~/.ssh/.agent.pid
 fi
 source ~/.ssh/.agent.pid >&/dev/null
-
-# https://unix.stackexchange.com/questions/90853/how-can-i-run-ssh-add-automatically-without-a-password-prompt
-# if [ -z "$SSH_AUTH_SOCK" ]; then
-# 	eval $(ssh-agent -s)
-# 	# ssh-add
-# fi
 
 # NOTE: virtualenvwrapper settings.
 # mkvirtualenv <name>
@@ -56,3 +72,11 @@ source ~/.ssh/.agent.pid >&/dev/null
 
 export WORKON_HOME=~/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON="/usr/bin/python3"  # Usage of python3
+
+# Auto activate virtualenv when the current directory is a git repo with the same name as the virtualenv
+# or when the current directory has a .venv file in it.
+if [[ -d "$WORKON_HOME/$(basename "$(pwd)")" ]]; then
+	workon "$(basename "$(pwd)")"
+# elif [[ -f ".venv" ]]; then
+# 	workon "$(cat .venv)"
+fi

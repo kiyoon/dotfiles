@@ -87,6 +87,10 @@ vim.api.nvim_create_autocmd("FileType", {
       nullcontext = "contextlib",
       closing = "contextlib",
       deepcopy = "copy",
+
+      date = "datetime",
+      datetime = "datetime",
+
       dataclass = "dataclasses",
       field = "dataclasses",
       fields = "dataclasses",

@@ -17,7 +17,7 @@ else
 		rm "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh"
 	fi
 
-	if ! command -v npm &>/dev/null; then
+	if ! command -v $INSTALL_DIR/bin/npm &>/dev/null; then
 		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 	fi
 fi

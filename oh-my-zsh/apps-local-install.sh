@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 INSTALL_DIR="$HOME/.local"
+CARGO="$HOME/.cargo/bin/cargo"
 
 if [[ $OSTYPE == "darwin"* ]]; then
 	INSTALL_DIR="$HOME/.local"
@@ -107,7 +108,7 @@ else
 	fi
 
 	if ! command -v eza &>/dev/null; then
-		cargo install eza
+		$CARGO install eza
 		wget https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza -P "$INSTALL_DIR/share/zsh/site-functions"
 
 		echo "eza install at $(which eza)"
@@ -160,13 +161,13 @@ else
 	fi
 
 	if ! command -v bat &> /dev/null; then
-		cargo install bat
+		$CARGO install bat
 	fi
-	cargo install viu # --features=sixel
-	cargo install bottom
-	cargo install du-dust
-	cargo install procs
-	cargo install csvlens
+	$CARGO install viu # --features=sixel
+	$CARGO install bottom
+	$CARGO install du-dust
+	$CARGO install procs
+	$CARGO install csvlens
 
 	if ! command -v hx &>/dev/null; then
 		wget https://github.com/helix-editor/helix/releases/download/23.10/helix-23.10-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"

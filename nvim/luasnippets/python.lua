@@ -19,6 +19,10 @@ return {
   }),
   s("logmain", {
     t {
+      "from rich.traceback import install",
+
+      "install(show_locals=True)",
+
       "import logging",
       "",
       "logger = logging.getLogger(__name__)",

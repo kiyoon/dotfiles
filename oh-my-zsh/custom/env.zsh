@@ -73,10 +73,10 @@ source ~/.ssh/.agent.pid >&/dev/null
 export WORKON_HOME=~/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON="/usr/bin/python3"  # Usage of python3
 
-# Auto activate virtualenv when the current directory is a git repo with the same name as the virtualenv
-# or when the current directory has a .venv file in it.
-if [[ -d "$WORKON_HOME/$(basename "$(pwd)")" ]]; then
+if [[ -d "$MINICONDA_PATH/envs/$(basename "$(pwd)")" ]]; then
+	# Auto activate conda when the current directory is a git repo with the same name as the conda env
+	conda activate "$(basename "$(pwd)")"
+elif [[ -d "$WORKON_HOME/$(basename "$(pwd)")" ]]; then
+	# Auto activate virtualenv when the current directory is a git repo with the same name as the virtualenv
 	workon "$(basename "$(pwd)")"
-# elif [[ -f ".venv" ]]; then
-# 	workon "$(cat .venv)"
 fi

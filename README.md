@@ -131,6 +131,15 @@ dotstable			# Use if you want to use the stable tag
 dotupdate <tag>		# Specify the tag/commit you want to use
 ```
 
+## SSH with WezTerm
+If you ssh into a remote server, it won't understand the terminal and the UI will break (like backspace seems to work like space).  
+You need to install `wezterm.terminfo` on the server.
+
+```bash
+bash wezterm/terminfo.sh <ssh_server_name>  # run this before ssh into a new server. Only need it once.
+ssh <ssh_server_name>
+```
+
 ## Docker
 
 You can use the provided Dockerfile that has everything installed.

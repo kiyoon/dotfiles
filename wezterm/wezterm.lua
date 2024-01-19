@@ -19,6 +19,7 @@ local config = {
 		},
 	},
 
+	enable_scroll_bar = true,
 	term = "wezterm",
 
 	enable_kitty_graphics = true,

@@ -1,13 +1,13 @@
-#!/usr/bin/env bash
+PIP3="/usr/bin/python3 -m pip"
 
 if command -v brew &> /dev/null; then
 	if command -v pipx &> /dev/null; then
-		pip3 install --user virtualenv # for Mason.nvim
-		pip3 install --user pynvim
+		$PIP3 install --user virtualenv # for Mason.nvim
+		$PIP3 install --user pynvim
 		npm install -g neovim
 
 		# DAP
-		pip3 install --user debugpy
+		$PIP3 install --user debugpy
 
 		# Lint
 		pipx install ruff
@@ -42,20 +42,20 @@ fi
 
 LOCALBIN="$HOME/.local/bin"
 
-pip3 install --user virtualenv # for Mason.nvim
-pip3 install --user pynvim
+$PIP3 install --user virtualenv # for Mason.nvim
+$PIP3 install --user pynvim
 npm install -g neovim
 
 # DAP
-pip3 install --user debugpy
+$PIP3 install --user debugpy
 
 # Lint
-# pip3 install --user flake8
-pip3 install --user ruff
+# $PIP3 install --user flake8
+$PIP3 install --user ruff
 
 # Formatter
-pip3 install --user isort 
-pip3 install --user black
+$PIP3 install --user isort 
+$PIP3 install --user black
 
 if ! command -v stylua &> /dev/null; then
 	npm install -g @johnnymorganz/stylua-bin
@@ -118,4 +118,4 @@ if ! command -v magick &> /dev/null; then
 else
 	echo "ImageMagick found at $(which magick). Skipping installation."
 fi
-pip3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+$PIP3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip

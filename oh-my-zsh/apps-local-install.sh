@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 INSTALL_DIR="$HOME/.local"
+PIP3="/usr/bin/python3 -m pip"
 
 if [[ $OSTYPE == "darwin"* ]]; then
 	INSTALL_DIR="$HOME/.local"
@@ -18,14 +19,14 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install thefuck
 	brew install starship
 
-	pip3 install --user pygments # colorize (ccat)
-	pip3 install --user pillow   # my custom ranger viu image viewer uses this
-	pip3 install --user virtualenvwrapper
+	$PIP3 install --user pygments # colorize (ccat)
+	$PIP3 install --user pillow   # my custom ranger viu image viewer uses this
+	$PIP3 install --user virtualenvwrapper
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)
 	git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
-	pip3 install --user "$TEMPDIR"
+	$PIP3 install --user "$TEMPDIR"
 
 	brew install fd
 	brew install tig
@@ -65,15 +66,15 @@ else
 		sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$INSTALL_DIR/bin" -y
 	fi
 
-	pip3 install --user pygments # colorize (ccat)
-	pip3 install --user thefuck  # fix last command
-	pip3 install --user pillow   # my custom ranger viu image viewer uses this
-	pip3 install --user virtualenvwrapper
+	$PIP3 install --user pygments # colorize (ccat)
+	$PIP3 install --user thefuck  # fix last command
+	$PIP3 install --user pillow   # my custom ranger viu image viewer uses this
+	$PIP3 install --user virtualenvwrapper
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)
 	git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
-	pip3 install --user "$TEMPDIR"
+	$PIP3 install --user "$TEMPDIR"
 
 	if ! command -v fd &>/dev/null; then
 		npm install -g fd-find

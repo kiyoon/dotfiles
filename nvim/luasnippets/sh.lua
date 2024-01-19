@@ -28,4 +28,30 @@ return {
     },
     i(0),
   }),
+  s("tmuxrun", {
+    t {
+      [[# Run multiple commands in a tmux session]],
+      [[script_dir=$(dirname "$(realpath -s "$0")")]],
+      [[sess=]],
+    },
+    i(1, "session_name"),
+    t {
+      "",
+      [[tmux new -d -s "$sess" -c "$script_dir"   # Use default directory as this script directory]],
+      "",
+      [[for window in {0..2}]],
+      [[do]],
+      "\t" .. [[# Window 0 or 1 may already exist so it will print error. Ignore that.]],
+      "\t" .. [[tmux new-window -t "$sess:$window"]],
+      "\t" .. [[command="CUDA_VISIBLE_DEVICES=$window ]],
+    },
+    i(2, [[python train.py --arg $((window+1))]]),
+    t {
+      [["]],
+      "\t" .. [[tmux send-keys -t "$sess:$window" "$command" Enter]],
+      [[done]],
+      [[]],
+    },
+    i(0),
+  }),
 }

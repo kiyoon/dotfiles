@@ -117,6 +117,8 @@ plugins=(
 	virtualenvwrapper
 )
 
+export DISABLE_VENV_CD=1  # disable virtualenvwrapper plugin to automatically activate on cd
+
 # VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false
 # VI_MODE_SET_CURSOR=true
 

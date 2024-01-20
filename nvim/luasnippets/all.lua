@@ -77,6 +77,8 @@ return {
   -- ),
   pair_multiline("(", ")"),
   pair_multiline("{", "}"),
+  pair_multiline("[", "]"),
+  pair_multiline("<", ">"),
 
   -- emojis
   s({ trig = ":siren:" }, { t { "🚨" } }),

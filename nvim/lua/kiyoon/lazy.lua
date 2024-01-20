@@ -1345,6 +1345,11 @@ return {
       { "<space>dl", ":lua require'dap'.run_last()<CR>" },
       { "<space>di", ":lua require'dapui'.toggle()<CR>" },
       { "<space>dt", ":lua require'dap'.disconnect()<CR>" },
+      {
+        "<space>do",
+        "<cmd>lua require('kiyoon.dap').load_files_with_breakpoints()<cr>",
+        desc = "Load files with breakpoints",
+      },
     },
     dependencies = {
       "rcarriga/nvim-dap-ui",
@@ -1368,7 +1373,7 @@ return {
     ft = "python",
     config = function()
       -- Path to python with debugpy installed
-      require("dap-python").setup "python3"
+      require("dap-python").setup "/usr/bin/python3"
     end,
   },
 

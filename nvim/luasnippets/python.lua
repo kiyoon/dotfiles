@@ -56,9 +56,9 @@ return {
   }),
   s("logmain", {
     t {
-      "from rich.traceback import install",
+      "import rich.traceback",
       "",
-      "install(show_locals=True)",
+      "rich.traceback.install(show_locals=True)",
       "",
       "import logging",
       "",

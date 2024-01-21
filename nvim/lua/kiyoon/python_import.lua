@@ -30,6 +30,19 @@ vim.api.nvim_create_autocmd("FileType", {
       return nil
     end
 
+    local function find_first_python_import(max_lines)
+      max_lines = max_lines or 50
+      local bufnr = vim.fn.bufnr()
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, max_lines, false)
+      for i, line in ipairs(lines) do
+        local node = vim.treesitter.get_node { pos = { i - 1, 0 } }
+        if node ~= nil and (node:type() == "import_statement" or node:type() == "import_from_statement") then
+          return i
+        end
+      end
+      return nil
+    end
+
     local function find_last_python_import(max_lines)
       max_lines = max_lines or 50
       local bufnr = vim.fn.bufnr()
@@ -540,18 +553,23 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { silent = true, desc = "Add python import" })
 
     vim.keymap.set({ "n" }, "<space>tr", function()
-      local line_number = find_python_after_module_docstring()
-      if line_number == nil then
-        line_number = 1
-      end
       local statements = { "import rich.traceback", "", "rich.traceback.install(show_locals=True)", "" }
 
-      local lines = vim.api.nvim_buf_get_lines(0, line_number - 1, line_number - 1 + 3, false)
-      if lines[1] == statements[1] and lines[2] == statements[2] and lines[3] == statements[3] then
-        vim.notify("Rich traceback already installed", "info", {
-          title = "Rich traceback already installed",
-        })
-        return
+      local line_number = find_first_python_import()
+      if line_number == nil then
+        line_number = find_python_after_module_docstring()
+        if line_number == nil then
+          line_number = 1
+        end
+      else
+        -- first import found. Check if rich traceback already installed
+        local lines = vim.api.nvim_buf_get_lines(0, line_number - 1, line_number - 1 + 3, false)
+        if lines[1] == statements[1] and lines[2] == statements[2] and lines[3] == statements[3] then
+          vim.notify("Rich traceback already installed", "info", {
+            title = "Python auto import",
+          })
+          return
+        end
       end
 
       vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, statements)

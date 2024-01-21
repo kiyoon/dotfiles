@@ -58,7 +58,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     -- ignore pyright / pylance
     bufmap("n", "<space>ti", make_repeatable_toggle_comment_keymap "type: ignore", { remap = true })
     -- ignore ruff
-    bufmap("n", "<space>tr", make_repeatable_toggle_comment_keymap "noqa", { remap = true })
+    bufmap("n", "<space>to", make_repeatable_toggle_comment_keymap "noqa", { remap = true })
     -- black formatting
     bufmap("n", "<space>tm", make_repeatable_toggle_comment_keymap "fmt: skip", { remap = true })
 

@@ -3,18 +3,41 @@ vim.api.nvim_create_autocmd("FileType", {
   group = "python_import",
   pattern = "python",
   callback = function()
-    local function find_first_python_empty_line_or_import(max_lines)
+    local function find_python_after_module_docstring(max_lines)
       max_lines = max_lines or 50
       local bufnr = vim.fn.bufnr()
       local lines = vim.api.nvim_buf_get_lines(bufnr, 0, max_lines, false)
       for i, line in ipairs(lines) do
         local node = vim.treesitter.get_node { pos = { i - 1, 0 } }
-        if node == nil or node:type() == "module" then
-          local stripped = line:match "^%s*(.*)%s*$"
-          if stripped == "" then
-            return i
-          end
-        elseif node:type() == "import_statement" or node:type() == "import_from_statement" then
+        -- if node == nil or node:type() == "module" then
+        --   local stripped = line:match "^%s*(.*)%s*$"
+        --   if stripped == "" then
+        --     return i
+        --   end
+        -- elseif node:type() == "import_statement" or node:type() == "import_from_statement" then
+        --   return i
+        if
+          node ~= nil
+          and node:type() ~= "comment"
+          and node:type() ~= "string"
+          and node:type() ~= "string_start"
+          and node:type() ~= "string_content"
+          and node:type() ~= "string_end"
+        then
+          return i
+        end
+      end
+      return nil
+    end
+
+    local function find_last_python_import(max_lines)
+      max_lines = max_lines or 50
+      local bufnr = vim.fn.bufnr()
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, max_lines, false)
+      -- iterate backwards
+      for i = #lines, 1, -1 do
+        local node = vim.treesitter.get_node { pos = { i - 1, 0 } }
+        if node ~= nil and (node:type() == "import_statement" or node:type() == "import_from_statement") then
           return i
         end
       end
@@ -412,7 +435,6 @@ vim.api.nvim_create_autocmd("FileType", {
         finish = #line + 1
       end
       local start = vim.fn.match(line:sub(1, col), [[\k*$]])
-      print(start, finish)
       return line:sub(start + 1, finish - 1)
     end
 
@@ -421,15 +443,19 @@ vim.api.nvim_create_autocmd("FileType", {
         return nil
       end
 
+      if statement == "logger" then
+        return { "import logging", "", "logger = logging.getLogger(__name__)" }
+      end
+
       if python_import_as[statement] ~= nil then
-        return "import " .. python_import_as[statement] .. " as " .. statement
+        return { "import " .. python_import_as[statement] .. " as " .. statement }
       end
 
       if python_import_from[statement] ~= nil then
-        return "from " .. python_import_from[statement] .. " import " .. statement
+        return { "from " .. python_import_from[statement] .. " import " .. statement }
       end
 
-      return "import " .. statement
+      return { "import " .. statement }
     end
 
     local function add_python_import(module)
@@ -442,15 +468,26 @@ vim.api.nvim_create_autocmd("FileType", {
         return nil
       end
 
-      local line_number = find_first_python_empty_line_or_import()
+      local import_statements = nil
+      -- prefer to add after last import
+      local line_number = find_last_python_import()
+      print(line_number)
       if line_number == nil then
-        line_number = 1
+        -- if no import, add to first empty line
+        line_number = find_python_after_module_docstring()
+        if line_number == nil then
+          line_number = 1
+        end
+      else
+        line_number = line_number + 1 -- add after last import
       end
 
-      local import_statement = get_python_import(module)
-      vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, { import_statement })
+      import_statements = get_python_import(module)
+      assert(import_statements ~= nil)
 
-      return line_number, import_statement
+      vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, import_statements)
+
+      return line_number, import_statements
     end
 
     local function add_python_import_current_word()
@@ -478,10 +515,10 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { silent = true, desc = "Add python import and move cursor" })
 
     vim.keymap.set({ "n", "i" }, "<M-CR>", function()
-      local line_number, import_statement = add_python_import_current_word()
+      local line_number, import_statements = add_python_import_current_word()
       if line_number ~= nil then
-        vim.notify(import_statement, "info", {
-          title = "Python import added",
+        vim.notify(import_statements, "info", {
+          title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
             vim.api.nvim_buf_set_option(buf, "filetype", "python")
@@ -490,10 +527,10 @@ vim.api.nvim_create_autocmd("FileType", {
       end
     end, { silent = true, desc = "Add python import" })
     vim.keymap.set("x", "<M-CR>", function()
-      local line_number, import_statement = add_python_import_current_selection()
+      local line_number, import_statements = add_python_import_current_selection()
       if line_number ~= nil then
-        vim.notify(import_statement, "info", {
-          title = "Python import added",
+        vim.notify(import_statements, "info", {
+          title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
             vim.api.nvim_buf_set_option(buf, "filetype", "python")

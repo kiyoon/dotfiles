@@ -5,6 +5,43 @@ local s = ls.snippet
 local t = ls.text_node
 
 return {
+  s("li", {
+    t { "logger.info(" },
+    i(1, "message"),
+    t { [[)]] },
+    i(0),
+  }),
+  s("ld", {
+    t { "logger.debug(" },
+    i(1, "message"),
+    t { [[)]] },
+    i(0),
+  }),
+  s("lw", {
+    t { "logger.warning(" },
+    i(1, "message"),
+    t { [[)]] },
+    i(0),
+  }),
+  s("le", {
+    t { "logger.error(" },
+    i(1, "message"),
+    t { [[)]] },
+    i(0),
+  }),
+  s("lc", {
+    t { "logger.critical(" },
+    i(1, "message"),
+    t { [[)]] },
+    i(0),
+  }),
+  s("lee", {
+    t { "logger.exception(" },
+    i(1, "message"),
+    t { [[)]] },
+    i(0),
+  }),
+
   -- Jupynium markdown cell
   s("md", {
     t { "# %% [md]", [["""]], "" },

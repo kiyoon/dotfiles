@@ -5,6 +5,15 @@ local func_node = ls.function_node
 local s = ls.snippet
 local t = ls.text_node
 
+local function read_from_url(url)
+  -- curl without progress bar
+  local content = vim.fn.system("curl -s " .. url)
+  -- local content = vim.fn.system("curl " .. url)
+  -- split by newline
+  local split_content = vim.fn.split(content, "\n")
+  return split_content
+end
+
 local function find_python_first_party_modules()
   -- find src/module_name in git root
 
@@ -134,5 +143,19 @@ return {
       "",
     },
     i(0),
+  }),
+  s("argparse", {
+    func_node(function()
+      local content =
+        read_from_url "https://gist.githubusercontent.com/kiyoon/bd5334f03136bad752b358f71fc00eca/raw/argparse_example.py"
+      return content
+    end, {}),
+  }),
+  s("config", {
+    func_node(function()
+      local content =
+        read_from_url "https://gist.githubusercontent.com/kiyoon/19eea0ea71228ac0f519319ac380ab13/raw/config.py"
+      return content
+    end, {}),
   }),
 }

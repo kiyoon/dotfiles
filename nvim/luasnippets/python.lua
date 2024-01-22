@@ -60,41 +60,60 @@ local function find_first_party_module()
 end
 
 return {
-  s("li", {
+  s("li(", {
     t { "logger.info(" },
     i(1, "message"),
     t { [[)]] },
     i(0),
   }),
-  s("ld", {
+  s("ld(", {
     t { "logger.debug(" },
     i(1, "message"),
     t { [[)]] },
     i(0),
   }),
-  s("lw", {
+  s("lw(", {
     t { "logger.warning(" },
     i(1, "message"),
     t { [[)]] },
     i(0),
   }),
-  s("le", {
+  s("le(", {
     t { "logger.error(" },
     i(1, "message"),
     t { [[)]] },
     i(0),
   }),
-  s("lc", {
+  s("lc(", {
     t { "logger.critical(" },
     i(1, "message"),
     t { [[)]] },
     i(0),
   }),
-  s("lee", {
+  s("lee(", {
     t { "logger.exception(" },
     i(1, "message"),
     t { [[)]] },
     i(0),
+  }),
+
+  s("li", {
+    t { "logger.info" },
+  }),
+  s("ld", {
+    t { "logger.debug" },
+  }),
+  s("lw", {
+    t { "logger.warning" },
+  }),
+  s("le", {
+    t { "logger.error" },
+  }),
+  s("lc", {
+    t { "logger.critical" },
+  }),
+  s("lee", {
+    t { "logger.exception" },
   }),
 
   -- Jupynium markdown cell

@@ -63,39 +63,13 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     bufmap("n", "<space>tm", make_repeatable_toggle_comment_keymap "fmt: skip", { remap = true })
 
     -- Added by kiyoon
-    local function toggle_ruff_noqa()
-      -- NOTE: nvim_exec will write additional stuff to stdout, like "shell returned 1"
-      -- so we need to pass the failing vim.json.decode
-      local ruff_outputs =
-        vim.api.nvim_exec([[w !ruff check --output-format=json-lines --ignore-noqa -]], { output = true })
-      assert(ruff_outputs ~= nil)
-      ruff_outputs = vim.split(ruff_outputs, "\n")
-
-      local codes = {}
-      for _, line in ipairs(ruff_outputs) do
-        local status, ruff_output = pcall(vim.json.decode, line)
-
-        if not status then
-          goto continue
-        end
-        local current_line = vim.fn.line "."
-        if current_line == ruff_output["location"]["row"] then
-          table.insert(codes, ruff_output["code"])
-        end
-
-        ::continue::
-      end
-
-      if #codes == 0 then
-        vim.notify("No ruff error on current line", vim.log.levels.ERROR)
-        return
-      end
-
-      local code = table.concat(codes, " ")
-      require("wookayin.lib.python").toggle_line_comment("noqa: " .. code)
-    end
     -- ignore ruff
-    bufmap("n", "<space>tq", toggle_ruff_noqa, { remap = true })
+    bufmap("n", "<space>tq", function()
+      require("kiyoon.python_tools").toggle_ruff_noqa()
+    end, { remap = true, desc = "Toggle ruff noqa" })
+    bufmap("n", "<space>tF", function()
+      require("kiyoon.python_tools").ruff_fix_current_line()
+    end, { remap = true, desc = "Fix ruff error in current line" })
 
     -- Toggle Optional[...], Annotated[...] for typing
     bufmap(

@@ -158,4 +158,10 @@ return {
       return content
     end, {}),
   }),
+  s("sp", {
+    t { "str | Path" },
+  }),
+  s("spn", {
+    t { "str | Path | None" },
+  }),
 }

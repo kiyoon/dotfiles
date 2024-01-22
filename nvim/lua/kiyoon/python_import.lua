@@ -119,6 +119,7 @@ vim.api.nvim_create_autocmd("FileType", {
       MetavarTypeHelpFormatter = "argparse",
       Namespace = "argparse",
 
+      copy2 = "shutil",
       contextmanager = "contextlib",
       nullcontext = "contextlib",
       closing = "contextlib",

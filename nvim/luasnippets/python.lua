@@ -183,4 +183,7 @@ return {
   s("spn", {
     t { "str | Path | None" },
   }),
+  s("mkdir", {
+    t { "mkdir(parents=True, exist_ok=True)" },
+  }),
 }

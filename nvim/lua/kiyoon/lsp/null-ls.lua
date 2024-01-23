@@ -93,7 +93,7 @@ local sources = {
       -- B905: ignore undefined name errors because pyright handles them
       -- F401: ignore unused imports because pyright handles them
       -- F841: ignore unused variables because pyright handles them
-      "--extend-ignore=F821,B905,F401,F841",
+      -- "--extend-ignore=F821,B905,F401,F841",
     },
   },
   -- diagnostics.flake8.with {

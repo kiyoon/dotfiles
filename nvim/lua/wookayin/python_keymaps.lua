@@ -76,7 +76,31 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       "n",
       "<space>tO",
       make_repeatable_keymap("n", "<Plug>(toggle-Optional)", function()
-        require("wookayin.lib.python").toggle_typing "Optional"
+        require("wookayin.lib.python").toggle_typing_none()
+      end),
+      { remap = true }
+    )
+    bufmap(
+      "n",
+      "<space>tp",
+      make_repeatable_keymap("n", "<Plug>(os-path-to-pathlib-wrap)", function()
+        require("wookayin.lib.python").os_path_to_pathlib(true) -- wrap with Path()
+      end),
+      { remap = true }
+    )
+    bufmap(
+      "n",
+      "<space>tP",
+      make_repeatable_keymap("n", "<Plug>(os-path-to-pathlib)", function()
+        require("wookayin.lib.python").os_path_to_pathlib(false) -- do not wrap with Path()
+      end),
+      { remap = true }
+    )
+    bufmap(
+      "n",
+      "<space>tt",
+      make_repeatable_keymap("n", "<Plug>(upgrade-typing)", function()
+        require("wookayin.lib.python").upgrade_typing() -- do not wrap with Path()
       end),
       { remap = true }
     )

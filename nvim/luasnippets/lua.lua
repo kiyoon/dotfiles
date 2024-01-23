@@ -117,4 +117,24 @@ return {
     }),
     i(0),
   }),
+
+  -- nvim-notify
+  s(
+    "noti",
+    fmt(
+      [[
+          vim.notify(<1>, "info", {
+            title = "My Plugin",
+            on_open = function(win)
+              local buf = vim.api.nvim_win_get_buf(win)
+              vim.api.nvim_buf_set_option(buf, "filetype", "python")
+            end,
+          })
+      ]],
+      {
+        i(1, "Message"),
+      },
+      { delimiters = "<>" }
+    )
+  ),
 }

@@ -159,6 +159,13 @@ vim.api.nvim_create_autocmd("FileType", {
       glob = "glob",
       iglob = "glob",
 
+      Pool = "multiprocessing",
+      Process = "multiprocessing",
+      Queue = "multiprocessing",
+      RawValue = "multiprocessing",
+      Semaphore = "multiprocessing",
+      Value = "multiprocessing",
+
       import_module = "importlib",
       invalidate_caches = "importlib",
       reload = "importlib",

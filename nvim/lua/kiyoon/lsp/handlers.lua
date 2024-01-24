@@ -56,6 +56,7 @@ M.setup = function()
   vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
     border = "rounded",
   })
+
   -- vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
   --   -- virtual_text = true,
   --   virtual_text = { spacing = 0, prefix = "" },
@@ -79,7 +80,7 @@ local function lsp_keymaps(bufnr)
   keymap("n", "gl", vim.diagnostic.open_float, opts, "Show Diagnostics")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
-  -- Use weilbith/nvim-code-action-menu
+  -- Use actions-preview.nvim
   -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
   keymap({ "n", "x", "o", "i" }, "<A-h>", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
@@ -124,7 +125,6 @@ M.on_attach = function(client, bufnr)
   client.server_capabilities.documentFormattingProvider = false
   for _, server in pairs(servers_use_formatting) do
     if client.name == server then
-      print(client.name)
       client.server_capabilities.documentFormattingProvider = true
       break
     end

@@ -21,24 +21,3 @@ vim.api.nvim_cmd({
     [[ <Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>]],
   },
 }, {})
-vim.api.nvim_cmd({
-  cmd = "vnoremenu",
-  args = {
-    "PopUp.ChatGPT",
-    [[ <cmd>ChatGPT<CR> ]],
-  },
-}, {})
-vim.api.nvim_cmd({
-  cmd = "vnoremenu",
-  args = {
-    "PopUp.ChatGPT:\\ Custom\\ Code\\ Action",
-    [[ <cmd>ChatGPTRunCustomCodeAction<CR> ]],
-  },
-}, {})
-vim.api.nvim_cmd({
-  cmd = "vnoremenu",
-  args = {
-    "PopUp.ChatGPT:\\ Edit\\ With\\ Instructions",
-    [[ <cmd>ChatGPTEditWithInstructions<CR> ]],
-  },
-}, {})

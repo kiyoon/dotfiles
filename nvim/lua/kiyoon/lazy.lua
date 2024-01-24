@@ -287,49 +287,6 @@ return {
   -- Free copilot alternative
   -- "Exafunction/codeium.vim",
   {
-    "jackMort/ChatGPT.nvim",
-    init = function()
-      local status, wk = pcall(require, "which-key")
-      if status then
-        wk.register {
-          ["<leader>c"] = { name = "ChatGPT" },
-        }
-      end
-    end,
-    config = function()
-      require("chatgpt").setup {
-        -- optional configuration
-      }
-    end,
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-    },
-    cmd = {
-      "ChatGPT",
-      "ChatGPTEditWithInstructions",
-      "ChatGPTActAs",
-      "ChatGPTRunCustomCodeAction",
-    },
-    keys = {
-      { "<leader>cg", "<cmd>ChatGPT<CR>", mode = { "n", "x" }, desc = "ChatGPT" },
-      {
-        "<leader>ce",
-        "<cmd>ChatGPTEditWithInstructions<CR>",
-        mode = { "n", "x" },
-        desc = "ChatGPT Edit With Instructions",
-      },
-      { "<leader>ca", "<cmd>ChatGPTActAs<CR>", mode = { "n", "x" }, desc = "ChatGPT Act As" },
-      {
-        "<leader>cc",
-        "<cmd>ChatGPTRunCustomCodeAction<CR>",
-        mode = { "n", "x" },
-        desc = "ChatGPT Run Custom Code Action",
-      },
-    },
-  },
-  {
     "Bryley/neoai.nvim",
     dependencies = {
       "MunifTanjim/nui.nvim",
@@ -378,6 +335,40 @@ return {
         },
       }
       require "kiyoon.neoai"
+    end,
+  },
+
+  {
+    "robitx/gp.nvim",
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.register {
+          ["<leader>c"] = { name = "ChatGPT" },
+        }
+      end
+    end,
+    cmd = {
+      "GpChatNew",
+      "GpChatPaste",
+      "GpRewrite",
+      "GpAppend",
+      "GpAgent",
+      "GpNextAgent",
+    },
+    keys = {
+      { "<leader>cg", "<cmd>GpChatNew<CR>", mode = { "n", "x" }, desc = "ChatGPT" },
+      {
+        "<leader>ce",
+        "<cmd>GpRewrite<CR>",
+        mode = { "n", "x" },
+        desc = "ChatGPT Edit With Instructions",
+      },
+    },
+    config = function()
+      require("gp").setup {
+        openai_api_key = { "pass", "API/openai" },
+      }
     end,
   },
 
@@ -1332,12 +1323,25 @@ return {
       -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
     end,
   },
+  -- {
+  --   "weilbith/nvim-code-action-menu",
+  --   cmd = "CodeActionMenu",
+  --   keys = {
+  --     { "<space>pa", "<cmd>CodeActionMenu<cr>", desc = "Code [A]ction" },
+  --   },
+  -- },
   {
-    "weilbith/nvim-code-action-menu",
-    cmd = "CodeActionMenu",
+    "aznhe21/actions-preview.nvim",
     keys = {
-      { "<space>pa", "<cmd>CodeActionMenu<cr>", desc = "Code [A]ction" },
+      {
+        "<space>pa",
+        function()
+          require("actions-preview").code_actions()
+        end,
+        desc = "Code [A]ction",
+      },
     },
+    opts = {},
   },
 
   --- NOTE: DAP (Debugger)

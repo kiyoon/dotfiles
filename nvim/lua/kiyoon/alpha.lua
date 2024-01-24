@@ -34,7 +34,7 @@ dashboard.section.buttons.val = {
     "<cmd>lua require'telescope'<cr><cmd>lua require'kiyoon.telescope'.live_grep_gitdir()<cr>"
   ),
   dashboard.button("d", " " .. " Diff view (\\dv)", "<cmd>DiffviewOpen<CR>"),
-  dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>ChatGPT<CR>"),
+  dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>GpChatNew<CR>"),
   dashboard.button("l", " " .. " Install language support (:Mason)", ":Mason<CR>"),
   dashboard.button("p", " " .. " Plugins", "<cmd>Lazy<CR>"),
   dashboard.button("P", " " .. " Plugins config", ":e " .. plugins_config_path .. "<CR>"),

@@ -92,6 +92,10 @@ local python_tools_code_action = {
   end,
   generator = {
     fn = function()
+      -- disable if in insert mode
+      if vim.api.nvim_get_mode().mode == "i" then
+        return nil
+      end
       return require("kiyoon.python_tools").available_actions()
     end,
   },

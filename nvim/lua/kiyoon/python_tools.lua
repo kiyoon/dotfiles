@@ -54,9 +54,14 @@ M.toggle_ruff_noqa = function(bufnr)
   end
 
   local codes = {}
+  local code_exists = {}
+
   for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
     if current_line == ruff_output["noqa_row"] then
-      table.insert(codes, ruff_output["code"])
+      if not code_exists[ruff_output["code"]] then
+        table.insert(codes, ruff_output["code"])
+        code_exists[ruff_output["code"]] = true
+      end
     end
   end
 

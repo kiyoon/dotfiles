@@ -299,7 +299,8 @@ M.upgrade_typing = function(node)
   end
 
   -- Climb up and find the closest ancestor node which is `generic_type` e.g. `Union`
-  while (node ~= nil) and node:type() ~= "generic_type" do
+  -- if the Union, List etc. is right side of binary_operator (|), it will be shown as `subscript`
+  while (node ~= nil) and node:type() ~= "generic_type" and node:type() ~= "subscript" do
     node = node:parent()
   end
 
@@ -310,38 +311,61 @@ M.upgrade_typing = function(node)
     return
   end
 
-  assert(node:type() == "generic_type")
-  local identifier_node = node:named_child(0) -- e.g., `os.path.join`
-  local type_parameter_node = node:named_child(1) -- e.g., `a, b`
+  assert(node:type() == "generic_type" or node:type() == "subscript")
 
+  local function num_type_parameters(node)
+    if node:type() == "subscript" then
+      -- Union[T1, T2] is shown as `subscript` node
+      -- children: Union, T1, T2
+      return node:named_child_count() - 1
+    elseif node:type() == "generic_type" then
+      -- Union[T1, T2] is shown as `generic_type` node
+      -- children: Union, [T1, T2] (type_parameter)
+      return node:named_child(1):named_child_count()
+    end
+  end
+
+  local function get_type_parameter_element(node, idx)
+    if node:type() == "subscript" then
+      -- Union[T1, T2] is shown as `subscript` node
+      -- children: Union, T1, T2
+      return node:named_child(idx + 1)
+    elseif node:type() == "generic_type" then
+      -- Union[T1, T2] is shown as `generic_type` node
+      -- children: Union, [T1, T2] (type_parameter)
+      return node:named_child(1):named_child(idx)
+    end
+  end
+
+  local identifier_node = node:named_child(0) -- e.g., Union
   local identifier_name = get_text(identifier_node)
 
   local new_text ---@type string
   local change_identifier_only = false -- if true, only change the identifier. e.g., `List` => `list`
   if identifier_name == "Union" then
-    if type_parameter_node:named_child_count() == 0 then
+    if num_type_parameters(node) == 0 then
       -- no arguments
-      vim.notify("At least one argument is required.", "error", {
-        title = "Fix python typing",
+      vim.notify("At least one argument is required", "error", {
+        title = "Fix python typing (Union)",
       })
       return
     end
 
-    new_text = get_text(type_parameter_node:named_child(0))
-    for i = 1, type_parameter_node:named_child_count() - 1 do
-      local arg_node = type_parameter_node:named_child(i)
+    new_text = get_text(get_type_parameter_element(node, 0))
+    for i = 1, num_type_parameters(node) - 1 do
+      local arg_node = get_type_parameter_element(node, i)
       new_text = new_text .. " | " .. get_text(arg_node)
     end
   elseif identifier_name == "Optional" then
-    if type_parameter_node:named_child_count() == 0 then
+    if num_type_parameters(node) == 0 then
       -- no arguments
-      vim.notify("At least one argument is required.", "error", {
-        title = "Fix python typing",
+      vim.notify("At least one argument is required", "error", {
+        title = "Fix python typing (Optional)",
       })
       return
     end
 
-    new_text = get_text(type_parameter_node:named_child(0)) .. " | None"
+    new_text = get_text(get_type_parameter_element(node, 0)) .. " | None"
   elseif identifier_name == "List" then
     new_text = "list"
     change_identifier_only = true

@@ -302,6 +302,7 @@ vim.api.nvim_create_autocmd("FileType", {
       ImageFont = "PIL",
       ImageOps = "PIL",
       tqdm = "tqdm",
+      EasyDict = "easydict",
     }
 
     local python_keywords = {

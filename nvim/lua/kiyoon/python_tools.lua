@@ -150,7 +150,7 @@ function M.available_actions(bufnr)
   M.run_ruff()
 
   if bufnr_to_ruff_per_line[bufnr] ~= nil and bufnr_to_ruff_per_line[bufnr][current_line] ~= nil then
-    -- table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })
+    table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })
 
     local fix_available = false
     for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do

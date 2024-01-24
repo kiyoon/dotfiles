@@ -550,7 +550,7 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       require("treesitter-context").setup {
-        max_lines = 10,
+        max_lines = 7,
       }
     end,
   },

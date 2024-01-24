@@ -85,3 +85,13 @@ if [[ -n "$git_root" ]]; then
 		workon $basename_git_root
 	fi
 fi
+
+
+# Force resetting TERM_PROGRAM to wezterm
+# This is required to view images over ssh or maybe tmux
+if [[ "$TERM" == "wezterm" ]]; then
+	if [[ -z "$TERM_PROGRAM" ]]; then
+		export TERM_PROGRAM=WezTerm
+		export TERM_PROGRAM_VERSION=20230712-072601-f4abf8fd
+	fi
+fi

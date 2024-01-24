@@ -1,14 +1,21 @@
 local M = {}
 
----key: line number
+---key: bufnr
 ---value: list of ruff check info
-M.ruff_per_line = {}
+---  key: line number
+---  value: list of ruff check info
+local bufnr_to_ruff_per_line = {}
+---Save the changedtick of the buffer when ruff is run
+local bufnr_to_ruff_changedtick = {}
 
--- run autocmd when filetype is python, buffer is modified, and cursor is hold
+---It also caches the results so repeated calls are fast
+M.run_ruff = function(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
+  if bufnr_to_ruff_changedtick[bufnr] == changedtick then
+    return bufnr_to_ruff_per_line[bufnr]
+  end
 
--- run autocmd when buffer is not being edited for some time
-
-M.run_ruff = function()
   -- NOTE: nvim_exec will write additional stuff to stdout, like "shell returned 1"
   -- so we need to pass the failing vim.json.decode
   local ruff_outputs =
@@ -16,7 +23,7 @@ M.run_ruff = function()
   assert(ruff_outputs ~= nil)
   ruff_outputs = vim.split(ruff_outputs, "\n")
 
-  M.ruff_per_line = {}
+  bufnr_to_ruff_per_line[bufnr] = {}
   for _, line in ipairs(ruff_outputs) do
     local status, ruff_output = pcall(vim.json.decode, line)
 
@@ -24,27 +31,30 @@ M.run_ruff = function()
       goto continue
     end
     local ruff_row = ruff_output["location"]["row"]
-    if M.ruff_per_line[ruff_row] == nil then
-      M.ruff_per_line[ruff_row] = { ruff_output }
+    if bufnr_to_ruff_per_line[bufnr][ruff_row] == nil then
+      bufnr_to_ruff_per_line[bufnr][ruff_row] = { ruff_output }
     else
-      table.insert(M.ruff_per_line[ruff_row], ruff_output)
+      table.insert(bufnr_to_ruff_per_line[bufnr][ruff_row], ruff_output)
     end
 
     ::continue::
   end
+
+  bufnr_to_ruff_changedtick[bufnr] = changedtick
 end
 
-M.toggle_ruff_noqa = function()
+M.toggle_ruff_noqa = function(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
   local current_line = vim.fn.line "."
   M.run_ruff()
 
-  if M.ruff_per_line[current_line] == nil then
+  if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
     vim.notify("No ruff error on current line", vim.log.levels.ERROR)
     return
   end
 
   local codes = {}
-  for _, ruff_output in ipairs(M.ruff_per_line[current_line]) do
+  for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
     if current_line == ruff_output["noqa_row"] then
       table.insert(codes, ruff_output["code"])
     end
@@ -59,17 +69,18 @@ M.toggle_ruff_noqa = function()
   require("wookayin.lib.python").toggle_line_comment("noqa: " .. code)
 end
 
-M.ruff_fix_current_line = function()
+M.ruff_fix_current_line = function(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
   local current_line = vim.fn.line "."
   M.run_ruff()
 
-  if M.ruff_per_line[current_line] == nil then
+  if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
     vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
     return
   end
 
   local all_fixes = {}
-  for _, ruff_output in ipairs(M.ruff_per_line[current_line]) do
+  for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
     local fix = ruff_output["fix"]
     if fix == vim.NIL then
       goto continue
@@ -123,6 +134,33 @@ M.ruff_fix_current_line = function()
     -- TODO: for now, only apply the first fix
     break
   end
+end
+
+function M.available_actions(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+  local actions = {}
+
+  local current_line = vim.fn.line "."
+  M.run_ruff()
+
+  if bufnr_to_ruff_per_line[bufnr] ~= nil and bufnr_to_ruff_per_line[bufnr][current_line] ~= nil then
+    table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })
+
+    local fix_available = false
+    for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
+      local fix = ruff_output["fix"]
+      if fix ~= vim.NIL then
+        fix_available = true
+        break
+      end
+    end
+    if fix_available then
+      table.insert(actions, { title = "Ruff: Fix current line", action = M.ruff_fix_current_line })
+    end
+  end
+
+  return actions
 end
 
 return M

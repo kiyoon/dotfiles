@@ -78,6 +78,25 @@ local u = require "null-ls.utils"
 --   },
 -- }
 
+local python_tools_code_action = {
+  name = "python_tools_code_action",
+  meta = {
+    url = "https://github.com/kiyoon/python-tools.nvim",
+    description = "A framework for running functions on Tree-sitter nodes, and updating the buffer with the result.",
+  },
+  method = methods.internal.CODE_ACTION,
+  filetypes = { "python" },
+  can_run = function()
+    local status, _ = pcall(require, "kiyoon.python_tools")
+    return status
+  end,
+  generator = {
+    fn = function()
+      return require("kiyoon.python_tools").available_actions()
+    end,
+  },
+}
+
 local sources = {
   -- formatting.prettier.with {
   --   extra_filetypes = { "toml" },
@@ -106,6 +125,7 @@ local sources = {
   --   },
   -- },
   -- null_ls.builtins.code_actions.gitsigns,
+  python_tools_code_action,
 }
 
 if vim.fn.executable "luacheck" == 1 then

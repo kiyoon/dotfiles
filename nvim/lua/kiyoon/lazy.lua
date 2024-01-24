@@ -1262,7 +1262,13 @@ return {
   {
     "j-hui/fidget.nvim",
     event = "LSPAttach",
-    opts = {},
+    opts = { -- In options table:
+      progress = {
+        ignore = {
+          "null-ls",
+        },
+      },
+    },
   },
 
   {
@@ -1312,9 +1318,12 @@ return {
     event = "BufRead",
     config = function()
       require("nvim-lightbulb").setup {
+        priority = 20, -- higher than LSP diagnostics
         sign = {
           enabled = true,
-          priority = 20, -- higher than LSP diagnostics
+        },
+        float = {
+          enabled = false,
         },
         autocmd = {
           enabled = true,

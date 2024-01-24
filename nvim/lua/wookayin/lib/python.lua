@@ -415,13 +415,14 @@ M.os_path_to_pathlib = function(wrap_with_path)
 
   local function wrap_with_pathlib(node)
     local text = get_text(node)
-    if node:type() == "identifier" then
+    if node:type() == "identifier" or node:type() == "call" then
       if wrap_with_path then
         return "Path(" .. text .. ")"
       else
         return text
       end
     elseif node:type() == "string" then
+      -- obviously string needs to be wrapped with Path(.)
       return "Path(" .. text .. ")"
     else
       if wrap_with_path then
@@ -458,7 +459,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
     new_text = wrap_with_pathlib(arglist_node:named_child(0))
     for i = 1, arglist_node:named_child_count() - 1 do
       local arg_node = arglist_node:named_child(i)
-      if has_type(arg_node, "identifier") or has_type(arg_node, "string") then
+      if has_type(arg_node, "identifier") or has_type(arg_node, "string") or has_type(arg_node, "call") then
         new_text = new_text .. " / " .. get_text(arg_node)
       else
         new_text = new_text .. " / (" .. get_text(arg_node) .. ")"

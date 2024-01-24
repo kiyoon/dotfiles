@@ -178,10 +178,10 @@ return {
     end, {}),
   }),
   s("sp", {
-    t { "str | Path" },
+    t { "str | PathLike" },
   }),
   s("spn", {
-    t { "str | Path | None" },
+    t { "str | PathLike | None" },
   }),
   s("mkdir", {
     t { "mkdir(parents=True, exist_ok=True)" },

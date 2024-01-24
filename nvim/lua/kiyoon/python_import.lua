@@ -202,6 +202,8 @@ vim.api.nvim_create_autocmd("FileType", {
       tee = "itertools",
       zip_longest = "itertools",
 
+      PathLike = "os",
+
       PurePath = "pathlib",
       PurePosixPath = "pathlib",
       PureWindowsPath = "pathlib",

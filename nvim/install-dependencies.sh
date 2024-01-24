@@ -29,7 +29,8 @@ if command -v brew &> /dev/null; then
 
 		# molten.nvim
 		brew install imagemagick
-		pip install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+		brew install pkg-config  # for magick from luarocks
+		$PIP3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 
 		exit 0
 	fi

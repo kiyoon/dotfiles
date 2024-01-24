@@ -8,7 +8,6 @@ local t = ls.text_node
 local function read_from_url(url)
   -- curl without progress bar
   local content = vim.fn.system("curl -s " .. url)
-  -- local content = vim.fn.system("curl " .. url)
   -- split by newline
   local split_content = vim.fn.split(content, "\n")
   return split_content

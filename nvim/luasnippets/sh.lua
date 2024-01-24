@@ -4,10 +4,19 @@ local extras = require "luasnip.extras"
 local l = extras.lambda
 local i = ls.insert_node
 local c = ls.choice_node
+local func_node = ls.function_node
 
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
+
+local function read_from_url(url)
+  -- curl without progress bar
+  local content = vim.fn.system("curl -s " .. url)
+  -- split by newline
+  local split_content = vim.fn.split(content, "\n")
+  return split_content
+end
 
 -- require snippets
 return {
@@ -53,5 +62,19 @@ return {
       [[]],
     },
     i(0),
+  }),
+  s("tmuxp", {
+    func_node(function()
+      local content =
+        read_from_url "https://gist.githubusercontent.com/kiyoon/8d9ab895d2f478cde2c7fec214d55dbb/raw/run_tmux_parallel.sh"
+      return content
+    end, {}),
+  }),
+  s("tmuxps", {
+    func_node(function()
+      local content =
+        read_from_url "https://gist.githubusercontent.com/kiyoon/8d9ab895d2f478cde2c7fec214d55dbb/raw/tmux_parallel_status.sh"
+      return content
+    end, {}),
   }),
 }

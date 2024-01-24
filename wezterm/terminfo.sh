@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [[ $# -eq 0 ]] ; then
 	tempfile=$(mktemp) &&
 		curl -o $tempfile https://raw.githubusercontent.com/wez/wezterm/master/termwiz/data/wezterm.terminfo &&

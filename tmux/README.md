@@ -71,6 +71,11 @@ You can even use mouse right click.
 - You can use mouse drag to copy.
 - Ctrl+a + =: see buffer list
 
+## Kill
+
+- Ctrl+a + x: kill current pane
+- Ctrl+a + X: kill session
+
 ## Other tips
 
 - If you press Ctrl+s by mistake, it will freeze. Ctrl+q to unfreeze.

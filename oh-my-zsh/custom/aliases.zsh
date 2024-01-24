@@ -72,7 +72,7 @@ alias ns='nvidia-smi'
 alias rb='gio trash'
 
 # git
-alias cdgit='cd $(git rev-parse --show-toplevel)'
+alias cdg='cd $(git rev-parse --show-toplevel)'
 
 # slurm
 alias sq='squeue -u $USER'

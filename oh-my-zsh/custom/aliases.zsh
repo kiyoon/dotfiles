@@ -3,11 +3,11 @@ if (($+commands[bat])); then
 fi
 
 if (($+commands[eza])); then
-	alias ls='eza --icons'
-	alias ll='eza -alF --icons'
-	alias la='eza -a --icons'
-	alias l='eza -F --icons'
-	alias lg='eza --git-ignore --icons'
+	alias ls='eza --icons auto'
+	alias ll='eza -alF --icons auto'
+	alias la='eza -a --icons auto'
+	alias l='eza -F --icons auto'
+	alias lg='eza --git-ignore --icons auto'
 fi
 
 if (($+commands[nvim])); then

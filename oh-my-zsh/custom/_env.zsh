@@ -1,7 +1,16 @@
-if [[ -d "$HOME/bin/miniconda3" ]]; then
+if [[ -d "$HOME/bin/miniforge3" ]]; then
+	export MINICONDA_PATH="$HOME/bin/miniforge3"
+elif [[ -d "$HOME/miniforge3" ]]; then
+	export MINICONDA_PATH="$HOME/miniforge3"
+elif [[ -d "$HOME/bin/miniconda3" ]]; then
 	export MINICONDA_PATH="$HOME/bin/miniconda3"
 elif [[ -d "$HOME/miniconda3" ]]; then
+	export MINICONDA_PATH="$HOME/anaconda3"
+elif [[ -d "$HOME/anaconda3" ]]; then
 	export MINICONDA_PATH="$HOME/miniconda3"
+elif [[ -d "/usr/local/Caskroom/miniforge/base" ]]; then
+	# Mac Homebrew
+	export MINICONDA_PATH="/usr/local/Caskroom/miniforge/base"
 elif [[ -d "/usr/local/Caskroom/miniconda/base" ]]; then
 	# Mac Homebrew
 	export MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"

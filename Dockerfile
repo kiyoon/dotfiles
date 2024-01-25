@@ -78,13 +78,13 @@ ENV LD_LIBRARY_PATH $HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew
 ENV INSTALL_DIR $HOME/.local
 
 RUN mkdir -p "$HOME/bin"
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$HOME/bin" \
-	&& bash "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh" -b -p "$HOME/bin/miniconda3" \ 
-	&& rm "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh"
+RUN wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" -P "$HOME/bin" \
+	&& bash "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh" -b -p "$HOME/bin/miniforge3" \ 
+	&& rm "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh"
 RUN chmod 777 $HOME/bin -R
-# SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
+# SHELL ["$HOME/bin/miniforge3/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
 # RUN conda create -n main python=3.11 -y
-# SHELL ["$HOME/bin/miniconda3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
+# SHELL ["$HOME/bin/miniforge3/bin/conda", "run", "-n", "main", "/bin/bash", "-c"]
 # RUN conda init bash
 
 # NOTE: error: too many open files if we install all of them at once

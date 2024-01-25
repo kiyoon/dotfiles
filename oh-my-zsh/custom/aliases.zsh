@@ -40,9 +40,17 @@ if (($+commands[gh])); then
 	}
 fi
 
-alias ca='conda activate'
-alias cda='conda deactivate'
-alias cc='conda create -n'
+if (($+commands[mamba])); then
+	alias ca='mamba activate'
+	alias cda='mamba deactivate'
+	alias cc='mamba create -n'
+	alias ci='mamba install'
+elif (($+commands[conda])); then
+	alias ca='conda activate'
+	alias cda='conda deactivate'
+	alias cc='conda create -n'
+	alias ci='conda install'
+fi
 
 # virtualenvwrapper
 alias a='workon'

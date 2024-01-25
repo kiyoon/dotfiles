@@ -5,23 +5,23 @@
 INSTALL_DIR="$HOME/.local"
 
 if [[ $OSTYPE == "darwin"* ]]; then
-	brew install --cask miniconda
+	# brew install --cask miniconda
 	brew install node
 else
-	##### conda
-	if ! command -v conda &>/dev/null; then
-		mkdir -p "$HOME/bin"
-		wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -P "$HOME/bin"
-		CONDADIR="$HOME/bin/miniconda3"
-		bash "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh" -b -p "$CONDADIR"
-		rm "$HOME/bin/Miniconda3-latest-Linux-x86_64.sh"
-	fi
 
 	if ! command -v $INSTALL_DIR/bin/npm &>/dev/null; then
 		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 	fi
 fi
 
+##### conda
+if ! command -v conda &>/dev/null; then
+	mkdir -p "$HOME/bin"
+	wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" -P "$HOME/bin"
+	CONDADIR="$HOME/bin/miniforge3"
+	bash "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh" -b -p "$CONDADIR"
+	rm "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh"
+fi
 
 # rustup, cargo
 if ! command -v rustc &>/dev/null; then

@@ -29,6 +29,9 @@ else
     fi
 fi
 unset __conda_setup
+if [ -f "$MINICONDA_PATH/etc/profile.d/mamba.sh" ]; then
+    . "$MINICONDA_PATH/etc/profile.d/mamba.sh"
+fi
 # <<< conda initialize <<<
 #
 # We don't want linuxbrew python to be used as default python, so we add it to the end of the path.

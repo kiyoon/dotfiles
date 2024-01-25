@@ -198,7 +198,7 @@ local ruff_diagnostics_filtered = {
     --     ".editorconfig"
     --   )(params.bufname)
     -- end),
-    factory = h.generator_factory,
+    -- factory = h.generator_factory,
     check_exit_code = function(code)
       return code == 0
     end,
@@ -206,7 +206,7 @@ local ruff_diagnostics_filtered = {
     ignore_stderr = true,
     on_output = ruff_on_output_filtered,
   },
-  factory = h.generator_factory,
+  -- factory = h.generator_factory,
 }
 
 local python_tools_code_action = {

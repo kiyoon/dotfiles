@@ -439,7 +439,12 @@ M.os_path_to_pathlib = function(wrap_with_path)
 
   local function wrap_with_pathlib(node)
     local text = get_text(node)
-    if node:type() == "identifier" or node:type() == "call" then
+    local no_paren_list = {
+      identifier = true,
+      call = true,
+      attribute = true,
+    }
+    if no_paren_list[node:type()] then
       if wrap_with_path then
         return "Path(" .. text .. ")"
       else

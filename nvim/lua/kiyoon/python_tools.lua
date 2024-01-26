@@ -46,7 +46,7 @@ end
 M.toggle_ruff_noqa = function(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local current_line = vim.fn.line "."
-  M.run_ruff()
+  M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
     vim.notify("No ruff error on current line", vim.log.levels.ERROR)
@@ -74,10 +74,51 @@ M.toggle_ruff_noqa = function(bufnr)
   require("wookayin.lib.python").toggle_line_comment("noqa: " .. code)
 end
 
+local function notify_diff_pre(bufnr)
+  if bufnr == nil then
+    bufnr = vim.api.nvim_get_current_buf()
+  end
+  local prev_buf = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local prev_buf_str = table.concat(prev_buf, "\n")
+  return prev_buf_str
+end
+
+local function notify_diff(bufnr, prev_buf_str, ruff_fix_message)
+  if ruff_fix_message == nil then
+    ruff_fix_message = "Ruff fix applied"
+  end
+  local new_buf = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local new_buf_str = table.concat(new_buf, "\n")
+  local diff = vim.diff(prev_buf_str, new_buf_str, { ctxlen = 3 })
+  -- strip last empty line
+  -- diff = vim.split(diff, "\n")
+  -- table.remove(diff, #diff)
+  -- diff = table.concat(diff, "\n")
+  diff = diff:gsub("\n$", "")
+
+  vim.notify(ruff_fix_message .. "\n" .. diff, "info", {
+    title = "Ruff fix applied",
+    on_open = function(win)
+      local buf = vim.api.nvim_win_get_buf(win)
+      vim.api.nvim_buf_set_option(buf, "filetype", "diff")
+    end,
+  })
+end
+
+local function apply_ruff_fix(fix)
+  local content = vim.split(fix["content"], "\n")
+  local start_row = fix["location"]["row"] - 1
+  local start_col = fix["location"]["column"] - 1
+  local end_row = fix["end_location"]["row"] - 1
+  local end_col = fix["end_location"]["column"] - 1
+
+  vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, content)
+end
+
 M.ruff_fix_current_line = function(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local current_line = vim.fn.line "."
-  M.run_ruff()
+  M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
     vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
@@ -105,40 +146,44 @@ M.ruff_fix_current_line = function(bufnr)
     return
   end
 
+  local prev_buf_str = notify_diff_pre(bufnr)
   for _, fix in pairs(all_fixes) do
-    local content = vim.split(fix["content"], "\n")
-    local start_row = fix["location"]["row"] - 1
-    local start_col = fix["location"]["column"] - 1
-    local end_row = fix["end_location"]["row"] - 1
-    local end_col = fix["end_location"]["column"] - 1
-    local message = fix["message"]
-
-    -- local prev_buf = vim.api.nvim_buf_get_lines(0, start_row - 3, end_row + 3, false)
-    local prev_buf = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local prev_buf_str = table.concat(prev_buf, "\n")
-
-    vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, content)
-
-    local new_buf = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local new_buf_str = table.concat(new_buf, "\n")
-    local diff = vim.diff(prev_buf_str, new_buf_str, { ctxlen = 3 })
-    -- strip last empty line
-    -- diff = vim.split(diff, "\n")
-    -- table.remove(diff, #diff)
-    -- diff = table.concat(diff, "\n")
-    diff = diff:gsub("\n$", "")
-
-    vim.notify(message .. "\n" .. diff, "info", {
-      title = "Ruff fix applied at line " .. (start_row + 1),
-      on_open = function(win)
-        local buf = vim.api.nvim_win_get_buf(win)
-        vim.api.nvim_buf_set_option(buf, "filetype", "diff")
-      end,
-    })
-
+    apply_ruff_fix(fix)
+    notify_diff(bufnr, prev_buf_str, fix["message"])
     -- TODO: for now, only apply the first fix
     break
   end
+end
+
+-- PERF: this runs ruff multiple times until it doesn't find any fix
+-- This can be slow but it's the easiest way to implement it
+M.ruff_fix_code = function(bufnr, ruff_code)
+  if bufnr == 0 or bufnr == nil then
+    bufnr = vim.api.nvim_get_current_buf()
+  end
+  local prev_buf_str = notify_diff_pre(bufnr)
+  local fixed = false
+  repeat
+    M.run_ruff(bufnr)
+    fixed = false
+    for i, ruff_line in pairs(bufnr_to_ruff_per_line[bufnr]) do
+      for _, ruff_output in ipairs(ruff_line) do
+        if ruff_output["code"] == ruff_code then
+          local fix = ruff_output["fix"]
+          if fix ~= vim.NIL then
+            -- each fix may have multiple edits
+            apply_ruff_fix(fix["edits"][1])
+            fixed = true
+            break
+          end
+        end
+      end
+      if fixed then
+        break
+      end
+    end
+  until not fixed
+  notify_diff(bufnr, prev_buf_str)
 end
 
 function M.available_actions(bufnr)
@@ -147,7 +192,7 @@ function M.available_actions(bufnr)
   local actions = {}
 
   local current_line = vim.fn.line "."
-  M.run_ruff()
+  M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line[bufnr] ~= nil and bufnr_to_ruff_per_line[bufnr][current_line] ~= nil then
     -- table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })

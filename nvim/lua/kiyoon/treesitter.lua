@@ -351,6 +351,6 @@ end)
 local status, wk = pcall(require, "which-key")
 if status then
   wk.register {
-    ["<space>t"] = { name = "[T]reesitter" },
+    ["<space>t"] = { name = "Language-specific [T]ools" },
   }
 end

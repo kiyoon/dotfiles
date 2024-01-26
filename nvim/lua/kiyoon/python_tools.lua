@@ -155,25 +155,31 @@ M.ruff_fix_current_line = function(bufnr)
   end
 end
 
--- PERF: this runs ruff multiple times until it doesn't find any fix
--- This can be slow but it's the easiest way to implement it
-M.ruff_fix_code = function(bufnr, ruff_code)
+---@param bufnr integer vim buffer number
+---@param ruff_code string|nil ruff code to fix, if nil, fix all
+M.ruff_fix_all = function(bufnr, ruff_code)
   if bufnr == 0 or bufnr == nil then
     bufnr = vim.api.nvim_get_current_buf()
   end
+
   local prev_buf_str = notify_diff_pre(bufnr)
-  local fixed = false
+  local num_fixed = 0
+
+  -- PERF: this runs ruff multiple times until it doesn't find any fix
+  -- This can be slow but it's the easiest way to implement it
+  --- Apply all ruff fixes, optionally only for a specific code
   repeat
     M.run_ruff(bufnr)
-    fixed = false
-    for i, ruff_line in pairs(bufnr_to_ruff_per_line[bufnr]) do
+    local fixed = false
+    for _, ruff_line in pairs(bufnr_to_ruff_per_line[bufnr]) do
       for _, ruff_output in ipairs(ruff_line) do
-        if ruff_output["code"] == ruff_code then
+        if ruff_code == nil or ruff_output["code"] == ruff_code then
           local fix = ruff_output["fix"]
           if fix ~= vim.NIL then
             -- each fix may have multiple edits
             apply_ruff_fix(fix["edits"][1])
             fixed = true
+            num_fixed = num_fixed + 1
             break
           end
         end
@@ -183,7 +189,12 @@ M.ruff_fix_code = function(bufnr, ruff_code)
       end
     end
   until not fixed
-  notify_diff(bufnr, prev_buf_str)
+
+  if num_fixed == 0 then
+    vim.notify("No fix available for unused imports.", vim.log.levels.ERROR)
+  else
+    notify_diff(bufnr, prev_buf_str, "Unused import (" .. num_fixed .. " fixes applied)")
+  end
 end
 
 function M.available_actions(bufnr)
@@ -198,15 +209,31 @@ function M.available_actions(bufnr)
     -- table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })
 
     local fix_available = false
+    local fix_import_available = false
     for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
       local fix = ruff_output["fix"]
       if fix ~= vim.NIL then
         fix_available = true
+        if ruff_output["code"] == "F401" then
+          fix_import_available = true
+        end
+      end
+
+      if fix_available and fix_import_available then
+        -- no need to search further
         break
       end
     end
     if fix_available then
       table.insert(actions, { title = "Ruff: Fix current line", action = M.ruff_fix_current_line })
+    end
+    if fix_import_available then
+      table.insert(actions, {
+        title = "Ruff: Fix unused import",
+        action = function()
+          M.ruff_fix_all(bufnr, "F401")
+        end,
+      })
     end
   end
 

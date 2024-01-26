@@ -71,7 +71,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       require("kiyoon.python_tools").ruff_fix_current_line()
     end, { remap = true, desc = "Fix ruff error in current line" })
     bufmap("n", "<space>tI", function()
-      require("kiyoon.python_tools").ruff_fix_code(0, "F401")
+      require("kiyoon.python_tools").ruff_fix_all(0, "F401")
     end, { remap = true, desc = "Fix unused imports" })
 
     -- Toggle Optional[...], Annotated[...] for typing

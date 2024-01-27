@@ -40,12 +40,15 @@ if (($+commands[gh])); then
 	}
 fi
 
-if (($+commands[mamba])); then
+# for some reason, it doesn't detect conda/mamba although they are ready and executable here.
+# We check the $MINICONDA_PATH instead of
+# if (($+commands[mamba])); then
+if [[ $(basename "$MINICONDA_PATH") == "miniforge3" ]]; then
 	alias ca='mamba activate'
 	alias cda='mamba deactivate'
 	alias cc='mamba create -n'
 	alias ci='mamba install'
-elif (($+commands[conda])); then
+else
 	alias ca='conda activate'
 	alias cda='conda deactivate'
 	alias cc='conda create -n'

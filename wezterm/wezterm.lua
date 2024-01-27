@@ -17,6 +17,11 @@ local config = {
 			mods = "ALT",
 			action = wezterm.action.DisableDefaultAssignment,
 		},
+		{
+			key = "r",
+			mods = "CMD|SHIFT",
+			action = wezterm.action.ReloadConfiguration,
+		},
 	},
 
 	enable_scroll_bar = true,
@@ -33,6 +38,17 @@ config.hyperlink_rules = wezterm.default_hyperlink_rules()
 table.insert(config.hyperlink_rules, {
 	regex = [[["'\s]([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["'\s]] .. "]",
 	format = "https://www.github.com/$1/$3",
+})
+-- write a regex for the following:
+-- 1. detect a string starting with ruff, followed by a colon, followed by a sentence, ending with [{1}]
+-- 2. format the url to be https://docs.astral.sh/ruff/rules/$1
+table.insert(config.hyperlink_rules, {
+	regex = [[ruff:.*\[(\w+)\]] .. "]",
+	format = "https://docs.astral.sh/ruff/rules/$1",
+})
+table.insert(config.hyperlink_rules, {
+	regex = [[table]],
+	format = "https://docs.astral.sh/ruff/rules/config",
 })
 
 return config

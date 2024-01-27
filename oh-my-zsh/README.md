@@ -44,7 +44,7 @@ bash apps-local-install.sh
 
 ```zsh
 ##### git
-git config --global user.email "yoonkr33@gmail.com"
+git config --global user.email "kiyoon@users.noreply.github.com"
 git config --global user.name "Kiyoon Kim"
 git config --global core.editor nvim
 git config --global pull.rebase false

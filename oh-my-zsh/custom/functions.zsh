@@ -145,3 +145,12 @@ t() {
 	fi
 
 }
+
+git_config() {
+	git config --global user.email "kiyoon@users.noreply.github.com"
+	git config --global user.name "Kiyoon Kim"
+	git config --global core.editor nvim
+	git config --global pull.rebase false
+	git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+}
+

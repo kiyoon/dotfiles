@@ -127,27 +127,8 @@ local custom_end_col = {
 -- HOWEVER, it will create warning when you use # noqa: CODE, which is not ideal.
 -- This is a workaround for that.
 local function ruff_on_output_filtered(pattern, groups)
-  local diag_func = h.diagnostics.from_pattern(
-    [[(%d+):(%d+): ((%u)%w+) (.*)]],
-    { "row", "col", "code", "severity", "message" },
-    {
-      adapters = {
-        custom_end_col,
-      },
-      severities = {
-        E = h.diagnostics.severities["error"], -- pycodestyle errors
-        W = h.diagnostics.severities["warning"], -- pycodestyle warnings
-        F = h.diagnostics.severities["information"], -- pyflakes
-        A = h.diagnostics.severities["information"], -- flake8-builtins
-        B = h.diagnostics.severities["warning"], -- flake8-bugbear
-        C = h.diagnostics.severities["warning"], -- flake8-comprehensions
-        T = h.diagnostics.severities["information"], -- flake8-print
-        U = h.diagnostics.severities["information"], -- pyupgrade
-        D = h.diagnostics.severities["information"], -- pydocstyle
-        M = h.diagnostics.severities["information"], -- Meta
-      },
-    }
-  )
+  -- pattern is just one line
+  local ruff_output = vim.json.decode(pattern)
 
   -- F401: ignore unused imports because pyright handles them
   -- F841: ignore unused variables because pyright handles them
@@ -157,12 +138,103 @@ local function ruff_on_output_filtered(pattern, groups)
     F841 = true,
   }
 
-  local one_diag = diag_func(pattern, groups)
-  if one_diag ~= nil and filter_out_codes[one_diag["code"]] then
+  if ruff_output == nil or ruff_output["code"] == nil or filter_out_codes[ruff_output["code"]] then
     return nil
   end
 
-  return one_diag
+  local nullls_output = {}
+
+  nullls_output["code"] = ruff_output["code"]
+  nullls_output["row"] = ruff_output["location"]["row"]
+  nullls_output["col"] = ruff_output["location"]["column"]
+  nullls_output["end_row"] = ruff_output["end_location"]["row"]
+  nullls_output["end_col"] = ruff_output["end_location"]["column"]
+  nullls_output["message"] = ruff_output["message"]
+
+  if string.find(ruff_output["code"], "^E") then
+    nullls_output["severity"] = h.diagnostics.severities["error"]
+  elseif string.find(ruff_output["code"], "^W") then
+    nullls_output["severity"] = h.diagnostics.severities["warning"]
+  elseif string.find(ruff_output["code"], "^F") then
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  elseif string.find(ruff_output["code"], "^A") then
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  elseif string.find(ruff_output["code"], "^B") then
+    nullls_output["severity"] = h.diagnostics.severities["warning"]
+  elseif string.find(ruff_output["code"], "^C") then
+    nullls_output["severity"] = h.diagnostics.severities["warning"]
+  elseif string.find(ruff_output["code"], "^T") then
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  elseif string.find(ruff_output["code"], "^U") then
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  elseif string.find(ruff_output["code"], "^D") then
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  elseif string.find(ruff_output["code"], "^M") then
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  else
+    nullls_output["severity"] = h.diagnostics.severities["information"]
+  end
+  --     severities = {
+  --       E = h.diagnostics.severities["error"], -- pycodestyle errors
+  --       W = h.diagnostics.severities["warning"], -- pycodestyle warnings
+  --       F = h.diagnostics.severities["information"], -- pyflakes
+  --       A = h.diagnostics.severities["information"], -- flake8-builtins
+  --       B = h.diagnostics.severities["warning"], -- flake8-bugbear
+  --       C = h.diagnostics.severities["warning"], -- flake8-comprehensions
+  --       T = h.diagnostics.severities["information"], -- flake8-print
+  --       U = h.diagnostics.severities["information"], -- pyupgrade
+  --       D = h.diagnostics.severities["information"], -- pydocstyle
+  --       M = h.diagnostics.severities["information"], -- Meta
+  --     },
+
+  return nullls_output
+
+  -- local diag_func = h.diagnostics.from_pattern(
+  --   [[(%d+):(%d+): ((%u)%w+) (.*)]],
+  --   { "row", "col", "code", "severity", "message" },
+  --   {
+  --     adapters = {
+  --       custom_end_col,
+  --     },
+  --     severities = {
+  --       E = h.diagnostics.severities["error"], -- pycodestyle errors
+  --       W = h.diagnostics.severities["warning"], -- pycodestyle warnings
+  --       F = h.diagnostics.severities["information"], -- pyflakes
+  --       A = h.diagnostics.severities["information"], -- flake8-builtins
+  --       B = h.diagnostics.severities["warning"], -- flake8-bugbear
+  --       C = h.diagnostics.severities["warning"], -- flake8-comprehensions
+  --       T = h.diagnostics.severities["information"], -- flake8-print
+  --       U = h.diagnostics.severities["information"], -- pyupgrade
+  --       D = h.diagnostics.severities["information"], -- pydocstyle
+  --       M = h.diagnostics.severities["information"], -- Meta
+  --     },
+  --   }
+  -- )
+  --
+  -- -- F401: ignore unused imports because pyright handles them
+  -- -- F841: ignore unused variables because pyright handles them
+  -- local filter_out_codes = {
+  --   -- F821 = true,  -- you can turn this off in pyright so we use it with ruff
+  --   F401 = true,
+  --   F841 = true,
+  -- }
+  --
+  -- local one_diag = diag_func(pattern, groups)
+  -- if one_diag ~= nil and filter_out_codes[one_diag["code"]] then
+  --   return nil
+  -- end
+  --
+  -- return one_diag
+
+  -- example return:
+  -- {
+  --   code = "E741",
+  --   col = "5",
+  --   end_col = 6,
+  --   message = "Ambiguous variable name: `l`",
+  --   row = "80",
+  --   severity = 1
+  -- }
 end
 
 local ruff_diagnostics_filtered = {
@@ -178,6 +250,7 @@ local ruff_diagnostics_filtered = {
     args = {
       "-n",
       "-e",
+      "--output-format=json-lines",
       "--stdin-filename",
       "$FILENAME",
       "-",

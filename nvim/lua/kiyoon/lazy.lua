@@ -1219,7 +1219,8 @@ return {
       -- Define your formatters
       formatters_by_ft = {
         lua = { "stylua" },
-        python = { "isort", "black" },
+        -- python = { "isort", "black" },
+        python = { "ruff_format" },
         javascript = { { "prettierd", "prettier" } },
         yaml = { "prettier" },
         json = { "prettier" },
@@ -1231,9 +1232,9 @@ return {
         shfmt = {
           prepend_args = { "-i", "2" },
         },
-        isort = {
-          prepend_args = { "--profile", "black" },
-        },
+        -- isort = {
+        --   prepend_args = { "--profile", "black" },
+        -- },
         prettier = {
           prepend_args = {
             "--no-semi",

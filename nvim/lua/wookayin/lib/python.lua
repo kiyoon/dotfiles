@@ -6,6 +6,18 @@ local M = {}
 
 --[[ Implementations for $DOTVIM/after/ftplugin/python.lua ]]
 
+-- Node types that do not require parentheses
+-- because they are not multiple statements.
+-- e.g., identifier: variable_name
+--       call: function_call()
+--       subscript: a[0]
+M.no_paren_ts_node_types = {
+  identifier = true,
+  call = true,
+  attribute = true,
+  subscript = true,
+}
+
 M.toggle_breakpoint = function()
   local pattern = "breakpoint()" -- Use python >= 3.7.
   local line = vim.fn.getline "." --[[@as string]]
@@ -439,12 +451,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
 
   local function wrap_with_pathlib(node)
     local text = get_text(node)
-    local no_paren_list = {
-      identifier = true,
-      call = true,
-      attribute = true,
-    }
-    if no_paren_list[node:type()] then
+    if M.no_paren_ts_node_types[node:type()] then
       if wrap_with_path then
         return "Path(" .. text .. ")"
       else
@@ -488,7 +495,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
     new_text = wrap_with_pathlib(arglist_node:named_child(0))
     for i = 1, arglist_node:named_child_count() - 1 do
       local arg_node = arglist_node:named_child(i)
-      if has_type(arg_node, "identifier") or has_type(arg_node, "string") or has_type(arg_node, "call") then
+      if M.no_paren_ts_node_types[arg_node:type()] then
         new_text = new_text .. " / " .. get_text(arg_node)
       else
         new_text = new_text .. " / (" .. get_text(arg_node) .. ")"

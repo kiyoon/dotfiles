@@ -43,7 +43,7 @@ table.insert(config.hyperlink_rules, {
 -- 1. detect a string starting with ruff, followed by a colon, followed by a sentence, ending with [{1}]
 -- 2. format the url to be https://docs.astral.sh/ruff/rules/$1
 table.insert(config.hyperlink_rules, {
-	regex = [[ruff:.*\[(\w+)\]] .. "]",
+	regex = [[[rR]uff:.*\[(\w+)\]] .. "]",
 	format = "https://docs.astral.sh/ruff/rules/$1",
 })
 table.insert(config.hyperlink_rules, {

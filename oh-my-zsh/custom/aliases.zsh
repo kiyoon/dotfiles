@@ -40,6 +40,12 @@ if (($+commands[gh])); then
 	}
 fi
 
+if (($+commands[ruff])); then
+	alias risort='ruff check --select I --fix'
+	alias rblack='ruff format'
+	alias rformat='ruff format'
+fi
+
 # for some reason, it doesn't detect conda/mamba although they are ready and executable here.
 # We check the $MINICONDA_PATH instead of
 # if (($+commands[mamba])); then

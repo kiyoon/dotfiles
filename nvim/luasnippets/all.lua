@@ -83,4 +83,5 @@ return {
   -- emojis
   s({ trig = ":siren:" }, { t { "🚨" } }),
   s({ trig = ":check:" }, { t { "✅" } }),
+  s({ trig = ":lightbulb:" }, { t { "💡" } }),
 }

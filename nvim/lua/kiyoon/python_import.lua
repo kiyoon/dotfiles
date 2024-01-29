@@ -221,7 +221,8 @@ vim.api.nvim_create_autocmd("FileType", {
 
       Annotated = "typing",
       Annotation = "typing",
-      Any = "typing",
+      Any = "typing", -- when you don't know the type
+      Incomplete = "typing", -- alias for Any, but indicates that the type hint should be completed later
       Callable = "typing",
       ClassVar = "typing",
       Concatenate = "typing",

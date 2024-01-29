@@ -304,6 +304,7 @@ vim.api.nvim_create_autocmd("FileType", {
       ImageOps = "PIL",
       tqdm = "tqdm",
       EasyDict = "easydict",
+      stringify_unsupported = "neptune.utils",
     }
 
     local python_keywords = {

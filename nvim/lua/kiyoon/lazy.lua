@@ -1236,7 +1236,18 @@ return {
         --   prepend_args = { "--profile", "black" },
         -- },
         ruff_fix = {
-          prepend_args = { "--select", "I" },
+          -- I: isort
+          -- D20, D21: docstring
+          -- UP00: upgrade to python 3.10
+
+          -- IGNORED:
+          -- D212: multi-line docstring summary should start at the first line (in favor of D213, second line)
+          prepend_args = {
+            "--select",
+            "I,D20,D21,UP00",
+            "--ignore",
+            "D212",
+          },
         },
         prettier = {
           prepend_args = {
@@ -1594,9 +1605,16 @@ return {
   },
   {
     "iamcco/markdown-preview.nvim",
-    ft = "markdown",
-    -- build = "cd app && yarn install",
-    build = ":call mkdp#util#install()",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    -- build = function()
+    --   vim.fn["mkdp#util#install"]()
+    -- end,
+    build = "cd app && npx --yes yarn install",
+    config = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+      -- vim.keymap.set("n", "<leader>mp", ":MarkdownPreviewToggle <CR>" , {})
+    end,
   },
   {
     "mechatroner/rainbow_csv",

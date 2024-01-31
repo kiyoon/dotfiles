@@ -107,3 +107,15 @@ if [[ "$TERM" == "wezterm" ]]; then
 		export TERM_PROGRAM_VERSION=20230712-072601-f4abf8fd
 	fi
 fi
+
+
+# fzf-tab completion
+if (($+commands[eza])); then
+	if (($+commands[bat])); then
+		# Preview on cd with eza
+		# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath'
+		zstyle ':fzf-tab:complete:*' fzf-preview 'if [[ -d $realpath ]]; then \
+				eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath; \
+			else bat --color=always --style=numbers --line-range=:1000 $realpath; fi'
+	fi
+fi

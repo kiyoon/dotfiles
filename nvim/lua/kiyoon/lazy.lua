@@ -548,6 +548,11 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-context",
     event = { "BufReadPost", "BufNewFile" },
+    -- This commit is the parent of https://github.com/nvim-treesitter/nvim-treesitter-context/pull/316
+    -- which introduced showing context in multiple lines.
+    -- However, it becomes too long and I prefer the old behaviour.
+    commit = "e5676455c7e68069c6299facd4b5c4eb80cc4e9d",
+
     config = function()
       require("treesitter-context").setup {
         max_lines = 7,

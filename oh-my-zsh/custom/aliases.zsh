@@ -4,6 +4,7 @@ fi
 
 if (($+commands[eza])); then
 	alias ls='eza --icons auto'
+	alias sl='eza --icons auto'
 	alias ll='eza -alF --icons auto'
 	alias la='eza -a --icons auto'
 	alias l='eza -F --icons auto'

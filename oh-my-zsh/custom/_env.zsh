@@ -1,3 +1,5 @@
+export TZ=Asia/Seoul
+
 if [[ -d "$HOME/bin/miniforge3" ]]; then
 	export MINICONDA_PATH="$HOME/bin/miniforge3"
 elif [[ -d "$HOME/miniforge3" ]]; then

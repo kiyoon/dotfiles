@@ -133,4 +133,5 @@ fi
 # Ignore some patterns in cd completion
 # NOTE: fzf-tab only changes the UI of the completion, not the completion itself.
 # So we need to change the zsh completion
-zstyle ':completion:*:*:cd:*:*' ignored-patterns '*__pycache__' '*.egg-info'
+# zstyle ':completion:*:*:cd:*:*' ignored-patterns '*__pycache__' '*.egg-info'
+zstyle ':completion:*:*:*:*:*' ignored-patterns '*__pycache__' '*.egg-info'

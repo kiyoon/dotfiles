@@ -16,10 +16,22 @@ M.run_ruff = function(bufnr)
     return bufnr_to_ruff_per_line[bufnr]
   end
 
+  -- HACK: the `:w !ruff` command will change the last paste register
+  -- so we need to save it and restore it after the command
+  local last_paste_start_line = vim.fn.line "'["
+  local last_paste_start_col = vim.fn.col "'["
+  local last_paste_end_line = vim.fn.line "']"
+  local last_paste_end_col = vim.fn.col "']"
+
   -- NOTE: nvim_exec will write additional stuff to stdout, like "shell returned 1"
   -- so we need to pass the failing vim.json.decode
   local ruff_outputs =
     vim.api.nvim_exec([[w !ruff check --output-format=json-lines --ignore-noqa -]], { output = true })
+
+  -- restore the last paste register
+  vim.fn.setpos("'[", { bufnr, last_paste_start_line, last_paste_start_col, 0 })
+  vim.fn.setpos("']", { bufnr, last_paste_end_line, last_paste_end_col, 0 })
+
   assert(ruff_outputs ~= nil)
   ruff_outputs = vim.split(ruff_outputs, "\n")
 

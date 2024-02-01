@@ -25,8 +25,11 @@ M.run_ruff = function(bufnr)
 
   -- NOTE: nvim_exec will write additional stuff to stdout, like "shell returned 1"
   -- so we need to pass the failing vim.json.decode
-  local ruff_outputs =
-    vim.api.nvim_exec([[w !ruff check --output-format=json-lines --ignore-noqa -]], { output = true })
+  local file_name = vim.api.nvim_buf_get_name(bufnr)
+  local ruff_outputs = vim.api.nvim_exec(
+    [[w !ruff check --stdin-filename ']] .. file_name .. [[' --output-format=json-lines --ignore-noqa -]],
+    { output = true }
+  )
 
   -- restore the last paste register
   vim.fn.setpos("'[", { bufnr, last_paste_start_line, last_paste_start_col, 0 })

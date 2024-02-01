@@ -236,6 +236,7 @@ vim.api.nvim_create_autocmd("FileType", {
       Tuple = "typing",
       Type = "typing",
       TypeVar = "typing",
+      TYPE_CHECKING = "typing",
       Union = "typing",
       AbstractSet = "typing",
       ByteString = "typing",

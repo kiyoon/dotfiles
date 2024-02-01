@@ -501,6 +501,8 @@ M.os_path_to_pathlib = function(wrap_with_path)
         new_text = new_text .. " / (" .. get_text(arg_node) .. ")"
       end
     end
+  elseif function_name == "os.mkdir" then
+    new_text = one_arg_function_to_pathlib "mkdir()"
   elseif function_name == "os.makedirs" then
     if arglist_node:named_child_count() == 0 then
       -- no arguments
@@ -545,6 +547,32 @@ M.os_path_to_pathlib = function(wrap_with_path)
     new_text = one_arg_function_to_pathlib "stat().st_ctime"
   elseif function_name == "os.path.getatime" then
     new_text = one_arg_function_to_pathlib "stat().st_atime"
+  elseif function_name == "os.listdir" then
+    new_text = one_arg_function_to_pathlib "iterdir()"
+  elseif function_name == "os.rename" then
+    new_text = one_arg_function_to_pathlib "rename("
+    local new_args = {}
+    for i = 1, arglist_node:named_child_count() - 1 do
+      local arg_node = arglist_node:named_child(i)
+      table.insert(new_args, get_text(arg_node))
+    end
+    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+  elseif function_name == "os.replace" then
+    new_text = one_arg_function_to_pathlib "replace("
+    local new_args = {}
+    for i = 1, arglist_node:named_child_count() - 1 do
+      local arg_node = arglist_node:named_child(i)
+      table.insert(new_args, get_text(arg_node))
+    end
+    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+  elseif function_name == "os.path.samefile" then
+    new_text = one_arg_function_to_pathlib "samefile("
+    local new_args = {}
+    for i = 1, arglist_node:named_child_count() - 1 do
+      local arg_node = arglist_node:named_child(i)
+      table.insert(new_args, get_text(arg_node))
+    end
+    new_text = new_text .. table.concat(new_args, ", ") .. ")"
   else
     vim.notify("Function `" .. function_name .. "` not recognised.", "error", {
       title = "os.path to pathlib.Path",

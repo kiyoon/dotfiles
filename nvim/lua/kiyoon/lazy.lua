@@ -1250,7 +1250,7 @@ return {
           -- ruff:[D212]: multi-line docstring summary should start at the first line (in favor of D213, second line)
           prepend_args = {
             "--select",
-            "I,D20,D21,UP00,RUF100",
+            "I,D20,D21,UP00",
             "--ignore",
             "D212",
           },

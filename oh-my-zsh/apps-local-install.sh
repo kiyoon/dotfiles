@@ -19,10 +19,10 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install pipx
 	brew install thefuck
 	brew install starship
+	brew install virtualenvwrapper
 
 	$PIP3 install --user pygments # colorize (ccat)
 	$PIP3 install --user pillow   # my custom ranger viu image viewer uses this
-	$PIP3 install --user virtualenvwrapper
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)

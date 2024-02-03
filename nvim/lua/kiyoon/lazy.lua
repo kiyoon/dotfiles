@@ -1245,13 +1245,15 @@ return {
           -- I: isort
           -- D20, D21: docstring
           -- UP00: upgrade to python 3.10
+          -- UP032: f-string over str.format
+          -- UP034: extraneous parentheses
           -- ruff:[RUF100]: unused noqa
 
           -- IGNORED:
           -- ruff:[D212]: multi-line docstring summary should start at the first line (in favor of D213, second line)
           prepend_args = {
             "--select",
-            "I,D20,D21,UP00",
+            "I,D20,D21,UP00,UP032,UP034",
             "--ignore",
             "D212",
           },

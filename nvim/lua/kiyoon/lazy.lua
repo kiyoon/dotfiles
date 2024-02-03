@@ -524,6 +524,7 @@ return {
               lua = init_strategy(500),
               vimdoc = init_strategy(300),
               vim = init_strategy(300),
+              markdown = require("rainbow-delimiters").strategy["global"], -- markdown parser is slow
             },
             query = {
               [""] = "rainbow-delimiters",

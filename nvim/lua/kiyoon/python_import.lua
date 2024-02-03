@@ -127,6 +127,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
       date = "datetime",
       datetime = "datetime",
+      timezone = "datetime",
 
       dataclass = "dataclasses",
       field = "dataclasses",

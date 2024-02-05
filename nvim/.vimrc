@@ -440,3 +440,7 @@ map <space>y "+y
 " https://stackoverflow.com/questions/17365324/auto-save-in-vim-as-you-type
 command AutoSave au CursorHold,CursorHoldI <buffer> if &readonly == 0 && filereadable(bufname('%')) | silent write | endif
 
+" delete word in INSERT mode
+" you can use <C-w> but this is for consistency with github copilot
+" using <A-Right> to accept a word.
+inoremap <A-Left> <C-\><C-o>db

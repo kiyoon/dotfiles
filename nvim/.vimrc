@@ -435,3 +435,8 @@ nmap <A-j> <cmd>cn<CR>
 nmap <A-k> <cmd>cp<CR>
 
 map <space>y "+y
+
+" Auto save
+" https://stackoverflow.com/questions/17365324/auto-save-in-vim-as-you-type
+command AutoSave au CursorHold,CursorHoldI <buffer> if &readonly == 0 && filereadable(bufname('%')) | silent write | endif
+

@@ -229,8 +229,10 @@ return {
       { "<C-A-y>", [[<cmd>lua require("tmux").resize_left()<cr>]] },
       { "<C-A-o>", [[<cmd>lua require("tmux").resize_right()<cr>]] },
       { "<F16>", [[<cmd>lua require("tmux").resize_top()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F3>
+      { "<F17>", [[<cmd>lua require("tmux").resize_top()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F4>
       { "<F18>", [[<cmd>lua require("tmux").resize_bottom()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F6>
       { "<F28>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F3>
+      { "<F29>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F4>
       { "<F30>", [[<cmd>lua require("tmux").resize_right()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F6>
       "<C-n>",
       "<C-p>",
@@ -293,6 +295,7 @@ return {
       -- using <A-Right> to accept a word.
       vim.cmd [[inoremap <A-Left> <C-\><C-o>db]]
       vim.cmd [[inoremap <F3> <C-\><C-o>db]]
+      vim.cmd [[inoremap <F4> <C-\><C-o>db]]
       vim.cmd [[inoremap <F6> <Plug>(copilot-accept-word)]]
     end,
   },

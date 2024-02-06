@@ -138,5 +138,6 @@ zstyle ':completion:*:*:*:*:*' ignored-patterns '*__pycache__' '*.egg-info'
 
 # dirhistory
 bindkey "^[OR" dirhistory_zle_dirhistory_back  # F3, knob counter-clockwise
+bindkey "^[OS" dirhistory_zle_dirhistory_back  # F4, knob counter-clockwise
 bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
 bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob clockwise

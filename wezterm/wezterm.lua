@@ -22,6 +22,21 @@ local config = {
 			mods = "CMD|SHIFT",
 			action = wezterm.action.ReloadConfiguration,
 		},
+		{
+			key = "F3",
+			mods = "CTRL|SHIFT",
+			action = wezterm.action.ActivateTabRelative(-1),
+		},
+		{
+			key = "F4",
+			mods = "CTRL|SHIFT",
+			action = wezterm.action.ActivateTabRelative(-1),
+		},
+		{
+			key = "F6",
+			mods = "CTRL|SHIFT",
+			action = wezterm.action.ActivateTabRelative(1),
+		},
 	},
 
 	enable_scroll_bar = true,

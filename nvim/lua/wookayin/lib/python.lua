@@ -16,6 +16,7 @@ M.no_paren_ts_node_types = {
   call = true,
   attribute = true,
   subscript = true,
+  string = true,
 }
 
 M.toggle_breakpoint = function()
@@ -451,15 +452,15 @@ M.os_path_to_pathlib = function(wrap_with_path)
 
   local function wrap_with_pathlib(node)
     local text = get_text(node)
-    if M.no_paren_ts_node_types[node:type()] then
+    if node:type() == "string" then
+      -- obviously string needs to be wrapped with Path(.)
+      return "Path(" .. text .. ")"
+    elseif M.no_paren_ts_node_types[node:type()] then
       if wrap_with_path then
         return "Path(" .. text .. ")"
       else
         return text
       end
-    elseif node:type() == "string" then
-      -- obviously string needs to be wrapped with Path(.)
-      return "Path(" .. text .. ")"
     else
       if wrap_with_path then
         return "Path(" .. text .. ")"
@@ -507,7 +508,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
     if arglist_node:named_child_count() == 0 then
       -- no arguments
       vim.notify("At least one argument is required.", "error", {
-        title = "os.path.join to pathlib.Path",
+        title = "os.makedirs to pathlib.Path",
       })
       return
     end

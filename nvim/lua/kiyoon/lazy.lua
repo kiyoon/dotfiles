@@ -228,6 +228,10 @@ return {
       { "<C-A-u>", [[<cmd>lua require("tmux").resize_bottom()<cr>]] },
       { "<C-A-y>", [[<cmd>lua require("tmux").resize_left()<cr>]] },
       { "<C-A-o>", [[<cmd>lua require("tmux").resize_right()<cr>]] },
+      { "<F16>", [[<cmd>lua require("tmux").resize_top()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F3>
+      { "<F18>", [[<cmd>lua require("tmux").resize_bottom()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F6>
+      { "<F28>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F3>
+      { "<F30>", [[<cmd>lua require("tmux").resize_right()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F6>
       "<C-n>",
       "<C-p>",
       "p",
@@ -282,6 +286,14 @@ return {
     init = function()
       vim.g.copilot_no_tab_map = true
       vim.cmd [[imap <silent><script><expr> <C-s> copilot#Accept("")]]
+      vim.cmd [[imap <silent><script><expr> <F7> copilot#Accept("")]]
+
+      -- delete word in INSERT mode
+      -- you can use <C-w> but this is for consistency with github copilot
+      -- using <A-Right> to accept a word.
+      vim.cmd [[inoremap <A-Left> <C-\><C-o>db]]
+      vim.cmd [[inoremap <F3> <C-\><C-o>db]]
+      vim.cmd [[inoremap <F6> <Plug>(copilot-accept-word)]]
     end,
   },
   -- Free copilot alternative

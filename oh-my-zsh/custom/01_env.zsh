@@ -136,8 +136,18 @@ fi
 # zstyle ':completion:*:*:cd:*:*' ignored-patterns '*__pycache__' '*.egg-info'
 zstyle ':completion:*:*:*:*:*' ignored-patterns '*__pycache__' '*.egg-info'
 
+# Move by word
+# zsh-vi-mode may have overwritten the default key bindings
+# so we need to rebind them (alt+f, alt+b)
+bindkey '^[f' forward-word
+bindkey '^[b' backward-word
+
+# delete word (alt+backspace)
+bindkey '^[^?' backward-kill-word
+
 # dirhistory
 bindkey "^[OR" dirhistory_zle_dirhistory_back  # F3, knob counter-clockwise
 bindkey "^[OS" dirhistory_zle_dirhistory_back  # F4, knob counter-clockwise
 bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
 bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob clockwise
+

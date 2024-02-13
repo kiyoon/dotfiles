@@ -130,8 +130,21 @@ local function apply_ruff_fix(fix)
   vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, content)
 end
 
-M.ruff_fix_current_line = function(bufnr)
+M.ruff_fix_current_line = function(bufnr, ruff_codes)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+  -- if ruff_code is a string, convert it to a table
+  if type(ruff_codes) == "string" then
+    ruff_codes = { ruff_codes }
+  end
+
+  local do_fix_code = {}
+  if ruff_codes ~= nil then
+    for _, code in pairs(ruff_codes) do
+      do_fix_code[code] = true
+    end
+  end
+
   local current_line = vim.fn.line "."
   M.run_ruff(bufnr)
 
@@ -142,17 +155,19 @@ M.ruff_fix_current_line = function(bufnr)
 
   local all_fixes = {}
   for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
-    local fix = ruff_output["fix"]
-    if fix == vim.NIL then
-      goto continue
-    end
+    if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
+      local fix = ruff_output["fix"]
+      if fix == vim.NIL then
+        goto continue
+      end
 
-    -- each fix may have multiple edits
-    for _, edit in ipairs(fix["edits"]) do
-      edit["message"] = fix["message"]
-      table.insert(all_fixes, edit)
+      -- each fix may have multiple edits
+      for _, edit in ipairs(fix["edits"]) do
+        edit["message"] = fix["message"]
+        table.insert(all_fixes, edit)
+      end
+      -- table.insert(all_fixes, fix)
     end
-    -- table.insert(all_fixes, fix)
     ::continue::
   end
 
@@ -194,6 +209,7 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
 
   -- PERF: this runs ruff multiple times until it doesn't find any fix
   -- This can be slow but it's the easiest way to implement it
+  -- NOTE: this will run up to 1000 times to avoid infinite loop
   --- Apply all ruff fixes, optionally only for a specific code
   repeat
     M.run_ruff(bufnr)
@@ -215,7 +231,7 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
         break
       end
     end
-  until not fixed
+  until not fixed or num_fixed > 1000
 
   if num_fixed == 0 then
     vim.notify("No fix available.", vim.log.levels.ERROR)
@@ -235,42 +251,25 @@ function M.available_actions(bufnr)
   if bufnr_to_ruff_per_line[bufnr] ~= nil and bufnr_to_ruff_per_line[bufnr][current_line] ~= nil then
     -- table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })
 
-    local fix_available = false
-    local fix = nil
-    local fix_code = nil
-    local ruff_message = nil
-    -- local fix_import_available = false
     for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
-      fix = ruff_output["fix"]
+      local fix = ruff_output["fix"]
       if fix ~= vim.NIL then
-        fix_available = true
-        fix_code = ruff_output["code"]
-        ruff_message = ruff_output["message"]
-        -- if ruff_output["code"] == "F401" then
-        --   fix_import_available = true
-        -- end
-        break
+        local fix_code = ruff_output["code"]
+        local ruff_message = ruff_output["message"]
+        table.insert(actions, {
+          title = "Ruff: Fix current: " .. fix["message"] .. " [" .. fix_code .. "]",
+          action = function()
+            M.ruff_fix_current_line(bufnr, fix_code)
+          end,
+        })
+        table.insert(actions, {
+          title = "Ruff: Fix " .. fix_code .. ": " .. ruff_message,
+          action = function()
+            M.ruff_fix_all(bufnr, fix_code)
+          end,
+        })
       end
-
-      -- if fix_available and fix_import_available then
-      --   -- no need to search further
-      --   break
-      -- end
     end
-    if fix_available then
-      table.insert(
-        actions,
-        { title = "Ruff: Fix current: " .. fix["message"] .. " [" .. fix_code .. "]", action = M.ruff_fix_current_line }
-      )
-      table.insert(actions, {
-        title = "Ruff: Fix " .. fix_code .. ": " .. ruff_message,
-        action = function()
-          M.ruff_fix_all(bufnr, fix_code)
-        end,
-      })
-    end
-    -- if fix_import_available then
-    -- end
   end
 
   return actions

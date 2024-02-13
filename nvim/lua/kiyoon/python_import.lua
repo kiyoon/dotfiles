@@ -99,6 +99,7 @@ vim.api.nvim_create_autocmd("FileType", {
       pd = "pandas",
       plt = "matplotlib.pyplot",
       o3d = "open3d",
+      F = "torch.nn.functional",
     }
 
     local python_import_from = {

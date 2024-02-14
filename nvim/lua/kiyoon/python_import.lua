@@ -127,6 +127,10 @@ vim.api.nvim_create_autocmd("FileType", {
       closing = "contextlib",
       deepcopy = "copy",
 
+      OrderedDict = "collections",
+      namedtuple = "collections",
+      defaultdict = "collections",
+
       date = "datetime",
       datetime = "datetime",
       timezone = "datetime",
@@ -279,7 +283,6 @@ vim.api.nvim_create_autocmd("FileType", {
       Dict = "typing",
       DefaultDict = "typing",
       List = "typing",
-      OrderedDict = "typing",
       Set = "typing",
       FrozenSet = "typing",
       NamedTuple = "typing",

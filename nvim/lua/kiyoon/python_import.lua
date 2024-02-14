@@ -100,6 +100,7 @@ vim.api.nvim_create_autocmd("FileType", {
       plt = "matplotlib.pyplot",
       o3d = "open3d",
       F = "torch.nn.functional",
+      tf = "tensorflow",
     }
 
     local python_import_from = {

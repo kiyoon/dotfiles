@@ -152,5 +152,8 @@ git_config() {
 	git config --global core.editor nvim
 	git config --global pull.rebase false
 	git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+	git config --global gpg.format ssh
+	git config --global user.signingkey ~/.ssh/id_ed25519.pub
+
 }
 

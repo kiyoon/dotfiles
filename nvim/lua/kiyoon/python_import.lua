@@ -95,6 +95,7 @@ vim.api.nvim_create_autocmd("FileType", {
     end
 
     local python_import_as = {
+      mp = "multiprocessing",
       np = "numpy",
       pd = "pandas",
       plt = "matplotlib.pyplot",

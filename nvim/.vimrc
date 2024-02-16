@@ -442,3 +442,7 @@ command AutoSave au CursorHold,CursorHoldI <buffer> if &readonly == 0 && filerea
 
 set nottimeout
 set ttimeoutlen=0
+
+" word back and forward like bash
+imap <silent> <a-b> <c-o>B
+imap <silent> <a-f> <c-o>W

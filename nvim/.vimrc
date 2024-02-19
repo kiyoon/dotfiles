@@ -68,13 +68,14 @@ if !has('nvim')
   set timeoutlen=10000  " leader key timeout = 10s
 endif
 
-" map common mistakes: :W, :Q, :Wq, :WQ, q:
+" map common typos: :W, :Q, :Wq, :WQ, q:
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>write<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>write<bang> <args> | quit
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>write<bang> <args> | quit
 command! -bang Q quit<bang>
 nmap q: :q
-
+" :w\ normally saves to the file named \ but this remap prevents it.
+cnoremap w\ w<CR>
 
 """""""""""""""""
 " <leader>l to toggle location list
@@ -446,3 +447,4 @@ set ttimeoutlen=0
 " word back and forward like bash
 imap <silent> <a-b> <c-o>B
 imap <silent> <a-f> <c-o>W
+

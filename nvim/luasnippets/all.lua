@@ -86,6 +86,8 @@ return {
   s({ trig = ":lightbulb" }, { t { "💡" } }),
   s({ trig = ":folder" }, { t { "📂" } }),
   s({ trig = ":file" }, { t { "📄" } }),
+  s({ trig = ":pencil" }, { t { "✏️" } }),
+  s({ trig = ":pen" }, { t { "🖊️" } }),
   s({ trig = ":heart" }, { t { "💖" } }),
   s({ trig = ":star" }, { t { "⭐" } }),
   s({ trig = ":fire" }, { t { "🔥" } }),

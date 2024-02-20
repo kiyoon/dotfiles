@@ -109,4 +109,9 @@ return {
   s({ trig = ":mask" }, { t { "😷" } }),
   s({ trig = ":vaccine" }, { t { "💉" } }),
   s({ trig = ":pill" }, { t { "💊" } }),
+  s({ trig = ":gear" }, { t { "⚙️" } }),
+  s({ trig = ":tools" }, { t { "🛠️" } }),
+  s({ trig = ":hammer" }, { t { "🔨" } }),
+  s({ trig = ":wrench" }, { t { "🔧" } }),
+  s({ trig = ":bolt" }, { t { "⚡" } }),
 }

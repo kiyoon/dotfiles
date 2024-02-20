@@ -118,7 +118,7 @@ return {
 
   {
     -- Similar to tpope/vim-surround
-    -- dsf to delete surrounding function call.
+    -- Plus dsf to delete surrounding function call.
     "kylechui/nvim-surround",
     event = "VeryLazy",
     config = function()

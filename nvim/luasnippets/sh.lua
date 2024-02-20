@@ -20,6 +20,13 @@ end
 
 -- require snippets
 return {
+  -- Get the directory of the script
+  s("sdir", {
+    t {
+      [[script_dir=$(dirname "$(realpath -s "$0")")]],
+      [[]],
+    },
+  }),
   s("waitp", {
     t {
       [[# wait for shell's child process to exit]],

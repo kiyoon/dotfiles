@@ -92,6 +92,7 @@ alias rb='gio trash'
 # git
 alias cdg='cd $(git rev-parse --show-toplevel)'
 alias gc='git commit --verbose --gpg-sign'
+alias glr='git pull --rebase'
 
 # slurm
 alias sq='squeue -u $USER'

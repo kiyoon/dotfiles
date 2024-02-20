@@ -75,7 +75,7 @@ command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>write<bang> <a
 command! -bang Q quit<bang>
 nmap q: :q
 " :w\ normally saves to the file named \ but this remap prevents it.
-cnoremap w\ w<CR>
+" cnoremap w\ w<CR>
 
 """""""""""""""""
 " <leader>l to toggle location list

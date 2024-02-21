@@ -82,6 +82,9 @@ return {
 
   -- emojis
   s({ trig = ":siren" }, { t { "🚨" } }),
+  s({ trig = ":error" }, { t { "❌" } }),
+  s({ trig = ":warning" }, { t { "⚠️" } }),
+  s({ trig = ":info" }, { t { "ℹ️" } }),
   s({ trig = ":check" }, { t { "✅" } }),
   s({ trig = ":lightbulb" }, { t { "💡" } }),
   s({ trig = ":folder" }, { t { "📂" } }),
@@ -113,5 +116,7 @@ return {
   s({ trig = ":tools" }, { t { "🛠️" } }),
   s({ trig = ":hammer" }, { t { "🔨" } }),
   s({ trig = ":wrench" }, { t { "🔧" } }),
+  s({ trig = ":shield" }, { t { "🛡️" } }),
+  s({ trig = ":lock" }, { t { "🔒" } }),
   s({ trig = ":bolt" }, { t { "⚡" } }),
 }

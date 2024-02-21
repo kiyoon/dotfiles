@@ -12,8 +12,17 @@ if (($+commands[eza])); then
 fi
 
 if (($+commands[nvim])); then
+	vi() {
+		if [[ "$#" -ge 2 ]] && [[ "$1" == "vi" ]]; then
+			# Likely a typo because vi is typed twice.
+			# ignore the first argument, and pass the rest to nvim
+			# ${@:2} = slice from second to the last
+			nvim "${@:2}"
+		else
+			nvim "$@"
+		fi
+	}
 	alias v='nvim'
-	alias vi='nvim'
 	alias vim='nvim'
 	alias vimdiff='nvim -d'
 	alias vic='NVIM_APPNAME=nvim-coc nvim'

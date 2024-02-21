@@ -25,7 +25,10 @@ if (($+commands[nvim])); then
 				return
 			fi
 		elif [[ "$#" -eq 1 ]]; then
-			if [[ "$1" == "ls" ]]; then
+			if [[ "$1" == "vi" ]]; then
+				nvim
+				return
+			elif [[ "$1" == "ls" ]]; then
 				ls
 				return
 			fi

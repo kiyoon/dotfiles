@@ -480,9 +480,9 @@ return {
   },
   {
     "stevearc/oil.nvim",
-    cond = function()
-      return vim.fn.isdirectory(vim.fn.expand "%:p") == 1
-    end,
+    -- cond = function()
+    --   return vim.fn.isdirectory(vim.fn.expand "%:p") == 1
+    -- end,
     config = function()
       require("oil").setup()
     end,

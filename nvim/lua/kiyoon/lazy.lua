@@ -1362,13 +1362,6 @@ return {
       -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
     end,
   },
-  -- {
-  --   "weilbith/nvim-code-action-menu",
-  --   cmd = "CodeActionMenu",
-  --   keys = {
-  --     { "<space>pa", "<cmd>CodeActionMenu<cr>", desc = "Code [A]ction" },
-  --   },
-  -- },
   {
     "aznhe21/actions-preview.nvim",
     keys = {

@@ -45,7 +45,47 @@ local config = {
 	enable_kitty_graphics = true,
 }
 
-config.hyperlink_rules = wezterm.default_hyperlink_rules()
+-- config.hyperlink_rules = wezterm.default_hyperlink_rules()
+-- NOTE: the default rule doesn't work well with parens, brackets, or braces.
+-- Updated rules following https://github.com/wez/wezterm/issues/3803
+config.hyperlink_rules = {
+	-- Matches: a URL in parens: (URL)
+	{
+		regex = "\\((\\w+://\\S+)\\)",
+		format = "$1",
+		highlight = 1,
+	},
+	-- Matches: a URL in brackets: [URL]
+	{
+		regex = "\\[(\\w+://\\S+)\\]",
+		format = "$1",
+		highlight = 1,
+	},
+	-- Matches: a URL in curly braces: {URL}
+	{
+		regex = "\\{(\\w+://\\S+)\\}",
+		format = "$1",
+		highlight = 1,
+	},
+	-- Matches: a URL in angle brackets: <URL>
+	{
+		regex = "<(\\w+://\\S+)>",
+		format = "$1",
+		highlight = 1,
+	},
+	-- Then handle URLs not wrapped in brackets
+	{
+		regex = "[^(]\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)",
+		format = "$1",
+		highlight = 1,
+	},
+	-- implicit mailto link
+	{
+		regex = "\\b\\w+@[\\w-]+(\\.[\\w-]+)+\\b",
+		format = "mailto:$0",
+	},
+}
+
 -- make username/project paths clickable. this implies paths like the following are for github.
 -- ( "nvim-treesitter/nvim-treesitter" | wbthomason/packer.nvim | wez/wezterm | "wez/wezterm.git" )
 -- as long as a full url hyperlink regex exists above this it should not match a full url to

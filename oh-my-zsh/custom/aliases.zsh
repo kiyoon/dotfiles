@@ -113,6 +113,7 @@ alias rb='gio trash'
 
 # git
 alias cdg='cd $(git rev-parse --show-toplevel)'
+alias groot='git rev-parse --show-toplevel'
 alias gc='git commit --verbose --gpg-sign'
 alias glr='git pull --rebase'
 

@@ -1407,7 +1407,7 @@ return {
     end,
   },
   {
-    "Weissle/persistent-breakpoints.nvim",
+    "kiyoon/persistent-breakpoints.nvim",
     event = "BufReadPost",
     config = function()
       require("persistent-breakpoints").setup {

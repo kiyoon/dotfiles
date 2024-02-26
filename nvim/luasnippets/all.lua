@@ -119,4 +119,5 @@ return {
   s({ trig = ":shield" }, { t { "🛡️" } }),
   s({ trig = ":lock" }, { t { "🔒" } }),
   s({ trig = ":bolt" }, { t { "⚡" } }),
+  s({ trig = ":strong" }, { t { "💪" } }),
 }

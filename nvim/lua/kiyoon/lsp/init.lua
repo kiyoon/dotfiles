@@ -34,6 +34,7 @@ local settings = {
 -- rust_analyzer is attached by rust-tools.nvim
 local ensure_installed = { unpack(servers) }
 table.insert(ensure_installed, "rust_analyzer")
+table.insert(ensure_installed, "shellcheck") -- NOTE: bashls needs this, but it's not a server.
 
 -- Mason makes it easier to install language servers
 -- Always load mason, mason-lspconfig and nvim-lspconfig in order.

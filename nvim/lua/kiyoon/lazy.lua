@@ -1243,6 +1243,7 @@ return {
         -- python = { "isort", "black" },
         python = { "ruff_fix", "ruff_format" },
         javascript = { { "prettierd", "prettier" } },
+        typescript = { { "prettierd", "prettier" } },
         yaml = { "prettier" },
         json = { "prettier" },
       },

@@ -313,6 +313,10 @@ vim.api.nvim_create_autocmd("FileType", {
       tqdm = "tqdm",
       EasyDict = "easydict",
       stringify_unsupported = "neptune.utils",
+      Console = "rich.console",
+      Table = "rich.table",
+      Progress = "rich.progress",
+      Traceback = "rich.traceback",
     }
 
     local python_keywords = {

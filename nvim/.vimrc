@@ -195,11 +195,11 @@ set shiftwidth=4
 filetype plugin indent on
 
 " use tab as spaces in python, tex
-autocmd FileType python,tex,lua,toml,yaml set expandtab
+autocmd FileType python,tex,lua,toml,yaml,json set expandtab
 
 " latex settings (global values require vim-latex plugin)
-autocmd FileType tex,lua,toml,yaml set tabstop=2
-autocmd FileType tex,lua,toml,yaml set shiftwidth=2
+autocmd FileType tex,lua,toml,yaml,json set tabstop=2
+autocmd FileType tex,lua,toml,yaml,json set shiftwidth=2
 autocmd FileType tex set iskeyword+=:
 " let g:tex_flavor='latex'
 " let g:Tex_DefaultTargetFormat = 'pdf'

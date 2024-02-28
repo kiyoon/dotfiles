@@ -1244,6 +1244,7 @@ return {
         python = { "ruff_fix", "ruff_format" },
         javascript = { { "prettierd", "prettier" } },
         typescript = { { "prettierd", "prettier" } },
+        html = { { "prettierd", "prettier" } },
         yaml = { "prettier" },
         json = { "prettier" },
       },

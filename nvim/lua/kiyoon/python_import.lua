@@ -132,6 +132,8 @@ vim.api.nvim_create_autocmd("FileType", {
       namedtuple = "collections",
       defaultdict = "collections",
 
+      Iterable = "collections.abc",
+
       date = "datetime",
       datetime = "datetime",
       timezone = "datetime",
@@ -252,7 +254,6 @@ vim.api.nvim_create_autocmd("FileType", {
       ContextManager = "typing",
       Hashable = "typing",
       ItemsView = "typing",
-      Iterable = "typing",
       Iterator = "typing",
       KeysView = "typing",
       Mapping = "typing",

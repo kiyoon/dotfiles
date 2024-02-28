@@ -3,6 +3,7 @@ local servers = {
   "cssls",
   "html",
   "tsserver",
+  "eslint",
   "pyright",
   -- "ruff_lsp",
   "bashls",
@@ -34,7 +35,6 @@ local settings = {
 -- rust_analyzer is attached by rust-tools.nvim
 local ensure_installed = { unpack(servers) }
 table.insert(ensure_installed, "rust_analyzer")
-table.insert(ensure_installed, "shellcheck") -- NOTE: bashls needs this, but it's not a server.
 
 -- Mason makes it easier to install language servers
 -- Always load mason, mason-lspconfig and nvim-lspconfig in order.
@@ -43,6 +43,35 @@ require("mason-lspconfig").setup {
   ensure_installed = ensure_installed,
   automatic_installation = true,
 }
+
+local function install_pkg_background(pkg_name)
+  local installed_pkgs = require("mason-registry").get_installed_package_names()
+  if not vim.tbl_contains(installed_pkgs, pkg_name) then
+    -- Code from mason-lspconfig.nvim/install.lua
+    -- Install in the background, unlike the following line:
+    -- require("mason.api.command").MasonInstall { "shellcheck" }
+
+    local pkg = require("mason-registry").get_package(pkg_name)
+    pkg:install():once(
+      "closed",
+      vim.schedule_wrap(function()
+        if pkg:is_installed() then
+          vim.notify(("[kiyoon/dotfiles] %s was successfully installed using Mason."):format(pkg_name))
+        else
+          vim.notify(
+            ("[kiyoon/dotfiles] Failed to install %s. Installation logs are available in :Mason and :MasonLog"):format(
+              pkg_name
+            ),
+            vim.log.levels.ERROR
+          )
+        end
+      end)
+    )
+  end
+end
+
+-- bashls needs shellcheck, but it's not a server. Thus it's available on mason but not mason-lspconfig's ensure_installed
+install_pkg_background "shellcheck"
 
 require("neodev").setup {
   override = function(root_dir, library)

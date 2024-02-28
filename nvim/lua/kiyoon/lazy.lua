@@ -1081,7 +1081,7 @@ return {
     commit = "bbaa1d5d1ff3cbd9d26bb37cfda1a990494c4043",
     ft = "python",
     init = function()
-      vim.cmd [[ hi link CocInlayHint Comment ]]
+      vim.cmd [[ hi link CocInlayHint LspInlayHint ]]
       vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
     end,
     config = function()

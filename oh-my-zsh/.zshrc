@@ -1,6 +1,10 @@
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+if [[ -f /opt/homebrew/bin/brew ]]; then
+	eval $(/opt/homebrew/bin/brew shellenv)
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -164,3 +168,4 @@ export ARCHFLAGS="-arch x86_64"
 if (( $+commands[starship] )); then
 	eval "$(starship init zsh)"
 fi
+

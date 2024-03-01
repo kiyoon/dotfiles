@@ -76,11 +76,13 @@ if (($+commands[mamba])); then
 	alias ca='mamba activate'
 	alias cda='mamba deactivate'
 	alias cc='mamba create -n'
+	alias ccg='mamba create -n $(git rev-parse --show-toplevel | xargs basename)'
 	alias ci='mamba install'
 else
 	alias ca='conda activate'
 	alias cda='conda deactivate'
 	alias cc='conda create -n'
+	alias ccg='conda create -n $(git rev-parse --show-toplevel | xargs basename)'
 	alias ci='conda install'
 fi
 

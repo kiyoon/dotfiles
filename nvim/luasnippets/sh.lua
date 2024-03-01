@@ -23,7 +23,7 @@ return {
   -- Get the directory of the script
   s("sdir", {
     t {
-      [[script_dir=$(dirname "$(realpath -s "$0")")]],
+      [[SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )]],
       [[]],
     },
   }),

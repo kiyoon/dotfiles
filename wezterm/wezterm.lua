@@ -102,4 +102,9 @@ table.insert(config.hyperlink_rules, {
 	format = "https://docs.astral.sh/ruff/rules/$1",
 })
 
+table.insert(config.hyperlink_rules, {
+	regex = [[shellcheck:.*\[(\w+)\]] .. "]",
+	format = "https://shellcheck.net/wiki/$1",
+})
+
 return config

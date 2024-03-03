@@ -1,5 +1,3 @@
-vim.cmd [[hi link LspInlayHint Comment]]
--- vim.cmd [[hi LspInlayHint guifg=#d8d8d8 guibg=#3a3a3a]]
 require("lsp-inlayhints").setup()
 
 vim.api.nvim_create_augroup("LspAttach_inlayhints", {})

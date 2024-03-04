@@ -81,6 +81,7 @@ function M.lsp_keymaps(bufnr)
     local source_to_icon = {
       rustc = "🦀",
       ["rust-analyzer"] = "🦀",
+      clippy = "🦀cl",
       pyright = "🐍",
       shellcheck = "🐚",
       tsserver = "🌐",
@@ -90,11 +91,23 @@ function M.lsp_keymaps(bufnr)
         -- if diagnostic.user_data ~= nil then
         --   vim.print(diagnostic.user_data)
         -- end
-        if source_to_icon[diagnostic.source] ~= nil then
-          return string.format("%s 🔗%s", diagnostic.message, source_to_icon[diagnostic.source])
+        local message
+        if diagnostic.source == "clippy" then
+          -- remove "for further information visit https://rust-lang.github.io/rust-clippy/...." from the message
+          -- match line break at the end
+          message = diagnostic.message:gsub(
+            "for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n",
+            ""
+          )
+        else
+          message = diagnostic.message
         end
 
-        return string.format("%s 🔗%s", diagnostic.message, diagnostic.source)
+        if source_to_icon[diagnostic.source] ~= nil then
+          return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+        end
+
+        return string.format("%s 🔗%s", message, diagnostic.source)
       end,
     }
   end, opts, "Show Diagnostics")

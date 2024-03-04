@@ -107,13 +107,20 @@ table.insert(config.hyperlink_rules, {
 	format = "https://shellcheck.net/wiki/$1",
 })
 
+-- rustc error
 table.insert(config.hyperlink_rules, {
 	regex = [[🔗🦀 \[E([0-9]+)\]] .. "]",
 	format = "https://doc.rust-lang.org/error_codes/E$1.html",
 })
+-- rustc lint warning
 table.insert(config.hyperlink_rules, {
 	regex = [[🔗🦀 \[([a-z0-9_]+)\]] .. "]",
 	format = "https://doc.rust-lang.org/rustc/?search=$1",
+})
+-- clippy
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗🦀cl \[([a-z0-9_]+)\]] .. "]",
+	format = "https://rust-lang.github.io/rust-clippy/master/index.html#$1",
 })
 
 return config

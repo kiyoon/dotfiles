@@ -78,9 +78,23 @@ function M.lsp_keymaps(bufnr)
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
   keymap("n", "gl", function()
+    local source_to_icon = {
+      rustc = "🦀",
+      ["rust-analyzer"] = "🦀",
+      pyright = "🐍",
+      shellcheck = "🐚",
+      tsserver = "🌐",
+    }
     vim.diagnostic.open_float {
       format = function(diagnostic)
-        return string.format("%s ℹ️ %s:", diagnostic.message, diagnostic.source)
+        -- if diagnostic.user_data ~= nil then
+        --   vim.print(diagnostic.user_data)
+        -- end
+        if source_to_icon[diagnostic.source] ~= nil then
+          return string.format("%s 🔗%s", diagnostic.message, source_to_icon[diagnostic.source])
+        end
+
+        return string.format("%s 🔗%s", diagnostic.message, diagnostic.source)
       end,
     }
   end, opts, "Show Diagnostics")

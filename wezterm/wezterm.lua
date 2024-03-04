@@ -98,13 +98,22 @@ table.insert(config.hyperlink_rules, {
 -- Example:
 --     ruff: Mixed spaces and tabs [E101]
 table.insert(config.hyperlink_rules, {
-	regex = [[[rR]uff:.*\[(\w+)\]] .. "]",
+	regex = [[🔗🐍 \[(\w+)\]] .. "]",
 	format = "https://docs.astral.sh/ruff/rules/$1",
 })
 
 table.insert(config.hyperlink_rules, {
-	regex = [[shellcheck:.*\[(\w+)\]] .. "]",
+	regex = [[🔗🐚 \[(\w+)\]] .. "]",
 	format = "https://shellcheck.net/wiki/$1",
+})
+
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗🦀 \[E([0-9]+)\]] .. "]",
+	format = "https://doc.rust-lang.org/error_codes/E$1.html",
+})
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗🦀 \[([a-z0-9_]+)\]] .. "]",
+	format = "https://doc.rust-lang.org/rustc/?search=$1",
 })
 
 return config

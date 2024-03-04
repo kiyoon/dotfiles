@@ -96,7 +96,6 @@ return {
   s({ trig = ":fire" }, { t { "🔥" } }),
   s({ trig = ":rocket" }, { t { "🚀" } }),
   s({ trig = ":warning" }, { t { "⚠️" } }),
-  s({ trig = ":python" }, { t { "🐍" } }),
   s({ trig = ":protein" }, { t { "⚕" } }),
   s({ trig = ":dna" }, { t { "🧬" } }),
   s({ trig = ":atom" }, { t { "⚛" } }),
@@ -120,4 +119,18 @@ return {
   s({ trig = ":lock" }, { t { "🔒" } }),
   s({ trig = ":bolt" }, { t { "⚡" } }),
   s({ trig = ":strong" }, { t { "💪" } }),
+  s({ trig = ":link" }, { t { "🔗" } }),
+
+  s({ trig = ":terminal" }, { t { "💻" } }),
+  s({ trig = ":laptop" }, { t { "💻" } }),
+  s({ trig = ":desktop" }, { t { "🖥️" } }),
+
+  s({ trig = ":python" }, { t { "🐍" } }),
+  s({ trig = ":shell" }, { t { "🐚" } }),
+  s({ trig = ":crab" }, { t { "🦀" } }),
+  s({ trig = ":rust" }, { t { "🦀" } }),
+  s({ trig = ":c" }, { t { "🅲" } }),
+  s({ trig = ":cpp" }, { t { "🅲🅿🅿" } }),
+  s({ trig = ":java" }, { t { "☕" } }),
+  s({ trig = ":javascript" }, { t { "🅹🆂" } }),
 }

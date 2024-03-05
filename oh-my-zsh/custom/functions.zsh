@@ -157,6 +157,10 @@ git_config() {
 
 }
 
+git_amend_author() {
+	git commit --amend --author="Kiyoon Kim <kiyoon@users.noreply.github.com>"
+}
+
 tgz() {
 	# Create a tar.gz file with progress bar
 

@@ -157,3 +157,32 @@ git_config() {
 
 }
 
+tgz() {
+	# Create a tar.gz file with progress bar
+
+	infile="$1"
+	outfile="$2"
+
+	if [ -z "$infile" ] || [ -z "$outfile" ]; then
+		echo "Usage: tgz [infile] [outfile]"
+		return 1
+	fi
+
+	if [ -f "$outfile" ]; then
+		echo "File already exists: $outfile"
+		return 1
+	fi
+
+
+
+	if [ -d "$infile" ] || [ -f "$infile" ]; then
+		if [[ $OSTYPE == "darwin"* ]]; then
+			tar cf - "$infile" -P | pv -s $(($(du -sk "$infile" | awk '{print $1}') * 1024)) | gzip > "$outfile"
+		elif [[ $OSTYPE == "linux"* ]]; then
+			tar cf - "$infile" -P | pv -s $(du -sb "$infile" | awk '{print $1}') | gzip > "$outfile"
+		fi
+	else
+		echo "File not found: $infile"
+		return 1
+	fi
+}

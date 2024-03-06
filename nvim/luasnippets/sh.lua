@@ -84,4 +84,11 @@ return {
       return content
     end, {}),
   }),
+  s("orx", {
+    -- For safe cd
+    -- https://www.shellcheck.net/wiki/SC2164
+    t {
+      [[|| { echo "Failure"; exit 1; }]],
+    },
+  }),
 }

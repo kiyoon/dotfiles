@@ -1,0 +1,60 @@
+shift + alt - j : yabai -m window --focus south 
+shift + alt - k : yabai -m window --focus north 
+shift + alt - h : yabai -m window --focus west 
+shift + alt - l : yabai -m window --focus east
+
+shift + alt - q : yabai -m display --focus west
+shift + alt - w : yabai -m display --focus east
+
+shift + alt - f : yabai -m window --toggle zoom-fullscreen
+shift + alt - e : yabai -m space --balance
+
+shift + alt - r : yabai -m space --rotate 270
+shift + alt - z : yabai -m space --mirror y-axis
+shift + alt - x : yabai -m space --mirror x-axis
+
+shift + alt - t : yabai -m window --toggle float --grid 8:8:1:1:6:6
+
+shift + alt - left : yabai -m window --swap west
+shift + alt - right : yabai -m window --swap east
+shift + alt - up : yabai -m window --swap north
+shift + alt - down : yabai -m window --swap south
+
+shift + alt - p : yabai -m window --space prev
+shift + alt - n : yabai -m window --space next
+
+shift + alt - 1 : yabai -m window --space 1;
+shift + alt - 2 : yabai -m window --space 2;
+shift + alt - 3 : yabai -m window --space 3;
+shift + alt - 4 : yabai -m window --space 4;
+shift + alt - 5 : yabai -m window --space 5;
+shift + alt - 6 : yabai -m window --space 6;
+shift + alt - 7 : yabai -m window --space 7;
+
+# alt - F8 : yabai -m 
+
+# adjust window size
+# https://github.com/koekeishiya/yabai/issues/200
+shift + alt - y : yabai -m window --resize right:-20:0 2> /dev/null || yabai -m window --resize left:-20:0 2> /dev/null
+shift + alt - u : yabai -m window --resize bottom:0:20 2> /dev/null || yabai -m window --resize top:0:20 2> /dev/null
+shift + alt - i : yabai -m window --resize bottom:0:-20 2> /dev/null || yabai -m window --resize top:0:-20 2> /dev/null
+shift + alt - o : yabai -m window --resize right:20:0 2> /dev/null || yabai -m window --resize left:20:0 2> /dev/null
+
+ctrl - f8 : yabai -m window --resize right:-40:0 2> /dev/null || yabai -m window --resize left:-40:0 2> /dev/null
+shift - f10 : yabai -m window --resize bottom:0:20 2> /dev/null || yabai -m window --resize top:0:20 2> /dev/null
+shift - f8 : yabai -m window --resize bottom:0:-20 2> /dev/null || yabai -m window --resize top:0:-20 2> /dev/null
+ctrl - f10 : yabai -m window --resize right:40:0 2> /dev/null || yabai -m window --resize left:40:0 2> /dev/null
+
+ctrl + shift - f2 : yabai -m space --rotate 90
+ctrl + shift - f6 : yabai -m space --rotate 270
+
+# change layout of desktop
+# basically stop / start yabai auto managing tiles but keeping the commands for resizing.
+shift + alt - s : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')
+
+# https://jasoneckert.github.io/myblog/customizing-macos-for-development/skhdrc.txt
+# create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
+shift + alt - m : yabai -m space --create && \
+                   index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 0))[-1].index')" && \
+                   yabai -m window --space "${index}" && \
+                   yabai -m space --focus "${index}"

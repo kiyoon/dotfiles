@@ -38,3 +38,9 @@ ln_sb cargo/config.toml ~/.cargo
 ln_sb conda/.condarc ~
 ln_sb helix ~/.config
 ln_sb ranger ~/.config
+
+if [[ $OSTYPE == "darwin"* ]]; then
+	ln_sb karabiner ~/.config
+	ln_sb skhd ~/.config
+	ln_sb yabai ~/.config
+fi

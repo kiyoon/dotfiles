@@ -28,7 +28,7 @@ local config = {
 			action = wezterm.action.ActivateTabRelative(-1),
 		},
 		{
-			key = "F4",
+			key = "F2",
 			mods = "CTRL|SHIFT",
 			action = wezterm.action.ActivateTabRelative(-1),
 		},

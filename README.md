@@ -153,3 +153,30 @@ docker run -it --rm \
     -e TERM_PROGRAM_VERSION=$TERM_PROGRAM_VERSION \
     ghcr.io/kiyoon/dotfiles
 ```
+
+## Implementation details
+
+### Keychron knob
+
+To support Keychron knob, I mapped the knob using VIA as following:
+
+- Counter Clockwise: `F3` (`F2` on Mac)
+- Clockwise: `F6`
+- Press: `F7`
+- Fn + Counter Clockwise: `F8`
+- Fn + Clockwise: `F10`
+- Fn + Press: `F9`
+
+You'll see the keymaps in tmux, wezterm, zsh and neovim.
+
+For example,
+
+```sh
+# 01_env.sh
+bindkey "^[OR" dirhistory_zle_dirhistory_back  # F3, knob counter-clockwise
+bindkey "^[[15~" dirhistory_zle_dirhistory_back  # F2, knob counter-clockwise (mac)
+bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
+bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob click 
+```
+
+In NeoVim, `<F13>` means `Shift + F1`, `<F25>` means `Ctrl + F1`.

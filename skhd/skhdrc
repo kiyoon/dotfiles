@@ -1,13 +1,29 @@
+ctrl + alt - t : open -n -a "WezTerm"
+ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \
+				  yabai -m window --focus "$window_id" || \
+				  open -n -a "WezTerm"
+ctrl + alt - g : open -n -a "Google Chrome"
+ctrl + cmd - g : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "Google Chrome"))[0]["id"]') && \
+				  yabai -m window --focus "$window_id" || \
+				  open -n -a "Google Chrome"
+# ctrl + alt - s : open -n -a "Slack"
+ctrl + cmd - s : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "Slack"))[0]["id"]') && \
+				  yabai -m window --focus "$window_id" || \
+				  open -n -a "Slack"
+
 shift + alt - j : yabai -m window --focus south 
 shift + alt - k : yabai -m window --focus north 
 shift + alt - h : yabai -m window --focus west 
 shift + alt - l : yabai -m window --focus east
 
+f2 : yabai -m space --focus prev || yabai -m space --focus last
+f6 : yabai -m space --focus next || yabai -m space --focus first
+
 f8 : yabai -m window --focus prev || yabai -m window --focus last
 f10 : yabai -m window --focus next || yabai -m window --focus first
 
-shift + alt - q : yabai -m display --focus west
-shift + alt - w : yabai -m display --focus east
+shift + alt - q : yabai -m display --focus prev || yabai -m display --focus last
+shift + alt - w : yabai -m display --focus next || yabai -m display --focus first
 
 shift + alt - f : yabai -m window --toggle zoom-fullscreen
 shift + alt - e : yabai -m space --balance
@@ -25,11 +41,9 @@ shift + alt - down : yabai -m window --swap south
 
 shift + alt - p : window_id=$(yabai -m query --windows | jq 'map(select(."has-focus" == true))[0]["id"]') && \
                   yabai -m window --space prev && \
-                  yabai -m space --focus prev && \
 				  yabai -m window --focus "$window_id"
 shift + alt - n : window_id=$(yabai -m query --windows | jq 'map(select(."has-focus" == true))[0]["id"]') && \
                   yabai -m window --space next && \
-                  yabai -m space --focus next && \
 				  yabai -m window --focus "$window_id"
 
 shift + alt - 1 : yabai -m window --space 1;
@@ -66,8 +80,6 @@ shift + alt - m : yabai -m space --create && \
                    yabai -m window --space "${index}" && \
                    yabai -m space --focus "${index}"
 
-f2 : yabai -m space --focus prev || yabai -m space --focus last
-f6 : yabai -m space --focus next || yabai -m space --focus first
 
 # https://github.com/koekeishiya/skhd/issues/164
 

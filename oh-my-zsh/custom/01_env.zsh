@@ -151,3 +151,9 @@ bindkey "^[OQ" dirhistory_zle_dirhistory_back  # F2, knob counter-clockwise (mac
 bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
 bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob click 
 
+# dircolors for coloring ls / eza
+if command -v dircolors &> /dev/null; then
+	eval "$(dircolors -b ~/.dircolors)"
+elif command -v gdircolors &> /dev/null; then
+	eval "$(gdircolors -b ~/.dircolors)"
+fi

@@ -30,6 +30,7 @@ ln_sb nvim-coc ~/.config
 ln_sb nvim-lazyvim ~/.config
 ln_sb tmux/.tmux.conf ~
 ln_sb oh-my-zsh/.zshrc ~
+ln_sb oh-my-zsh/.dircolors ~
 # Installing at ~/.oh-my-zsh will make it difficult to manage oh-my-zsh installation.
 ln_sb oh-my-zsh ~/.config
 ln_sb oh-my-zsh/starship.toml ~/.config

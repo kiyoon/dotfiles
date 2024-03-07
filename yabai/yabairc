@@ -19,3 +19,5 @@ yabai -m mouse_drop_action swap
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Karabiner-Elements$" manage=off
+
+yabai -m signal --add event=space_changed action="sh ~/.config/yabai/scripts/clean_empty_spaces.sh"

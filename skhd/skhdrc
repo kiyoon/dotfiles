@@ -1,7 +1,8 @@
 :: default
 :: passthrough
 cmd + alt - b ; passthrough
-passthrough < cmd + shift + alt - b ; default 
+# passthrough < cmd + shift + alt - b ; default 
+cmd + shift + alt - b ; default 
 
 ctrl + alt - t : open -n -a "WezTerm"
 ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \
@@ -52,6 +53,7 @@ shift + alt - l : yabai -m window --focus east
 # NOTE: sending the same key makes infinite loop, so we go to the "passthrough" mode first.
 f2 [
     "Google Chrome"       : skhd --key 'ctrl + shift - tab'
+    # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f3; skhd --key 'cmd + shift + alt - b'
     "WezTerm"       : skhd --key f3
     *             : echo "hello everyone"
 ]

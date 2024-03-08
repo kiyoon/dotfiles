@@ -25,7 +25,7 @@
                                     {
                                         "input_sources": [
                                             {
-                                                "input_source_id": "org.youknowone.inputmethod.Gureum.han2"
+                                                "input_source_id": "org.youknowone.inputmethod.Gureum"
                                             }
                                         ],
                                         "type": "input_source_if"

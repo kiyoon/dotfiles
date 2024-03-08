@@ -108,6 +108,7 @@ return {
   s({ trig = ":party" }, { t { "🥳" } }),
   s({ trig = ":cake" }, { t { "🍰" } }),
   s({ trig = ":sick" }, { t { "🤢" } }),
+  s({ trig = ":angry" }, { t { "😡" } }),
   s({ trig = ":mask" }, { t { "😷" } }),
   s({ trig = ":vaccine" }, { t { "💉" } }),
   s({ trig = ":pill" }, { t { "💊" } }),

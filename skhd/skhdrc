@@ -1,8 +1,8 @@
 :: default
 :: passthrough
 cmd + alt - b ; passthrough
-# passthrough < cmd + shift + alt - b ; default 
-cmd + shift + alt - b ; default 
+passthrough < cmd + shift + alt - b ; default 
+# cmd + shift + alt - b ; default 
 
 ctrl + alt - t : open -n -a "WezTerm"
 ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \

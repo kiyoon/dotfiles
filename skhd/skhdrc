@@ -1,3 +1,8 @@
+:: default
+:: passthrough
+cmd + alt - b ; passthrough
+passthrough < cmd + shift + alt - b ; default 
+
 ctrl + alt - t : open -n -a "WezTerm"
 ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \
 				  yabai -m window --focus "$window_id" || \
@@ -23,11 +28,44 @@ shift + alt - k : yabai -m window --focus north
 shift + alt - h : yabai -m window --focus west 
 shift + alt - l : yabai -m window --focus east
 
-f2 : yabai -m space --focus prev || yabai -m space --focus last
-f6 : yabai -m space --focus next || yabai -m space --focus first
+# `yabai -m query --windows --window` has a bug where it sometimes detect child window in an app and doesn't return the app name.
+# so we first find the current app from all windows in the space.
+# f2 : appname=$(yabai -m query --windows --space | jq -r 'map(select(."has-focus" == true))[0]["app"]') && \
+#     if [[ "$appname" == "WezTerm" ]]; then \
+# 	    echo "pass"; \
+#     elif [[ "$appname" == "Google Chrome" ]]; then \
+#         skhd --key 'ctrl + shift - tab'; \
+#     else \
+# 		echo "$appname" >> ~/skhd.log; \
+#     fi
+# f6 : appname=$(yabai -m query --windows --space | jq -r 'map(select(."has-focus" == true))[0]["app"]') && \
+#     if [[ "$appname" == "WezTerm" ]]; then \
+# 	    echo "pass"; \
+#     elif [[ "$appname" == "Google Chrome" ]]; then \
+#         skhd --key 'ctrl - tab'; \
+#     else \
+# 		echo "$appname" >> ~/skhd.log; \
+#     fi
 
-f8 : yabai -m window --focus prev || yabai -m window --focus last
-f10 : yabai -m window --focus next || yabai -m window --focus first
+
+# application specific bindings
+# NOTE: sending the same key makes infinite loop, so we go to the "passthrough" mode first.
+f2 [
+    "Google Chrome"       : skhd --key 'ctrl + shift - tab'
+    "WezTerm"       : skhd --key f3
+    *             : echo "hello everyone"
+]
+f6 [
+    "Google Chrome"       : skhd --key 'ctrl - tab'
+    "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
+    *             : echo "hello everyone"
+]
+
+f8 : yabai -m space --focus prev || yabai -m space --focus last
+f10 : yabai -m space --focus next || yabai -m space --focus first
+
+shift + alt - v : yabai -m window --focus prev || yabai -m window --focus last
+# f10 : yabai -m window --focus next || yabai -m window --focus first
 
 shift + alt - q : yabai -m display --focus prev || yabai -m display --focus last
 shift + alt - w : yabai -m display --focus next || yabai -m display --focus first
@@ -46,10 +84,10 @@ shift + alt - right : yabai -m window --swap east
 shift + alt - up : yabai -m window --swap north
 shift + alt - down : yabai -m window --swap south
 
-shift + alt - p : window_id=$(yabai -m query --windows | jq 'map(select(."has-focus" == true))[0]["id"]') && \
+shift + alt - p : window_id=$(yabai -m query --windows --space | jq 'map(select(."has-focus" == true))[0]["id"]') && \
                   yabai -m window --space prev && \
 				  yabai -m window --focus "$window_id"
-shift + alt - n : window_id=$(yabai -m query --windows | jq 'map(select(."has-focus" == true))[0]["id"]') && \
+shift + alt - n : window_id=$(yabai -m query --windows --space | jq 'map(select(."has-focus" == true))[0]["id"]') && \
                   yabai -m window --space next && \
 				  yabai -m window --focus "$window_id"
 
@@ -90,7 +128,6 @@ shift + alt - m : yabai -m space --create && \
 
 # https://github.com/koekeishiya/skhd/issues/164
 
-:: default
 :: resize
 
 cmd + alt - r ; resize

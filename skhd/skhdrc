@@ -13,6 +13,10 @@ ctrl + cmd - s : window_id=$(yabai -m query --windows | jq 'map(select(."app" ==
 ctrl + cmd - n : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "Notion"))[0]["id"]') && \
 				  yabai -m window --focus "$window_id" || \
 				  open -n -a "Notion"
+ctrl + alt - f : open -n -a "Finder"
+ctrl + cmd - f : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "Finder"))[0]["id"]') && \
+				  yabai -m window --focus "$window_id" || \
+				  open -n -a "Finder"
 
 shift + alt - j : yabai -m window --focus south 
 shift + alt - k : yabai -m window --focus north 

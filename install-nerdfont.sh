@@ -5,6 +5,7 @@
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	brew tap homebrew/cask-fonts
 	brew install font-jetbrains-mono-nerd-font
+	brew install font-fira-code
 else
 	TEMPDIR=$(mktemp -d)
 	FONTDIR="$HOME/.local/share/fonts"
@@ -23,11 +24,20 @@ else
 			cut -d : -f 2,3 |
 			tr -d \" |
 			wget -qi - -O "$TEMPDIR/nf.zip"
-		unzip "$TEMPDIR/nf.zip" -d $TEMPDIR/nerd-fonts
+		unzip "$TEMPDIR/nf.zip" -d "$TEMPDIR"/nerd-fonts
 		rm "$TEMPDIR/nerd-fonts/*"" Nerd Font "*" Windows Compatible.ttf"
-		mv $TEMPDIR/nerd-fonts/*.ttf "$FONTDIR"
-		#rm -rf $TEMPDIR/nerd-fonts
-		#rm "$TEMPDIR/ubuntumononf.zip"
+		mv "$TEMPDIR"/nerd-fonts/*.ttf "$FONTDIR"
+
+		# NOTE: we need non-NF FiraCode for python rich export_svg -> cairosvg PDF generation
+		mkdir -p "$TEMPDIR/firacode"
+		curl -s https://api.github.com/repos/tonsky/FiraCode/releases/latest |
+			grep "browser_download_url.*.zip" |
+			cut -d : -f 2,3 |
+			tr -d \" |
+			wget -qi - -O "$TEMPDIR/firacode.zip"
+		unzip "$TEMPDIR/firacode.zip" -d "$TEMPDIR"/firacode
+		mv "$TEMPDIR"/firacode/ttf/*.ttf "$FONTDIR"
+
 		fc-cache -fv
 	else
 		echo "Nerd Font is already installed"

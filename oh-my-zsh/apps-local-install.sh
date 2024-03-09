@@ -23,13 +23,13 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install virtualenvwrapper
 	brew install uv
 
-	$PIP3 install --user pygments # colorize (ccat)
-	$PIP3 install --user pillow   # my custom ranger viu image viewer uses this
+	$PIP3 install --user --break-system-packages pygments # colorize (ccat)
+	$PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)
 	git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
-	$PIP3 install --user "$TEMPDIR"
+	$PIP3 install --user --break-system-packages "$TEMPDIR"
 
 	brew install fd
 	brew install tig
@@ -70,16 +70,16 @@ else
 		sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$INSTALL_DIR/bin" -y
 	fi
 
-	$PIP3 install --user pygments # colorize (ccat)
-	$PIP3 install --user thefuck  # fix last command
-	$PIP3 install --user pillow   # my custom ranger viu image viewer uses this
-	$PIP3 install --user virtualenvwrapper
-	$PIP3 install --user uv
+	$PIP3 install --user --break-system-packages pygments # colorize (ccat)
+	$PIP3 install --user --break-system-packages thefuck  # fix last command
+	$PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
+	$PIP3 install --user --break-system-packages virtualenvwrapper
+	$PIP3 install --user --break-system-packages uv
 
 	# install ranger from github
 	TEMPDIR=$(mktemp -d)
 	git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
-	$PIP3 install --user "$TEMPDIR"
+	$PIP3 install --user --break-system-packages "$TEMPDIR"
 
 	if ! command -v fd &>/dev/null; then
 		npm install -g fd-find
@@ -152,6 +152,7 @@ else
 
 	if ! command -v pv &>/dev/null; then
 		TEMPDIR=$(mktemp -d)
+		cd "$TEMPDIR" || { echo "Failure"; exit 1; }
 		wget https://www.ivarch.com/programs/sources/pv-1.8.5.tar.gz
 		tar xzf pv-1.8.5.tar.gz
 		cd pv-1.8.5 || { echo "Failure"; exit 1; }

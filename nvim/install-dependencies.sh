@@ -2,12 +2,12 @@ PIP3="/usr/bin/python3 -m pip"
 
 if command -v brew &> /dev/null; then
 	if command -v pipx &> /dev/null; then
-		$PIP3 install --user virtualenv # for Mason.nvim
-		$PIP3 install --user pynvim
+		$PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
+		$PIP3 install --user --break-system-packages pynvim
 		npm install -g neovim
 
 		# DAP
-		$PIP3 install --user debugpy
+		$PIP3 install --user --break-system-packages debugpy
 
 		# Lint
 		pipx install ruff
@@ -30,7 +30,7 @@ if command -v brew &> /dev/null; then
 		# molten.nvim
 		brew install imagemagick
 		brew install pkg-config  # for magick from luarocks
-		$PIP3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+		$PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 
 		exit 0
 	fi
@@ -43,20 +43,20 @@ fi
 
 LOCALBIN="$HOME/.local/bin"
 
-$PIP3 install --user virtualenv # for Mason.nvim
-$PIP3 install --user pynvim
+$PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
+$PIP3 install --user --break-system-packages pynvim
 npm install -g neovim
 
 # DAP
-$PIP3 install --user debugpy
+$PIP3 install --user --break-system-packages debugpy
 
 # Lint
 # $PIP3 install --user flake8
-$PIP3 install --user ruff
+$PIP3 install --user --break-system-packages ruff
 
 # Formatter
-$PIP3 install --user isort 
-$PIP3 install --user black
+# $PIP3 install --user --break-system-packages isort 
+# $PIP3 install --user --break-system-packages black
 
 if ! command -v stylua &> /dev/null; then
 	npm install -g @johnnymorganz/stylua-bin
@@ -113,10 +113,14 @@ if ! command -v magick &> /dev/null; then
 		| wget -qi - -O magick.appimage
 	chmod +x magick.appimage
 	./magick.appimage --appimage-extract
+	# NOTE: installing libglib will break the system's package manager.
+	# Many apps depend on it and it won't work.
+	# We need to remove libglib from the extracted AppImage.
+	rm squashfs-root/usr/lib/libglib-2.0.so.0
 	rsync -a squashfs-root/usr/ ~/.local/
 	rm magick.appimage
 	rm -rf squashfs-root
 else
 	echo "ImageMagick found at $(which magick). Skipping installation."
 fi
-$PIP3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+$PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip

@@ -86,7 +86,7 @@ else
 	fi
 
 	if ! command -v tig &>/dev/null; then
-		if [ -z "$INSTALL_DIR/include/ncurses/curses.h" ]; then
+		if [ -f "$INSTALL_DIR/include/ncurses/curses.h" ]; then
 			echo "Ncurses not found in $INSTALL_DIR/include"
 			echo "It should have been installed with zsh-local-install.sh"
 			echo "Skipping installing tig."
@@ -98,9 +98,9 @@ else
 				cut -d : -f 2,3 |
 				tr -d \" |
 				wget -qi - -O - | tar xzf - -C "$TEMPDIR" --strip-components=1
-			cd "$TEMPDIR"
+			cd "$TEMPDIR" || { echo "Failure"; exit 1; }
 
-			./configure prefix=$INSTALL_DIR \
+			./configure prefix="$INSTALL_DIR" \
 				CPPFLAGS="-I$INSTALL_DIR/include" \
 				LDFLAGS="-L$INSTALL_DIR/lib"
 			make
@@ -127,7 +127,7 @@ else
 			grep "browser_download_url.*_linux_amd64.tar.gz" |
 			cut -d : -f 2,3 |
 			tr -d \" |
-			wget -qi - -O - | tar xvzf - -C $TEMPDIR --strip-components=1
+			wget -qi - -O - | tar xvzf - -C "$TEMPDIR" --strip-components=1
 		\rm "$TEMPDIR/LICENSE"
 		rsync -av "$TEMPDIR/" "$INSTALL_DIR/"
 		echo "gh installed at $(which gh)"
@@ -159,9 +159,9 @@ else
 		make -j8
 		mv pv "$INSTALL_DIR/bin"
 
-		echo "jq installed at $(which jq)"
+		echo "pv installed at $(which pv)"
 	else
-		echo "jq already installed at $(which jq). Skipping.."
+		echo "pv already installed at $(which pv). Skipping.."
 	fi
 
 	if ! command -v lazygit &>/dev/null; then

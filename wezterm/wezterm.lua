@@ -40,6 +40,7 @@ local config = {
 	},
 
 	enable_scroll_bar = true,
+	scrollback_lines = 30000,
 	term = "wezterm",
 
 	enable_kitty_graphics = true,

@@ -318,6 +318,7 @@ vim.api.nvim_create_autocmd("FileType", {
       Table = "rich.table",
       Progress = "rich.progress",
       Traceback = "rich.traceback",
+      Theme = "rich.theme",
     }
 
     local python_keywords = {

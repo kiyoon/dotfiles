@@ -3,12 +3,12 @@ if (($+commands[bat])); then
 fi
 
 if (($+commands[eza])); then
-	alias ls='eza --icons auto'
-	alias sl='eza --icons auto'
-	alias ll='eza -alF --icons auto'
-	alias la='eza -a --icons auto'
-	alias l='eza -F --icons auto'
-	alias lg='eza --git-ignore --icons auto'
+	alias ls='eza --icons auto --hyperlink'
+	alias sl='eza --icons auto --hyperlink'
+	alias ll='eza -alF --icons auto --hyperlink'
+	alias la='eza -a --icons auto --hyperlink'
+	alias l='eza -F --icons auto --hyperlink'
+	alias lg='eza --git-ignore --icons auto --hyperlink'
 fi
 
 if (($+commands[nvim])); then
@@ -76,11 +76,15 @@ if (($+commands[mamba])); then
 	alias ca='mamba activate'
 	alias cda='mamba deactivate'
 	alias cc='mamba create -n'
+	alias ccg='mamba create -n $(git rev-parse --show-toplevel | xargs basename)'
+	alias cag='mamba activate $(git rev-parse --show-toplevel | xargs basename)'
 	alias ci='mamba install'
 else
 	alias ca='conda activate'
 	alias cda='conda deactivate'
 	alias cc='conda create -n'
+	alias ccg='conda create -n $(git rev-parse --show-toplevel | xargs basename)'
+	alias cag='conda activate $(git rev-parse --show-toplevel | xargs basename)'
 	alias ci='conda install'
 fi
 

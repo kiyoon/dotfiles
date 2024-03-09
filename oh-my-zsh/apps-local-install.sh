@@ -8,6 +8,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	INSTALL_DIR="$HOME/.local"
 
 	brew install wget
+	brew install coreutils
 
 	##### oh-my-zsh
 	if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -46,6 +47,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install procs
 	brew install csvlens
 	brew install helix
+	brew install pv
 else
 	##### oh-my-zsh
 	if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -103,20 +105,20 @@ else
 				LDFLAGS="-L$INSTALL_DIR/lib"
 			make
 			make install
-			echo "tig install at $(which tig)"
+			echo "tig installed at $(which tig)"
 			\rm -rf "$TEMPDIR"
 		fi
 	else
-		echo "tig already install at $(which tig). Skipping.."
+		echo "tig already installed at $(which tig). Skipping.."
 	fi
 
 	if ! command -v eza &>/dev/null; then
 		$CARGO install eza
 		wget https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza -P "$INSTALL_DIR/share/zsh/site-functions"
 
-		echo "eza install at $(which eza)"
+		echo "eza installed at $(which eza)"
 	else
-		echo "eza already install at $(which eza). Skipping.."
+		echo "eza already installed at $(which eza). Skipping.."
 	fi
 
 	if ! command -v gh &>/dev/null; then
@@ -128,10 +130,10 @@ else
 			wget -qi - -O - | tar xvzf - -C $TEMPDIR --strip-components=1
 		\rm "$TEMPDIR/LICENSE"
 		rsync -av "$TEMPDIR/" "$INSTALL_DIR/"
-		echo "gh install at $(which gh)"
+		echo "gh installed at $(which gh)"
 		\rm -rf "$TEMPDIR"
 	else
-		echo "gh already install at $(which gh). Skipping.."
+		echo "gh already installed at $(which gh). Skipping.."
 	fi
 	gh extension install github/gh-copilot
 	gh extension upgrade gh-copilot
@@ -143,9 +145,23 @@ else
 			tr -d \" |
 			wget -qi - -O "$INSTALL_DIR/bin/jq"
 		chmod +x "$INSTALL_DIR/bin/jq"
-		echo "jq install at $(which jq)"
+		echo "jq installed at $(which jq)"
 	else
-		echo "jq already install at $(which jq). Skipping.."
+		echo "jq already installed at $(which jq). Skipping.."
+	fi
+
+	if ! command -v pv &>/dev/null; then
+		TEMPDIR=$(mktemp -d)
+		wget https://www.ivarch.com/programs/sources/pv-1.8.5.tar.gz
+		tar xzf pv-1.8.5.tar.gz
+		cd pv-1.8.5 || { echo "Failure"; exit 1; }
+		sh ./configure
+		make -j8
+		mv pv "$INSTALL_DIR/bin"
+
+		echo "jq installed at $(which jq)"
+	else
+		echo "jq already installed at $(which jq). Skipping.."
 	fi
 
 	if ! command -v lazygit &>/dev/null; then
@@ -154,9 +170,9 @@ else
 			cut -d : -f 2,3 |
 			tr -d \" |
 			wget -qi - -O - | tar xzf - -C "$INSTALL_DIR/bin"
-		echo "lazygit install at $(which lazygit)"
+		echo "lazygit installed at $(which lazygit)"
 	else
-		echo "lazygit already install at $(which lazygit). Skipping.."
+		echo "lazygit already installed at $(which lazygit). Skipping.."
 	fi
 
 	if ! command -v ai &>/dev/null; then
@@ -176,7 +192,7 @@ else
 		wget https://github.com/helix-editor/helix/releases/download/23.10/helix-23.10-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"
 		chmod +x "$INSTALL_DIR/bin/hx"
 	else
-		echo "hx already install at $(which hx). Skipping.."
+		echo "hx already installed at $(which hx). Skipping.."
 	fi
 fi
 

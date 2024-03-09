@@ -229,10 +229,10 @@ return {
       { "<C-A-y>", [[<cmd>lua require("tmux").resize_left()<cr>]] },
       { "<C-A-o>", [[<cmd>lua require("tmux").resize_right()<cr>]] },
       { "<F16>", [[<cmd>lua require("tmux").resize_top()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F3>
-      { "<F17>", [[<cmd>lua require("tmux").resize_top()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F4>
+      { "<F15>", [[<cmd>lua require("tmux").resize_top()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F2>
       { "<F18>", [[<cmd>lua require("tmux").resize_bottom()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <S-F6>
-      { "<F28>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F3>
-      { "<F29>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F4>
+      { "<F27>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F3>
+      { "<F26>", [[<cmd>lua require("tmux").resize_left()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F2>
       { "<F30>", [[<cmd>lua require("tmux").resize_right()<cr>]], mode = { "n", "i", "x", "s", "o" } }, -- <C-F6>
       "<C-n>",
       "<C-p>",
@@ -1130,6 +1130,10 @@ return {
   {
     "lvimuser/lsp-inlayhints.nvim",
     event = "LSPAttach",
+    -- init = function()
+    --   vim.cmd [[hi link LspInlayHint Comment]]
+    --   vim.cmd [[hi LspInlayHint guifg=#d8d8d8 guibg=#3a3a3a]]
+    -- end,
     config = function()
       require "kiyoon.lsp.inlayhints"
     end,
@@ -1155,25 +1159,52 @@ return {
       require("lsp_signature").setup(cfg)
     end,
   },
+  -- {
+  --   "simrat39/rust-tools.nvim",
+  --   ft = "rust",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "mfussenegger/nvim-dap",
+  --     "neovim/nvim-lspconfig",
+  --   },
+  --   config = function()
+  --     local rt = require "rust-tools"
+  --     rt.setup {
+  --       server = {
+  --         on_attach = function(_, bufnr)
+  --           -- Hover actions
+  --           vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+  --           -- Code action groups
+  --           vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+  --         end,
+  --       },
+  --     }
+  --   end,
+  -- },
   {
-    "simrat39/rust-tools.nvim",
-    ft = "rust",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "mfussenegger/nvim-dap",
-      "neovim/nvim-lspconfig",
-    },
-    config = function()
-      local rt = require "rust-tools"
-      rt.setup {
+    "mrcjkb/rustaceanvim",
+    version = "^4", -- Recommended
+    ft = { "rust" },
+    init = function()
+      vim.g.rustaceanvim = {
+        -- Plugin configuration
+        tools = {},
+        -- LSP configuration
         server = {
-          on_attach = function(_, bufnr)
-            -- Hover actions
-            vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-            -- Code action groups
-            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+          on_attach = function(client, bufnr)
+            -- you can also put keymaps in here
           end,
+          default_settings = {
+            -- rust-analyzer language server configuration
+            ["rust-analyzer"] = {
+              check = {
+                command = "clippy",
+              },
+            },
+          },
         },
+        -- DAP configuration
+        dap = {},
       }
     end,
   },

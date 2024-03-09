@@ -23,7 +23,7 @@ return {
   -- Get the directory of the script
   s("sdir", {
     t {
-      [[script_dir=$(dirname "$(realpath -s "$0")")]],
+      [[SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )]],
       [[]],
     },
   }),
@@ -83,5 +83,12 @@ return {
         read_from_url "https://gist.githubusercontent.com/kiyoon/8d9ab895d2f478cde2c7fec214d55dbb/raw/tmux_parallel_status.sh"
       return content
     end, {}),
+  }),
+  s("orx", {
+    -- For safe cd
+    -- https://www.shellcheck.net/wiki/SC2164
+    t {
+      [[|| { echo "Failure"; exit 1; }]],
+    },
   }),
 }

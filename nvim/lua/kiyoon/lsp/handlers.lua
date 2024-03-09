@@ -1,6 +1,6 @@
 local servers_use_formatting = {
   -- "lua_ls",
-  "ruff_lsp",
+  -- "ruff_lsp",
 }
 
 local M = {}
@@ -66,7 +66,7 @@ M.setup = function()
   -- })
 end
 
-local function lsp_keymaps(bufnr)
+function M.lsp_keymaps(bufnr)
   local opts = { noremap = true, silent = true, buffer = bufnr }
   local keymap = function(mode, lhs, rhs, opts_, desc)
     opts_.desc = desc
@@ -77,7 +77,40 @@ local function lsp_keymaps(bufnr)
   keymap("n", "K", vim.lsp.buf.hover, opts, "LSP hover")
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
-  keymap("n", "gl", vim.diagnostic.open_float, opts, "Show Diagnostics")
+  keymap("n", "gl", function()
+    local source_to_icon = {
+      rustc = "🦀",
+      ["rust-analyzer"] = "🦀",
+      clippy = "🦀cl",
+      pyright = "🐍",
+      shellcheck = "🐚",
+      tsserver = "🌐",
+    }
+    vim.diagnostic.open_float {
+      format = function(diagnostic)
+        -- if diagnostic.user_data ~= nil then
+        --   vim.print(diagnostic.user_data)
+        -- end
+        local message
+        if diagnostic.source == "clippy" then
+          -- remove "for further information visit https://rust-lang.github.io/rust-clippy/...." from the message
+          -- match line break at the end
+          message = diagnostic.message:gsub(
+            "for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n",
+            ""
+          )
+        else
+          message = diagnostic.message
+        end
+
+        if source_to_icon[diagnostic.source] ~= nil then
+          return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+        end
+
+        return string.format("%s 🔗%s", message, diagnostic.source)
+      end,
+    }
+  end, opts, "Show Diagnostics")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
   -- Use actions-preview.nvim
@@ -130,7 +163,7 @@ M.on_attach = function(client, bufnr)
     end
   end
 
-  lsp_keymaps(bufnr)
+  M.lsp_keymaps(bufnr)
 end
 
 return M

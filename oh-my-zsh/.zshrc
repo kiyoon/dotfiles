@@ -169,3 +169,15 @@ if (( $+commands[starship] )); then
 	eval "$(starship init zsh)"
 fi
 
+# Auto activate conda or virtualenv when the current directory is a git repo with the same name as the conda env
+# NOTE: This should be sourced at the end, so that other scripts don't override the conda env
+git_root=$(git rev-parse --show-toplevel 2> /dev/null)
+if [[ -n "$git_root" ]]; then
+	basename_git_root=$(basename "$git_root")
+	if [[ -d "$MINICONDA_PATH/envs/$basename_git_root" ]]; then
+		conda activate $basename_git_root
+	elif [[ -d "$WORKON_HOME/$basename_git_root" ]]; then
+		workon $basename_git_root
+	fi
+fi
+

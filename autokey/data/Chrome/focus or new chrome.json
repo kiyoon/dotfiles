@@ -1,0 +1,31 @@
+{
+    "type": "script",
+    "description": "focus or new chrome",
+    "store": {},
+    "modes": [
+        3
+    ],
+    "usageCount": 155,
+    "prompt": false,
+    "omitTrigger": false,
+    "showInTrayMenu": true,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": [
+            "<alt>",
+            "<ctrl>"
+        ],
+        "hotKey": "g"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    }
+}

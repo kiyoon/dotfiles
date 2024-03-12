@@ -3,6 +3,7 @@ if not tele_status_ok then
   return
 end
 
+local actions = require "telescope.actions"
 local path_actions = require "telescope_insert_path"
 local trouble = require "trouble.providers.telescope"
 local lga_actions = require "telescope-live-grep-args.actions"
@@ -25,7 +26,11 @@ telescope.setup {
         ["="] = path_actions.insert_abspath_normal,
         ["<c-t>"] = trouble.open_with_trouble,
       },
-      i = { ["<c-t>"] = trouble.open_with_trouble },
+      i = {
+        ["<c-t>"] = trouble.open_with_trouble,
+        ["<f3>"] = actions.move_selection_previous,
+        ["<f6>"] = actions.move_selection_next,
+      },
     },
     preview = {
       mime_hook = function(filepath, bufnr, opts)

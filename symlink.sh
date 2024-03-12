@@ -44,4 +44,6 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	ln_sb karabiner ~/.config
 	ln_sb skhd ~/.config
 	ln_sb yabai ~/.config
+elif [[ $OSTYPE == "linux-gnu" ]]; then
+	ln_sb autokey ~/.config
 fi

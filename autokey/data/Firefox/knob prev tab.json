@@ -1,0 +1,28 @@
+{
+    "type": "script",
+    "description": "knob: prev tab",
+    "store": {},
+    "modes": [
+        3
+    ],
+    "usageCount": 0,
+    "prompt": false,
+    "omitTrigger": false,
+    "showInTrayMenu": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": [],
+        "hotKey": "<f3>"
+    },
+    "filter": {
+        "regex": "Navigator.firefox",
+        "isRecursive": false
+    }
+}

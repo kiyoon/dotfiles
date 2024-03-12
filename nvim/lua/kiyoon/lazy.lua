@@ -181,7 +181,7 @@ return {
   -- },
   {
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
-    event = "VeryLazy",
+    event = "BufReadPost",
   },
   {
     "kana/vim-textobj-entire",

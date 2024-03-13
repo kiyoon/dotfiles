@@ -4,15 +4,15 @@ cmd + alt - b ; passthrough
 passthrough < cmd + shift + alt - b ; default 
 cmd + shift + alt - b ; default 
 
-cmd - 1 : open -a "Finder" ~
-cmd + shift - 1 : open -n -a "Finder" ~
-cmd - 2 : open -a "Google Chrome"
-cmd + shift - 2 : open -n -a "Google Chrome"
-cmd - 3 : open -a "WezTerm"
-cmd + shift - 3 : open -n -a "WezTerm"
-cmd - 4 : open -a "Telegram"
-cmd - 5 : open -a "Slack"
-cmd - 6 : open -a "Notion"
+alt - 1 : open -a "Finder" ~
+alt + shift - 1 : open -n -a "Finder" ~
+alt - 2 : open -a "Google Chrome"
+alt + shift - 2 : open -n -a "Google Chrome"
+alt - 3 : open -a "WezTerm"
+alt + shift - 3 : open -n -a "WezTerm"
+alt - 4 : open -a "Telegram"
+alt - 5 : open -a "Slack"
+alt - 6 : open -a "Notion"
 # ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \
 # 				  yabai -m window --focus "$window_id" || \
 # 				  open -n -a "WezTerm"
@@ -63,7 +63,8 @@ f10 : yabai -m space --focus next || yabai -m space --focus first
 shift + alt - v : yabai -m window --focus prev || yabai -m window --focus last
 # f10 : yabai -m window --focus next || yabai -m window --focus first
 
-shift + alt - q : yabai -m display --focus prev || yabai -m display --focus last
+shift + alt - q : yabai -m window --close
+# shift + alt - q : yabai -m display --focus prev || yabai -m display --focus last
 shift + alt - w : yabai -m display --focus next || yabai -m display --focus first
 
 shift + alt - m : yabai -m window --toggle zoom-fullscreen

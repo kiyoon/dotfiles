@@ -195,7 +195,7 @@ set shiftwidth=4
 filetype plugin indent on
 
 " use tab as spaces in python, tex
-autocmd FileType python,tex,lua,toml,yaml,json,javascript,typescript set expandtab
+autocmd FileType sh,python,tex,lua,toml,yaml,json,javascript,typescript set expandtab
 
 " latex settings (global values require vim-latex plugin)
 autocmd FileType tex,lua,toml,yaml,json,javascript,typescript set tabstop=2

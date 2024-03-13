@@ -53,7 +53,8 @@ f2 [
 ]
 f6 [
     "Google Chrome"       : skhd --key 'ctrl - tab'
-    "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
+    # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
+    "WezTerm"       : skhd --key f5
     *             : echo "hello everyone"
 ]
 

@@ -28,7 +28,9 @@ telescope.setup {
       },
       i = {
         ["<c-t>"] = trouble.open_with_trouble,
+        ["<f2>"] = actions.move_selection_previous,
         ["<f3>"] = actions.move_selection_previous,
+        ["<f5>"] = actions.move_selection_next,
         ["<f6>"] = actions.move_selection_next,
       },
     },

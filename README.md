@@ -180,3 +180,6 @@ bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob click
 ```
 
 In NeoVim, `<F13>` means `Shift + F1`, `<F25>` means `Ctrl + F1`.
+
+Sometimes it is hard to pass the exact key sequence to the terminal. For example, skhd intercepts `F6` and it can't
+pass the same key to the terminal. Thus, I used `F5` in some cases.

@@ -182,6 +182,12 @@ return {
   {
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
     event = "BufReadPost",
+    -- config = function()
+    --   -- script to execute AFTER the plugin is loaded
+    --   -- vim.defer_fn(function()
+    --   --   vim.opt.tabstop = 4
+    --   -- end, 0)
+    -- end,
   },
   {
     "kana/vim-textobj-entire",

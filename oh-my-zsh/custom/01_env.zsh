@@ -53,7 +53,7 @@ fi
 # setup fzf Ctrl+t and Alt+c
 if (($+commands[fzf])); then
 	if (($+commands[fd])); then
-		export FZF_DEFAULT_OPTS='-m --bind ctrl-s:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,F2:up,F3:up,F6:down,F7:accept'
+		export FZF_DEFAULT_OPTS='-m --bind ctrl-s:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,F2:up,F3:up,F5:down,F6:down,F7:accept'
 		export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 		export FZF_CTRL_T_COMMAND='fd --type f --hidden --exclude .git'
 		export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
@@ -133,10 +133,28 @@ bindkey '^[b' backward-word
 bindkey '^[^?' backward-kill-word
 
 # dirhistory
-bindkey "^[OR" dirhistory_zle_dirhistory_back  # F3, knob counter-clockwise
-bindkey "^[OQ" dirhistory_zle_dirhistory_back  # F2, knob counter-clockwise (mac)
-bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
-bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob click 
+function tmux_next_window() {
+	if [[ -z "$TMUX" ]]; then
+		return
+	fi
+	tmux select-window -t :+
+}
+function tmux_previous_window() {
+	if [[ -z "$TMUX" ]]; then
+		return
+	fi
+	tmux select-window -t :-
+}
+zle -N tmux_next_window
+zle -N tmux_previous_window
+bindkey "^[OR" tmux_previous_window  # F3, knob counter-clockwise
+bindkey "^[OQ" tmux_previous_window  # F2, knob counter-clockwise (mac)
+bindkey "^[[15~" tmux_next_window  # F5, knob clockwise
+bindkey "^[[17~" tmux_next_window  # F6, knob clockwise
+# bindkey "^[OR" dirhistory_zle_dirhistory_back  # F3, knob counter-clockwise
+# bindkey "^[OQ" dirhistory_zle_dirhistory_back  # F2, knob counter-clockwise (mac)
+# bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
+# bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob click 
 
 # dircolors for coloring ls / eza
 if command -v dircolors &> /dev/null; then

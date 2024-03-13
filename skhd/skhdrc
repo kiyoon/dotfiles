@@ -57,8 +57,8 @@ f6 [
     *             : echo "hello everyone"
 ]
 
-f8 : yabai -m space --focus prev || yabai -m space --focus last
-f10 : yabai -m space --focus next || yabai -m space --focus first
+f8 : ~/.config/yabai/scripts/clean_empty_spaces.sh && yabai -m space --focus prev || yabai -m space --focus last
+f10 : ~/.config/yabai/scripts/clean_empty_spaces.sh && yabai -m space --focus next || yabai -m space --focus first
 
 shift + alt - v : yabai -m window --focus prev || yabai -m window --focus last
 # f10 : yabai -m window --focus next || yabai -m window --focus first

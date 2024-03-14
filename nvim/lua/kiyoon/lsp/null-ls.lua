@@ -117,7 +117,7 @@ local function ruff_on_output_filtered(pattern, groups)
   elseif string.find(ruff_output["code"], "^W") then
     nullls_output["severity"] = h.diagnostics.severities["warning"]
   elseif string.find(ruff_output["code"], "^F") then
-    nullls_output["severity"] = h.diagnostics.severities["information"]
+    nullls_output["severity"] = h.diagnostics.severities["error"]
   elseif string.find(ruff_output["code"], "^A") then
     nullls_output["severity"] = h.diagnostics.severities["information"]
   elseif string.find(ruff_output["code"], "^B") then

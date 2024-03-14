@@ -82,7 +82,7 @@ function M.lsp_keymaps(bufnr)
       rustc = "🦀",
       ["rust-analyzer"] = "🦀",
       clippy = "🦀cl",
-      pyright = "🐍",
+      ruff = "🐍",
       shellcheck = "🐚",
       tsserver = "🌐",
     }

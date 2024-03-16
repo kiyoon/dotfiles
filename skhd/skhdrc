@@ -4,7 +4,7 @@ cmd + alt - b ; passthrough
 passthrough < cmd + shift + alt - b ; default 
 cmd + shift + alt - b ; default 
 
-alt - 1 : open -a "Finder" ~
+alt - 1 : open -a "Finder"
 alt + shift - 1 : open -n -a "Finder" ~
 alt - 2 : open -a "Google Chrome"
 alt + shift - 2 : open -n -a "Google Chrome"

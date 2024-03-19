@@ -126,3 +126,10 @@ alias sq='squeue -u $USER'
 idamnii() {
 	srun --time=0-05:00:00 --gres=gpu:$2 --partition=PGR-Standard -w damnii$1 --cpus-per-task=$3 --pty bash
 }
+
+if [[ -n "$TMUX" ]]; then
+	alias tpl='tmux display-message -p -F "#{pane_current_path}" -t left'
+	alias tpr='tmux display-message -p -F "#{pane_current_path}" -t right'
+	alias tpb='tmux display-message -p -F "#{pane_current_path}" -t bottom'
+	alias tpt='tmux display-message -p -F "#{pane_current_path}" -t top'
+fi

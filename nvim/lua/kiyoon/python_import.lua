@@ -102,6 +102,8 @@ vim.api.nvim_create_autocmd("FileType", {
       o3d = "open3d",
       F = "torch.nn.functional",
       tf = "tensorflow",
+      nx = "networkx",
+      rx = "rustworkx",
     }
 
     local python_import_from = {

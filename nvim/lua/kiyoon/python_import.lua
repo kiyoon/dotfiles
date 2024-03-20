@@ -447,17 +447,6 @@ vim.api.nvim_create_autocmd("FileType", {
       ban_from_import[v] = true
     end
 
-    local first_party_modules = find_python_first_party_modules()
-    -- extend from .. import *
-    if first_party_modules ~= nil then
-      local first_module = first_party_modules[1]
-      python_import_from["PROJECT_DIR"] = first_module
-      python_import_from["DATA_DIR"] = first_module
-      python_import_from["DATASET_DIR"] = first_module
-      python_import_from["OUTPUT_DIR"] = first_module
-      python_import_from["LOG_DIR"] = first_module
-    end
-
     local function get_current_word()
       local line = vim.fn.getline "."
       local col = vim.fn.col "."
@@ -480,6 +469,8 @@ vim.api.nvim_create_autocmd("FileType", {
       return line:sub(start + 1, finish - 1)
     end
 
+    local first_party_modules = find_python_first_party_modules()
+
     local function get_python_import(statement)
       if statement == nil then
         return nil
@@ -487,6 +478,15 @@ vim.api.nvim_create_autocmd("FileType", {
 
       if statement == "logger" then
         return { "import logging", "", "logger = logging.getLogger(__name__)" }
+      end
+
+      -- extend from .. import *
+      if first_party_modules ~= nil then
+        local first_module = first_party_modules[1]
+        -- if statement ends with _DIR, import from the first module (from project import PROJECT_DIR)
+        if statement:match "_DIR$" then
+          return { "from " .. first_module .. " import " .. statement }
+        end
       end
 
       if python_import_as[statement] ~= nil then

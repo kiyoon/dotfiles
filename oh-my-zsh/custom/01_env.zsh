@@ -98,7 +98,18 @@ if [[ "$TERM" == "wezterm" ]]; then
 fi
 
 
-# fzf-tab completion
+## fzf-tab completion
+
+# tmux popup
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+# apply to all command
+zstyle ':fzf-tab:*' popup-min-size 1000 20
+
+# NOTE: by default switch-group is f1 and f2, but we need to reserve f2 for knob.
+zstyle ':fzf-tab:*' switch-group '<' '>'
+
+
+# completion
 if (($+commands[eza])); then
 	if (($+commands[bat])); then
 		# Preview on cd with eza

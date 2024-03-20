@@ -44,18 +44,17 @@ shift + alt - l : yabai -m window --focus east
 
 
 # application specific bindings
-# NOTE: sending the same key makes infinite loop, so we go to the "passthrough" mode first.
 f2 [
     "Google Chrome"       : skhd --key 'ctrl + shift - tab'
     # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f3; skhd --key 'cmd + shift + alt - b'
-    "WezTerm"       : skhd --key f3
-    *             : echo "hello everyone"
+    # "WezTerm"       : skhd --key f3
+    # *             : echo "hello everyone"
 ]
 f6 [
     "Google Chrome"       : skhd --key 'ctrl - tab'
     # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
-    "WezTerm"       : skhd --key f5
-    *             : echo "hello everyone"
+    # "WezTerm"       : skhd --key f5
+    # *             : echo "hello everyone"
 ]
 
 f8 : yabai -m space --focus prev || yabai -m space --focus last

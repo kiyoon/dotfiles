@@ -10,7 +10,7 @@ return {
   settings = {
     python = {
       analysis = {
-        typeCheckingMode = "basic", -- off, basic, strict
+        typeCheckingMode = "standard", -- off, basic, standard, strict, all
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
         autoImportCompletions = true,

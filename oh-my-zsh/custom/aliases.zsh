@@ -71,8 +71,8 @@ fi
 
 # for some reason, it doesn't detect conda/mamba although they are ready and executable here.
 # We check the $MINICONDA_PATH instead of
-# if [[ $(basename "$MINICONDA_PATH") == "miniforge3" ]]; then
-if (($+commands[mamba])); then
+if [[ $(basename "$MINICONDA_PATH") == "miniforge3" ]]; then
+# if (($+commands[mamba])); then
 	alias ca='mamba activate'
 	alias cda='mamba deactivate'
 	alias cc='mamba create -n'

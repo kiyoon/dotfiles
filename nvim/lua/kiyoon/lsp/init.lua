@@ -4,7 +4,7 @@ local servers = {
   "html",
   "tsserver",
   "eslint",
-  "pyright",
+  "basedpyright",
   -- "ruff_lsp",
   "bashls",
   "jsonls",

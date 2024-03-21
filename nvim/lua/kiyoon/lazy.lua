@@ -1082,21 +1082,21 @@ return {
   --
   -- CoC supports out-of-the-box features like inlay hints
   -- which isn't possible with native LSP yet.
-  {
-    "neoclide/coc.nvim",
-    -- branch = "release",
-    commit = "bbaa1d5d1ff3cbd9d26bb37cfda1a990494c4043",
-    ft = "python",
-    init = function()
-      vim.cmd [[ hi link CocInlayHint LspInlayHint ]]
-      vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
-    end,
-    config = function()
-      vim.cmd [[
-        call coc#add_extension('coc-pyright')
-      ]]
-    end,
-  },
+  -- {
+  --   "neoclide/coc.nvim",
+  --   -- branch = "release",
+  --   commit = "bbaa1d5d1ff3cbd9d26bb37cfda1a990494c4043",
+  --   ft = "python",
+  --   init = function()
+  --     vim.cmd [[ hi link CocInlayHint LspInlayHint ]]
+  --     vim.g.coc_data_home = vim.fn.stdpath "data" .. "/coc"
+  --   end,
+  --   config = function()
+  --     vim.cmd [[
+  --       call coc#add_extension('coc-pyright')
+  --     ]]
+  --   end,
+  -- },
 
   {
     "neovim/nvim-lspconfig",
@@ -1127,6 +1127,7 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-calc",
+      "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
       "onsails/lspkind.nvim", -- display icons
     },

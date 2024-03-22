@@ -197,3 +197,7 @@ end, { desc = "tmux next window" })
 vim.keymap.set({ "n", "v", "o" }, "<F6>", function()
   vim.fn.system "tmux select-window -t :+"
 end, { desc = "tmux next window" })
+
+-- Align CSV columns. Much faster than rainbow_csv
+-- https://stackoverflow.com/questions/3249275/multiple-commands-on-same-line
+vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!sed 's/,/:,/g' | column -t -s: | sed 's/ ,/,/g'<cr>", {})

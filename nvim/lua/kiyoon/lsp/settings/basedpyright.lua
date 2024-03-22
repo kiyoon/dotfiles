@@ -8,13 +8,22 @@ return {
   --   }),
   -- },
   settings = {
-    python = {
+    -- python = {
+    basedpyright = {
       analysis = {
         typeCheckingMode = "standard", -- off, basic, standard, strict, all
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
         autoImportCompletions = true,
         diagnosticsMode = "openFilesOnly", -- workspace, openFilesOnly
+        diagnosticSeverityOverrides = {
+          reportUnusedImports = false,
+          reportUnusedVariable = false,
+          -- reportUnusedClass = "warning",
+          -- reportUnusedFunction = "warning",
+          reportUndefinedVariable = false, -- ruff handles this with F822
+          reportImplicitOverride = "warning",
+        },
       },
     },
   },

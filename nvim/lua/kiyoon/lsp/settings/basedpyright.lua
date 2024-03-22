@@ -22,7 +22,6 @@ return {
           -- reportUnusedClass = "warning",
           -- reportUnusedFunction = "warning",
           reportUndefinedVariable = false, -- ruff handles this with F822
-          reportImplicitOverride = "warning",
         },
       },
     },

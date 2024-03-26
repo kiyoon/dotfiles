@@ -33,7 +33,7 @@
   "jupynium.nvim": { "branch": "master", "commit": "71c3c15f49e693e7c90e1f53051e04f4c5887af9" },
   "lazy.nvim": { "branch": "main", "commit": "08954f723bf2d442ea020551e3acc956f4dc6dc7" },
   "log-highlight.nvim": { "branch": "main", "commit": "c18d1fd20c411f9fd9702d6d0d09edf3faa2bb96" },
-  "lsp-inlayhints.nvim": { "branch": "main", "commit": "ac7379556be7d5bfaf083fc4985ffd2773d18027" },
+  "lsp-inlayhints.nvim": { "branch": "main", "commit": "d981f65c9ae0b6062176f0accb9c151daeda6f16" },
   "lsp_signature.nvim": { "branch": "master", "commit": "c6aeb2f1d2538bbdfdaab1664d9d4c3c75aa9db8" },
   "lspkind.nvim": { "branch": "master", "commit": "1735dd5a5054c1fb7feaf8e8658dbab925f4f0cf" },
   "lualine.nvim": { "branch": "master", "commit": "b5e8bb642138f787a2c1c5aedc2a78cb2cebbd67" },

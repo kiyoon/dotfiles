@@ -3,7 +3,6 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
-local lsp_inlayhints_dev = false
 
 local icons = require "kiyoon.icons"
 
@@ -1137,7 +1136,7 @@ return {
     end,
   },
   {
-    "kiyoon/lsp-inlayhints.nvim",
+    "lvimuser/lsp-inlayhints.nvim",
     event = "LSPAttach",
     -- init = function()
     --   vim.cmd [[hi link LspInlayHint Comment]]
@@ -1146,7 +1145,6 @@ return {
     config = function()
       require "kiyoon.lsp.inlayhints"
     end,
-    dev = lsp_inlayhints_dev,
   },
   {
     "ray-x/lsp_signature.nvim",

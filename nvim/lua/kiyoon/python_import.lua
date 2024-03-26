@@ -135,6 +135,7 @@ vim.api.nvim_create_autocmd("FileType", {
       defaultdict = "collections",
 
       Iterable = "collections.abc",
+      Sequence = "collections.abc",
 
       date = "datetime",
       datetime = "datetime",
@@ -263,7 +264,6 @@ vim.api.nvim_create_autocmd("FileType", {
       MutableMapping = "typing",
       MutableSequence = "typing",
       MutableSet = "typing",
-      Sequence = "typing",
       Sized = "typing",
       ValuesView = "typing",
       Awaitable = "typing",

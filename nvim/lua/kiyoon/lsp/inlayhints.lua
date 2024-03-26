@@ -13,3 +13,152 @@ vim.api.nvim_create_autocmd("LspAttach", {
     require("lsp-inlayhints").on_attach(client, bufnr)
   end,
 })
+
+-- Bake inlay type hints into the buffer
+-- Some functions taken from https://github.com/simrat39/inlay-hints.nvim
+local function get_inlay_hint_params(client, bufnr, line)
+  local params = {
+    textDocument = vim.lsp.util.make_text_document_params(bufnr),
+    range = {
+      start = {
+        line = 0,
+        character = 0,
+      },
+      ["end"] = {
+        line = 0,
+        character = 0,
+      },
+    },
+  }
+
+  if line == nil then
+    local line_count = vim.api.nvim_buf_line_count(bufnr) - 1
+    local last_line = vim.api.nvim_buf_get_lines(bufnr, line_count, line_count + 1, true)
+
+    params["range"]["end"]["line"] = line_count
+    params["range"]["end"]["character"] =
+      vim.lsp.util.character_offset(bufnr, line_count, #last_line[1], client.offset_encoding)
+  else
+    local current_line = vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)
+    params["range"]["start"]["line"] = line
+    params["range"]["end"]["line"] = line
+    params["range"]["end"]["character"] =
+      vim.lsp.util.character_offset(bufnr, line, #current_line[1], client.offset_encoding)
+    -- vim.print(params)
+  end
+
+  return params
+end
+
+local function request_all_inlay_hints(client, bufnr, callback)
+  client.request("textDocument/inlayHint", get_inlay_hint_params(client, bufnr), callback, bufnr)
+end
+
+local function request_current_line_inlay_hints(client, callback)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1
+  client.request("textDocument/inlayHint", get_inlay_hint_params(client, bufnr, current_line), callback, bufnr)
+end
+
+-- Parses the result into a easily usable format
+-- example:
+-- {
+--  ["12"] = { {
+--      kind = "TypeHint",
+--      label = "String"
+--    } },
+--  ["13"] = { {
+--      kind = "TypeHint",
+--      label = "usize"
+--    } },
+-- }
+--
+local function parse_hints(result)
+  local map = {}
+
+  if type(result) ~= "table" then
+    return {}
+  end
+
+  for _, value in pairs(result) do
+    local range = value.position
+    local line = value.position.line
+    local label = value.label
+
+    local label_str = ""
+
+    if type(label) == "string" then
+      label_str = value.label
+    elseif type(label) == "table" then
+      for _, label_part in ipairs(label) do
+        label_str = label_str .. label_part.value
+      end
+    end
+
+    local kind = value.kind
+
+    if map[line] ~= nil then
+      table.insert(map[line], {
+        label = label_str,
+        kind = kind,
+        range = range,
+      })
+    else
+      map[line] = {
+        { label = label_str, kind = kind, range = range },
+      }
+    end
+
+    table.sort(map[line], function(a, b)
+      return a.range.character < b.range.character
+    end)
+  end
+
+  return map
+end
+
+local function inlay_type_hint_to_text_in_buffer()
+  local clients = vim.lsp.get_active_clients { bufnr = 0 }
+  if not next(clients) then
+    return
+  end
+  local current_line_num = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+  for _, client in ipairs(clients) do
+    if client.server_capabilities == nil or not client.server_capabilities.inlayHintProvider then
+      return
+    end
+
+    request_current_line_inlay_hints(client, function(err, result, ctx)
+      if err then
+        return
+      end
+
+      local hints = parse_hints(result)
+      if hints[current_line_num] == nil then
+        return
+      end
+
+      for _, hint in ipairs(hints[current_line_num]) do
+        if hint.kind == 1 then
+          -- TypeHint
+          local current_line = vim.api.nvim_buf_get_lines(ctx.bufnr, current_line_num, current_line_num + 1, true)[1]
+          local line_with_hint = current_line:sub(1, hint.range.character)
+            .. hint.label
+            .. current_line:sub(hint.range.character + 1)
+          vim.api.nvim_buf_set_lines(ctx.bufnr, current_line_num, current_line_num + 1, true, { line_with_hint })
+        end
+        break
+      end
+
+      -- vim.print(hints)
+    end)
+  end
+end
+
+vim.keymap.set(
+  "n",
+  "<space>th",
+  inlay_type_hint_to_text_in_buffer,
+  { noremap = true, silent = true, desc = "Bake inlay type hints into the buffer" }
+)

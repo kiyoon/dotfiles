@@ -1136,7 +1136,7 @@ return {
     end,
   },
   {
-    "lvimuser/lsp-inlayhints.nvim",
+    "kiyoon/lsp-inlayhints.nvim",
     event = "LSPAttach",
     -- init = function()
     --   vim.cmd [[hi link LspInlayHint Comment]]

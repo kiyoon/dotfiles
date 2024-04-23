@@ -95,14 +95,14 @@ return {
   },
 
   --- NOTE: Coding
-  {
-    -- "jk or jj to escape insert mode"
-    "max397574/better-escape.nvim",
-    event = "InsertEnter",
-    config = function()
-      require("better_escape").setup()
-    end,
-  },
+  -- {
+  --   -- "jk or jj to escape insert mode"
+  --   "max397574/better-escape.nvim",
+  --   event = "InsertEnter",
+  --   config = function()
+  --     require("better_escape").setup()
+  --   end,
+  -- },
   {
     -- <space>siwie to substitute word from entire buffer
     -- <space>siwip to substitute word from paragraph

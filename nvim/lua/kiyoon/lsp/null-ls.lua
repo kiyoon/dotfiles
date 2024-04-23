@@ -3,6 +3,8 @@ if not null_ls_status_ok then
   return
 end
 
+local translate_ruff_message = require("kiyoon.lang.ruff").translate_ruff_message
+
 -- local ft_format_on_save = {
 --   "python",
 --   "lua",
@@ -108,7 +110,7 @@ local function ruff_on_output_filtered(pattern, groups)
   nullls_output["col"] = ruff_output["location"]["column"]
   nullls_output["end_row"] = ruff_output["end_location"]["row"]
   nullls_output["end_col"] = ruff_output["end_location"]["column"]
-  nullls_output["message"] = ruff_output["message"]
+  nullls_output["message"] = translate_ruff_message(ruff_output["code"], ruff_output["message"])
 
   if string.find(ruff_output["code"], "^COM") then
     nullls_output["severity"] = h.diagnostics.severities["information"]

@@ -32,6 +32,24 @@ M.translate_ruff_message = function(code, message)
     return "Las importaciones de `from __future__` deben ocurrir al principio del archivo"
   end
 
+  if code == "F405" then
+    -- {name} may be undefined, or defined from star imports
+    local name = message:match "([^ ]+) may be undefined"
+    return string.format("%s puede ser indefinido, o definido desde importaciones de estrella", name)
+  end
+
+  if code == "F406" then
+    -- from {name} import * only allowed at module level
+    local name = message:match "from ([^ ]+) import"
+    return string.format("`from %s import *` solo permitido a nivel de módulo", name)
+  end
+
+  if code == "F407" then
+    -- Future feature {name} is not defined
+    local name = message:match "Future feature ([^ ]+) is not defined"
+    return string.format("La característica futura %s no está definida", name)
+  end
+
   return message
 end
 

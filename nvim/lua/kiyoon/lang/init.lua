@@ -2,8 +2,8 @@
 
 M = {}
 
--- begins with "es-ES"
-if string.match(os.getenv "LANG", "^es%-ES") then
+-- begins with "es"
+if string.match(os.getenv "LANG", "^es") then
   M.lang = "es"
 else
   M.lang = "en"

@@ -1,4 +1,4 @@
-return {
+M = {
   -- handlers = {
   --   ["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
   --     virtual_text = { spacing = 0, prefix = "" },
@@ -27,3 +27,11 @@ return {
     },
   },
 }
+
+-- NOTE: pyright works with es-ES but not with es_ES. Weird.
+local lang = require("kiyoon.lang").lang
+if lang == "es" then
+  M.cmd_env = { LC_ALL = "es-ES.UTF-8" }
+end
+
+return M

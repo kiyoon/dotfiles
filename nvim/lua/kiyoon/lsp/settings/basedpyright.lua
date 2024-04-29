@@ -1,3 +1,8 @@
+-- NOTE: in nvim 0.9.5, if you import this module at the bottom,
+-- it will sometimes not work, returning `lang` instaed of `M`.
+-- Super strange, likely a bug in nvim.
+local lang = require("kiyoon.lang").lang
+
 M = {
   -- handlers = {
   --   ["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -16,20 +21,21 @@ M = {
         useLibraryCodeForTypes = true,
         autoImportCompletions = true,
         diagnosticsMode = "openFilesOnly", -- workspace, openFilesOnly
-        diagnosticSeverityOverrides = {
-          reportUnusedImports = false,
-          reportUnusedVariable = false,
-          -- reportUnusedClass = "warning",
-          -- reportUnusedFunction = "warning",
-          reportUndefinedVariable = false, -- ruff handles this with F822
-        },
+        -- diagnosticSeverityOverrides = {
+        -- reportUnusedImports = false,
+        --   reportUnusedVariable = false,
+        --   -- reportUnusedClass = "warning",
+        --   -- reportUnusedFunction = "warning",
+        --   reportUndefinedVariable = false, -- ruff handles this with F822
+        --   reportAny = false,
+        --   reportUnknownVariableType = false,
+        -- },
       },
     },
   },
 }
 
 -- NOTE: pyright works with es-ES but not with es_ES. Weird.
-local lang = require("kiyoon.lang").lang
 if lang == "es" then
   M.cmd_env = { LC_ALL = "es-ES.UTF-8" }
 end

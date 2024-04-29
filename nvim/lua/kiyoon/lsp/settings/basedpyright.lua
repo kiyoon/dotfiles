@@ -21,15 +21,13 @@ M = {
         useLibraryCodeForTypes = true,
         autoImportCompletions = true,
         diagnosticsMode = "openFilesOnly", -- workspace, openFilesOnly
-        -- diagnosticSeverityOverrides = {
-        -- reportUnusedImports = false,
-        --   reportUnusedVariable = false,
-        --   -- reportUnusedClass = "warning",
-        --   -- reportUnusedFunction = "warning",
-        --   reportUndefinedVariable = false, -- ruff handles this with F822
-        --   reportAny = false,
-        --   reportUnknownVariableType = false,
-        -- },
+        diagnosticSeverityOverrides = {
+          reportUnusedImports = false,
+          reportUnusedVariable = false,
+          -- reportUnusedClass = "warning",
+          -- reportUnusedFunction = "warning",
+          reportUndefinedVariable = false, -- ruff handles this with F822
+        },
       },
     },
   },

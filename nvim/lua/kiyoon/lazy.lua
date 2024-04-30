@@ -1695,19 +1695,19 @@ return {
   --   "mechatroner/rainbow_csv",
   --   ft = "csv",
   -- },
-  {
-    "cameron-wags/rainbow_csv.nvim",
-    opts = {},
-    ft = {
-      "csv",
-      "tsv",
-      "csv_semicolon",
-      "csv_whitespace",
-      "csv_pipe",
-      "rfc_csv",
-      "rfc_semicolon",
-    },
-  },
+  -- {
+  --   "cameron-wags/rainbow_csv.nvim",
+  --   opts = {},
+  --   ft = {
+  --     "csv",
+  --     "tsv",
+  --     "csv_semicolon",
+  --     "csv_whitespace",
+  --     "csv_pipe",
+  --     "rfc_csv",
+  --     "rfc_semicolon",
+  --   },
+  -- },
   {
     "fei6409/log-highlight.nvim",
     config = function()

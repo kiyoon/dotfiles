@@ -16,8 +16,40 @@ yabai -m config mouse_action1 move
 # right click + drag
 yabai -m config mouse_action2 resize
 yabai -m mouse_drop_action swap
-yabai -m rule --add app="^System Settings$" manage=off
-yabai -m rule --add app="^Calculator$" manage=off
-yabai -m rule --add app="^Karabiner-Elements$" manage=off
 
 yabai -m signal --add event=space_changed action="sh ~/.config/yabai/scripts/clean_empty_spaces.sh"
+
+# not resizable apps shouldn't be managed
+# https://github.com/koekeishiya/yabai/issues/1317
+yabai -m signal --add event=window_created action='
+  yabai -m query --windows --window $YABAI_WINDOW_ID | jq -er ".\"can-resize\" or .\"is-floating\"" || \
+  yabai -m window $YABAI_WINDOW_ID --toggle float && \
+  yabai -m window $YABAI_WINDOW_ID --layer above && \
+  yabai -m window $YABAI_WINDOW_ID --grid 3:3:1:1:1:1
+'
+
+# apps to not manage (ignore)
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^Ajustes del Sistema$" manage=off
+yabai -m rule --add app="^Utilidad de Compresión$" manage=off
+yabai -m rule --add app="^Karabiner-Elements$" manage=off
+
+yabai -m rule --add app="^Archive Utility$" manage=off
+yabai -m rule --add app="^Wally$" manage=off
+yabai -m rule --add app="^Pika$" manage=off
+yabai -m rule --add app="^balenaEtcher$" manage=off
+yabai -m rule --add app="^Creative Cloud$" manage=off
+yabai -m rule --add app="^Logi Options$" manage=off
+yabai -m rule --add app="^Alfred Preferences$" manage=off
+yabai -m rule --add label="Finder" app="^Finder$" title="(Co(py|nnect)|Move|Info|Pref)" manage=off
+yabai -m rule --add label="Safari" app="^Safari$" title="^(General|(Tab|Password|Website|Extension)s|AutoFill|Se(arch|curity)|Privacy|Advance)$" manage=off
+yabai -m rule --add label="macfeh" app="^macfeh$" manage=off
+yabai -m rule --add label="App Store" app="^App Store$" manage=off
+yabai -m rule --add label="Activity Monitor" app="^Activity Monitor$" manage=off
+yabai -m rule --add label="KeePassXC" app="^KeePassXC$" manage=off
+yabai -m rule --add label="Calculator" app="^Calculator$" manage=off
+yabai -m rule --add label="Dictionary" app="^Dictionary$" manage=off
+yabai -m rule --add label="mpv" app="^mpv$" manage=off
+yabai -m rule --add label="Software Update" title="Software Update" manage=off
+yabai -m rule --add label="About This Mac" app="System Information" title="About This Mac" manage=off
+

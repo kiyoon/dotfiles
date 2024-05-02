@@ -411,8 +411,9 @@ M.upgrade_typing = function(node)
 end
 
 --- Added by kiyoon
---- replaces os.path with pathlib
+--- replaces os.path with pathlib. Plus, some other function replacements.
 --- e.g., `os.path.join(a, b)` => `Path(a) / b`
+--- `print(a)` => `logger.info(a)`
 --- See ruff PTH code for more details.
 M.os_path_to_pathlib = function(wrap_with_path)
   if wrap_with_path == nil then
@@ -481,6 +482,21 @@ M.os_path_to_pathlib = function(wrap_with_path)
     end
 
     return wrap_with_pathlib(arglist_node:named_child(0)) .. "." .. pathlib_function_name
+  end
+
+  ---Alternative method. Change only the function name.
+  ---e.g. print(a) => logger.info(a)
+  ---@param change_to string
+  ---@return string
+  local function change_call_name(change_to)
+    local new_text = change_to .. "("
+    local new_args = {}
+    for i = 0, arglist_node:named_child_count() - 1 do
+      local arg_node = arglist_node:named_child(i)
+      table.insert(new_args, get_text(arg_node))
+    end
+    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+    return new_text
   end
 
   local new_text ---@type string | nil
@@ -574,6 +590,8 @@ M.os_path_to_pathlib = function(wrap_with_path)
       table.insert(new_args, get_text(arg_node))
     end
     new_text = new_text .. table.concat(new_args, ", ") .. ")"
+  elseif function_name == "print" then
+    new_text = change_call_name "logger.info"
   else
     vim.notify("Function `" .. function_name .. "` not recognised.", "error", {
       title = "os.path to pathlib.Path",

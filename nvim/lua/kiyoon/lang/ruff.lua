@@ -85,8 +85,14 @@ M.translate_ruff_message = function(code, message)
     -- F706	return-outside-function	return statement outside of a function/method	✔️ 🛠️
     -- F707	default-except-not-last	An except block as not the last exception handler	✔️ 🛠️
     -- F722	forward-annotation-syntax-error	Syntax error in forward annotation: {body}	✔️ 🛠️
+  elseif code == "F811" then
     -- F811	redefined-while-unused	Redefinition of unused {name} from {row}	✔️ 🛠️
+    local name, row = message:match "Redefinition of unused ([^ ]+) from line ([0-9]+)"
+    return string.format("Redefinición de %s no usado desde la línea %s", name, row)
+  elseif code == "F821" then
     -- F821	undefined-name	Undefined name {name}	✔️ 🛠️
+    local name = message:match "Undefined name ([^ ]+)"
+    return string.format("Nombre %s indefinido", name)
     -- F822	undefined-export	Undefined name {name} in __all__	✔️ 🛠️
     -- F823	undefined-local	Local variable {name} referenced before assignment	✔️ 🛠️
     -- F841	unused-variable	Local variable {name} is assigned to but never used	✔️ 🛠️

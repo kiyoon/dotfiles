@@ -213,11 +213,11 @@ set wildmenu
 
 
 " zf folding comment set
-set commentstring=%s
-autocmd FileType c,cpp,java,html,php setl commentstring=//%s 
-autocmd FileType sh,python setl commentstring=#%s 
-autocmd FileType matlab setl commentstring=%%s
-autocmd FileType sml setl commentstring=(*%s*)
+" set commentstring=%s
+" autocmd FileType c,cpp,java,html,php setl commentstring=//%s 
+" autocmd FileType sh,python setl commentstring=#%s 
+" autocmd FileType matlab setl commentstring=%%s
+" autocmd FileType sml setl commentstring=(*%s*)
 "autocmd FileType html,php setl commentstring=<!--%s-->
 
 " set foldcolumn automatically if there is at least one fold

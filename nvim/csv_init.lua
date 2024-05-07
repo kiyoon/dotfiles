@@ -1,6 +1,7 @@
 -- Configuration for csv, tsv files
 -- Data files are often very big and slow to load, so we disable most plugins.
 
+vim.o.number = true
 vim.o.termguicolors = true
 vim.opt.iskeyword:append "-" -- treats words with `-` as single words
 vim.o.cursorline = true

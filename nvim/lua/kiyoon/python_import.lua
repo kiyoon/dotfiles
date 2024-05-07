@@ -98,6 +98,7 @@ vim.api.nvim_create_autocmd("FileType", {
       mp = "multiprocessing",
       np = "numpy",
       pd = "pandas",
+      pl = "polars",
       plt = "matplotlib.pyplot",
       o3d = "open3d",
       F = "torch.nn.functional",

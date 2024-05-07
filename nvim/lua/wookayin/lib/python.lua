@@ -509,7 +509,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
   ---os.path functions that require one path argument and multiple other arguments
   ---e.g. os.path.rename(a, b) => Path(a).rename(b)
   local function multi_arg_function_to_pathlib(pathlib_function_name)
-    local new_text = one_arg_function_to_pathlib(pathlib_function_name)
+    local new_text = one_arg_function_to_pathlib(pathlib_function_name .. "(")
     if new_text == nil then
       return nil
     end

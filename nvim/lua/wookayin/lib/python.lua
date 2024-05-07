@@ -484,6 +484,45 @@ M.os_path_to_pathlib = function(wrap_with_path)
     return wrap_with_pathlib(arglist_node:named_child(0)) .. "." .. pathlib_function_name
   end
 
+  ---os.path.join to pathlib.Path
+  local function osp_join_to_pathlib()
+    if arglist_node:named_child_count() == 0 then
+      -- no arguments
+      vim.notify("At least one argument is required.", "error", {
+        title = "os.path.join to pathlib.Path",
+      })
+      return
+    end
+
+    local new_text = wrap_with_pathlib(arglist_node:named_child(0))
+    for i = 1, arglist_node:named_child_count() - 1 do
+      local arg_node = arglist_node:named_child(i)
+      if M.no_paren_ts_node_types[arg_node:type()] then
+        new_text = new_text .. " / " .. get_text(arg_node)
+      else
+        new_text = new_text .. " / (" .. get_text(arg_node) .. ")"
+      end
+    end
+    return new_text
+  end
+
+  ---os.path functions that require one path argument and multiple other arguments
+  ---e.g. os.path.rename(a, b) => Path(a).rename(b)
+  local function multi_arg_function_to_pathlib(pathlib_function_name)
+    local new_text = one_arg_function_to_pathlib(pathlib_function_name)
+    if new_text == nil then
+      return nil
+    end
+
+    local new_args = {}
+    for i = 1, arglist_node:named_child_count() - 1 do
+      local arg_node = arglist_node:named_child(i)
+      table.insert(new_args, get_text(arg_node))
+    end
+    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+    return new_text
+  end
+
   ---Alternative method. Change only the function name.
   ---e.g. print(a) => logger.info(a)
   ---@param change_to string
@@ -501,23 +540,11 @@ M.os_path_to_pathlib = function(wrap_with_path)
 
   local new_text ---@type string | nil
   if function_name == "os.path.join" then
-    if arglist_node:named_child_count() == 0 then
-      -- no arguments
-      vim.notify("At least one argument is required.", "error", {
-        title = "os.path.join to pathlib.Path",
-      })
-      return
-    end
-
-    new_text = wrap_with_pathlib(arglist_node:named_child(0))
-    for i = 1, arglist_node:named_child_count() - 1 do
-      local arg_node = arglist_node:named_child(i)
-      if M.no_paren_ts_node_types[arg_node:type()] then
-        new_text = new_text .. " / " .. get_text(arg_node)
-      else
-        new_text = new_text .. " / (" .. get_text(arg_node) .. ")"
-      end
-    end
+    new_text = osp_join_to_pathlib()
+  elseif function_name == "join" then
+    new_text = osp_join_to_pathlib()
+  elseif function_name == "osp_join" then
+    new_text = osp_join_to_pathlib()
   elseif function_name == "os.mkdir" then
     new_text = one_arg_function_to_pathlib "mkdir()"
   elseif function_name == "os.makedirs" then
@@ -567,29 +594,13 @@ M.os_path_to_pathlib = function(wrap_with_path)
   elseif function_name == "os.listdir" then
     new_text = one_arg_function_to_pathlib "iterdir()"
   elseif function_name == "os.rename" then
-    new_text = one_arg_function_to_pathlib "rename("
-    local new_args = {}
-    for i = 1, arglist_node:named_child_count() - 1 do
-      local arg_node = arglist_node:named_child(i)
-      table.insert(new_args, get_text(arg_node))
-    end
-    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+    new_text = multi_arg_function_to_pathlib "rename"
   elseif function_name == "os.replace" then
-    new_text = one_arg_function_to_pathlib "replace("
-    local new_args = {}
-    for i = 1, arglist_node:named_child_count() - 1 do
-      local arg_node = arglist_node:named_child(i)
-      table.insert(new_args, get_text(arg_node))
-    end
-    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+    new_text = multi_arg_function_to_pathlib "replace"
   elseif function_name == "os.path.samefile" then
-    new_text = one_arg_function_to_pathlib "samefile("
-    local new_args = {}
-    for i = 1, arglist_node:named_child_count() - 1 do
-      local arg_node = arglist_node:named_child(i)
-      table.insert(new_args, get_text(arg_node))
-    end
-    new_text = new_text .. table.concat(new_args, ", ") .. ")"
+    new_text = multi_arg_function_to_pathlib "samefile"
+  elseif function_name == "open" then
+    new_text = multi_arg_function_to_pathlib "open"
   elseif function_name == "print" then
     new_text = change_call_name "logger.info"
   else

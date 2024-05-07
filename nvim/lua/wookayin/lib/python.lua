@@ -602,6 +602,11 @@ M.os_path_to_pathlib = function(wrap_with_path)
   elseif function_name == "open" then
     new_text = multi_arg_function_to_pathlib "open"
   elseif function_name == "print" then
+    if arglist_node:named_child_count() > 1 then
+      vim.notify("print() with more than one argument can't be safely converted to logger.info", "warning", {
+        title = "os.path to pathlib.Path",
+      })
+    end
     new_text = change_call_name "logger.info"
   else
     vim.notify("Function `" .. function_name .. "` not recognised.", "error", {

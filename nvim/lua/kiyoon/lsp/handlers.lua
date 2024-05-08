@@ -14,6 +14,39 @@ if status_cmp_ok then
   M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
 end
 
+-- diagnostic float options used for vim.diagnostic.open_float, vim.diagnostic.goto_next, vim.diagnostic.goto_prev
+-- adds URL to lint errors
+local source_to_icon = {
+  rustc = "🦀",
+  ["rust-analyzer"] = "🦀",
+  clippy = "🦀cl",
+  ruff = "🐍",
+  shellcheck = "🐚",
+  tsserver = "🌐",
+}
+local float_opts = {
+  format = function(diagnostic)
+    -- if diagnostic.user_data ~= nil then
+    --   vim.print(diagnostic.user_data)
+    -- end
+    local message
+    if diagnostic.source == "clippy" then
+      -- remove "for further information visit https://rust-lang.github.io/rust-clippy/...." from the message
+      -- match line break at the end
+      message =
+        diagnostic.message:gsub("for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n", "")
+    else
+      message = diagnostic.message
+    end
+
+    if source_to_icon[diagnostic.source] ~= nil then
+      return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+    end
+
+    return string.format("%s 🔗%s", message, diagnostic.source)
+  end,
+}
+
 M.setup = function()
   local signs = {
 
@@ -78,45 +111,18 @@ function M.lsp_keymaps(bufnr)
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
   keymap("n", "gl", function()
-    local source_to_icon = {
-      rustc = "🦀",
-      ["rust-analyzer"] = "🦀",
-      clippy = "🦀cl",
-      ruff = "🐍",
-      shellcheck = "🐚",
-      tsserver = "🌐",
-    }
-    vim.diagnostic.open_float {
-      format = function(diagnostic)
-        -- if diagnostic.user_data ~= nil then
-        --   vim.print(diagnostic.user_data)
-        -- end
-        local message
-        if diagnostic.source == "clippy" then
-          -- remove "for further information visit https://rust-lang.github.io/rust-clippy/...." from the message
-          -- match line break at the end
-          message = diagnostic.message:gsub(
-            "for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n",
-            ""
-          )
-        else
-          message = diagnostic.message
-        end
-
-        if source_to_icon[diagnostic.source] ~= nil then
-          return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
-        end
-
-        return string.format("%s 🔗%s", message, diagnostic.source)
-      end,
-    }
+    vim.diagnostic.open_float(float_opts)
   end, opts, "Show Diagnostics")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
   -- Use actions-preview.nvim
   -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
-  keymap({ "n", "x", "o", "i" }, "<A-l>", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
-  keymap({ "n", "x", "o", "i" }, "<A-h>", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
+  keymap({ "n", "x", "o", "i" }, "<A-l>", function()
+    vim.diagnostic.goto_next { buffer = 0, float = float_opts }
+  end, opts)
+  keymap({ "n", "x", "o", "i" }, "<A-h>", function()
+    vim.diagnostic.goto_prev { buffer = 0, float = float_opts }
+  end, opts)
 
   local next_warn = function()
     vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARNING }

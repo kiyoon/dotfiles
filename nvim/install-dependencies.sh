@@ -9,6 +9,9 @@ if command -v brew &> /dev/null; then
 		# DAP
 		$PIP3 install --user --break-system-packages debugpy
 
+		# Csv align
+		$PIP3 install --user --break-system-packages polars
+
 		# Lint
 		pipx install ruff
 
@@ -49,6 +52,9 @@ npm install -g neovim
 
 # DAP
 $PIP3 install --user --break-system-packages debugpy
+
+# Csv align
+$PIP3 install --user --break-system-packages polars
 
 # Lint
 # $PIP3 install --user flake8

@@ -1215,7 +1215,8 @@ return {
   },
   {
     "ray-x/lsp_signature.nvim",
-    event = "LSPAttach",
+    -- event = "LSPAttach",
+    event = "BufReadPre",
     config = function()
       local cfg = {
         on_attach = function(client, bufnr)

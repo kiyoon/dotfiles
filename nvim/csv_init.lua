@@ -55,18 +55,74 @@ end, { desc = "tmux next window" })
 -- https://stackoverflow.com/questions/51471554/align-columns-in-comma-separated-file
 
 -- Mac only
-if vim.fn.has "macunix" == 1 then
-  vim.api.nvim_create_user_command(
-    "CsvAlign",
-    ":set nowrap | %!sed 's/,/&^::,/g' | column -t -s'&^::' | sed 's/ ,/,/g'",
-    {}
-  )
-  vim.api.nvim_create_user_command(
-    "TsvAlign",
-    ":set nowrap | %!sed 's/\t/&^::\t/g' | column -t -s'&^::' | sed 's/ \t/\t/g'",
-    {}
-  )
--- Linux only
-elseif vim.fn.has "unix" == 1 then
-  vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
-end
+-- if vim.fn.has "macunix" == 1 then
+--   vim.api.nvim_create_user_command(
+--     "CsvAlign",
+--     ":set nowrap | %!sed 's/,/&^::,/g' | column -t -s'&^::' | sed 's/ ,/,/g'",
+--     {}
+--   )
+--   vim.api.nvim_create_user_command(
+--     "TsvAlign",
+--     ":set nowrap | %!sed 's/\t/&^::\t/g' | column -t -s'&^::' | sed 's/ \t/\t/g'",
+--     {}
+--   )
+-- -- Linux only
+-- elseif vim.fn.has "unix" == 1 then
+--   vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
+-- end
+
+vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!/usr/bin/python3 ~/.config/nvim/csv_align.py", {})
+vim.api.nvim_create_user_command(
+  "TsvAlign",
+  ":set nowrap | %!/usr/bin/python3 ~/.config/nvim/csv_align.py --type tsv",
+  {}
+)
+
+-- Lock header row
+-- https://stackoverflow.com/questions/1773311/vim-lock-top-line-of-a-window
+vim.cmd [[1spl]]
+vim.cmd [[set scrollbind]]
+-- go to the first window
+vim.cmd [[wincmd w]]
+vim.cmd [[set scrollbind]] -- synchronize lower window
+vim.cmd [[set sbo=hor]] -- synchronize horizontally
+vim.cmd [[wincmd w]]
+
+-- H, L to move columns based on the length from the first row.
+
+vim.keymap.set({ "n", "v" }, "H", function()
+  local first_line = vim.fn.getline(1)
+  local col = vim.fn.col "."
+  local start = col
+  for i = col - 1, 1, -1 do
+    if string.sub(first_line, i, i) == "," then
+      start = i
+      break
+    end
+  end
+
+  if start ~= 1 then
+    for i = start - 1, 1, -1 do
+      if string.sub(first_line, i, i) == "," then
+        start = i + 1
+        break
+      end
+    end
+  end
+
+  vim.cmd("normal! " .. start .. "|")
+end, { desc = "Goto column left" })
+
+vim.keymap.set({ "n", "v" }, "L", function()
+  local first_line = vim.fn.getline(1)
+  local col = vim.fn.col "."
+  local first_line_len = string.len(first_line)
+  local start = col
+  for i = col + 1, first_line_len do
+    if string.sub(first_line, i, i) == "," then
+      start = i + 1
+      break
+    end
+  end
+  vim.cmd("normal! " .. start .. "|")
+end, { desc = "Goto column right" })

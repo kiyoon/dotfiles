@@ -488,6 +488,8 @@ vim.api.nvim_create_autocmd("FileType", {
         -- if statement ends with _DIR, import from the first module (from project import PROJECT_DIR)
         if statement:match "_DIR$" then
           return { "from " .. first_module .. " import " .. statement }
+        elseif statement == "setup_logging" then
+          return { "from " .. first_module .. ".utils.log import setup_logging" }
         end
       end
 

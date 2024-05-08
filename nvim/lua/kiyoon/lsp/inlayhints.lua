@@ -125,13 +125,14 @@ end
 local function inlay_type_hint_to_text_in_buffer()
   local clients = vim.lsp.get_active_clients { bufnr = 0 }
   if not next(clients) then
+    vim.notify("No active LSP clients", vim.log.levels.ERROR)
     return
   end
   local current_line_num = vim.api.nvim_win_get_cursor(0)[1] - 1
 
   for _, client in ipairs(clients) do
     if client.server_capabilities == nil or not client.server_capabilities.inlayHintProvider then
-      return
+      goto continue
     end
 
     request_current_line_inlay_hints(client, function(err, result, ctx)
@@ -158,6 +159,8 @@ local function inlay_type_hint_to_text_in_buffer()
 
       -- vim.print(hints)
     end)
+
+    ::continue::
   end
 end
 

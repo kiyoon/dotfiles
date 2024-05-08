@@ -21,6 +21,7 @@ Also, it has many versions of vim configurations.
 - `vic` to run neovim with stable and mild configuration using CoC. It's a balance between the two, and should be used when the first option is broken.
 - `lazyvim` to run pre-configured [LazyVim](https://github.com/LazyVim/LazyVim).
 - `\vim` to run original vim with no plugins (only simple `.vimrc`)
+- `csvi` to read CSV files. `:CsvAlign` or `:TsvAlign` to align columns and `H`, `L` to move by columns.
 - Use `vscode_init.lua` for VSCode-Neovim.
 
 ## Features
@@ -49,9 +50,9 @@ Also, it has many versions of vim configurations.
 
 ## Requirements
 
-- Linux x86-64, Windows WSL2 (Mac support planned. You just need dependency install script to use `brew`)
-- Neovim v0.9.4 (make sure you use this exact version)
-- Tmux v3.3a
+- Linux x86-64, macOS, Windows WSL2
+- Neovim v0.9.5 (make sure you use this exact version)
+- Tmux v3.4
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
 On Ubuntu, maybe you need to install some dependencies:

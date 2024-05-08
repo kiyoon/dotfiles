@@ -70,6 +70,12 @@ if (($+commands[ruff])); then
 	alias rformat='ruff format'
 fi
 
+if [[ -f /opt/homebrew/bin/git ]]; then
+	# Use homebrew git if available
+	# The default git only supports English
+	alias git='/opt/homebrew/bin/git'
+fi
+
 # for some reason, it doesn't detect conda/mamba although they are ready and executable here.
 # We check the $MINICONDA_PATH instead of
 if [[ $(basename "$MINICONDA_PATH") == "miniforge3" ]]; then

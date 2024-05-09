@@ -63,10 +63,12 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 - `viw` : select a word
 - `qq<command>q`: record macro at @q, then quit.
 - `10@q`: run macro @q 10 times.
-- Choose block with `<C-v>` and press `<S-i>`. It will add the change to all the lines selected.
 - `/pattern` to find and `cgn`: change next found pattern. `.` to repeat.
 - `:g/pattern/command`: apply command at found patterns (`:v` to inverse)
     - <https://vim.fandom.com/wiki/Power_of_g>
+- Choose block with `<C-v>` and press `I` or `A` (with shift). It will add the change to all the lines selected after pressing ESC.
+- Paste in insert mode: `<C-r>0` or `<C-r>"`. Used for pasting one line into multiple lines.
+    - <https://vi.stackexchange.com/questions/42578/paste-in-visual-block-mode-without-deleting-the-character-under-vertically-multi>
 
 ## Installing
 

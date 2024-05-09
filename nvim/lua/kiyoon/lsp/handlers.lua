@@ -21,6 +21,7 @@ local source_to_icon = {
   ["rust-analyzer"] = "🦀",
   clippy = "🦀cl",
   ruff = "🐍",
+  basedpyright = "🐍b",
   shellcheck = "🐚",
   tsserver = "🌐",
 }

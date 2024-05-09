@@ -64,27 +64,42 @@ M.translate_ruff_message = function(code, message)
     -- %-format string has unsupported format character {char}
     local char = message:match "string has unsupported format character (.*)"
     return string.format("Cadena de formato %% tiene carácter de formato %s no soportado", char)
-
-    -- F521	string-dot-format-invalid-format	.format call has invalid format string: {message}	✔️ 🛠️
-    -- F522	string-dot-format-extra-named-arguments	.format call has unused named argument(s): {message}	✔️ 🛠️
-    -- F523	string-dot-format-extra-positional-arguments	.format call has unused arguments at position(s): {message}	✔️ 🛠️
-    -- F524	string-dot-format-missing-arguments	.format call is missing argument(s) for placeholder(s): {message}	✔️ 🛠️
-    -- F525	string-dot-format-mixing-automatic	.format string mixes automatic and manual numbering	✔️ 🛠️
-    -- F541	f-string-missing-placeholders	f-string without any placeholders	✔️ 🛠️
-    -- F601	multi-value-repeated-key-literal	Dictionary key literal {name} repeated	✔️ 🛠️
-    -- F602	multi-value-repeated-key-variable	Dictionary key {name} repeated	✔️ 🛠️
-    -- F621	expressions-in-star-assignment	Too many expressions in star-unpacking assignment	✔️ 🛠️
-    -- F622	multiple-starred-expressions	Two starred expressions in assignment	✔️ 🛠️
-    -- F631	assert-tuple	Assert test is a non-empty tuple, which is always True	✔️ 🛠️
-    -- F632	is-literal	Use == to compare constant literals	✔️ 🛠️
-    -- F633	invalid-print-syntax	Use of >> is invalid with print function	✔️ 🛠️
-    -- F634	if-tuple	If test is a tuple, which is always True	✔️ 🛠️
-    -- F701	break-outside-loop	break outside loop	✔️ 🛠️
-    -- F702	continue-outside-loop	continue not properly in loop	✔️ 🛠️
-    -- F704	yield-outside-function	{keyword} statement outside of a function	✔️ 🛠️
-    -- F706	return-outside-function	return statement outside of a function/method	✔️ 🛠️
-    -- F707	default-except-not-last	An except block as not the last exception handler	✔️ 🛠️
-    -- F722	forward-annotation-syntax-error	Syntax error in forward annotation: {body}	✔️ 🛠️
+  elseif code == "F521" then
+    -- 🔗🐍 [F521]	string-dot-format-invalid-format	.format call has invalid format string: {message}	✔️ 🛠️
+    local mes = message:match "call has invalid format string: (.*)"
+    return string.format("`.format` tiene una cadena de formato inválida: %s", mes)
+  elseif code == "F522" then
+    -- 🔗🐍 [F522]	string-dot-format-extra-named-arguments	.format call has unused named argument(s): {message}	✔️ 🛠️
+    local mes = message:match "call has unused named argument[(]s[)]: (.*)"
+    return string.format("`.format` tiene argumento(s) con nombre no usado: %s", mes)
+  elseif code == "F523" then
+    -- 🔗🐍 [F523]	string-dot-format-extra-positional-arguments	.format call has unused arguments at position(s): {message}	✔️ 🛠️
+    local mes = message:match "call has unused arguments at position[(]s[)]: (.*)"
+    return string.format("`.format` tiene argumento(s) no usado en posición(es): %s", mes)
+  elseif code == "F524" then
+    -- 🔗🐍 [F524]	string-dot-format-missing-arguments	.format call is missing argument(s) for placeholder(s): {message}	✔️ 🛠️
+    local mes = message:match "call is missing argument[(]s[)] for placeholder[(]s[)]: (.*)"
+    return string.format("`.format` falta argumento(s) para marcador(es): %s", mes)
+  elseif code == "F525" then
+    -- 🔗🐍 [F525]	string-dot-format-mixing-automatic	.format string mixes automatic and manual numbering	✔️ 🛠️
+    return "Cadena de formato `.format` mezcla numeración automática y manual"
+  elseif code == "F541" then
+    -- 🔗🐍 [F541]	f-string-missing-placeholders	f-string without any placeholders	✔️ 🛠️
+    return "f-cadena sin marcadores"
+    -- 🔗🐍 [F601]	multi-value-repeated-key-literal	Dictionary key literal {name} repeated	✔️ 🛠️
+    -- 🔗🐍 [F602]	multi-value-repeated-key-variable	Dictionary key {name} repeated	✔️ 🛠️
+    -- 🔗🐍 [F621]	expressions-in-star-assignment	Too many expressions in star-unpacking assignment	✔️ 🛠️
+    -- 🔗🐍 [F622]	multiple-starred-expressions	Two starred expressions in assignment	✔️ 🛠️
+    -- 🔗🐍 [F631]	assert-tuple	Assert test is a non-empty tuple, which is always True	✔️ 🛠️
+    -- 🔗🐍 [F632]	is-literal	Use == to compare constant literals	✔️ 🛠️
+    -- 🔗🐍 [F633]	invalid-print-syntax	Use of >> is invalid with print function	✔️ 🛠️
+    -- 🔗🐍 [F634]	if-tuple	If test is a tuple, which is always True	✔️ 🛠️
+    -- 🔗🐍 [F701]	break-outside-loop	break outside loop	✔️ 🛠️
+    -- 🔗🐍 [F702]	continue-outside-loop	continue not properly in loop	✔️ 🛠️
+    -- 🔗🐍 [F704]	yield-outside-function	{keyword} statement outside of a function	✔️ 🛠️
+    -- 🔗🐍 [F706]	return-outside-function	return statement outside of a function/method	✔️ 🛠️
+    -- 🔗🐍 [F707]	default-except-not-last	An except block as not the last exception handler	✔️ 🛠️
+    -- 🔗🐍 [F722]	forward-annotation-syntax-error	Syntax error in forward annotation: {body}	✔️ 🛠️
   elseif code == "F811" then
     -- F811	redefined-while-unused	Redefinition of unused {name} from {row}	✔️ 🛠️
     local name, row = message:match "Redefinition of unused ([^ ]+) from line ([0-9]+)"

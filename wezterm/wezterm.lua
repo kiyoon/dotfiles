@@ -103,11 +103,7 @@ table.insert(config.hyperlink_rules, {
 	format = "https://docs.astral.sh/ruff/rules/$1",
 })
 table.insert(config.hyperlink_rules, {
-	regex = [[🔗🐍 \[(\w+)\]] .. "]",
-	format = "https://docs.astral.sh/ruff/rules/$1",
-})
-table.insert(config.hyperlink_rules, {
-	regex = [[🔗basedpyright]],
+	regex = [[🔗🐍b]],
 	format = "https://github.com/DetachHead/basedpyright/blob/main/docs/configuration.md#type-check-diagnostics-settings",
 })
 

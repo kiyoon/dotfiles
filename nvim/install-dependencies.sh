@@ -55,6 +55,7 @@ $PIP3 install --user --break-system-packages debugpy
 
 # Csv align
 $PIP3 install --user --break-system-packages polars
+$PIP3 install --user --break-system-packages 'typer[all]'
 
 # Lint
 # $PIP3 install --user flake8

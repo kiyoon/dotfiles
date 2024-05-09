@@ -71,12 +71,22 @@ end, { desc = "tmux next window" })
 --   vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
 -- end
 
-vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!/usr/bin/python3 ~/.config/nvim/csv_align.py", {})
 vim.api.nvim_create_user_command(
-  "TsvAlign",
-  ":set nowrap | %!/usr/bin/python3 ~/.config/nvim/csv_align.py --type tsv",
+  "CsvAlign",
+  ":set nowrap | %!/usr/bin/python3 ~/.config/nvim/csv_tools.py align --filetype " .. vim.bo.filetype,
   {}
 )
+
+vim.api.nvim_create_user_command("CsvSelectAndAlign", function(opts)
+  vim.cmd(
+    [[ %!/usr/bin/python3 ~/.config/nvim/csv_tools.py select ']]
+      .. opts.fargs[1]
+      .. [[' --filetype ]]
+      .. vim.bo.filetype
+      .. [[ | /usr/bin/python3 ~/.config/nvim/csv_tools.py align --filetype ]]
+      .. vim.bo.filetype
+  )
+end, { nargs = 1 })
 
 -- Lock header row
 -- https://stackoverflow.com/questions/1773311/vim-lock-top-line-of-a-window
@@ -86,7 +96,11 @@ vim.cmd [[set scrollbind]]
 vim.cmd [[wincmd w]]
 vim.cmd [[set scrollbind]] -- synchronize lower window
 vim.cmd [[set sbo=hor]] -- synchronize horizontally
-vim.cmd [[wincmd w]]
+
+-- Run this after loading all UI
+vim.defer_fn(function()
+  vim.cmd [[wincmd w]]
+end, 0)
 
 -- H, L to move columns based on the length from the first row.
 

@@ -71,15 +71,15 @@ end, { desc = "tmux next window" })
 --   vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
 -- end
 
-vim.api.nvim_create_user_command(
-  "CsvAlign",
-  ":set nowrap | %!/usr/bin/python3 ~/.config/nvim/csv_tools.py align --filetype " .. vim.bo.filetype,
-  {}
-)
+require "kiyoon.async_run"
+
+vim.api.nvim_create_user_command("CsvAlign", function()
+  vim.cmd([[%!/usr/bin/python3 ~/.config/nvim/csv_tools.py align --filetype ]] .. vim.bo.filetype)
+end, {})
 
 vim.api.nvim_create_user_command("CsvSelectAndAlign", function(opts)
   vim.cmd(
-    [[ %!/usr/bin/python3 ~/.config/nvim/csv_tools.py select ']]
+    [[%!/usr/bin/python3 ~/.config/nvim/csv_tools.py select ']]
       .. opts.fargs[1]
       .. [[' --filetype ]]
       .. vim.bo.filetype

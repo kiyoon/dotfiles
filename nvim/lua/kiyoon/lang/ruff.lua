@@ -185,7 +185,6 @@ M.translate_ruff_message = function(code, message)
   elseif code == "E712" then
     local cond = message:match "use `if (.*):` for truth checks"
     return string.format("Evita comparaciones de igualdad a `True`; usa `if %s:` para comprobaciones de verdad", cond)
-  end
   -- 🔗🐍 [E713]	not-in-test	Test for membership should be not in	✔️ 🛠️
   -- 🔗🐍 [E714]	not-is-test	Test for object identity should be is not	✔️ 🛠️
   -- 🔗🐍 [E721]	type-comparison	Do not compare types, use isinstance()	✔️ 🛠️
@@ -532,7 +531,102 @@ M.translate_ruff_message = function(code, message)
   -- 🔗🐍 [PIE810	multiple-starts-ends-with	Call {attr} once with a tuple	✔️ 🛠️
   -- 🔗🐍 [T201	print	print found	✔️ 🛠️
   -- 🔗🐍 [T203	p-print	pprint found	✔️ 🛠️
-
+  elseif code == "PTH100" then
+    -- 🔗🐍 [PTH100]	os-path-abspath	os.path.abspath() should be replaced by Path.resolve()	✔️ 🛠️
+    return "`os.path.abspath()` debería ser reemplazado por `Path.resolve()`"
+  elseif code == "PTH101" then
+    -- 🔗🐍 [PTH101]	os-chmod	os.chmod() should be replaced by Path.chmod()	✔️ 🛠️
+    return "`os.chmod()` debería ser reemplazado por `Path.chmod()`"
+  elseif code == "PTH102" then
+    -- 🔗🐍 [PTH102]	os-mkdir	os.mkdir() should be replaced by Path.mkdir()	✔️ 🛠️
+    return "`os.mkdir()` debería ser reemplazado por `Path.mkdir()`"
+  elseif code == "PTH103" then
+    -- 🔗🐍 [PTH103]	os-makedirs	os.makedirs() should be replaced by Path.mkdir(parents=True)	✔️ 🛠️
+    return "`os.makedirs()` debería ser reemplazado por `Path.mkdir(parents=True)`"
+  elseif code == "PTH104" then
+    -- 🔗🐍 [PTH104]	os-rename	os.rename() should be replaced by Path.rename()	✔️ 🛠️
+    return "`os.rename()` debería ser reemplazado por `Path.rename()`"
+  -- 🔗🐍 [PTH105]	os-replace	os.replace() should be replaced by Path.replace()	✔️ 🛠️
+  elseif code == "PTH106" then
+    -- 🔗🐍 [PTH106]	os-rmdir	os.rmdir() should be replaced by Path.rmdir()	✔️ 🛠️
+    return "`os.rmdir()` debería ser reemplazado por `Path.rmdir()`"
+  elseif code == "PTH107" then
+    -- 🔗🐍 [PTH107]	os-remove	os.remove() should be replaced by Path.unlink()	✔️ 🛠️
+    return "`os.remove()` debería ser reemplazado por `Path.unlink()`"
+  elseif code == "PTH108" then
+    -- 🔗🐍 [PTH108]	os-unlink	os.unlink() should be replaced by Path.unlink()	✔️ 🛠️
+    return "`os.unlink()` debería ser reemplazado por `Path.unlink()`"
+  elseif code == "PTH109" then
+    -- 🔗🐍 [PTH109]	os-getcwd	os.getcwd() should be replaced by Path.cwd()	✔️ 🛠️
+    return "`os.getcwd()` debería ser reemplazado por `Path.cwd()`"
+  elseif code == "PTH110" then
+    -- 🔗🐍 [PTH110]	os-path-exists	os.path.exists() should be replaced by Path.exists()	✔️ 🛠️
+    return "`os.path.exists()` debería ser reemplazado por `Path.exists()`"
+  elseif code == "PTH111" then
+    -- 🔗🐍 [PTH111]	os-path-expanduser	os.path.expanduser() should be replaced by Path.expanduser()	✔️ 🛠️
+    return "`os.path.expanduser()` debería ser reemplazado por `Path.expanduser()`"
+  elseif code == "PTH112" then
+    -- 🔗🐍 [PTH112]	os-path-isdir	os.path.isdir() should be replaced by Path.is_dir()	✔️ 🛠️
+    return "`os.path.isdir()` debería ser reemplazado por `Path.is_dir()`"
+  elseif code == "PTH113" then
+    -- 🔗🐍 [PTH113]	os-path-isfile	os.path.isfile() should be replaced by Path.is_file()	✔️ 🛠️
+    return "`os.path.isfile()` debería ser reemplazado por `Path.is_file()`"
+  elseif code == "PTH114" then
+    -- 🔗🐍 [PTH114]	os-path-islink	os.path.islink() should be replaced by Path.is_symlink()	✔️ 🛠️
+    return "`os.path.islink()` debería ser reemplazado por `Path.is_symlink()`"
+  elseif code == "PTH115" then
+    -- 🔗🐍 [PTH115]	os-readlink	os.readlink() should be replaced by Path.readlink()	✔️ 🛠️
+    return "`os.readlink()` debería ser reemplazado por `Path.readlink()`"
+  elseif code == "PTH116" then
+    -- 🔗🐍 [PTH116]	os-stat	os.stat() should be replaced by Path.stat(), Path.owner(), or Path.group()	✔️ 🛠️
+    return "`os.stat()` debería ser reemplazado por `Path.stat()`, `Path.owner()`, o `Path.group()`"
+  elseif code == "PTH117" then
+    -- 🔗🐍 [PTH117]	os-path-isabs	os.path.isabs() should be replaced by Path.is_absolute()	✔️ 🛠️
+    return "`os.path.isabs()` debería ser reemplazado por `Path.is_absolute()`"
+  elseif code == "PTH118" then
+    -- 🔗🐍 [PTH118]	os-path-join	os.{module}.join() should be replaced by Path with / operator	✔️ 🛠️
+    return "`os.path.join()` debería ser reemplazado por `Path` con el operador `/`"
+  elseif code == "PTH119" then
+    -- 🔗🐍 [PTH119]	os-path-basename	os.path.basename() should be replaced by Path.name	✔️ 🛠️
+    return "`os.path.basename()` debería ser reemplazado por `Path.name`"
+  elseif code == "PTH120" then
+    -- 🔗🐍 [PTH120]	os-path-dirname	os.path.dirname() should be replaced by Path.parent	✔️ 🛠️
+    return "`os.path.dirname()` debería ser reemplazado por `Path.parent`"
+  elseif code == "PTH121" then
+    -- 🔗🐍 [PTH121]	os-path-samefile	os.path.samefile() should be replaced by Path.samefile()	✔️ 🛠️
+    return "`os.path.samefile()` debería ser reemplazado por `Path.samefile()`"
+  elseif code == "PTH122" then
+    -- 🔗🐍 [PTH122]	os-path-splitext	os.path.splitext() should be replaced by Path.suffix, Path.stem, and Path.parent	✔️ 🛠️
+    return "`os.path.splitext()` debería ser reemplazado por `Path.suffix`, `Path.stem`, y `Path.parent`"
+  elseif code == "PTH123" then
+    -- 🔗🐍 [PTH123]	builtin-open	open() should be replaced by Path.open()	✔️ 🛠️
+    return "`open()` debería ser reemplazado por `Path.open()`"
+  elseif code == "PTH124" then
+    -- 🔗🐍 [PTH124]	py-path	py.path is in maintenance mode, use pathlib instead	✔️ 🛠️
+    return "`py.path` está en modo de mantenimiento, use `pathlib` en su lugar"
+  elseif code == "PTH201" then
+    -- 🔗🐍 [PTH201]	path-constructor-current-directory	Do not pass the current directory explicitly to Path	✔️ 🛠️
+    return "No pase el directorio actual explícitamente a `Path`"
+  elseif code == "PTH202" then
+    -- 🔗🐍 [PTH202]	os-path-getsize	os.path.getsize should be replaced by Path.stat().st_size	✔️ 🛠️
+    return "`os.path.getsize` debería ser reemplazado por `Path.stat().st_size`"
+  elseif code == "PTH203" then
+    -- 🔗🐍 [PTH203]	os-path-getatime	os.path.getatime should be replaced by Path.stat().st_atime	✔️ 🛠️
+    return "`os.path.getatime` debería ser reemplazado por `Path.stat().st_atime`"
+  elseif code == "PTH204" then
+    -- 🔗🐍 [PTH204]	os-path-getmtime	os.path.getmtime should be replaced by Path.stat().st_mtime	✔️ 🛠️
+    return "`os.path.getmtime` debería ser reemplazado por `Path.stat().st_mtime`"
+  elseif code == "PTH205" then
+    -- 🔗🐍 [PTH205]	os-path-getctime	os.path.getctime should be replaced by Path.stat().st_ctime	✔️ 🛠️
+    return "`os.path.getctime` debería ser reemplazado por `Path.stat().st_ctime`"
+  elseif code == "PTH206" then
+    -- 🔗🐍 [PTH206]	os-sep-split	Replace .split(os.sep) with Path.parts	✔️ 🛠️
+    return "Reemplace `.split(os.sep)` con `Path.parts`"
+  elseif code == "PTH207" then
+    -- 🔗🐍 [PTH207]	glob	Replace {function} with Path.glob or Path.rglob	✔️ 🛠️
+    local function_name = message:match "Replace `(.*)` with"
+    return string.format("Reemplace `%s` con `Path.glob` o `Path.rglob`", function_name)
+  end
   return message
 end
 

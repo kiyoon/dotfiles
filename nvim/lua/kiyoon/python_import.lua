@@ -307,6 +307,7 @@ vim.api.nvim_create_autocmd("FileType", {
       TypeAlias = "typing",
       TypeGuard = "typing",
       override = "typing",
+      overload = "typing",
 
       setup = "setuptools",
 

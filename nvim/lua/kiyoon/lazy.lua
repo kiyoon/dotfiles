@@ -93,6 +93,29 @@ return {
     end,
     dev = jupynium_dev,
   },
+  -- {
+  --   "SUSTech-data/neopyter",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "AbaoFromCUG/websocket.nvim",
+  --   },
+  --   opts = {
+  --     -- auto define autocmd
+  --     auto_attach = true,
+  --     -- auto connect rpc service
+  --     auto_connect = true,
+  --     mode = "direct",
+  --     -- same with JupyterLab settings
+  --     remote_address = "127.0.0.1:19001",
+  --     file_pattern = { "*.ju.*" },
+  --     on_attach = function(bufnr) end,
+  --
+  --     highlight = {
+  --       enable = true,
+  --       shortsighted = true,
+  --     },
+  --   },
+  -- },
 
   --- NOTE: Coding
   -- {
@@ -728,7 +751,16 @@ return {
     "danymat/neogen",
     dependencies = "nvim-treesitter/nvim-treesitter",
     config = function()
-      require("neogen").setup { snippet_engine = "luasnip" }
+      require("neogen").setup {
+        snippet_engine = "luasnip",
+        languages = {
+          python = {
+            template = {
+              annotation_convention = "google_docstrings",
+            },
+          },
+        },
+      }
     end,
     -- Uncomment next line if you want to follow only stable versions
     -- version = "*"

@@ -63,6 +63,7 @@ cmp.setup {
   },
   sources = {
     { name = "jupynium", priority = 1000 },
+    -- { name = "neopyter", priority = 1000 },
     { name = "nvim_lsp", priority = 500 },
     { name = "luasnip", priority = 10 },
     { name = "path", priority = 9 },
@@ -104,8 +105,18 @@ cmp.setup {
         nvim_lua = "[Lua]",
         latex_symbols = "[Latex]",
         jupynium = "[Jupynium]",
+        -- neopyter = "[Neopyter]",
         emoji = "[Emoji]",
       },
+      -- symbol_map = {
+      --   -- specific complete item kind icon
+      --   -- brought from neopyter
+      --   ["Magic"] = "🪄",
+      --   ["Path"] = "📁",
+      --   ["Dict key"] = "🔑",
+      --   ["Instance"] = "󱃻",
+      --   ["Statement"] = "󱇯",
+      -- },
     },
   },
   window = {
@@ -123,3 +134,11 @@ cmp.setup {
 
 -- transparent popup
 vim.o.pumblend = 30
+
+-- brought from neopyter
+-- menu item highlight
+-- vim.api.nvim_set_hl(0, "CmpItemKindMagic", { bg = "NONE", fg = "#D4D434" })
+-- vim.api.nvim_set_hl(0, "CmpItemKindPath", { link = "CmpItemKindFolder" })
+-- vim.api.nvim_set_hl(0, "CmpItemKindDictkey", { link = "CmpItemKindKeyword" })
+-- vim.api.nvim_set_hl(0, "CmpItemKindInstance", { link = "CmpItemKindVariable" })
+-- vim.api.nvim_set_hl(0, "CmpItemKindStatement", { link = "CmpItemKindVariable" })

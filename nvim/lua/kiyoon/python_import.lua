@@ -37,7 +37,11 @@ vim.api.nvim_create_autocmd("FileType", {
       for i, line in ipairs(lines) do
         local node = vim.treesitter.get_node { pos = { i - 1, 0 } }
         if node ~= nil and (node:type() == "import_statement" or node:type() == "import_from_statement") then
-          return i
+          -- additional check whether the node is top-level.
+          -- if not, it's probably an import inside a function
+          if node:parent():type() == "module" then
+            return i
+          end
         end
       end
       return nil
@@ -51,7 +55,11 @@ vim.api.nvim_create_autocmd("FileType", {
       for i = #lines, 1, -1 do
         local node = vim.treesitter.get_node { pos = { i - 1, 0 } }
         if node ~= nil and (node:type() == "import_statement" or node:type() == "import_from_statement") then
-          return i
+          -- additional check whether the node is top-level.
+          -- if not, it's probably an import inside a function
+          if node:parent():type() == "module" then
+            return i
+          end
         end
       end
       return nil
@@ -139,7 +147,7 @@ vim.api.nvim_create_autocmd("FileType", {
       Sequence = "collections.abc",
 
       date = "datetime",
-      datetime = "datetime",
+      -- datetime = "datetime",
       timezone = "datetime",
 
       dataclass = "dataclasses",
@@ -518,7 +526,6 @@ vim.api.nvim_create_autocmd("FileType", {
       local import_statements = nil
       -- prefer to add after last import
       local line_number = find_last_python_import()
-      print(line_number)
       if line_number == nil then
         -- if no import, add to first empty line
         line_number = find_python_after_module_docstring()

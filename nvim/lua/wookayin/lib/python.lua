@@ -626,7 +626,8 @@ M.os_path_to_pathlib = function(wrap_with_path)
   -- treesitter range is 0-indexed and end-exclusive
   -- nvim_buf_set_text() also uses 0-indexed and end-exclusive indexing
   local srow, scol, erow, ecol = node:range()
-  vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, { new_text })
+  local new_text_list = vim.split(new_text, "\n")
+  vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, new_text_list)
 
   -- Restore cursor
   vim.api.nvim_win_set_cursor(winnr, cursor)

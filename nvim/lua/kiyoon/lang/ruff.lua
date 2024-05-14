@@ -529,8 +529,12 @@ M.translate_ruff_message = function(code, message)
   -- 🔗🐍 [PIE807	reimplemented-container-builtin	Prefer {container} over useless lambda	✔️ 🛠️
   -- 🔗🐍 [PIE808	unnecessary-range-start	Unnecessary start argument in range	✔️ 🛠️
   -- 🔗🐍 [PIE810	multiple-starts-ends-with	Call {attr} once with a tuple	✔️ 🛠️
-  -- 🔗🐍 [T201	print	print found	✔️ 🛠️
-  -- 🔗🐍 [T203	p-print	pprint found	✔️ 🛠️
+  elseif code == "T201" then
+    -- 🔗🐍 [T201	print	print found	✔️ 🛠️
+    return "`print` encontrado"
+  elseif code == "T203" then
+    -- 🔗🐍 [T203	p-print	pprint found	✔️ 🛠️
+    return "`pprint` encontrado"
   elseif code == "PTH100" then
     -- 🔗🐍 [PTH100]	os-path-abspath	os.path.abspath() should be replaced by Path.resolve()	✔️ 🛠️
     return "`os.path.abspath()` debería ser reemplazado por `Path.resolve()`"

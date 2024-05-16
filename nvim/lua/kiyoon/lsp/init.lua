@@ -72,6 +72,7 @@ end
 
 -- bashls needs shellcheck, but it's not a server. Thus it's available on mason but not mason-lspconfig's ensure_installed
 install_pkg_background "shellcheck"
+install_pkg_background "actionlint"
 
 require("neodev").setup {
   override = function(root_dir, library)

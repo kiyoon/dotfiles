@@ -271,6 +271,7 @@ local sources = {
   -- },
   ruff_diagnostics_filtered,
   python_tools_code_action,
+  diagnostics.actionlint,
 }
 
 if vim.fn.executable "luacheck" == 1 then

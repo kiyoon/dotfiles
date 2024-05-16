@@ -1,12 +1,15 @@
 local builtin = require "statuscol.builtin"
 
+local diagnostic_with_float = require "kiyoon.lsp.diagnostic_with_float"
+
 -- functions modified from statuscol.nvim
 --- Toggle a (conditional) DAP breakpoint.
 local function toggle_breakpoint(args)
-  local status, persistent_breakpoints_api = pcall(require, "persistent-breakpoints.api")
-  if not status then
-    return
-  end
+  -- local status, persistent_breakpoints_api = pcall(require, "persistent-breakpoints.api")
+  -- if not status then
+  --   return
+  -- end
+  local persistent_breakpoints_api = require "persistent-breakpoints.api"
   if args.mods:find "c" then
     persistent_breakpoints_api.set_conditional_breakpoint()
   else
@@ -30,17 +33,56 @@ local function lnum_click(args)
   end
 end
 
+--- Handler for clicking a Diagnostc* sign.
+local function diagnostic_click(args)
+  if args.button == "l" then
+    diagnostic_with_float.open_float() -- Open diagnostic float on left click
+  elseif args.button == "m" then
+    vim.lsp.buf.code_action() -- Open code action on middle click
+  end
+end
+
 require("statuscol").setup {
   relculright = true,
   segments = {
-    { text = { "%s" }, click = "v:lua.ScSa" },
+    -- NOTE: below will display all signs, but they get overwriiten easily by other plugins and the click handlers are not always working.
+    -- Thus I put each sign in a separate segment.
+    -- { text = { "%s" }, click = "v:lua.ScSa" },
+    {
+      sign = { namespace = { "gitsign" }, colwidth = 1, wrap = true },
+      click = "v:lua.ScSa",
+    },
+    {
+      sign = {
+        name = { "DiagnosticSign.*" },
+        colwidth = 2,
+        auto = true,
+      },
+      click = "v:lua.ScSa",
+    },
+    {
+      sign = {
+        name = { "DapBreakpoint.*" },
+        colwidth = 2,
+        auto = true,
+      },
+      click = "v:lua.ScSa",
+    },
     { text = { builtin.lnumfunc }, click = "v:lua.ScLa" },
-    { text = { " ", builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+    {
+      text = { " ", builtin.foldfunc, " " },
+      condition = { builtin.not_empty, true, builtin.not_empty },
+      click = "v:lua.ScFa",
+    },
   },
   clickhandlers = {
     Lnum = lnum_click,
     DapBreakpointRejected = toggle_breakpoint,
     DapBreakpoint = toggle_breakpoint,
     DapBreakpointCondition = toggle_breakpoint,
+    DiagnosticSignError = diagnostic_click,
+    DiagnosticSignHint = diagnostic_click,
+    DiagnosticSignInfo = diagnostic_click,
+    DiagnosticSignWarn = diagnostic_click,
   },
 }

@@ -1557,6 +1557,13 @@ return {
       "rcarriga/nvim-dap-ui",
       "theHamsta/nvim-dap-virtual-text",
     },
+    init = function()
+      vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticSignError", linehl = "", numhl = "" })
+      vim.fn.sign_define(
+        "DapBreakpointCondition",
+        { text = "", texthl = "DiagnosticSignWarn", linehl = "", numhl = "" }
+      )
+    end,
     config = function()
       require "kiyoon.dap"
     end,

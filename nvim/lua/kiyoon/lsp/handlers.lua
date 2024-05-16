@@ -8,45 +8,13 @@ local M = {}
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 local icons = require "kiyoon.icons"
 
+local diagnostic_with_float = require "kiyoon.lsp.diagnostic_with_float"
+
 if status_cmp_ok then
   M.capabilities = vim.lsp.protocol.make_client_capabilities()
   M.capabilities.textDocument.completion.completionItem.snippetSupport = true
   M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
 end
-
--- diagnostic float options used for vim.diagnostic.open_float, vim.diagnostic.goto_next, vim.diagnostic.goto_prev
--- adds URL to lint errors
-local source_to_icon = {
-  rustc = "🦀",
-  ["rust-analyzer"] = "🦀",
-  clippy = "🦀cl",
-  ruff = "🐍",
-  basedpyright = "🐍b",
-  shellcheck = "🐚",
-  tsserver = "🌐",
-}
-local float_opts = {
-  format = function(diagnostic)
-    -- if diagnostic.user_data ~= nil then
-    --   vim.print(diagnostic.user_data)
-    -- end
-    local message
-    if diagnostic.source == "clippy" then
-      -- remove "for further information visit https://rust-lang.github.io/rust-clippy/...." from the message
-      -- match line break at the end
-      message =
-        diagnostic.message:gsub("for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n", "")
-    else
-      message = diagnostic.message
-    end
-
-    if source_to_icon[diagnostic.source] ~= nil then
-      return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
-    end
-
-    return string.format("%s 🔗%s", message, diagnostic.source)
-  end,
-}
 
 M.setup = function()
   local signs = {
@@ -111,31 +79,29 @@ function M.lsp_keymaps(bufnr)
   keymap("n", "K", vim.lsp.buf.hover, opts, "LSP hover")
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
-  keymap("n", "gl", function()
-    vim.diagnostic.open_float(float_opts)
-  end, opts, "Show Diagnostics")
+  keymap("n", "gl", diagnostic_with_float.open_float, opts, "Show Diagnostics")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
   -- Use actions-preview.nvim
   -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", function()
-    vim.diagnostic.goto_next { buffer = 0, float = float_opts }
+    diagnostic_with_float.goto_next { buffer = 0 }
   end, opts)
   keymap({ "n", "x", "o", "i" }, "<A-h>", function()
-    vim.diagnostic.goto_prev { buffer = 0, float = float_opts }
+    diagnostic_with_float.goto_prev { buffer = 0 }
   end, opts)
 
   local next_warn = function()
-    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARNING }
+    diagnostic_with_float.goto_next { severity = vim.diagnostic.severity.WARNING }
   end
   local prev_warn = function()
-    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.WARNING }
+    diagnostic_with_float.goto_prev { severity = vim.diagnostic.severity.WARNING }
   end
   local next_err = function()
-    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+    diagnostic_with_float.goto_next { severity = vim.diagnostic.severity.ERROR }
   end
   local prev_err = function()
-    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+    diagnostic_with_float.goto_prev { severity = vim.diagnostic.severity.ERROR }
   end
   local status, tsrepeat = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
   if status then

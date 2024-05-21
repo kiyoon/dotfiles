@@ -76,7 +76,6 @@ function M.lsp_keymaps(bufnr)
   end
   keymap("n", "gD", vim.lsp.buf.declaration, opts, "[G]o to [D]eclaration")
   keymap("n", "gd", vim.lsp.buf.definition, opts, "[G]o to [D]efinition")
-  keymap("n", "K", vim.lsp.buf.hover, opts, "LSP hover")
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
   keymap("n", "gl", diagnostic_with_float.open_float, opts, "Show Diagnostics")

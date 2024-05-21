@@ -196,12 +196,6 @@ return {
       require("Comment").setup()
     end,
   },
-  -- {
-  --   "echasnovski/mini.comment",
-  --   config = function()
-  --     require("mini.comment").setup()
-  --   end,
-  -- },
   {
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
     event = "BufReadPost",
@@ -671,10 +665,6 @@ return {
         max_lines = 7,
       }
     end,
-  },
-  {
-    "nvim-treesitter/playground",
-    cmd = "TSPlaygroundToggle",
   },
   {
     "lukas-reineke/indent-blankline.nvim",

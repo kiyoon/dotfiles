@@ -68,11 +68,11 @@ vim.api.nvim_create_autocmd("FileType", {
     local function find_python_first_party_modules()
       -- find src/module_name in git root
 
-      local git_root = vim.fn.systemlist "git rev-parse --show-toplevel"
-      if #git_root == 0 then
+      -- local git_root = vim.fn.systemlist "git rev-parse --show-toplevel"
+      local git_root = vim.fs.root(0, ".git")
+      if git_root == nil then
         return nil
       end
-      git_root = git_root[1]
 
       local src_dir = git_root .. "/src"
       if vim.fn.isdirectory(src_dir) == 0 then
@@ -332,6 +332,7 @@ vim.api.nvim_create_autocmd("FileType", {
       Progress = "rich.progress",
       Traceback = "rich.traceback",
       Theme = "rich.theme",
+      deprecated = "deprecated",
     }
 
     local python_keywords = {

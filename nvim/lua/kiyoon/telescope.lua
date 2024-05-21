@@ -86,18 +86,12 @@ telescope.setup {
 -- This has to be loaded after telescope.setup, otherwise the keymaps don't get set
 telescope.load_extension "live_grep_args"
 
--- get git folder
-local function get_git_dir()
-  local git_dir = vim.fn.trim(vim.fn.system "git rev-parse --show-toplevel")
-  return git_dir
-end
-
 local builtin = require "telescope.builtin"
 
 M = {}
 M.live_grep_gitdir = function()
-  local git_dir = get_git_dir()
-  if git_dir == "" then
+  local git_dir = vim.fs.root(0, ".git")
+  if git_dir == nil then
     builtin.live_grep()
   else
     builtin.live_grep {

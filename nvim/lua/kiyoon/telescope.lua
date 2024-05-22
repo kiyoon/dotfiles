@@ -101,8 +101,8 @@ M.live_grep_gitdir = function()
 end
 
 M.grep_string_gitdir = function()
-  local git_dir = get_git_dir()
-  if git_dir == "" then
+  local git_dir = vim.fs.root(0, ".git")
+  if git_dir == nil then
     builtin.grep_string()
   else
     builtin.grep_string {

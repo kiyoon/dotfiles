@@ -317,6 +317,8 @@ vim.api.nvim_create_autocmd("FileType", {
       override = "typing",
       overload = "typing",
 
+      deprecated = "typing_extensions",
+
       setup = "setuptools",
 
       nn = "torch",
@@ -332,7 +334,6 @@ vim.api.nvim_create_autocmd("FileType", {
       Progress = "rich.progress",
       Traceback = "rich.traceback",
       Theme = "rich.theme",
-      deprecated = "deprecated",
     }
 
     local python_keywords = {
@@ -576,7 +577,9 @@ vim.api.nvim_create_autocmd("FileType", {
           title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
-            vim.api.nvim_buf_set_option(buf, "filetype", "python")
+            vim.api.nvim_buf_call(buf, function()
+              vim.api.nvim_cmd({ cmd = "setfiletype", args = { "python" } }, {})
+            end)
           end,
         })
       end
@@ -588,7 +591,9 @@ vim.api.nvim_create_autocmd("FileType", {
           title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
-            vim.api.nvim_buf_set_option(buf, "filetype", "python")
+            vim.api.nvim_buf_call(buf, function()
+              vim.api.nvim_cmd({ cmd = "setfiletype", args = { "python" } }, {})
+            end)
           end,
         })
       end
@@ -619,7 +624,9 @@ vim.api.nvim_create_autocmd("FileType", {
         title = "Rich traceback install added at line " .. line_number,
         on_open = function(win)
           local buf = vim.api.nvim_win_get_buf(win)
-          vim.api.nvim_buf_set_option(buf, "filetype", "python")
+          vim.api.nvim_buf_call(buf, function()
+            vim.api.nvim_cmd({ cmd = "setfiletype", args = { "python" } }, {})
+          end)
         end,
       })
     end, { silent = true, desc = "Add rich traceback install" })

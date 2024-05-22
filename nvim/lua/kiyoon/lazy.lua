@@ -945,9 +945,15 @@ return {
     ---@type Flash.Config
     opts = {
       modes = {
+        -- sometimes search results may not exist in a file.
+        -- but flash search will accidentally match something else.
+        -- e.g. I want to search for "enabled" but it matches "english"
+        -- because "en" is in "english" and when you type a it matches the first one.
+        -- so I disable search mode.
         search = {
           enabled = false,
         },
+        -- Use nvim-treesitter-textobjects' repetable_move instead.
         char = {
           enabled = false,
         },

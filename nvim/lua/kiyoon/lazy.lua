@@ -589,7 +589,9 @@ return {
     end,
     dependencies = {
       {
-        "nvim-treesitter/nvim-treesitter-textobjects",
+        -- "nvim-treesitter/nvim-treesitter-textobjects",
+        "kiyoon/nvim-treesitter-textobjects",
+        branch = "fix/builtin_find",
         dev = nvim_treesitter_textobjects_dev,
       },
       "RRethy/nvim-treesitter-endwise",
@@ -936,6 +938,7 @@ return {
   --     { "M", "m", noremap = true, desc = "[M]ark" },
   --   },
   -- },
+
   {
     "folke/flash.nvim",
     event = "VeryLazy",
@@ -943,6 +946,9 @@ return {
     opts = {
       modes = {
         search = {
+          enabled = false,
+        },
+        char = {
           enabled = false,
         },
       },
@@ -956,6 +962,7 @@ return {
       { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
   },
+
   -- {
   --   "ggandor/leap.nvim",
   --   keys = {

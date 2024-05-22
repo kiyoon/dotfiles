@@ -336,11 +336,15 @@ vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
 -- vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
 
 -- Make builtin f, F, t, T also repeatable with ; and ,
--- Disabled in favour of ggandor/flit.nvim
+-- Disabled in favour of folke/flash.nvim
 -- vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f)
 -- vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F)
 -- vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t)
 -- vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T)
+vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
+vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F_expr, { expr = true })
+vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
+vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
 
 -- This repeats the last query with always previous direction and to the start of the range.
 vim.keymap.set({ "n", "x", "o" }, "<home>", function()

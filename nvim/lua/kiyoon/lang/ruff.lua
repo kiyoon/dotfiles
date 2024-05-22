@@ -185,14 +185,33 @@ M.translate_ruff_message = function(code, message)
   elseif code == "E712" then
     local cond = message:match "use `if (.*):` for truth checks"
     return string.format("Evita comparaciones de igualdad a `True`; usa `if %s:` para comprobaciones de verdad", cond)
-  -- 🔗🐍 [E713]	not-in-test	Test for membership should be not in	✔️ 🛠️
-  -- 🔗🐍 [E714]	not-is-test	Test for object identity should be is not	✔️ 🛠️
-  -- 🔗🐍 [E721]	type-comparison	Do not compare types, use isinstance()	✔️ 🛠️
-  -- 🔗🐍 [E722]	bare-except	Do not use bare except	✔️ 🛠️
-  -- 🔗🐍 [E731]	lambda-assignment	Do not assign a lambda expression, use a def	✔️ 🛠️
-  -- 🔗🐍 [E741]	ambiguous-variable-name	Ambiguous variable name: {name}	✔️ 🛠️
-  -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️
-  -- 🔗🐍 [E743]	ambiguous-function-name	Ambiguous function name: {name}	✔️ 🛠️
+  elseif code == "E713" then
+    -- 🔗🐍 [E713]	not-in-test	Test for membership should be not in	✔️ 🛠️
+    return "Prueba de membresía debería ser `not in`"
+  elseif code == "E714" then
+    -- 🔗🐍 [E714]	not-is-test	Test for object identity should be is not	✔️ 🛠️
+    return "Prueba de identidad de objeto debería ser `is not`"
+  elseif code == "E721" then
+    -- 🔗🐍 [E721]	type-comparison	Do not compare types, use isinstance()	✔️ 🛠️
+    return "No compares tipos, usa `isinstance()`"
+  elseif code == "E722" then
+    -- 🔗🐍 [E722]	bare-except	Do not use bare except	✔️ 🛠️
+    return "No uses `except` sin especificar la excepción"
+  elseif code == "E731" then
+    -- 🔗🐍 [E731]	lambda-assignment	Do not assign a lambda expression, use a def	✔️ 🛠️
+    return "No asignes una expresión lambda, usa un `def`"
+  elseif code == "E741" then
+    -- 🔗🐍 [E741]	ambiguous-variable-name	Ambiguous variable name: {name}	✔️ 🛠️
+    local name = message:match "Ambiguous variable name: (.*)"
+    return string.format("Nombre de variable ambiguo: %s", name)
+  elseif code == "E742" then
+    -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️
+    local name = message:match "Ambiguous class name: (.*)"
+    return string.format("Nombre de clase ambiguo: %s", name)
+  elseif code == "E743" then
+    -- 🔗🐍 [E743]	ambiguous-function-name	Ambiguous function name: {name}	✔️ 🛠️
+    local name = message:match "Ambiguous function name: (.*)"
+    return string.format("Nombre de función ambiguo: %s", name)
   -- 🔗🐍 [E902]	io-error	{message}	✔️ 🛠️
   -- 🔗🐍 [E999]	syntax-error	SyntaxError: {message}
 

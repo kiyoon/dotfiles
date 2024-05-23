@@ -577,9 +577,7 @@ vim.api.nvim_create_autocmd("FileType", {
           title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
-            vim.api.nvim_buf_call(buf, function()
-              vim.api.nvim_cmd({ cmd = "setfiletype", args = { "python" } }, {})
-            end)
+            vim.bo[buf].filetype = "python"
           end,
         })
       end
@@ -591,9 +589,7 @@ vim.api.nvim_create_autocmd("FileType", {
           title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
-            vim.api.nvim_buf_call(buf, function()
-              vim.api.nvim_cmd({ cmd = "setfiletype", args = { "python" } }, {})
-            end)
+            vim.bo[buf].filetype = "python"
           end,
         })
       end
@@ -602,7 +598,8 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set({ "n" }, "<space>tr", function()
       local statements = { "import rich.traceback", "", "rich.traceback.install(show_locals=True)", "" }
 
-      local line_number = find_first_python_import()
+      local line_number = find_first_python_import() ---@type integer | nil
+
       if line_number == nil then
         line_number = find_python_after_module_docstring()
         if line_number == nil then
@@ -624,9 +621,7 @@ vim.api.nvim_create_autocmd("FileType", {
         title = "Rich traceback install added at line " .. line_number,
         on_open = function(win)
           local buf = vim.api.nvim_win_get_buf(win)
-          vim.api.nvim_buf_call(buf, function()
-            vim.api.nvim_cmd({ cmd = "setfiletype", args = { "python" } }, {})
-          end)
+          vim.bo[buf].filetype = "python"
         end,
       })
     end, { silent = true, desc = "Add rich traceback install" })

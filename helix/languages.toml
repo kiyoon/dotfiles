@@ -1,21 +1,20 @@
-[language-server.pyright]
-command = "pyright-langserver"
+[language-server.basedpyright]
+command = "basedpyright-langserver"
 args = ["--stdio"]
-config = { settings = { python = { analysis = { autoImportCompletions = true, typeCheckingMode = "off", autoSearchPaths = true, useLibraryCodeForTypes = true, diagnosticMode = "openFilesOnly" } } } }
+config = { settings = { basedpyright = { analysis = { autoImportCompletions = true, typeCheckingMode = "standard", autoSearchPaths = true, useLibraryCodeForTypes = true, diagnosticMode = "openFilesOnly" } } } }
 
-[language-server.ruff-lsp]
-command = "ruff-lsp"
+[language-server.ruff]
+command = "ruff"
+args = ["server", "--preview"]
 
-[language-server.ruff-lsp.config]
-documentFormatting = true 
-settings.run = "onSave"
+# [language-server.ruff.config.settings.lint]
+# select = ["ALL"]
 
 [[language]]
 name = "python"
 scope = "source.python"
 injection-regex = "python"
 auto-format = true
-# formatter = { command = "black", args = ["-", "-q"] }
 file-types = [
   "py",
   "pyi",
@@ -36,7 +35,8 @@ roots = [
 ]
 comment-token = "#"
 language-servers = [
-  { name = "ruff-lsp", only-features = [ "format", "diagnostics" ] },
-  { name = "pyright", except-features = [ "format" ] },
+  # { name = "ruff", only-features = [ "format", "diagnostics", "code-action" ] },
+  { name = "ruff" },
+  { name = "basedpyright", except-features = [ "format" ] },
 ]
 indent = { tab-width = 4, unit = "    " }

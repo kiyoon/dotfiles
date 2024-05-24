@@ -4,6 +4,10 @@ theme = "dracula"
 line-number = "relative"
 true-color = true
 
+[editor.lsp]
+display-inlay-hints = true
+display-messages = true
+
 [editor.cursor-shape]
 insert = "bar"
 normal = "block"

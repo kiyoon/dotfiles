@@ -326,7 +326,7 @@ vim.api.nvim_create_autocmd("FileType", {
       ImageDraw = "PIL",
       ImageFont = "PIL",
       ImageOps = "PIL",
-      tqdm = "tqdm",
+      tqdm = "tqdm.auto",
       EasyDict = "easydict",
       stringify_unsupported = "neptune.utils",
       Console = "rich.console",

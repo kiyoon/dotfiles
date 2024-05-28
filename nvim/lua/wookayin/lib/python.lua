@@ -439,9 +439,38 @@ M.os_path_to_pathlib = function(wrap_with_path)
   end
 
   if not node then
-    vim.notify("Not in a call node.", "error", {
-      title = "os.path to pathlib.Path",
-    })
+    -- Not a call node.
+    -- Alternatively, check if the current node is a variable.
+    -- Find attribute node (e.g. self.var)
+    -- If not found use the current node (identifier, string).
+    node = vim.treesitter.get_node()
+    while (node ~= nil) and node:type() ~= "attribute" do
+      node = node:parent()
+    end
+
+    if not node then
+      node = vim.treesitter.get_node()
+      if node == nil or not vim.list_contains({ "identifier", "string" }, node:type()) then
+        vim.print(node:type())
+        vim.notify("Not in a call node, nor is a variable.", "error", {
+          title = "os.path to pathlib.Path",
+        })
+        return
+      end
+    end
+
+    -- Wrap the variable with Path() if it's a string or a variable.
+    local text = get_text(node)
+    local new_text = "Path(" .. text .. ")"
+    -- treesitter range is 0-indexed and end-exclusive
+    -- nvim_buf_set_text() also uses 0-indexed and end-exclusive indexing
+    local srow, scol, erow, ecol = node:range()
+    local new_text_list = vim.split(new_text, "\n")
+    vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, new_text_list)
+
+    -- Restore cursor
+    vim.api.nvim_win_set_cursor(winnr, cursor)
+
     return
   end
 

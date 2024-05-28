@@ -437,7 +437,10 @@ M.translate_ruff_message = function(code, message)
   -- 🔗🐍 [B004	unreliable-callable-check	Using hasattr(x, "__call__") to test if x is callable is unreliable. Use callable(x) for consistent results.	✔️ 🛠️
   -- 🔗🐍 [B005	strip-with-multi-characters	Using .strip() with multi-character strings is misleading	✔️ 🛠️
   -- 🔗🐍 [B006	mutable-argument-default	Do not use mutable data structures for argument defaults	✔️ 🛠️
-  -- 🔗🐍 [B007	unused-loop-control-variable	Loop control variable {name} not used within loop body	✔️ 🛠️
+  elseif code == "B007" then
+    -- 🔗🐍 [B007]	unused-loop-control-variable	Loop control variable {name} not used within loop body	✔️ 🛠️
+    local name = message:match "Loop control variable ([^']+) not used within loop body"
+    return string.format("El variable de control del bucle %s no se usa dentro del cuerpo del bucle", name)
   -- 🔗🐍 [B008	function-call-in-default-argument	Do not perform function call {name} in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable	✔️ 🛠️
   -- 🔗🐍 [B009	get-attr-with-constant	Do not call getattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️
   -- 🔗🐍 [B010	set-attr-with-constant	Do not call setattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️

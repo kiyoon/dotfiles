@@ -48,13 +48,22 @@ require("statuscol").setup {
     -- NOTE: below will display all signs, but they get overwriiten easily by other plugins and the click handlers are not always working.
     -- Thus I put each sign in a separate segment.
     -- { text = { "%s" }, click = "v:lua.ScSa" },
+
     {
-      sign = { namespace = { "gitsign" }, colwidth = 1, wrap = true },
+      sign = {
+        namespace = { "gitsign" },
+        colwidth = 1,
+        wrap = true,
+      },
       click = "v:lua.ScSa",
     },
     {
+      -- :lua vim.print(vim.diagnostic.get_namespaces())
+      -- I guess it wouldn't display gitsigns again even if I match all namespaces
       sign = {
-        name = { "DiagnosticSign.*" },
+        namespace = { "vim.lsp..*", "NULL_LS_.*", "todo.*" },
+        -- "dap.*",
+        -- namespace = { ".*" },
         colwidth = 2,
         auto = true,
       },
@@ -62,7 +71,16 @@ require("statuscol").setup {
     },
     {
       sign = {
-        name = { "DapBreakpoint.*" },
+        text = { "💡" },
+        colwidth = 2,
+        auto = true,
+      },
+      click = "v:lua.ScSa",
+    },
+    {
+      sign = {
+        -- name = { "DapBreakpoint.*" },
+        namespace = { "dap.*" },
         colwidth = 2,
         auto = true,
       },

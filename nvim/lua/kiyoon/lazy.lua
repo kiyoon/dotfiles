@@ -1492,7 +1492,7 @@ return {
     event = "BufRead",
     config = function()
       require("nvim-lightbulb").setup {
-        priority = 20, -- higher than LSP diagnostics
+        priority = 50, -- higher than LSP diagnostics
         sign = {
           enabled = true,
         },

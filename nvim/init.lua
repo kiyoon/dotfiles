@@ -215,5 +215,5 @@ end
 
 -- sql formatter for selection
 vim.keymap.set("x", "<space>pF", function()
-  vim.cmd [['<,'>!sql-formatter -l mariadb -c '{ "keywordCase": "upper" }']]
-end)
+  vim.cmd [['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']]
+end, { desc = "Run sql-formatter in selection" })

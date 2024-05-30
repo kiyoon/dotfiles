@@ -42,6 +42,14 @@ local function diagnostic_click(args)
   end
 end
 
+--- Handler for clicking the light bulb sign.
+local function lightbulb_click(args)
+  if args.button == "l" then
+    -- vim.lsp.buf.code_action()
+    require("actions-preview").code_actions()
+  end
+end
+
 require("statuscol").setup {
   relculright = true,
   segments = {
@@ -102,5 +110,6 @@ require("statuscol").setup {
     DiagnosticSignHint = diagnostic_click,
     DiagnosticSignInfo = diagnostic_click,
     DiagnosticSignWarn = diagnostic_click,
+    LightBulbSign = lightbulb_click,
   },
 }

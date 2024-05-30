@@ -212,3 +212,8 @@ if vim.fn.has "macunix" == 1 then
 elseif vim.fn.has "unix" == 1 then
   vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
 end
+
+-- sql formatter for selection
+vim.keymap.set("x", "<space>pF", function()
+  vim.cmd [['<,'>!sql-formatter -l mariadb -c '{ "keywordCase": "upper" }']]
+end)

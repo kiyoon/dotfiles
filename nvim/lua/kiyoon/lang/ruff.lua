@@ -249,86 +249,151 @@ M.translate_ruff_message = function(code, message)
   -- 🔗🐍 [D105]	undocumented-magic-method	Missing docstring in magic method	✔️ 🛠️
   -- 🔗🐍 [D106]	undocumented-public-nested-class	Missing docstring in public nested class	✔️ 🛠️
   -- 🔗🐍 [D107]	undocumented-public-init	Missing docstring in __init__	✔️ 🛠️
+  -- 🔗🐍 [D200]	fits-on-one-line	One-line docstring should fit on one line	✔️ 🛠️
   elseif code == "D200" then
-    -- 🔗🐍 [D200]	fits-on-one-line	One-line docstring should fit on one line	✔️ 🛠️
     return "Docstring de una línea debería caber en una línea"
+  -- 🔗🐍 [D201]	no-blank-line-before-function	No blank lines allowed before function docstring (found {num_lines})	✔️ 🛠️
   elseif code == "D201" then
-    -- 🔗🐍 [D201]	no-blank-line-before-function	No blank lines allowed before function docstring (found {num_lines})	✔️ 🛠️
     local num_lines = message:match "No blank lines allowed before function docstring %(found ([0-9]+)%)"
     return string.format(
       "No se permiten líneas en blanco antes de la docstring de la función (encontrado %s)",
       num_lines
     )
+  -- 🔗🐍 [D202]	no-blank-line-after-function	No blank lines allowed after function docstring (found {num_lines})	✔️ 🛠️
   elseif code == "D202" then
-    -- 🔗🐍 [D202]	no-blank-line-after-function	No blank lines allowed after function docstring (found {num_lines})	✔️ 🛠️
     local num_lines = message:match "No blank lines allowed after function docstring %(found ([0-9]+)%)"
     return string.format(
       "No se permiten líneas en blanco después de la docstring de la función (encontrado %s)",
       num_lines
     )
+  -- 🔗🐍 [D203]	one-blank-line-before-class	1 blank line required before class docstring	✔️ 🛠️
   elseif code == "D203" then
-    -- 🔗🐍 [D203]	one-blank-line-before-class	1 blank line required before class docstring	✔️ 🛠️
     return "Se requiere 1 línea en blanco antes de la docstring de la clase"
+  -- 🔗🐍 [D204]	one-blank-line-after-class	1 blank line required after class docstring	✔️ 🛠️
   elseif code == "D204" then
-    -- 🔗🐍 [D204]	one-blank-line-after-class	1 blank line required after class docstring	✔️ 🛠️
     return "Se requiere 1 línea en blanco después de la docstring de la clase"
+  -- 🔗🐍 [D205]	blank-line-after-summary	1 blank line required between summary line and description	✔️ 🛠️
   elseif code == "D205" then
-    -- 🔗🐍 [D205]	blank-line-after-summary	1 blank line required between summary line and description	✔️ 🛠️
     return "Se requiere 1 línea en blanco entre la línea de resumen y la descripción"
+  -- 🔗🐍 [D206]	indent-with-spaces	Docstring should be indented with spaces, not tabs	✔️ 🛠️
   elseif code == "D206" then
-    -- 🔗🐍 [D206]	indent-with-spaces	Docstring should be indented with spaces, not tabs	✔️ 🛠️
     return "La docstring debería estar indentada con espacios, no con tabulaciones"
+  -- 🔗🐍 [D207]	under-indentation	Docstring is under-indented	✔️ 🛠️
   elseif code == "D207" then
-    -- 🔗🐍 [D207]	under-indentation	Docstring is under-indented	✔️ 🛠️
     return "Docstring está sub-indentada"
+  -- 🔗🐍 [D208]	over-indentation	Docstring is over-indented	✔️ 🛠️
   elseif code == "D208" then
-    -- 🔗🐍 [D208]	over-indentation	Docstring is over-indented	✔️ 🛠️
     return "Docstring está sobre-indentada"
+  -- 🔗🐍 [D209]	new-line-after-last-paragraph	Multi-line docstring closing quotes should be on a separate line	✔️ 🛠️
   elseif code == "D209" then
-    -- 🔗🐍 [D209]	new-line-after-last-paragraph	Multi-line docstring closing quotes should be on a separate line	✔️ 🛠️
     return "Las comillas de cierre de la docstring de varias líneas deberían estar en una línea separada"
+  -- 🔗🐍 [D210]	surrounding-whitespace	No whitespaces allowed surrounding docstring text	✔️ 🛠️
   elseif code == "D210" then
-    -- 🔗🐍 [D210]	surrounding-whitespace	No whitespaces allowed surrounding docstring text	✔️ 🛠️
     return "No se permiten espacios en blanco alrededor del texto de la docstring"
+  -- 🔗🐍 [D211]	blank-line-before-class	No blank lines allowed before class docstring	✔️ 🛠️
   elseif code == "D211" then
-    -- 🔗🐍 [D211]	blank-line-before-class	No blank lines allowed before class docstring	✔️ 🛠️
     return "No se permiten líneas en blanco antes de la docstring de la clase"
+  -- 🔗🐍 [D212]	multi-line-summary-first-line	Multi-line docstring summary should start at the first line	✔️ 🛠️
   elseif code == "D212" then
-    -- 🔗🐍 [D212]	multi-line-summary-first-line	Multi-line docstring summary should start at the first line	✔️ 🛠️
     return "El resumen de la docstring de varias líneas debería empezar en la primera línea"
+  -- 🔗🐍 [D213]	multi-line-summary-second-line	Multi-line docstring summary should start at the second line	✔️ 🛠️
   elseif code == "D213" then
-    -- 🔗🐍 [D213]	multi-line-summary-second-line	Multi-line docstring summary should start at the second line	✔️ 🛠️
     return "El resumen de la docstring de varias líneas debería empezar en la segunda línea"
+  -- 🔗🐍 [D214]	section-not-over-indented	Section is over-indented ("{name}")	✔️ 🛠️
   elseif code == "D214" then
-    -- 🔗🐍 [D214]	section-not-over-indented	Section is over-indented ("{name}")	✔️ 🛠️
     local name = message:match 'Section is over-indented %("(.*)"%)'
     return string.format("La sección está sobre-indentada (%s)", name)
+  -- 🔗🐍 [D215]	section-underline-not-over-indented	Section underline is over-indented ("{name}")	✔️ 🛠️
   elseif code == "D215" then
-    -- 🔗🐍 [D215]	section-underline-not-over-indented	Section underline is over-indented ("{name}")	✔️ 🛠️
     local name = message:match 'Section underline is over-indented %("(.*)"%)'
     return string.format("La subrayado de la sección está sobre-indentado (%s)", name)
   -- 🔗🐍 [D300]	triple-single-quotes	Use triple double quotes """	✔️ 🛠️
+  elseif code == "D300" then
+    return 'Usa comillas triples dobles `"""`'
   -- 🔗🐍 [D301]	escape-sequence-in-docstring	Use r""" if any backslashes in a docstring	✔️ 🛠️
+  elseif code == "D301" then
+    return 'Usa `r"""` si hay barras invertidas en una docstring'
   -- 🔗🐍 [D400]	ends-in-period	First line should end with a period	✔️ 🛠️
+  elseif code == "D400" then
+    return "La primera línea debería terminar con un punto"
   -- 🔗🐍 [D401]	non-imperative-mood	First line of docstring should be in imperative mood: "{first_line}"	✔️ 🛠️
+  elseif code == "D401" then
+    local first_line = message:match 'First line of docstring should be in imperative mood: "(.*)"'
+    return string.format('La primera línea de la docstring debería estar en modo imperativo: "%s"', first_line)
   -- 🔗🐍 [D402]	no-signature	First line should not be the function's signature	✔️ 🛠️
+  elseif code == "D402" then
+    return "La primera línea no debería ser la firma de la función"
   -- 🔗🐍 [D403]	first-line-capitalized	First word of the first line should be capitalized: {} -> {}	✔️ 🛠️
+  elseif code == "D403" then
+    local first_word, capitalized = message:match "First word of the first line should be capitalized: (.*) -> (.*)"
+    return string.format(
+      "La primera palabra de la primera línea debería estar capitalizada: %s -> %s",
+      first_word,
+      capitalized
+    )
   -- 🔗🐍 [D404]	docstring-starts-with-this	First word of the docstring should not be "This"	✔️ 🛠️
+  elseif code == "D404" then
+    return 'La primera palabra de la docstring no debería ser "This"'
   -- 🔗🐍 [D405]	capitalize-section-name	Section name should be properly capitalized ("{name}")	✔️ 🛠️
+  elseif code == "D405" then
+    local name = message:match 'Section name should be properly capitalized %("(.*)"%)'
+    return string.format("El nombre de la sección debería estar capitalizado correctamente (%s)", name)
   -- 🔗🐍 [D406]	new-line-after-section-name	Section name should end with a newline ("{name}")	✔️ 🛠️
+  elseif code == "D406" then
+    local name = message:match 'Section name should end with a newline %("(.*)"%)'
+    return string.format("El nombre de la sección debería terminar con una nueva línea (%s)", name)
   -- 🔗🐍 [D407]	dashed-underline-after-section	Missing dashed underline after section ("{name}")	✔️ 🛠️
+  elseif code == "D407" then
+    local name = message:match 'Missing dashed underline after section %("(.*)"%)'
+    return string.format("Falta subrayado punteado después de la sección (%s)", name)
   -- 🔗🐍 [D408]	section-underline-after-name	Section underline should be in the line following the section's name ("{name}")	✔️ 🛠️
+  elseif code == "D408" then
+    local name = message:match 'Section underline should be in the line following the section\'s name %("(.*)"%)'
+    return string.format(
+      "El subrayado de la sección debería estar en la línea siguiente al nombre de la sección (%s)",
+      name
+    )
   -- 🔗🐍 [D409]	section-underline-matches-section-length	Section underline should match the length of its name ("{name}")	✔️ 🛠️
+  elseif code == "D409" then
+    local name = message:match 'Section underline should match the length of its name %("(.*)"%)'
+    return string.format("El subrayado de la sección debería coincidir con la longitud de su nombre (%s)", name)
   -- 🔗🐍 [D410]	no-blank-line-after-section	Missing blank line after section ("{name}")	✔️ 🛠️
+  elseif code == "D410" then
+    local name = message:match 'Missing blank line after section %("(.*)"%)'
+    return string.format("Falta línea en blanco después de la sección (%s)", name)
   -- 🔗🐍 [D411]	no-blank-line-before-section	Missing blank line before section ("{name}")	✔️ 🛠️
+  elseif code == "D411" then
+    local name = message:match 'Missing blank line before section %("(.*)"%)'
+    return string.format("Falta línea en blanco antes de la sección (%s)", name)
   -- 🔗🐍 [D412]	blank-lines-between-header-and-content	No blank lines allowed between a section header and its content ("{name}")	✔️ 🛠️
+  elseif code == "D412" then
+    local name = message:match 'No blank lines allowed between a section header and its content %("(.*)"%)'
+    return string.format("No se permiten líneas en blanco entre un encabezado de sección y su contenido (%s)", name)
   -- 🔗🐍 [D413]	blank-line-after-last-section	Missing blank line after last section ("{name}")	✔️ 🛠️
+  elseif code == "D413" then
+    local name = message:match 'Missing blank line after last section %("(.*)"%)'
+    return string.format("Falta línea en blanco después de la última sección (%s)", name)
   -- 🔗🐍 [D414]	empty-docstring-section	Section has no content ("{name}")	✔️ 🛠️
+  elseif code == "D414" then
+    local name = message:match 'Section has no content %("(.*)"%)'
+    return string.format("La sección no tiene contenido (%s)", name)
   -- 🔗🐍 [D415]	ends-in-punctuation	First line should end with a period, question mark, or exclamation point	✔️ 🛠️
+  elseif code == "D415" then
+    return "La primera línea debería terminar con un punto, signo de interrogación o signo de exclamación"
   -- 🔗🐍 [D416]	section-name-ends-in-colon	Section name should end with a colon ("{name}")	✔️ 🛠️
+  elseif code == "D416" then
+    local name = message:match 'Section name should end with a colon %("(.*)"%)'
+    return string.format("El nombre de la sección debería terminar con dos puntos (%s)", name)
   -- 🔗🐍 [D417]	undocumented-param	Missing argument description in the docstring for {definition}: {name}	✔️ 🛠️
+  elseif code == "D417" then
+    local definition, name = message:match "Missing argument description in the docstring for ([^:]+): (.*)"
+    return string.format("Descripción de argumento faltante en la docstring para %s: %s", definition, name)
   -- 🔗🐍 [D418]	overload-with-docstring	Function decorated with @overload shouldn't contain a docstring	✔️ 🛠️
+  elseif code == "D418" then
+    return "La función decorada con @overload no debería contener una docstring"
   -- 🔗🐍 [D419]	empty-docstring	Docstring is empty	✔️ 🛠️
+  elseif code == "D419" then
+    return "Docstring está vacía"
   -- 🔗🐍 [UP001	useless-metaclass-type	__metaclass__ = type is implied	✔️ 🛠️
   -- 🔗🐍 [UP003	type-of-primitive	Use {} instead of type(...)	✔️ 🛠️
   -- 🔗🐍 [UP004	useless-object-inheritance	Class {name} inherits from object	✔️ 🛠️

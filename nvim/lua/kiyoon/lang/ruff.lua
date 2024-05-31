@@ -249,22 +249,64 @@ M.translate_ruff_message = function(code, message)
   -- 🔗🐍 [D105]	undocumented-magic-method	Missing docstring in magic method	✔️ 🛠️
   -- 🔗🐍 [D106]	undocumented-public-nested-class	Missing docstring in public nested class	✔️ 🛠️
   -- 🔗🐍 [D107]	undocumented-public-init	Missing docstring in __init__	✔️ 🛠️
-  -- 🔗🐍 [D200]	fits-on-one-line	One-line docstring should fit on one line	✔️ 🛠️
-  -- 🔗🐍 [D201]	no-blank-line-before-function	No blank lines allowed before function docstring (found {num_lines})	✔️ 🛠️
-  -- 🔗🐍 [D202]	no-blank-line-after-function	No blank lines allowed after function docstring (found {num_lines})	✔️ 🛠️
-  -- 🔗🐍 [D203]	one-blank-line-before-class	1 blank line required before class docstring	✔️ 🛠️
-  -- 🔗🐍 [D204]	one-blank-line-after-class	1 blank line required after class docstring	✔️ 🛠️
-  -- 🔗🐍 [D205]	blank-line-after-summary	1 blank line required between summary line and description	✔️ 🛠️
-  -- 🔗🐍 [D206]	indent-with-spaces	Docstring should be indented with spaces, not tabs	✔️ 🛠️
-  -- 🔗🐍 [D207]	under-indentation	Docstring is under-indented	✔️ 🛠️
-  -- 🔗🐍 [D208]	over-indentation	Docstring is over-indented	✔️ 🛠️
-  -- 🔗🐍 [D209]	new-line-after-last-paragraph	Multi-line docstring closing quotes should be on a separate line	✔️ 🛠️
-  -- 🔗🐍 [D210]	surrounding-whitespace	No whitespaces allowed surrounding docstring text	✔️ 🛠️
-  -- 🔗🐍 [D211]	blank-line-before-class	No blank lines allowed before class docstring	✔️ 🛠️
-  -- 🔗🐍 [D212]	multi-line-summary-first-line	Multi-line docstring summary should start at the first line	✔️ 🛠️
-  -- 🔗🐍 [D213]	multi-line-summary-second-line	Multi-line docstring summary should start at the second line	✔️ 🛠️
-  -- 🔗🐍 [D214]	section-not-over-indented	Section is over-indented ("{name}")	✔️ 🛠️
-  -- 🔗🐍 [D215]	section-underline-not-over-indented	Section underline is over-indented ("{name}")	✔️ 🛠️
+  elseif code == "D200" then
+    -- 🔗🐍 [D200]	fits-on-one-line	One-line docstring should fit on one line	✔️ 🛠️
+    return "Docstring de una línea debería caber en una línea"
+  elseif code == "D201" then
+    -- 🔗🐍 [D201]	no-blank-line-before-function	No blank lines allowed before function docstring (found {num_lines})	✔️ 🛠️
+    local num_lines = message:match "No blank lines allowed before function docstring %(found ([0-9]+)%)"
+    return string.format(
+      "No se permiten líneas en blanco antes de la docstring de la función (encontrado %s)",
+      num_lines
+    )
+  elseif code == "D202" then
+    -- 🔗🐍 [D202]	no-blank-line-after-function	No blank lines allowed after function docstring (found {num_lines})	✔️ 🛠️
+    local num_lines = message:match "No blank lines allowed after function docstring %(found ([0-9]+)%)"
+    return string.format(
+      "No se permiten líneas en blanco después de la docstring de la función (encontrado %s)",
+      num_lines
+    )
+  elseif code == "D203" then
+    -- 🔗🐍 [D203]	one-blank-line-before-class	1 blank line required before class docstring	✔️ 🛠️
+    return "Se requiere 1 línea en blanco antes de la docstring de la clase"
+  elseif code == "D204" then
+    -- 🔗🐍 [D204]	one-blank-line-after-class	1 blank line required after class docstring	✔️ 🛠️
+    return "Se requiere 1 línea en blanco después de la docstring de la clase"
+  elseif code == "D205" then
+    -- 🔗🐍 [D205]	blank-line-after-summary	1 blank line required between summary line and description	✔️ 🛠️
+    return "Se requiere 1 línea en blanco entre la línea de resumen y la descripción"
+  elseif code == "D206" then
+    -- 🔗🐍 [D206]	indent-with-spaces	Docstring should be indented with spaces, not tabs	✔️ 🛠️
+    return "La docstring debería estar indentada con espacios, no con tabulaciones"
+  elseif code == "D207" then
+    -- 🔗🐍 [D207]	under-indentation	Docstring is under-indented	✔️ 🛠️
+    return "Docstring está sub-indentada"
+  elseif code == "D208" then
+    -- 🔗🐍 [D208]	over-indentation	Docstring is over-indented	✔️ 🛠️
+    return "Docstring está sobre-indentada"
+  elseif code == "D209" then
+    -- 🔗🐍 [D209]	new-line-after-last-paragraph	Multi-line docstring closing quotes should be on a separate line	✔️ 🛠️
+    return "Las comillas de cierre de la docstring de varias líneas deberían estar en una línea separada"
+  elseif code == "D210" then
+    -- 🔗🐍 [D210]	surrounding-whitespace	No whitespaces allowed surrounding docstring text	✔️ 🛠️
+    return "No se permiten espacios en blanco alrededor del texto de la docstring"
+  elseif code == "D211" then
+    -- 🔗🐍 [D211]	blank-line-before-class	No blank lines allowed before class docstring	✔️ 🛠️
+    return "No se permiten líneas en blanco antes de la docstring de la clase"
+  elseif code == "D212" then
+    -- 🔗🐍 [D212]	multi-line-summary-first-line	Multi-line docstring summary should start at the first line	✔️ 🛠️
+    return "El resumen de la docstring de varias líneas debería empezar en la primera línea"
+  elseif code == "D213" then
+    -- 🔗🐍 [D213]	multi-line-summary-second-line	Multi-line docstring summary should start at the second line	✔️ 🛠️
+    return "El resumen de la docstring de varias líneas debería empezar en la segunda línea"
+  elseif code == "D214" then
+    -- 🔗🐍 [D214]	section-not-over-indented	Section is over-indented ("{name}")	✔️ 🛠️
+    local name = message:match 'Section is over-indented %("(.*)"%)'
+    return string.format("La sección está sobre-indentada (%s)", name)
+  elseif code == "D215" then
+    -- 🔗🐍 [D215]	section-underline-not-over-indented	Section underline is over-indented ("{name}")	✔️ 🛠️
+    local name = message:match 'Section underline is over-indented %("(.*)"%)'
+    return string.format("La subrayado de la sección está sobre-indentado (%s)", name)
   -- 🔗🐍 [D300]	triple-single-quotes	Use triple double quotes """	✔️ 🛠️
   -- 🔗🐍 [D301]	escape-sequence-in-docstring	Use r""" if any backslashes in a docstring	✔️ 🛠️
   -- 🔗🐍 [D400]	ends-in-period	First line should end with a period	✔️ 🛠️

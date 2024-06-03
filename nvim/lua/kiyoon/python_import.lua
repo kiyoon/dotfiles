@@ -69,7 +69,7 @@ vim.api.nvim_create_autocmd("FileType", {
       -- find src/module_name in git root
 
       -- local git_root = vim.fn.systemlist "git rev-parse --show-toplevel"
-      local git_root = vim.fs.root(0, ".git")
+      local git_root = vim.fs.root(0, { ".git", "pyproject.toml" })
       if git_root == nil then
         return nil
       end
@@ -627,6 +627,7 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { silent = true, desc = "Add rich traceback install" })
   end,
 })
+
 M = {}
 
 ---WIP
@@ -638,25 +639,27 @@ M = {}
 ---@param col integer
 ---@param name string
 ---@return string?
-function M.open_python_file_and_get_import(file_path, row, col, name)
+local open_python_file_and_get_import = function(file_path, row, col, name)
   local buffers = vim.api.nvim_list_bufs()
   vim.print(buffers)
   file_path = file_path or "/Users/kiyoon/project/dti-db-curation/tools/process_dtc.py" -- open file silently
   name = name or "refine_assay_format"
+  row = row or 6
+  col = col or 4
 
   -- 이렇게 하면 파일이 열려있을 경우 swap error가 발생함
   local bufnr = vim.fn.bufadd(file_path)
 
   -- Open file but ignore swap error. We're going to open it read-only
-  local bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_call(bufnr, function()
-    vim.bo[bufnr].swapfile = false
-    vim.bo[bufnr].modifiable = false
-    vim.bo[bufnr].readonly = true
-    vim.bo[bufnr].bufhidden = "wipe"
-    vim.bo[bufnr].buftype = "nofile"
-    vim.api.nvim_command("edit " .. file_path)
-  end)
+  -- local bufnr = vim.api.nvim_create_buf(true, false)
+  -- vim.api.nvim_buf_call(bufnr, function()
+  --   -- vim.bo[bufnr].swapfile = false
+  --   -- vim.bo[bufnr].modifiable = false
+  --   -- vim.bo[bufnr].readonly = true
+  --   -- vim.bo[bufnr].bufhidden = "wipe"
+  --   -- vim.bo[bufnr].buftype = "nofile"
+  --   vim.api.nvim_command("edit " .. file_path)
+  -- end)
 
   -- get all buffers
   local buffers = vim.api.nvim_list_bufs()
@@ -664,7 +667,7 @@ function M.open_python_file_and_get_import(file_path, row, col, name)
 
   -- get treesitter node
   vim.treesitter.get_parser(bufnr, "python"):parse()
-  local node = vim.treesitter.get_node { bufnr = bufnr, pos = { 6, 4 } }
+  local node = vim.treesitter.get_node { bufnr = bufnr, pos = { row, col } }
   vim.print(node:range())
   vim.print(node:type())
 
@@ -771,6 +774,7 @@ function M.open_python_file_and_get_import(file_path, row, col, name)
   -- remove buffer
   vim.api.nvim_buf_delete(bufnr, { force = true })
 end
+
 local function get_current_word()
   local line = vim.fn.getline "."
   local col = vim.fn.col "."
@@ -793,10 +797,10 @@ local function get_current_word()
   return line:sub(start + 1, finish - 1)
 end
 
-function M.find_import_counts_in_project()
+M.find_import_counts_in_project = function()
   local current_file = vim.fn.expand "%"
   local current_word = get_current_word()
-  local git_root = vim.fs.root(0, ".git")
+  local git_root = vim.fs.root(0, { ".git", "pyproject.toml" })
   if git_root == nil then
     return nil
   end
@@ -810,8 +814,11 @@ function M.find_import_counts_in_project()
   local last_paste_end_line = vim.fn.line "']"
   local last_paste_end_col = vim.fn.col "']"
 
-  local rg_outputs =
-    vim.api.nvim_exec([[w !find ']] .. git_root .. [[' -name '*.py' -type f | xargs rg --json]], { output = true })
+  local rg_outputs = vim.api.nvim_exec(
+    [[w !find ']] .. git_root .. [[' -name '*.py' -type f | xargs rg --json ']] .. current_word .. [[']],
+    { output = true }
+  )
+  print(rg_outputs)
 
   -- restore the last paste register
   vim.fn.setpos("'[", { bufnr, last_paste_start_line, last_paste_start_col, 0 })
@@ -832,15 +839,15 @@ function M.find_import_counts_in_project()
     if type == "match" then
       local data = rg_output["data"]
       local file = data["path"]["text"]
-      local line_number = data["line_number"]
+      local line_number = data["line_number"] - 1 ---@type integer
       -- local lines = data["lines"]["text"]
-      local col = data["submatches"][1]["start"]
+      local col = data["submatches"][1]["start"] - 1 ---@type integer
 
       if file == current_file then
         goto continue
       end
 
-      local import_statement = M.open_python_file_and_get_import(file, line_number, col, current_word)
+      local import_statement = open_python_file_and_get_import(file, line_number, col, current_word)
       if import_statement == nil then
         goto continue
       end
@@ -859,12 +866,5 @@ function M.find_import_counts_in_project()
     ::continue::
   end
 end
-
-vim.keymap.set(
-  "n",
-  "<space>pp",
-  M.find_import_counts_in_project,
-  { silent = true, desc = "Find import counts in project" }
-)
 
 return M

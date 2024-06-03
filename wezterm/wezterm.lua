@@ -128,4 +128,14 @@ table.insert(config.hyperlink_rules, {
 	format = "https://rust-lang.github.io/rust-clippy/master/index.html#$1",
 })
 
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗🌜d \[(.*)\]] .. "]",
+	format = "https://luals.github.io/wiki/diagnostics/#$1",
+})
+
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗🌜s \[(.*)\]] .. "]",
+	format = "https://luals.github.io/wiki/syntax-errors/#$1",
+})
+
 return config

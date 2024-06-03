@@ -217,3 +217,7 @@ end
 vim.keymap.set("x", "<space>pF", function()
   vim.cmd [['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']]
 end, { desc = "Run sql-formatter in selection" })
+
+vim.keymap.set("n", "<space>pp", function()
+  require("kiyoon.python_import").find_import_counts_in_project()
+end, { desc = "Find import counts in project" })

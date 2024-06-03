@@ -1,3 +1,4 @@
+# ruff: noqa: UP007
 import io
 import sys
 from typing import Optional

@@ -10,6 +10,8 @@ local source_to_icon = {
   basedpyright = "🐍b",
   shellcheck = "🐚",
   tsserver = "🌐",
+  ["Lua Syntax Check."] = "🌜s",
+  ["Lua Diagnostics."] = "🌜d",
 }
 
 local float_opts = {

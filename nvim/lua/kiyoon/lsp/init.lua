@@ -74,12 +74,12 @@ end
 install_pkg_background "shellcheck"
 install_pkg_background "actionlint"
 
-require("neodev").setup {
-  override = function(root_dir, library)
-    library.enabled = true
-    library.plugins = true
-  end,
-} -- make sure to call this before lspconfig
+-- require("neodev").setup {
+--   override = function(root_dir, library)
+--     library.enabled = true
+--     library.plugins = true
+--   end,
+-- } -- make sure to call this before lspconfig
 
 local lspconfig_status_ok, lspconfig = pcall(require, "lspconfig")
 if not lspconfig_status_ok then

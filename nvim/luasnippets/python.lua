@@ -122,10 +122,23 @@ return {
     i(0),
   }),
 
-  -- logger
-  s("logger", {
-    t { "import logging", "logger = logging.getLogger(__name__)" },
+  s("main", {
+    t {
+      "def main():",
+      "\t",
+    },
+    i(1, "pass"),
+    t {
+      "",
+      "",
+      "",
+      [[if __name__ == "__main__":]],
+      "\tmain()",
+      "",
+    },
+    i(0),
   }),
+
   s("logmain", {
     t {
       "import rich.traceback",

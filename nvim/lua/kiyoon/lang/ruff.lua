@@ -394,39 +394,42 @@ M.translate_ruff_message = function(code, message)
   -- 🔗🐍 [D419]	empty-docstring	Docstring is empty	✔️ 🛠️
   elseif code == "D419" then
     return "Docstring está vacía"
-  -- 🔗🐍 [UP001	useless-metaclass-type	__metaclass__ = type is implied	✔️ 🛠️
-  -- 🔗🐍 [UP003	type-of-primitive	Use {} instead of type(...)	✔️ 🛠️
-  -- 🔗🐍 [UP004	useless-object-inheritance	Class {name} inherits from object	✔️ 🛠️
-  -- 🔗🐍 [UP005	deprecated-unittest-alias	{alias} is deprecated, use {target}	✔️ 🛠️
-  -- 🔗🐍 [UP006	non-pep585-annotation	Use {to} instead of {from} for type annotation	✔️ 🛠️
-  -- 🔗🐍 [UP007	non-pep604-annotation	Use X | Y for type annotations	✔️ 🛠️
-  -- 🔗🐍 [UP008	super-call-with-parameters	Use super() instead of super(__class__, self)	✔️ 🛠️
-  -- 🔗🐍 [UP009	utf8-encoding-declaration	UTF-8 encoding declaration is unnecessary	✔️ 🛠️
-  -- 🔗🐍 [UP010	unnecessary-future-import	Unnecessary __future__ import {import} for target Python version	✔️ 🛠️
-  -- 🔗🐍 [UP011	lru-cache-without-parameters	Unnecessary parentheses to functools.lru_cache	✔️ 🛠️
-  -- 🔗🐍 [UP012	unnecessary-encode-utf8	Unnecessary call to encode as UTF-8	✔️ 🛠️
-  -- 🔗🐍 [UP013	convert-typed-dict-functional-to-class	Convert {name} from TypedDict functional to class syntax	✔️ 🛠️
-  -- 🔗🐍 [UP014	convert-named-tuple-functional-to-class	Convert {name} from NamedTuple functional to class syntax	✔️ 🛠️
-  -- 🔗🐍 [UP015	redundant-open-modes	Unnecessary open mode parameters	✔️ 🛠️
-  -- 🔗🐍 [UP017	datetime-timezone-utc	Use datetime.UTC alias	✔️ 🛠️
-  -- 🔗🐍 [UP018	native-literals	Unnecessary {literal_type} call (rewrite as a literal)	✔️ 🛠️
-  -- 🔗🐍 [UP019	typing-text-str-alias	typing.Text is deprecated, use str	✔️ 🛠️
-  -- 🔗🐍 [UP020	open-alias	Use builtin open	✔️ 🛠️
-  -- 🔗🐍 [UP021	replace-universal-newlines	universal_newlines is deprecated, use text	✔️ 🛠️
-  -- 🔗🐍 [UP022	replace-stdout-stderr	Prefer capture_output over sending stdout and stderr to PIPE	✔️ 🛠️
-  -- 🔗🐍 [UP023	deprecated-c-element-tree	cElementTree is deprecated, use ElementTree	✔️ 🛠️
-  -- 🔗🐍 [UP024	os-error-alias	Replace aliased errors with OSError	✔️ 🛠️
-  -- 🔗🐍 [UP025	unicode-kind-prefix	Remove unicode literals from strings	✔️ 🛠️
-  -- 🔗🐍 [UP026	deprecated-mock-import	mock is deprecated, use unittest.mock	✔️ 🛠️
-  -- 🔗🐍 [UP027	unpacked-list-comprehension	Replace unpacked list comprehension with a generator expression	✔️ 🛠️
-  -- 🔗🐍 [UP028	yield-in-for-loop	Replace yield over for loop with yield from	✔️ 🛠️
-  -- 🔗🐍 [UP029	unnecessary-builtin-import	Unnecessary builtin import: {import}	✔️ 🛠️
-  -- 🔗🐍 [UP030	format-literals	Use implicit references for positional format fields	✔️ 🛠️
-  -- 🔗🐍 [UP031	printf-string-formatting	Use format specifiers instead of percent format	✔️ 🛠️
-  -- 🔗🐍 [UP032	f-string	Use f-string instead of format call	✔️ 🛠️
-  -- 🔗🐍 [UP033	lru-cache-with-maxsize-none	Use @functools.cache instead of @functools.lru_cache(maxsize=None)	✔️ 🛠️
-  -- 🔗🐍 [UP034	extraneous-parentheses	Avoid extraneous parentheses	✔️ 🛠️
-  -- 🔗🐍 [UP035	deprecated-import	Import from {target} instead: {names}	✔️ 🛠️
+  -- 🔗🐍 [UP001]	useless-metaclass-type	__metaclass__ = type is implied	✔️ 🛠️
+  -- 🔗🐍 [UP003]	type-of-primitive	Use {} instead of type(...)	✔️ 🛠️
+  -- 🔗🐍 [UP004]	useless-object-inheritance	Class {name} inherits from object	✔️ 🛠️
+  -- 🔗🐍 [UP005]	deprecated-unittest-alias	{alias} is deprecated, use {target}	✔️ 🛠️
+  -- 🔗🐍 [UP006]	non-pep585-annotation	Use {to} instead of {from} for type annotation	✔️ 🛠️
+  -- 🔗🐍 [UP007]	non-pep604-annotation	Use X | Y for type annotations	✔️ 🛠️
+  -- 🔗🐍 [UP008]	super-call-with-parameters	Use super() instead of super(__class__, self)	✔️ 🛠️
+  -- 🔗🐍 [UP009]	utf8-encoding-declaration	UTF-8 encoding declaration is unnecessary	✔️ 🛠️
+  -- 🔗🐍 [UP010]	unnecessary-future-import	Unnecessary __future__ import {import} for target Python version	✔️ 🛠️
+  -- 🔗🐍 [UP011]	lru-cache-without-parameters	Unnecessary parentheses to functools.lru_cache	✔️ 🛠️
+  -- 🔗🐍 [UP012]	unnecessary-encode-utf8	Unnecessary call to encode as UTF-8	✔️ 🛠️
+  -- 🔗🐍 [UP013]	convert-typed-dict-functional-to-class	Convert {name} from TypedDict functional to class syntax	✔️ 🛠️
+  -- 🔗🐍 [UP014]	convert-named-tuple-functional-to-class	Convert {name} from NamedTuple functional to class syntax	✔️ 🛠️
+  -- 🔗🐍 [UP015]	redundant-open-modes	Unnecessary open mode parameters	✔️ 🛠️
+  -- 🔗🐍 [UP017]	datetime-timezone-utc	Use datetime.UTC alias	✔️ 🛠️
+  -- 🔗🐍 [UP018]	native-literals	Unnecessary {literal_type} call (rewrite as a literal)	✔️ 🛠️
+  -- 🔗🐍 [UP019]	typing-text-str-alias	typing.Text is deprecated, use str	✔️ 🛠️
+  -- 🔗🐍 [UP020]	open-alias	Use builtin open	✔️ 🛠️
+  -- 🔗🐍 [UP021]	replace-universal-newlines	universal_newlines is deprecated, use text	✔️ 🛠️
+  -- 🔗🐍 [UP022]	replace-stdout-stderr	Prefer capture_output over sending stdout and stderr to PIPE	✔️ 🛠️
+  -- 🔗🐍 [UP023]	deprecated-c-element-tree	cElementTree is deprecated, use ElementTree	✔️ 🛠️
+  -- 🔗🐍 [UP024]	os-error-alias	Replace aliased errors with OSError	✔️ 🛠️
+  -- 🔗🐍 [UP025]	unicode-kind-prefix	Remove unicode literals from strings	✔️ 🛠️
+  -- 🔗🐍 [UP026]	deprecated-mock-import	mock is deprecated, use unittest.mock	✔️ 🛠️
+  -- 🔗🐍 [UP027]	unpacked-list-comprehension	Replace unpacked list comprehension with a generator expression	✔️ 🛠️
+  -- 🔗🐍 [UP028]	yield-in-for-loop	Replace yield over for loop with yield from	✔️ 🛠️
+  -- 🔗🐍 [UP029]	unnecessary-builtin-import	Unnecessary builtin import: {import}	✔️ 🛠️
+  -- 🔗🐍 [UP030]	format-literals	Use implicit references for positional format fields	✔️ 🛠️
+  -- 🔗🐍 [UP031]	printf-string-formatting	Use format specifiers instead of percent format	✔️ 🛠️
+  -- 🔗🐍 [UP032]	f-string	Use f-string instead of format call	✔️ 🛠️
+  -- 🔗🐍 [UP033]	lru-cache-with-maxsize-none	Use @functools.cache instead of @functools.lru_cache(maxsize=None)	✔️ 🛠️
+  -- 🔗🐍 [UP034]	extraneous-parentheses	Avoid extraneous parentheses	✔️ 🛠️
+  -- 🔗🐍 [UP035]	deprecated-import	Import from {target} instead: {names}	✔️ 🛠️
+  elseif code == "UP035" then
+    local target, names = message:match "(.*) is deprecated, use (.*) instead"
+    return string.format("%s está obsoleto, usa %s en su lugar", target, names)
   -- 🔗🐍 [UP036	outdated-version-block	Version block is outdated for minimum Python version	✔️ 🛠️
   -- 🔗🐍 [UP037	quoted-annotation	Remove quotes from type annotation	✔️ 🛠️
   -- 🔗🐍 [UP038	non-pep604-isinstance	Use X | Y in {} call instead of (X, Y)	✔️ 🛠️

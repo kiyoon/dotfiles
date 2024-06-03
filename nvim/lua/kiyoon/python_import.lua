@@ -627,3 +627,148 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { silent = true, desc = "Add rich traceback install" })
   end,
 })
+M = {}
+
+---WIP
+---Given we already know the row and col of the module name (e.g. using ruff we found "np")
+---This will return the whole import statement (e.g. "import numpy as np")
+---We assume that there is only one import statement for that name in the file
+---@param file_path string
+---@param row integer
+---@param col integer
+---@param name string
+---@return string?
+function M.open_python_file_and_get_import(file_path, row, col, name)
+  local buffers = vim.api.nvim_list_bufs()
+  vim.print(buffers)
+  file_path = file_path or "/Users/kiyoon/project/dti-db-curation/tools/process_dtc.py" -- open file silently
+  name = name or "refine_assay_format"
+
+  -- 이렇게 하면 파일이 열려있을 경우 swap error가 발생함
+  local bufnr = vim.fn.bufadd(file_path)
+
+  -- Open file but ignore swap error. We're going to open it read-only
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.bo[bufnr].swapfile = false
+    vim.bo[bufnr].modifiable = false
+    vim.bo[bufnr].readonly = true
+    vim.bo[bufnr].bufhidden = "wipe"
+    vim.bo[bufnr].buftype = "nofile"
+    vim.api.nvim_command("edit " .. file_path)
+  end)
+
+  -- get all buffers
+  local buffers = vim.api.nvim_list_bufs()
+  vim.print(buffers)
+
+  -- get treesitter node
+  vim.treesitter.get_parser(bufnr, "python"):parse()
+  local node = vim.treesitter.get_node { bufnr = bufnr, pos = { 6, 4 } }
+  vim.print(node:range())
+  vim.print(node:type())
+
+  if node == nil or node:type() ~= "identifier" then
+    -- remove buffer
+    vim.api.nvim_buf_delete(bufnr, { force = true })
+    return nil
+  end
+
+  -- climb up until we find import_statement or import_from_statement
+  local import_node = node
+  while
+    import_node ~= nil
+    and import_node:type() ~= "import_statement"
+    and import_node:type() ~= "import_from_statement"
+  do
+    import_node = import_node:parent()
+  end
+
+  if import_node == nil then
+    -- not an import statement
+    return nil
+  end
+
+  local parent_node = node:parent()
+  if parent_node == nil then
+    -- remove buffer
+    vim.api.nvim_buf_delete(bufnr, { force = true })
+    return nil
+  end
+
+  if parent_node:type() == "aliased_import" then
+    -- import .. as ..
+    --
+    -- (import_statement ; [15, 0] - [15, 18]
+    --   name: (aliased_import ; [15, 7] - [15, 18]
+    --     name: (dotted_name ; [15, 7] - [15, 12]
+    --       (identifier)) ; [15, 7] - [15, 12]
+    --     alias: (identifier))) ; [15, 16] - [15, 18]
+
+    -- from .. import .. as ..
+
+    -- (import_from_statement ; [2, 0] - [7, 1]
+    --   module_name: (dotted_name ; [2, 5] - [2, 40]
+    --     (identifier) ; [2, 5] - [2, 20]
+    --     (identifier) ; [2, 21] - [2, 27]
+    --     (identifier) ; [2, 28] - [2, 31]
+    --     (identifier)) ; [2, 32] - [2, 40]
+    --   name: (dotted_name ; [3, 4] - [3, 25]
+    --     (identifier)) ; [3, 4] - [3, 25]
+    --   name: (dotted_name ; [4, 4] - [4, 30]
+    --     (identifier)) ; [4, 4] - [4, 30]
+    --   name: (dotted_name ; [5, 4] - [5, 17]
+    --     (identifier)) ; [5, 4] - [5, 17]
+    --   name: (aliased_import ; [6, 4] - [6, 32]
+    --     name: (dotted_name ; [6, 4] - [6, 25]
+    --       (identifier)) ; [6, 4] - [6, 25]
+    --     alias: (identifier))) ; [6, 29] - [6, 32]
+
+    local grandparent_node = parent_node:parent()
+    if grandparent_node == "import_statement" then
+      -- import .. as ..
+      local import_name = vim.treesitter.get_node_text(parent_node:child(1), bufnr)
+      local import_as = vim.treesitter.get_node_text(parent_node:child(2), bufnr)
+      return "import " .. import_name .. " as " .. import_as
+    elseif grandparent_node == "import_from_statement" then
+      -- from .. import .. as ..
+      local import_from = vim.treesitter.get_node_text(grandparent_node:child(1), bufnr)
+      local import_name = vim.treesitter.get_node_text(parent_node:child(1), bufnr)
+      local import_as = vim.treesitter.get_node_text(parent_node:child(2), bufnr)
+      return "from " .. import_from .. " import " .. import_name .. " as " .. import_as
+    end
+  elseif parent_node:type() == "import_statement" then
+    -- import ..
+    local import_name = vim.treesitter.get_node_text(node, bufnr)
+    return "import " .. import_name
+  elseif parent_node:type() == "import_from_statement" then
+    -- from .. import ..
+    local import_from = vim.treesitter.get_node_text(parent_node:child(1), bufnr)
+    local import_name = vim.treesitter.get_node_text(node, bufnr)
+    return "from " .. import_from .. " import " .. import_name
+  else
+    return nil
+  end
+
+  -- if import_node:type() == "import_statement" then
+  --   if node:parent():type() == "aliased_import" then
+  --   end
+  --   if import_node:child(1):child(2) ~= nil then
+  --     -- import .. as ..
+  --     local import_name = vim.treesitter.get_node_text(import_node:child(1):child(1), bufnr)
+  --     local import_as = vim.treesitter.get_node_text(import_node:child(1):child(2), bufnr)
+  --     return "import " .. import_name .. " as " .. import_as
+  --   else
+  --     local import_name = vim.treesitter.get_node_text(import_node:child(1):child(1), bufnr)
+  --     return "import " .. import_name
+  --   end
+  -- elseif import_node:type() == "import_from_statement" then
+  --   local import_name = import_node:child(1):child(1):text()
+  --   local import_as = import_node:child(3):child(1):text()
+  --   return "from " .. import_name .. " import " .. import_as
+  -- end
+
+  -- remove buffer
+  vim.api.nvim_buf_delete(bufnr, { force = true })
+end
+return M

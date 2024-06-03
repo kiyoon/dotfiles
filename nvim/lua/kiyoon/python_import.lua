@@ -771,4 +771,100 @@ function M.open_python_file_and_get_import(file_path, row, col, name)
   -- remove buffer
   vim.api.nvim_buf_delete(bufnr, { force = true })
 end
+local function get_current_word()
+  local line = vim.fn.getline "."
+  local col = vim.fn.col "."
+  local mode = vim.fn.mode "."
+  if mode == "i" then
+    -- insert mode has cursor one char to the right
+    col = col - 1
+  end
+  local finish = line:find("[^a-zA-Z0-9_]", col)
+  -- look forward
+  while finish == col do
+    col = col + 1
+    finish = line:find("[^a-zA-Z0-9_]", col)
+  end
+
+  if finish == nil then
+    finish = #line + 1
+  end
+  local start = vim.fn.match(line:sub(1, col), [[\k*$]])
+  return line:sub(start + 1, finish - 1)
+end
+
+function M.find_import_counts_in_project()
+  local current_file = vim.fn.expand "%"
+  local current_word = get_current_word()
+  local git_root = vim.fs.root(0, ".git")
+  if git_root == nil then
+    return nil
+  end
+
+  local bufnr = 0
+
+  -- HACK: the `:w !rg` command will change the last paste register
+  -- so we need to save it and restore it after the command
+  local last_paste_start_line = vim.fn.line "'["
+  local last_paste_start_col = vim.fn.col "'["
+  local last_paste_end_line = vim.fn.line "']"
+  local last_paste_end_col = vim.fn.col "']"
+
+  local rg_outputs =
+    vim.api.nvim_exec([[w !find ']] .. git_root .. [[' -name '*.py' -type f | xargs rg --json]], { output = true })
+
+  -- restore the last paste register
+  vim.fn.setpos("'[", { bufnr, last_paste_start_line, last_paste_start_col, 0 })
+  vim.fn.setpos("']", { bufnr, last_paste_end_line, last_paste_end_col, 0 })
+
+  assert(rg_outputs ~= nil)
+  local rg_outputs_split = vim.split(rg_outputs, "\n")
+
+  for _, line in ipairs(rg_outputs_split) do
+    local status, rg_output = pcall(vim.json.decode, line)
+
+    if not status then
+      goto continue
+    end
+
+    local type = rg_output["type"]
+    -- type: "begin", "match", "end"
+    if type == "match" then
+      local data = rg_output["data"]
+      local file = data["path"]["text"]
+      local line_number = data["line_number"]
+      -- local lines = data["lines"]["text"]
+      local col = data["submatches"][1]["start"]
+
+      if file == current_file then
+        goto continue
+      end
+
+      local import_statement = M.open_python_file_and_get_import(file, line_number, col, current_word)
+      if import_statement == nil then
+        goto continue
+      end
+
+      vim.notify(import_statement, "info", {
+        title = "Python import found in " .. file,
+        on_open = function(win)
+          local buf = vim.api.nvim_win_get_buf(win)
+          vim.bo[buf].filetype = "python"
+        end,
+      })
+
+      ::continue::
+    end
+
+    ::continue::
+  end
+end
+
+vim.keymap.set(
+  "n",
+  "<space>pp",
+  M.find_import_counts_in_project,
+  { silent = true, desc = "Find import counts in project" }
+)
+
 return M

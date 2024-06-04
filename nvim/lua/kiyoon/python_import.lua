@@ -490,10 +490,46 @@ vim.api.nvim_create_autocmd("FileType", {
     local first_party_modules = find_python_first_party_modules()
 
     ---@param statement string
+    ---@param ts_node TSNode?
     ---@return string[]?
-    local function get_python_import(statement)
+    local function get_python_import(statement, ts_node)
       if statement == nil then
         return nil
+      end
+
+      if ts_node ~= nil then
+        -- check if currently on
+        -- class Data(torch.utils.data.Dataset):
+        -- then import torch.utils.data
+
+        -- (class_definition ; [9, 0] - [10, 8]
+        --   name: (identifier) ; [9, 6] - [9, 10]
+        --   superclasses: (argument_list ; [9, 10] - [9, 36]
+        --     (attribute ; [9, 11] - [9, 35]
+        --       object: (attribute ; [9, 11] - [9, 27]
+        --         object: (attribute ; [9, 11] - [9, 22]
+        --           object: (identifier) ; [9, 11] - [9, 16]
+        --           attribute: (identifier)) ; [9, 17] - [9, 22]
+        --         attribute: (identifier)) ; [9, 23] - [9, 27]
+        --       attribute: (identifier))) ; [9, 28] - [9, 35]
+        --   body: (block ; [10, 4] - [10, 8]
+        --     (pass_statement))) ; [10, 4] - [10, 8]
+
+        if ts_node:type() == "identifier" then
+          -- climb up until we find argument_list
+          local parent = ts_node:parent()
+          while parent ~= nil and parent:type() ~= "argument_list" do
+            parent = parent:parent()
+          end
+
+          if parent ~= nil and parent:type() == "argument_list" then
+            local superclasses_text = vim.treesitter.get_node_text(parent, 0)
+            -- print(superclasses_text)  -- (torch.utils.data.Dataset)
+            if superclasses_text:match "^%(torch%.utils%.data%." then
+              return { "import torch.utils.data" }
+            end
+          end
+        end
       end
 
       if statement == "logger" then
@@ -574,8 +610,9 @@ vim.api.nvim_create_autocmd("FileType", {
     end
 
     ---@param module string
+    ---@param ts_node TSNode?
     ---@return integer?, string[]?
-    local function add_python_import(module)
+    local function add_python_import(module, ts_node)
       -- strip
       module = module:match "^%s*(.*)%s*$"
       if module == "" then
@@ -598,7 +635,7 @@ vim.api.nvim_create_autocmd("FileType", {
         line_number = line_number + 1 -- add after last import
       end
 
-      import_statements = get_python_import(module)
+      import_statements = get_python_import(module, ts_node)
       if import_statements == nil then
         notify("No import statement found or it was aborted, for `" .. module .. "`", "warn", {
           title = "Python auto import",
@@ -617,13 +654,15 @@ vim.api.nvim_create_autocmd("FileType", {
 
     local function add_python_import_current_word()
       local module = get_current_word()
+      local node = require("wookayin.utils.ts_utils").get_node_at_cursor()
       -- local module = vim.fn.expand "<cword>"
-      return add_python_import(module)
+      return add_python_import(module, node)
     end
 
     local function add_python_import_current_selection()
       vim.cmd [[normal! "sy]]
-      return add_python_import(vim.fn.getreg "s")
+      local node = require("wookayin.utils.ts_utils").get_node_at_cursor()
+      return add_python_import(vim.fn.getreg "s", node)
     end
 
     vim.keymap.set("n", "<leader>i", function()

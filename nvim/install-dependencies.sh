@@ -55,7 +55,11 @@ $PIP3 install --user --break-system-packages debugpy
 
 # Csv align
 $PIP3 install --user --break-system-packages polars
-$PIP3 install --user --break-system-packages 'typer[all]'
+$PIP3 install --user --break-system-packages typer
+
+# Find python imports in a project
+$PIP3 install --user --break-system-packages tree-sitter
+$PIP3 install --user --break-system-packages tree-sitter-python
 
 # Lint
 # $PIP3 install --user flake8

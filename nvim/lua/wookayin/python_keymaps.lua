@@ -92,6 +92,14 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       { remap = true }
     )
     bufmap(
+      "x",
+      "<space>tp",
+      make_repeatable_keymap("x", "<Plug>(wrap-selection-with-Path)", function()
+        require("wookayin.lib.python").wrap_selection_with_path() -- wrap with Path()
+      end),
+      { remap = true }
+    )
+    bufmap(
       "n",
       "<space>tP",
       make_repeatable_keymap("n", "<Plug>(os-path-to-pathlib)", function()

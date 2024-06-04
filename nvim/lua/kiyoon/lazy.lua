@@ -715,27 +715,35 @@ return {
     keys = {
       {
         "ai",
-        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_outer()<CR>",
+        function()
+          require("treesitter_indent_object.textobj").select_indent_outer()
+        end,
         mode = { "x", "o" },
         desc = "Select context-aware indent (outer)",
       },
       {
         "aI",
-        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_outer(true)<CR>",
+        function()
+          require("treesitter_indent_object.textobj").select_indent_outer(true)
+        end,
         mode = { "x", "o" },
         desc = "Select context-aware indent (outer, line-wise)",
       },
       {
         "ii",
-        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner()<CR>",
+        function()
+          require("treesitter_indent_object.textobj").select_indent_inner()
+        end,
         mode = { "x", "o" },
         desc = "Select context-aware indent (inner, partial range)",
       },
       {
         "iI",
-        "<Cmd>lua require'treesitter_indent_object.textobj'.select_indent_inner(true)<CR>",
+        function()
+          require("treesitter_indent_object.textobj").select_indent_inner(true, "V")
+        end,
         mode = { "x", "o" },
-        desc = "Select context-aware indent (inner, entire range)",
+        desc = "Select context-aware indent (inner, entire range) in line-wise visual mode",
       },
     },
   },

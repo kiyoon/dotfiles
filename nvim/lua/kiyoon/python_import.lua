@@ -1,3 +1,8 @@
+local status, notify = pcall(require, "notify")
+if not status then
+  notify = function(message, level, opts) end
+end
+
 vim.api.nvim_create_augroup("python_import", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   group = "python_import",
@@ -484,6 +489,8 @@ vim.api.nvim_create_autocmd("FileType", {
 
     local first_party_modules = find_python_first_party_modules()
 
+    ---@param statement string
+    ---@return string[]?
     local function get_python_import(statement)
       if statement == nil then
         return nil
@@ -512,9 +519,62 @@ vim.api.nvim_create_autocmd("FileType", {
         return { "from " .. python_import_from[statement] .. " import " .. statement }
       end
 
+      -- Can't find from pre-defined tables.
+      -- Search the project directory for the import statements
+      -- Sorted from the most frequently used
+      -- e.g. 00020:import ABCD
+
+      local project_root = vim.fs.root(0, { ".git", "pyproject.toml" })
+      if project_root ~= nil then
+        local find_import_outputs = vim.api.nvim_exec(
+          [[w !/usr/bin/python3 ~/.config/nvim/find_python_import_in_project.py count ']]
+            .. project_root
+            .. [[' ']]
+            .. statement
+            .. [[']],
+          { output = true }
+        )
+
+        if find_import_outputs ~= nil then
+          -- strip
+          find_import_outputs = find_import_outputs:gsub("^\n", "")
+          -- find_import_outputs = find_import_outputs:match "^%s*(.*)%s*$"
+          -- strip trailing newline
+          find_import_outputs = find_import_outputs:gsub("\n$", "")
+          -- find_import_outputs = find_import_outputs:match "^%s*(.*)%s*$"
+
+          if find_import_outputs ~= "" then
+            local find_import_outputs_split = vim.split(find_import_outputs, "\n")
+            -- print(#find_import_outputs_split)
+            if #find_import_outputs_split == 1 then
+              local import_statement = { find_import_outputs_split[1]:sub(7) } -- remove the count
+              return import_statement
+            end
+
+            local outputs_to_inputlist = {}
+            for i, v in ipairs(find_import_outputs_split) do
+              local count = tonumber(v:sub(1, 5))
+              local import_statement = v:sub(7) -- remove the count
+
+              outputs_to_inputlist[i] = string.format("%d. count %d: %s", i, count, import_statement)
+            end
+
+            local choice = vim.fn.inputlist(outputs_to_inputlist)
+            if choice == 0 then
+              return nil
+            end
+
+            local import_statement = find_import_outputs_split[choice]:sub(7) -- remove the count
+            return { import_statement }
+          end
+        end
+      end
+
       return { "import " .. statement }
     end
 
+    ---@param module string
+    ---@return integer?, string[]?
     local function add_python_import(module)
       -- strip
       module = module:match "^%s*(.*)%s*$"
@@ -539,7 +599,16 @@ vim.api.nvim_create_autocmd("FileType", {
       end
 
       import_statements = get_python_import(module)
-      assert(import_statements ~= nil)
+      if import_statements == nil then
+        notify("No import statement found or it was aborted, for `" .. module .. "`", "warn", {
+          title = "Python auto import",
+          on_open = function(win)
+            local buf = vim.api.nvim_win_get_buf(win)
+            vim.bo[buf].filetype = "markdown"
+          end,
+        })
+        return nil, nil
+      end
 
       vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, import_statements)
 
@@ -573,7 +642,7 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set({ "n", "i" }, "<M-CR>", function()
       local line_number, import_statements = add_python_import_current_word()
       if line_number ~= nil then
-        vim.notify(import_statements, "info", {
+        notify(import_statements, "info", {
           title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
@@ -585,7 +654,7 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("x", "<M-CR>", function()
       local line_number, import_statements = add_python_import_current_selection()
       if line_number ~= nil then
-        vim.notify(import_statements, "info", {
+        notify(import_statements, "info", {
           title = "Python import added at line " .. line_number,
           on_open = function(win)
             local buf = vim.api.nvim_win_get_buf(win)
@@ -609,7 +678,7 @@ vim.api.nvim_create_autocmd("FileType", {
         -- first import found. Check if rich traceback already installed
         local lines = vim.api.nvim_buf_get_lines(0, line_number - 1, line_number - 1 + 3, false)
         if lines[1] == statements[1] and lines[2] == statements[2] and lines[3] == statements[3] then
-          vim.notify("Rich traceback already installed", "info", {
+          notify("Rich traceback already installed", "info", {
             title = "Python auto import",
           })
           return
@@ -617,7 +686,7 @@ vim.api.nvim_create_autocmd("FileType", {
       end
 
       vim.api.nvim_buf_set_lines(0, line_number - 1, line_number - 1, false, statements)
-      vim.notify(statements, "info", {
+      notify(statements, "info", {
         title = "Rich traceback install added at line " .. line_number,
         on_open = function(win)
           local buf = vim.api.nvim_win_get_buf(win)
@@ -852,7 +921,7 @@ M.find_import_counts_in_project = function()
         goto continue
       end
 
-      vim.notify(import_statement, "info", {
+      notify(import_statement, "info", {
         title = "Python import found in " .. file,
         on_open = function(win)
           local buf = vim.api.nvim_win_get_buf(win)

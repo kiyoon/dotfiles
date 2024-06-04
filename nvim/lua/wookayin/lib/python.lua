@@ -2,6 +2,11 @@
 -- lib/python
 -- Utilities and functions specific to python
 
+local status, notify = pcall(require, "notify")
+if not status then
+  notify = function(msg, level, opts) end
+end
+
 local M = {}
 
 --[[ Implementations for $DOTVIM/after/ftplugin/python.lua ]]
@@ -318,7 +323,7 @@ M.upgrade_typing = function(node)
   end
 
   if not node then
-    vim.notify("No fix found.", "info", {
+    notify("No fix found.", "info", {
       title = "Fix python typing",
     })
     return
@@ -358,7 +363,7 @@ M.upgrade_typing = function(node)
   if identifier_name == "Union" then
     if num_type_parameters(node) == 0 then
       -- no arguments
-      vim.notify("At least one argument is required", "error", {
+      notify("At least one argument is required", "error", {
         title = "Fix python typing (Union)",
       })
       return
@@ -372,7 +377,7 @@ M.upgrade_typing = function(node)
   elseif identifier_name == "Optional" then
     if num_type_parameters(node) == 0 then
       -- no arguments
-      vim.notify("At least one argument is required", "error", {
+      notify("At least one argument is required", "error", {
         title = "Fix python typing (Optional)",
       })
       return
@@ -452,7 +457,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
       node = vim.treesitter.get_node()
       if node == nil or not vim.list_contains({ "identifier", "string" }, node:type()) then
         vim.print(node:type())
-        vim.notify("Not in a call node, nor is a variable.", "error", {
+        notify("Not in a call node, nor is a variable.", "error", {
           title = "os.path to pathlib.Path",
         })
         return
@@ -504,7 +509,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
   ---e.g. os.path.exists(a) => Path(a).exists()
   local function one_arg_function_to_pathlib(pathlib_function_name)
     if arglist_node:named_child_count() == 0 then
-      vim.notify("At least one argument is required.", "error", {
+      notify("At least one argument is required.", "error", {
         title = "os.path to pathlib.Path",
       })
       return nil
@@ -517,7 +522,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
   local function osp_join_to_pathlib()
     if arglist_node:named_child_count() == 0 then
       -- no arguments
-      vim.notify("At least one argument is required.", "error", {
+      notify("At least one argument is required.", "error", {
         title = "os.path.join to pathlib.Path",
       })
       return
@@ -579,7 +584,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
   elseif function_name == "os.makedirs" then
     if arglist_node:named_child_count() == 0 then
       -- no arguments
-      vim.notify("At least one argument is required.", "error", {
+      notify("At least one argument is required.", "error", {
         title = "os.makedirs to pathlib.Path",
       })
       return
@@ -632,17 +637,17 @@ M.os_path_to_pathlib = function(wrap_with_path)
     new_text = multi_arg_function_to_pathlib "open"
   elseif function_name == "print" then
     if arglist_node:named_child_count() > 1 then
-      vim.notify("print() with more than one argument can't be safely converted to logger.info", "warning", {
+      notify("print() with more than one argument can't be safely converted to logger.info", "warning", {
         title = "os.path to pathlib.Path",
       })
     end
     new_text = change_call_name "logger.info"
   else
-    vim.notify("Function `" .. function_name .. "` not recognised.", "error", {
+    notify("Function `" .. function_name .. "` not recognised.", "error", {
       title = "os.path to pathlib.Path",
       on_open = function(win)
         local buf = vim.api.nvim_win_get_buf(win)
-        vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+        vim.bo[buf].filetype = "markdown"
       end,
     })
     return
@@ -660,6 +665,92 @@ M.os_path_to_pathlib = function(wrap_with_path)
 
   -- Restore cursor
   vim.api.nvim_win_set_cursor(winnr, cursor)
+end
+
+local buffer = require "nvim-surround.buffer"
+local config = require "nvim-surround.config"
+
+-- Add delimiters around a visual selection.
+-- Taken from nvim-surround https://github.com/kylechui/nvim-surround/commit/23f4966aba1d90d9ea4e06dfe3dd7d07b8420611
+---@param delimiters string[][]
+---@param args? { curpos: position, curswant: number }
+local visual_surround = function(delimiters, args)
+  -- Get a character and selection from the user
+  args = args or {}
+  args.curpos = args.curpos or buffer.get_curpos()
+  args.curswant = args.curswant or vim.fn.winsaveview().curswant
+
+  -- if vim.fn.visualmode() == "V" then
+  --   args.line_mode = true
+  -- end
+
+  -- exit visual mode
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
+
+  local first_pos, last_pos = buffer.get_mark "<", buffer.get_mark ">"
+  vim.print(first_pos)
+  vim.print(last_pos)
+  if not delimiters or not first_pos or not last_pos then
+    return
+  end
+
+  if vim.fn.visualmode() == "\22" then -- Visual block mode case (add delimiters to every line)
+    if vim.o.selection == "exclusive" then
+      last_pos[2] = last_pos[2] - 1
+    end
+    -- Get (visually) what columns the start and end are located at
+    local first_disp = vim.fn.strdisplaywidth(buffer.get_line(first_pos[1]):sub(1, first_pos[2] - 1)) + 1
+    local last_disp = vim.fn.strdisplaywidth(buffer.get_line(last_pos[1]):sub(1, last_pos[2] - 1)) + 1
+    -- Find the min/max for some variables, since visual blocks can either go diagonally or anti-diagonally
+    local mn_disp, mx_disp = math.min(first_disp, last_disp), math.max(first_disp, last_disp)
+    local mn_lnum, mx_lnum = math.min(first_pos[1], last_pos[1]), math.max(first_pos[1], last_pos[1])
+    -- Check if $ was used in creating the block selection
+    local surround_to_end_of_line = args.curswant == vim.v.maxcol
+    -- Surround each line with the delimiter pair, last to first (for indexing reasons)
+    for lnum = mx_lnum, mn_lnum, -1 do
+      local line = buffer.get_line(lnum)
+      if surround_to_end_of_line then
+        buffer.insert_text({ lnum, #buffer.get_line(lnum) + 1 }, delimiters[2])
+      else
+        local index = buffer.get_last_byte({ lnum, 1 })[2]
+        -- The current display count should be >= the desired one
+        while vim.fn.strdisplaywidth(line:sub(1, index)) < mx_disp and index <= #line do
+          index = buffer.get_last_byte({ lnum, index + 1 })[2]
+        end
+        -- Go to the end of the current character
+        index = buffer.get_last_byte({ lnum, index })[2]
+        buffer.insert_text({ lnum, index + 1 }, delimiters[2])
+      end
+
+      local index = 1
+      -- The current display count should be <= the desired one
+      while vim.fn.strdisplaywidth(line:sub(1, index - 1)) + 1 < mn_disp and index <= #line do
+        index = buffer.get_last_byte({ lnum, index })[2] + 1
+      end
+      if vim.fn.strdisplaywidth(line:sub(1, index - 1)) + 1 > mn_disp then
+        -- Go to the beginning of the previous character
+        index = buffer.get_first_byte({ lnum, index - 1 })[2]
+      end
+      buffer.insert_text({ lnum, index }, delimiters[1])
+    end
+  else -- Regular visual mode case
+    if vim.o.selection == "exclusive" then
+      last_pos[2] = last_pos[2] - 1
+    end
+
+    last_pos = buffer.get_last_byte(last_pos)
+    buffer.insert_text({ last_pos[1], last_pos[2] + 1 }, delimiters[2])
+    buffer.insert_text(first_pos, delimiters[1])
+  end
+
+  config.get_opts().indent_lines(first_pos[1], last_pos[1] + #delimiters[1] + #delimiters[2] - 2)
+  buffer.restore_curpos {
+    first_pos = first_pos,
+    old_pos = args.curpos,
+  }
+end
+M.wrap_selection_with_path = function()
+  visual_surround({ { "Path(" }, { ")" } }, {})
 end
 
 return M

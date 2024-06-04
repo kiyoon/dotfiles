@@ -1,4 +1,6 @@
 # ruff: noqa: UP007
+from __future__ import annotations
+
 import json
 import subprocess
 from collections import defaultdict
@@ -26,10 +28,6 @@ def relative_import_to_absolute_import(
     python_file_path: str | PathLike,
     from_import_name: str,
 ):
-    # from_import_name: ..c.d
-    # file_path: /a/b/c/d.py
-    # return: /a/b/c/a/b/c/d.py
-
     count_num_dots = 0
     for i in range(len(from_import_name)):
         if from_import_name[i] == ".":
@@ -69,7 +67,7 @@ def relative_import_to_absolute_import(
 
 
 @app.command()
-def find_python_import_in_project(
+def count(
     project_root: str,
     module_name: str,
 ) -> None:
@@ -301,9 +299,14 @@ def find_python_import_in_project(
     #     )
 
 
+@app.command()
+def dummy_do_not_use() -> None:
+    print(count.__doc__)
+
+
 if __name__ == "__main__":
-    # app()
+    app()
     # find_python_import_in_project("/home/kiyoon/project/dti-db-curation", "abcd")
-    find_python_import_in_project(
-        "/Users/kiyoon/project/dti-db-curation", "ManualCurationUpdater"
-    )
+    # find_python_import_in_project(
+    #     "/Users/kiyoon/project/dti-db-curation", "ManualCurationUpdater"
+    # )

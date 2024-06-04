@@ -339,6 +339,7 @@ vim.api.nvim_create_autocmd("FileType", {
       Progress = "rich.progress",
       Traceback = "rich.traceback",
       Theme = "rich.theme",
+      WebDriver = "selenium.webdriver.remote.webdriver",
     }
 
     local python_keywords = {

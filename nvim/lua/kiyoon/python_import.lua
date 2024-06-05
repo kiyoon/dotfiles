@@ -107,6 +107,27 @@ vim.api.nvim_create_autocmd("FileType", {
       return modules
     end
 
+    local python_import = {
+      "pickle",
+      "os",
+      "sys",
+      "re",
+      "json",
+      "time",
+      "datetime",
+      "random",
+      "math",
+      "numpy",
+      "pandas",
+      "torch",
+      "importlib",
+    }
+
+    local is_python_import = {}
+    for _, v in ipairs(python_import) do
+      is_python_import[v] = true
+    end
+
     local python_import_as = {
       mp = "multiprocessing",
       np = "numpy",
@@ -546,6 +567,10 @@ vim.api.nvim_create_autocmd("FileType", {
         elseif statement == "setup_logging" then
           return { "from " .. first_module .. ".utils.log import setup_logging" }
         end
+      end
+
+      if is_python_import[statement] then
+        return { "import " .. statement }
       end
 
       if python_import_as[statement] ~= nil then

@@ -107,6 +107,9 @@ vim.api.nvim_create_autocmd("FileType", {
       return modules
     end
 
+    -- If nothing is found, it will return `import ..` anyway.
+    -- However, it might take some time to search the candidate,
+    -- so we define a list of common imports here.
     local python_import = {
       "pickle",
       "os",
@@ -117,10 +120,34 @@ vim.api.nvim_create_autocmd("FileType", {
       "datetime",
       "random",
       "math",
-      "numpy",
-      "pandas",
-      "torch",
       "importlib",
+      "argparse",
+      "shutil",
+      "copy",
+      "dataclasses",
+      "enum",
+      "functools",
+      "glob",
+      "itertools",
+      "pathlib",
+      "pprint",
+      "abc",
+      "contextlib",
+      "collections",
+      "io",
+      "multiprocessing",
+      "typing",
+      "typing_extensions",
+      "setuptools",
+
+      -- third-party
+      "PIL",
+      "tqdm",
+      "easydict",
+      "rich",
+      "selenium",
+      "neptune",
+      "torch",
     }
 
     local is_python_import = {}

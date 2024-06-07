@@ -89,6 +89,12 @@ return {
         python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
         -- firefox_profiles_ini_path = "~/snap/firefox/common/.mozilla/firefox/profiles.ini",
+
+        -- notify = {
+        --   ignore = {
+        --     "download_ipynb",
+        --   },
+        -- },
       }
     end,
     dev = jupynium_dev,
@@ -589,9 +595,9 @@ return {
     end,
     dependencies = {
       {
-        -- "nvim-treesitter/nvim-treesitter-textobjects",
-        "kiyoon/nvim-treesitter-textobjects",
-        branch = "fix/builtin_find",
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        -- "kiyoon/nvim-treesitter-textobjects",
+        -- branch = "fix/builtin_find",
         dev = nvim_treesitter_textobjects_dev,
       },
       "RRethy/nvim-treesitter-endwise",

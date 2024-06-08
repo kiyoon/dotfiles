@@ -3,6 +3,7 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
+local python_import_dev = false
 
 local icons = require "kiyoon.icons"
 
@@ -48,14 +49,82 @@ return {
   },
 
   --- NOTE: Python
-  -- {
-  --   "kiyoon/vim-autoimport",
-  --   ft = { "python" },
-  --   keys = {
-  --     { "<M-CR>", ":ImportSymbol<CR>" },
-  --     { "<M-CR>", "<Esc>:ImportSymbol<CR>a", mode = "i" },
-  --   },
-  -- },
+  {
+    "kiyoon/python-import.nvim",
+    build = "pipx install .",
+    keys = {
+      {
+        "<M-CR>",
+        function()
+          require("python_import.api").add_import_current_word_and_notify()
+        end,
+        mode = { "i", "n" },
+        silent = true,
+        desc = "Add python import",
+        ft = "python",
+      },
+      {
+        "<M-CR>",
+        function()
+          require("python_import.api").add_import_current_selection_and_notify()
+        end,
+        mode = "x",
+        silent = true,
+        desc = "Add python import",
+        ft = "python",
+      },
+      {
+        "<space>i",
+        function()
+          require("python_import.api").add_import_current_word_and_move_cursor()
+        end,
+        mode = "n",
+        silent = true,
+        desc = "Add python import and move cursor",
+        ft = "python",
+      },
+      {
+        "<space>i",
+        function()
+          require("python_import.api").add_import_current_selection_and_move_cursor()
+        end,
+        mode = "x",
+        silent = true,
+        desc = "Add python import and move cursor",
+        ft = "python",
+      },
+      {
+        "<space>tr",
+        function()
+          require("python_import.api").add_rich_traceback()
+        end,
+        silent = true,
+        desc = "Add rich traceback",
+        ft = "python",
+      },
+    },
+    opts = {
+      -- Example 1:
+      -- Default behaviour for `tqdm` is `from tqdm.auto import tqdm`.
+      -- If you want to change it to `import tqdm`, you can set `import = {"tqdm"}` and `import_from = {tqdm = nil}` here.
+      -- If you want to change it to `from tqdm import tqdm`, you can set `import_from = {tqdm = "tqdm"}` here.
+      extend_lookup_table = {
+        import = {
+          -- "tqdm",
+        },
+        import_as = {
+          -- These are the default values. Here for demonstration.
+          -- np = "numpy",
+          -- pd = "pandas",
+        },
+        import_from = {
+          -- tqdm = nil,
+          -- tqdm = "tqdm",
+        },
+      },
+    },
+    dev = python_import_dev,
+  },
   -- {
   --   "Vimjas/vim-python-pep8-indent",
   --   ft = "python",

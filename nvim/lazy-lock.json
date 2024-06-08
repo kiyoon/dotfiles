@@ -72,6 +72,7 @@
   "persistent-breakpoints.nvim": { "branch": "main", "commit": "6f3ff5707385ee446acf548cb759db54223bcfca" },
   "plenary.nvim": { "branch": "master", "commit": "a3e3bc82a3f95c5ed0d7201546d5d2c19b20d683" },
   "promise-async": { "branch": "main", "commit": "93540c168c5ed2b030ec3e6c40ab8bbb85e36355" },
+  "python-import.nvim": { "branch": "master", "commit": "e679a98cc05abbfd2ad94646d66f2e49d57faa14" },
   "rainbow-delimiters.nvim": { "branch": "master", "commit": "849803e0a687c6ef7c9a0d305bd4d441017b8abf" },
   "refactoring.nvim": { "branch": "master", "commit": "d2786877c91aa409c824f27b4ce8a9f560dda60a" },
   "rustaceanvim": { "branch": "master", "commit": "e306c742bd7f7183e371cd91268b72d9db1bbae0" },

@@ -145,7 +145,6 @@ vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})
 -- only filetype specific mappings
 -- autocmd
 
-require "kiyoon.python_import"
 require "wookayin.python_keymaps"
 
 -- Convert | to │ (box drawing character)
@@ -217,7 +216,3 @@ end
 vim.keymap.set("x", "<space>pF", function()
   vim.cmd [['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']]
 end, { desc = "Run sql-formatter in selection" })
-
-vim.keymap.set("n", "<space>pp", function()
-  require("kiyoon.python_import").find_import_counts_in_project()
-end, { desc = "Find import counts in project" })

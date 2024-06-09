@@ -26,20 +26,33 @@ M.run_ruff = function(bufnr)
   -- NOTE: nvim_exec will write additional stuff to stdout, like "shell returned 1"
   -- so we need to pass the failing vim.json.decode
   local file_name = vim.api.nvim_buf_get_name(bufnr)
-  local ruff_outputs = vim.api.nvim_exec(
-    [[w !ruff check --stdin-filename ']] .. file_name .. [[' --output-format=json-lines --ignore-noqa -]],
-    { output = true }
-  )
+
+  local buf_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local response = vim
+    .system({
+      "ruff",
+      "check",
+      "--stdin-filename",
+      file_name,
+      "--output-format=json-lines",
+      "--ignore-noqa",
+      "-",
+    }, { text = true, stdin = buf_lines })
+    :wait()
+
+  if response.code ~= 0 then
+    vim.notify("Failed to run ruff", vim.log.levels.ERROR)
+  end
+  local ruff_outputs = response.stdout:gsub("\n$", "")
 
   -- restore the last paste register
   vim.fn.setpos("'[", { bufnr, last_paste_start_line, last_paste_start_col, 0 })
   vim.fn.setpos("']", { bufnr, last_paste_end_line, last_paste_end_col, 0 })
 
-  assert(ruff_outputs ~= nil)
-  ruff_outputs = vim.split(ruff_outputs, "\n")
+  local ruff_outputs_list = vim.split(ruff_outputs, "\n")
 
   bufnr_to_ruff_per_line[bufnr] = {}
-  for _, line in ipairs(ruff_outputs) do
+  for _, line in ipairs(ruff_outputs_list) do
     local status, ruff_output = pcall(vim.json.decode, line)
 
     if not status then

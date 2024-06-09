@@ -16,17 +16,9 @@ M.run_ruff = function(bufnr)
     return bufnr_to_ruff_per_line[bufnr]
   end
 
-  -- HACK: the `:w !ruff` command will change the last paste register
-  -- so we need to save it and restore it after the command
-  local last_paste_start_line = vim.fn.line "'["
-  local last_paste_start_col = vim.fn.col "'["
-  local last_paste_end_line = vim.fn.line "']"
-  local last_paste_end_col = vim.fn.col "']"
-
   -- NOTE: nvim_exec will write additional stuff to stdout, like "shell returned 1"
   -- so we need to pass the failing vim.json.decode
   local file_name = vim.api.nvim_buf_get_name(bufnr)
-
   local buf_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
   local response = vim
     .system({
@@ -40,15 +32,11 @@ M.run_ruff = function(bufnr)
     }, { text = true, stdin = buf_lines })
     :wait()
 
-  if response.code ~= 0 then
-    vim.notify("Failed to run ruff", vim.log.levels.ERROR)
+  if response.code ~= 0 and response.code ~= 1 then
+    -- NOTE: ruff returns 1 when there are violations
+    vim.notify(string.format("Failed to run ruff with code %d", response.code), vim.log.levels.ERROR)
   end
   local ruff_outputs = response.stdout:gsub("\n$", "")
-
-  -- restore the last paste register
-  vim.fn.setpos("'[", { bufnr, last_paste_start_line, last_paste_start_col, 0 })
-  vim.fn.setpos("']", { bufnr, last_paste_end_line, last_paste_end_col, 0 })
-
   local ruff_outputs_list = vim.split(ruff_outputs, "\n")
 
   bufnr_to_ruff_per_line[bufnr] = {}

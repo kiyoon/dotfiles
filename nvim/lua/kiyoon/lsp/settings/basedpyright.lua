@@ -26,7 +26,7 @@ M = {
           reportUnusedVariable = false,
           -- reportUnusedClass = "warning",
           -- reportUnusedFunction = "warning",
-          reportUndefinedVariable = false, -- ruff handles this with F822
+          -- reportUndefinedVariable = false, -- ruff handles this with F822
         },
       },
     },

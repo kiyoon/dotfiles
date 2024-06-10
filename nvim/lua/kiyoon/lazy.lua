@@ -104,24 +104,49 @@ return {
       },
     },
     opts = {
-      -- Example 1:
-      -- Default behaviour for `tqdm` is `from tqdm.auto import tqdm`.
-      -- If you want to change it to `import tqdm`, you can set `import = {"tqdm"}` and `import_from = {tqdm = nil}` here.
-      -- If you want to change it to `from tqdm import tqdm`, you can set `import_from = {tqdm = "tqdm"}` here.
       extend_lookup_table = {
+        ---@type string[]
         import = {
           -- "tqdm",
         },
+
+        ---@type table<string, string>
         import_as = {
           -- These are the default values. Here for demonstration.
           -- np = "numpy",
           -- pd = "pandas",
         },
+
+        ---@type table<string, string>
         import_from = {
           -- tqdm = nil,
           -- tqdm = "tqdm",
         },
+
+        ---@type table<string, string[]>
+        statement_after_imports = {
+          -- logger = { "import my_custom_logger", "", "logger = my_custom_logger.get_logger()" },
+        },
       },
+
+      ---Return nil to indicate no match is found and continue with the default lookup
+      ---Return a table to stop the lookup and use the returned table as the result
+      ---Return an empty table to stop the lookup. This is useful when you want to add to wherever you need to.
+      ---@type fun(winnr: integer, word: string, ts_node: TSNode?): string[]?
+      custom_function = function(winnr, word, ts_node)
+        local bufnr = vim.api.nvim_win_get_buf(winnr)
+
+        local utils = require "python_import.utils"
+        if utils.get_cached_first_party_modules(bufnr) ~= nil then
+          local first_module = utils.get_cached_first_party_modules(bufnr)[1]
+          -- if statement ends with _DIR, import from the first module (from project import PROJECT_DIR)
+          if word:match "_DIR$" then
+            return { "from " .. first_module .. " import " .. word }
+          elseif word == "setup_logging" then
+            return { "from " .. first_module .. ".utils.log import setup_logging" }
+          end
+        end
+      end,
     },
     dev = python_import_dev,
   },
@@ -1298,26 +1323,31 @@ return {
           "williamboman/mason-lspconfig.nvim",
         },
       },
-      -- "folke/neodev.nvim",
       {
         "folke/lazydev.nvim",
         ft = "lua",
         opts = {
           library = {
             -- Library items can be absolute paths
-            -- "~/projects/my-awesome-lib",
+            "~/project/nvim-treesitter-textobjects",
+            "~/project/jupynium.nvim",
+            "~/project/python-import.nvim",
             -- Or relative, which means they will be resolved as a plugin
             -- "LazyVim",
             -- When relative, you can also provide a path to the library in the plugin dir
             -- "luvit-meta/library", -- see below
+            { path = "luvit-meta/library", words = { "vim%.uv" } },
           },
         },
       },
+      -- "folke/neodev.nvim",
     },
     config = function()
       require "kiyoon.lsp"
     end,
   },
+  -- optional for lazydev.nvim: `vim.uv` typings. Plugin will never be loaded
+  { "Bilal2453/luvit-meta", lazy = true },
   {
     "hrsh7th/nvim-cmp",
     -- event = "InsertEnter",

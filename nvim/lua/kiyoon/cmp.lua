@@ -64,7 +64,7 @@ cmp.setup {
   sources = {
     { name = "jupynium", priority = 1000 },
     -- { name = "neopyter", priority = 1000 },
-    { name = "lazydev", group_index = 0, priority = 600 },
+    { name = "lazydev", priority = 600 },
     { name = "nvim_lsp", priority = 500 },
     { name = "luasnip", priority = 10 },
     { name = "path", priority = 9 },

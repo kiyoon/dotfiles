@@ -5,7 +5,7 @@ end
 
 local actions = require "telescope.actions"
 local path_actions = require "telescope_insert_path"
-local trouble = require "trouble.providers.telescope"
+local trouble = require "trouble.sources.telescope"
 local lga_actions = require "telescope-live-grep-args.actions"
 
 telescope.setup {
@@ -24,10 +24,10 @@ telescope.setup {
         ["}"] = path_actions.insert_abspath_insert,
         ["-"] = path_actions.insert_reltobufpath_normal,
         ["="] = path_actions.insert_abspath_normal,
-        ["<c-t>"] = trouble.open_with_trouble,
+        ["<c-t>"] = trouble.open,
       },
       i = {
-        ["<c-t>"] = trouble.open_with_trouble,
+        ["<c-t>"] = trouble.open,
         ["<f2>"] = actions.move_selection_previous,
         ["<f3>"] = actions.move_selection_previous,
         ["<f5>"] = actions.move_selection_next,

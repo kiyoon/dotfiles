@@ -51,7 +51,7 @@ return {
   --- NOTE: Python
   {
     "kiyoon/python-import.nvim",
-    build = "pipx install .",
+    build = "bash scripts/build_with_uv.sh ~/.virtualenvs/python-import",
     keys = {
       {
         "<M-CR>",
@@ -168,19 +168,18 @@ return {
   },
   {
     "kiyoon/jupynium.nvim",
-    build = "conda run --no-capture-output -n jupynium pip install .",
-    enabled = vim.fn.isdirectory(vim.fn.expand "~/bin/miniconda3/envs/jupynium"),
+    build = "bash scripts/build_with_uv.sh ~/.virtualenvs/jupynium",
     ft = { "python", "markdown" },
     config = function()
-      local jupynium_conda_env
+      local python_host
       if jupynium_dev then
-        jupynium_conda_env = "jupynium_dev"
+        python_host = { "conda", "run", "--no-capture-output", "-n", "jupynium_dev", "python" }
       else
-        jupynium_conda_env = "jupynium"
+        python_host = { "~/.virtualenvs/jupynium/bin/python" }
       end
       require("jupynium").setup {
         default_notebook_URL = "localhost:8888/nbclassic",
-        python_host = { "conda", "run", "--no-capture-output", "-n", jupynium_conda_env, "python" },
+        python_host = python_host,
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
         -- firefox_profiles_ini_path = "~/snap/firefox/common/.mozilla/firefox/profiles.ini",
 

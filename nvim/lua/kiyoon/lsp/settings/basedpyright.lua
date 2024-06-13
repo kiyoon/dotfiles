@@ -36,6 +36,8 @@ M = {
 -- NOTE: pyright works with es-ES but not with es_ES. Weird.
 if lang == "es" then
   M.cmd_env = { LC_ALL = "es-ES.UTF-8" }
+elseif lang == "fr" then
+  M.cmd_env = { LC_ALL = "fr-FR.UTF-8" }
 end
 
 return M

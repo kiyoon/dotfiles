@@ -731,17 +731,23 @@ M.translate_ruff_message = function(code, message)
       if lang == "es" then
         return string.format("El variable de control del bucle %s no se usa dentro del cuerpo del bucle", name)
       end
-    -- 🔗🐍 [B008	function-call-in-default-argument	Do not perform function call {name} in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable	✔️ 🛠️
-    -- 🔗🐍 [B009	get-attr-with-constant	Do not call getattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️
-    -- 🔗🐍 [B010	set-attr-with-constant	Do not call setattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️
-    -- 🔗🐍 [B011	assert-false	Do not assert False (python -O removes these calls), raise AssertionError()	✔️ 🛠️
-    -- 🔗🐍 [B012	jump-statement-in-finally	{name} inside finally blocks cause exceptions to be silenced	✔️ 🛠️
-    -- 🔗🐍 [B013	redundant-tuple-in-exception-handler	A length-one tuple literal is redundant in exception handlers	✔️ 🛠️
-    -- 🔗🐍 [B014	duplicate-handler-exception	Exception handler with duplicate exception: {name}	✔️ 🛠️
-    -- 🔗🐍 [B015	useless-comparison	Pointless comparison. Did you mean to assign a value? Otherwise, prepend assert or remove it.	✔️ 🛠️
-    -- 🔗🐍 [B016	raise-literal	Cannot raise a literal. Did you intend to return it or raise an Exception?	✔️ 🛠️
-    -- 🔗🐍 [B017	assert-raises-exception	{assertion}({exception}) should be considered evil	✔️ 🛠️
-    -- 🔗🐍 [B018	useless-expression	Found useless expression. Either assign it to a variable or remove it.	✔️ 🛠️
+      -- 🔗🐍 [B008	function-call-in-default-argument	Do not perform function call {name} in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable	✔️ 🛠️
+      -- 🔗🐍 [B009	get-attr-with-constant	Do not call getattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️
+      -- 🔗🐍 [B010	set-attr-with-constant	Do not call setattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️
+      -- 🔗🐍 [B011	assert-false	Do not assert False (python -O removes these calls), raise AssertionError()	✔️ 🛠️
+      -- 🔗🐍 [B012	jump-statement-in-finally	{name} inside finally blocks cause exceptions to be silenced	✔️ 🛠️
+      -- 🔗🐍 [B013	redundant-tuple-in-exception-handler	A length-one tuple literal is redundant in exception handlers	✔️ 🛠️
+      -- 🔗🐍 [B014	duplicate-handler-exception	Exception handler with duplicate exception: {name}	✔️ 🛠️
+      -- 🔗🐍 [B015	useless-comparison	Pointless comparison. Did you mean to assign a value? Otherwise, prepend assert or remove it.	✔️ 🛠️
+      -- 🔗🐍 [B016	raise-literal	Cannot raise a literal. Did you intend to return it or raise an Exception?	✔️ 🛠️
+      -- 🔗🐍 [B017	assert-raises-exception	{assertion}({exception}) should be considered evil	✔️ 🛠️
+      -- 🔗🐍 [B018	useless-expression	Found useless expression. Either assign it to a variable or remove it.	✔️ 🛠️
+    elseif code == "B018" then
+      if lang == "es" then
+        return "Se encontró una expresión inútil. Asígnala a una variable o elimínala."
+      elseif lang == "fr" then
+        return "Expression inutile trouvée. Attribuez-la à une variable ou supprimez-la."
+      end
     -- 🔗🐍 [B019	cached-instance-method	Use of functools.lru_cache or functools.cache on methods can lead to memory leaks	✔️ 🛠️
     -- 🔗🐍 [B020	loop-variable-overrides-iterator	Loop control variable {name} overrides iterable it iterates	✔️ 🛠️
     -- 🔗🐍 [B021	f-string-docstring	f-string used as docstring. Python will interpret this as a joined string, rather than a docstring.	✔️ 🛠️

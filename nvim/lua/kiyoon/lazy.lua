@@ -3,7 +3,7 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
-local python_import_dev = false
+local python_import_dev = true
 
 local icons = require "kiyoon.icons"
 
@@ -827,12 +827,10 @@ return {
           local prev_cursor = vim.api.nvim_win_get_cursor(0)
           vim.cmd [[normal! w]]
           local cursor = vim.api.nvim_win_get_cursor(0)
-          vim.print(cursor)
 
           -- loop until line is not empty, or cursor didn't move
           local line = vim.fn.getline(cursor[1])
           while line:match "^%s*$" and cursor[1] ~= prev_cursor[1] do
-            print(line)
             vim.cmd [[normal! )]]
             prev_cursor = { cursor[1], cursor[2] }
             cursor = vim.api.nvim_win_get_cursor(0)

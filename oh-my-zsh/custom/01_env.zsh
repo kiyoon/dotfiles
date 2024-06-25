@@ -69,7 +69,11 @@ bindkey "^[OH" beginning-of-line
 
 # https://stackoverflow.com/questions/41287226/ssh-asking-every-single-time-for-passphrase
 if ! pgrep -u $UID ssh-agent >/dev/null; then
-  ssh-agent -t 3h > ~/.ssh/.agent.pid
+	if [[ $OSTYPE == "darwin"* ]]; then
+		ssh-agent -t 9h > ~/.ssh/.agent.pid
+	else
+		ssh-agent -t 3h > ~/.ssh/.agent.pid
+	fi
 fi
 source ~/.ssh/.agent.pid >&/dev/null
 

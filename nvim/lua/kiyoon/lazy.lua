@@ -823,7 +823,26 @@ return {
       {
         "aI",
         function()
-          require("treesitter_indent_object.textobj").select_indent_outer(true)
+          require("treesitter_indent_object.textobj").select_indent_outer(true, "V")
+          local prev_cursor = vim.api.nvim_win_get_cursor(0)
+          vim.cmd [[normal! w]]
+          local cursor = vim.api.nvim_win_get_cursor(0)
+          vim.print(cursor)
+
+          -- loop until line is not empty, or cursor didn't move
+          local line = vim.fn.getline(cursor[1])
+          while line:match "^%s*$" and cursor[1] ~= prev_cursor[1] do
+            print(line)
+            vim.cmd [[normal! )]]
+            prev_cursor = { cursor[1], cursor[2] }
+            cursor = vim.api.nvim_win_get_cursor(0)
+            line = vim.fn.getline(cursor[1])
+          end
+
+          if cursor[1] ~= prev_cursor[1] then
+            -- line is not empty. Adjust cursor position (row-1)
+            vim.cmd [[normal! k$]]
+          end
         end,
         mode = { "x", "o" },
         desc = "Select context-aware indent (outer, line-wise)",

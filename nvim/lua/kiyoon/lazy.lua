@@ -416,6 +416,7 @@ return {
       -- you can use <C-w> but this is for consistency with github copilot
       -- using <A-Right> to accept a word.
       vim.cmd [[inoremap <A-Left> <C-\><C-o>db]]
+      vim.cmd [[inoremap <A-BS> <C-\><C-o>db]] -- consistency with zsh and bash
       vim.cmd [[inoremap <F2> <C-\><C-o>db]]
       vim.cmd [[inoremap <F3> <C-\><C-o>db]]
       vim.cmd [[inoremap <F5> <Plug>(copilot-accept-word)]]

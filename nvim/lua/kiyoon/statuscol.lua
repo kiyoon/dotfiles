@@ -1,7 +1,5 @@
 local builtin = require "statuscol.builtin"
 
-local diagnostic_with_float = require "kiyoon.lsp.diagnostic_with_float"
-
 -- functions modified from statuscol.nvim
 --- Toggle a (conditional) DAP breakpoint.
 local function toggle_breakpoint(args)
@@ -30,15 +28,6 @@ local function lnum_click(args)
     else
       vim.cmd "norm! p" -- Paste on right click
     end
-  end
-end
-
---- Handler for clicking a Diagnostc* sign.
-local function diagnostic_click(args)
-  if args.button == "l" then
-    diagnostic_with_float.open_float() -- Open diagnostic float on left click
-  elseif args.button == "m" then
-    vim.lsp.buf.code_action() -- Open code action on middle click
   end
 end
 
@@ -108,10 +97,6 @@ require("statuscol").setup {
     DapBreakpointRejected = toggle_breakpoint,
     DapBreakpoint = toggle_breakpoint,
     DapBreakpointCondition = toggle_breakpoint,
-    DiagnosticSignError = diagnostic_click,
-    DiagnosticSignHint = diagnostic_click,
-    DiagnosticSignInfo = diagnostic_click,
-    DiagnosticSignWarn = diagnostic_click,
     LightBulbSign = lightbulb_click,
   },
 }

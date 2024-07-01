@@ -3,17 +3,77 @@ local servers_use_formatting = {
   -- "ruff_lsp",
 }
 
+local source_to_icon = {
+  rustc = "🦀",
+  ["rust-analyzer"] = "🦀",
+  clippy = "🦀cl",
+  ruff = "🐍",
+  basedpyright = "🐍b",
+  shellcheck = "🐚",
+  tsserver = "🌐",
+  ["Lua Syntax Check."] = "🌜s",
+  ["Lua Diagnostics."] = "🌜d",
+}
+
+local ruff_codes_to_ignore = {
+  T201 = true,
+  T202 = true,
+}
+
+local basedpyright_codes_to_ignore = {
+  reportUnusedVariable = true,
+  reportUnusedImport = true,
+}
+
 local M = {}
 
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 local icons = require "kiyoon.icons"
 
-local diagnostic_with_float = require "kiyoon.lsp.diagnostic_with_float"
-
 if status_cmp_ok then
   M.capabilities = vim.lsp.protocol.make_client_capabilities()
   M.capabilities.textDocument.completion.completionItem.snippetSupport = true
   M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
+end
+
+---@param diagnostic vim.Diagnostic
+---@return string
+local function format_float(diagnostic)
+  -- diagnostic float options used for vim.diagnostic.open_float, vim.diagnostic.goto_next, vim.diagnostic.goto_prev
+  -- adds URL to lint errors
+
+  -- if diagnostic.user_data ~= nil then
+  --   vim.print(diagnostic.user_data)
+  -- end
+  local message
+  if diagnostic.source == "clippy" then
+    -- remove "for further information visit https://rust-lang.github.io/rust-clippy/...." from the message
+    -- match line break at the end
+    message =
+      diagnostic.message:gsub("for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n", "")
+  else
+    message = diagnostic.message
+  end
+
+  if source_to_icon[diagnostic.source] ~= nil then
+    return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+  end
+
+  return string.format("%s 🔗%s", message, diagnostic.source)
+end
+
+---@param diagnostic vim.Diagnostic
+local function format_virtual_text(diagnostic)
+  if diagnostic.source == "ruff" then
+    if ruff_codes_to_ignore[diagnostic.code] then
+      return nil
+    end
+  elseif diagnostic.source == "basedpyright" then
+    if basedpyright_codes_to_ignore[diagnostic.code] then
+      return nil
+    end
+  end
+  return diagnostic.message
 end
 
 M.setup = function()
@@ -31,7 +91,8 @@ M.setup = function()
 
   local config = {
     -- virtual_text = true,
-    virtual_text = { spacing = 3, prefix = "" },
+    -- virtual_text = { spacing = 3, prefix = "" },
+    virtual_text = { spacing = 3, prefix = "", format = format_virtual_text },
     signs = {
       active = signs, -- show signs
     },
@@ -46,6 +107,7 @@ M.setup = function()
       source = "always",
       header = "",
       prefix = "",
+      format = format_float,
     },
   }
 
@@ -78,7 +140,7 @@ function M.lsp_keymaps(bufnr)
   keymap("n", "gd", vim.lsp.buf.definition, opts, "[G]o to [D]efinition")
   keymap("n", "gI", vim.lsp.buf.implementation, opts, "[G]o to [I]mplementation")
   keymap("n", "gr", vim.lsp.buf.references, opts, "[G]o to [R]eferences")
-  keymap("n", "gl", diagnostic_with_float.open_float, opts, "Show Diagnostics")
+  keymap("n", "gl", vim.diagnostic.open_float, opts, "Show Diagnostics")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)
   keymap("n", "<space>ph", function()
@@ -88,23 +150,23 @@ function M.lsp_keymaps(bufnr)
   -- Use actions-preview.nvim
   -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", function()
-    diagnostic_with_float.goto_next { buffer = 0 }
+    vim.diagnostic.goto_next { buffer = 0 }
   end, opts)
   keymap({ "n", "x", "o", "i" }, "<A-h>", function()
-    diagnostic_with_float.goto_prev { buffer = 0 }
+    vim.diagnostic.goto_prev { buffer = 0 }
   end, opts)
 
   local next_warn = function()
-    diagnostic_with_float.goto_next { severity = vim.diagnostic.severity.WARNING }
+    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARNING }
   end
   local prev_warn = function()
-    diagnostic_with_float.goto_prev { severity = vim.diagnostic.severity.WARNING }
+    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.WARNING }
   end
   local next_err = function()
-    diagnostic_with_float.goto_next { severity = vim.diagnostic.severity.ERROR }
+    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
   end
   local prev_err = function()
-    diagnostic_with_float.goto_prev { severity = vim.diagnostic.severity.ERROR }
+    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
   end
   local status, tsrepeat = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
   if status then

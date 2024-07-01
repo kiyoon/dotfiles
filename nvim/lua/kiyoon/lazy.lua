@@ -666,7 +666,27 @@ return {
     --   return vim.fn.isdirectory(vim.fn.expand "%:p") == 1
     -- end,
     config = function()
-      require("oil").setup()
+      require("oil").setup {
+        keymaps = {
+          ["\\"] = { "actions.select", opts = { vertical = true }, desc = "Open the entry in a vertical split" },
+          ["|"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
+          ["<C-r>"] = "actions.refresh",
+          ["g?"] = "actions.show_help",
+          ["<CR>"] = "actions.select",
+          ["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
+          ["<C-p>"] = "actions.preview",
+          ["<C-c>"] = "actions.close",
+          ["-"] = "actions.parent",
+          ["_"] = "actions.open_cwd",
+          ["`"] = "actions.cd",
+          ["~"] = { "actions.cd", opts = { scope = "tab" }, desc = ":tcd to the current oil directory" },
+          ["gs"] = "actions.change_sort",
+          ["gx"] = "actions.open_external",
+          ["g."] = "actions.toggle_hidden",
+          ["g\\"] = "actions.toggle_trash",
+        },
+        use_default_keymaps = false,
+      }
     end,
   },
 
@@ -1555,6 +1575,7 @@ return {
           -- IGNORED:
           -- ruff:[D212]: multi-line docstring summary should start at the first line (in favor of D213, second line)
           prepend_args = {
+            "check",
             "--select",
             "I,D20,D21,UP00,UP032,UP034",
             "--ignore",

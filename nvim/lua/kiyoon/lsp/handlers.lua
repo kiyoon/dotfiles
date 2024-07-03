@@ -18,6 +18,7 @@ local source_to_icon = {
 local ruff_codes_to_ignore = {
   T201 = true,
   T202 = true,
+  T203 = true,
 }
 
 local basedpyright_codes_to_ignore = {

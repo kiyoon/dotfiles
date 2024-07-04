@@ -617,6 +617,8 @@ M.os_path_to_pathlib = function(wrap_with_path)
     new_text = one_arg_function_to_pathlib "name"
   elseif function_name == "os.path.dirname" then
     new_text = one_arg_function_to_pathlib "parent"
+  elseif function_name == "os.stat" then
+    new_text = one_arg_function_to_pathlib "stat()"
   elseif function_name == "os.path.getsize" then
     new_text = one_arg_function_to_pathlib "stat().st_size"
   elseif function_name == "os.path.getmtime" then

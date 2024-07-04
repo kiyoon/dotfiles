@@ -637,6 +637,8 @@ M.os_path_to_pathlib = function(wrap_with_path)
     new_text = multi_arg_function_to_pathlib "samefile"
   elseif function_name == "open" then
     new_text = multi_arg_function_to_pathlib "open"
+  elseif function_name == "glob.glob" then
+    new_text = multi_arg_function_to_pathlib "glob" -- this is not completely correct
   elseif function_name == "print" then
     if arglist_node:named_child_count() > 1 then
       notify("print() with more than one argument can't be safely converted to logger.info", "warning", {

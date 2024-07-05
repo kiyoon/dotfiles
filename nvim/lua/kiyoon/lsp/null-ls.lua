@@ -117,7 +117,7 @@ local function ruff_on_output_filtered(pattern, groups)
   nullls_output["end_col"] = ruff_output["end_location"]["column"]
   nullls_output["message"] = translate_ruff_message(ruff_output["code"], ruff_output["message"])
 
-  vim.print(ruff_output["code"])
+  -- vim.print(ruff_output["code"])
   if string.find(ruff_output["code"], "^COM") then
     nullls_output["severity"] = h.diagnostics.severities["information"]
   elseif string.find(ruff_output["code"], "^E") then

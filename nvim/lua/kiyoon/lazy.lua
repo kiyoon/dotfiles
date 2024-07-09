@@ -3,7 +3,7 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
-local python_import_dev = true
+local python_import_dev = false
 
 local icons = require "kiyoon.icons"
 
@@ -845,23 +845,7 @@ return {
         "aI",
         function()
           require("treesitter_indent_object.textobj").select_indent_outer(true, "V")
-          local prev_cursor = vim.api.nvim_win_get_cursor(0)
-          vim.cmd [[normal! w]]
-          local cursor = vim.api.nvim_win_get_cursor(0)
-
-          -- loop until line is not empty, or cursor didn't move
-          local line = vim.fn.getline(cursor[1])
-          while line:match "^%s*$" and cursor[1] ~= prev_cursor[1] do
-            vim.cmd [[normal! )]]
-            prev_cursor = { cursor[1], cursor[2] }
-            cursor = vim.api.nvim_win_get_cursor(0)
-            line = vim.fn.getline(cursor[1])
-          end
-
-          if cursor[1] ~= prev_cursor[1] then
-            -- line is not empty. Adjust cursor position (row-1)
-            vim.cmd [[normal! k$]]
-          end
+          require("treesitter_indent_object.refiner").include_surrounding_empty_lines()
         end,
         mode = { "x", "o" },
         desc = "Select context-aware indent (outer, line-wise)",

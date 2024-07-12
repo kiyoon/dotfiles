@@ -4,6 +4,7 @@ local config = {
 	color_scheme = "Dracula (Official)",
 
 	font = wezterm.font_with_fallback({
+		-- "Cascadia Code NF",
 		"JetBrainsMono Nerd Font",
 		"Fira Code Nerd Font",
 	}),

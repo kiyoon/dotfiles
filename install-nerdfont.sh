@@ -6,6 +6,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	brew tap homebrew/cask-fonts
 	brew install font-jetbrains-mono-nerd-font
 	brew install font-fira-code
+    # brew install font-cascadia-code-nf
+    # brew install font-caskaydia-cove-nerd-font
 else
 	TEMPDIR=$(mktemp -d)
 	FONTDIR="$HOME/.local/share/fonts"
@@ -13,6 +15,7 @@ else
 	# fontname="UbuntuMono"
 	# fontname="FiraCode"
 	fontname="JetBrainsMono"
+	# fontname="CascadiaCode"
 
 	# nerd fonts
 	if [ ! command -v fc-list ] &>/dev/null || ! fc-list | grep -q "$fontname Nerd Font"; then

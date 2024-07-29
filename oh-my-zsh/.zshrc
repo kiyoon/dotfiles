@@ -116,8 +116,6 @@ plugins=(
 	fzf
 	zoxide
 	thefuck
-	ripgrep
-	fd
 	virtualenvwrapper
 )
 
@@ -181,3 +179,7 @@ if [[ -n "$git_root" ]]; then
 	fi
 fi
 
+
+autoload -Uz compinit
+zstyle ':completion:*' menu select
+fpath+=~/.zfunc

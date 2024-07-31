@@ -362,6 +362,8 @@ return {
       "P",
       "=p",
       "=P",
+      -- { '"', mode = { "n", "x" } },
+      -- { "<C-r>", mode = { "i" } },
       { "y", mode = { "x", "o", "s" } },
       { "d", mode = { "x", "o", "s" } },
       { "c", mode = { "x", "o", "s" } },
@@ -482,8 +484,8 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.register {
-          ["<leader>c"] = { name = "ChatGPT" },
+        wk.add {
+          { "<leader>c", group = "ChatGPT" },
         }
       end
     end,
@@ -593,8 +595,8 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.register {
-          ["<leader>h"] = { name = "Gitsigns" },
+        wk.add {
+          { "<leader>h", group = "Gitsigns" },
         }
       end
     end,
@@ -931,8 +933,8 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.register {
-          ["<space>r"] = { name = "[R]efactor" },
+        wk.add {
+          { "<space>r", group = "[R]efactor" },
         }
       end
     end,
@@ -1284,9 +1286,9 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.register {
-          ["<leader>f"] = { name = "Telescope [F]uzzy [F]inder" },
-          ["<leader>fi"] = { name = "[I]nner" },
+        wk.add {
+          { "<leader>f", group = "Telescope [F]uzzy [F]inder" },
+          { "<leader>fi", group = "[I]nner" },
         }
       end
     end,
@@ -1657,8 +1659,8 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.register {
-          ["<leader>x"] = { name = "Trouble" },
+        wk.add {
+          { "<leader>x", group = "Trouble" },
         }
       end
     end,
@@ -1959,6 +1961,18 @@ return {
         -- or leave it empty to use the default settings
         -- refer to the configuration section below
       }
+
+      -- Sync with tmux registers
+      -- https://github.com/folke/which-key.nvim/issues/743#issuecomment-2234460129
+      local reg = require "which-key.plugins.registers"
+      local expand = reg.expand
+
+      function reg.expand()
+        if vim.env.TMUX then
+          require("tmux.copy").sync_registers()
+        end
+        return expand()
+      end
     end,
   },
   {

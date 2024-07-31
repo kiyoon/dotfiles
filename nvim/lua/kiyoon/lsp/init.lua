@@ -108,7 +108,7 @@ end
 
 local status, wk = pcall(require, "which-key")
 if status then
-  wk.register {
-    ["<space>p"] = { name = "LS[P] (language server)" },
+  wk.add {
+    { "<space>p", group = "LS[P] (language server)" },
   }
 end

@@ -4,6 +4,7 @@ require("tmux").setup {
     enable = true,
     sync_clipboard = false,
     sync_registers = true,
+    sync_registers_keymap_reg = false,
   },
   resize = {
     enable_default_keybindings = false,
@@ -47,21 +48,6 @@ vim.keymap.set("x", "P", function()
   yanky.put("P", true)
 end)
 
-local status, which_key = pcall(require, "which-key")
-if status then
-  vim.keymap.set("n", [["]], function()
-    if vim.env.TMUX then
-      require("tmux.copy").sync_registers()
-    end
-    which_key.show('"', { mode = "n", auto = true })
-  end)
-  vim.keymap.set("x", [["]], function()
-    if vim.env.TMUX then
-      require("tmux.copy").sync_registers()
-    end
-    which_key.show('"', { mode = "v", auto = true })
-  end)
-end
 vim.keymap.set("n", "<c-n>", "<Plug>(YankyCycleForward)")
 vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleBackward)")
 vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")

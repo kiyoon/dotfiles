@@ -68,8 +68,8 @@ require("nvim-dap-virtual-text").setup()
 
 local status, wk = pcall(require, "which-key")
 if status then
-  wk.register {
-    ["<space>d"] = { name = "DAP (Debugger)" },
+  wk.add {
+    { "<space>d", group = "DAP (Debugger)" },
   }
 end
 

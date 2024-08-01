@@ -604,9 +604,9 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [UP034]	extraneous-parentheses	Avoid extraneous parentheses	✔️ 🛠️
     -- 🔗🐍 [UP035]	deprecated-import	Import from {target} instead: {names}	✔️ 🛠️
     elseif code == "UP035" then
-      local target, names = message:match "(.*) is deprecated, use (.*) instead"
+      local target, names = message:match "Import from (.*) instead: (.*)"
       if lang == "es" then
-        return string.format("%s está obsoleto, usa %s en su lugar", target, names)
+        return string.format("Importa desde %s en lugar de: %s", target, names)
       end
     -- 🔗🐍 [UP036	outdated-version-block	Version block is outdated for minimum Python version	✔️ 🛠️
     -- 🔗🐍 [UP037	quoted-annotation	Remove quotes from type annotation	✔️ 🛠️

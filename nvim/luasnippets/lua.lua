@@ -68,8 +68,8 @@ return {
       [[
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.register {{
-          ["{}"] = {{ name = "{}" }},
+        wk.add {{
+          {{"{}", group = "{}" }},
         }}
       end
     ]],

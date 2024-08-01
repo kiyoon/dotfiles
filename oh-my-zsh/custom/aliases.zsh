@@ -127,7 +127,18 @@ alias cdg='cd $(git rev-parse --show-toplevel)'
 alias groot='git rev-parse --show-toplevel'
 alias gc='git commit --verbose --gpg-sign'
 alias glr='git pull --rebase'
-alias gglr='ggl --rebase'
+
+gglr() {
+	# from oh-my-zsh glr but with --rebase option
+	if [[ "$#" != 0 ]] && [[ "$#" != 1 ]]
+	then
+			git pull --rebase origin "${*}"
+	else
+			[[ "$#" == 0 ]] && local b="$(git_current_branch)"
+			git pull --rebase origin "${b:=$1}"
+	fi
+}
+
 
 # slurm
 alias sq='squeue -u $USER'

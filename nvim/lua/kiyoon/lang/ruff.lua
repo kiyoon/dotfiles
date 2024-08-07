@@ -326,7 +326,15 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [N802]	invalid-function-name	Function name {name} should be lowercase	✔️ 🛠️
     -- 🔗🐍 [N803]	invalid-argument-name	Argument name {name} should be lowercase	✔️ 🛠️
     -- 🔗🐍 [N804]	invalid-first-argument-name-for-class-method	First argument of a class method should be named cls	✔️ 🛠️
+    elseif code == "N804" then
+      if lang == "es" then
+        return "El primer argumento de un método debería llamarse `cls`"
+      end
     -- 🔗🐍 [N805]	invalid-first-argument-name-for-method	First argument of a method should be named self	✔️ 🛠️
+    elseif code == "N805" then
+      if lang == "es" then
+        return "El primer argumento de un método debería llamarse `self`"
+      end
     -- 🔗🐍 [N806]	non-lowercase-variable-in-function	Variable {name} in function should be lowercase	✔️ 🛠️
     -- 🔗🐍 [N807]	dunder-function-name	Function name should not start and end with __	✔️ 🛠️
     -- 🔗🐍 [N811]	constant-imported-as-non-constant	Constant {name} imported as non-constant {asname}	✔️ 🛠️
@@ -1014,6 +1022,41 @@ M.translate_ruff_message = function(code, message)
       if lang == "es" then
         return string.format("Reemplace `%s` con `Path.glob` o `Path.rglob`", function_name)
       end
+    -- RUF001	ambiguous-unicode-character-string	String contains ambiguous {}. Did you mean {}?	✔️ 🛠️
+    -- RUF002	ambiguous-unicode-character-docstring	Docstring contains ambiguous {}. Did you mean {}?	✔️ 🛠️
+    -- RUF003	ambiguous-unicode-character-comment	Comment contains ambiguous {}. Did you mean {}?	✔️ 🛠️
+    -- RUF005	collection-literal-concatenation	Consider {expression} instead of concatenation	✔️ 🛠️
+    -- RUF006	asyncio-dangling-task	Store a reference to the return value of {expr}.{method}	✔️ 🛠️
+    -- RUF007	zip-instead-of-pairwise	Prefer itertools.pairwise() over zip() when iterating over successive pairs	✔️ 🛠️
+    -- RUF008	mutable-dataclass-default	Do not use mutable default values for dataclass attributes	✔️ 🛠️
+    -- RUF009	function-call-in-dataclass-default-argument	Do not perform function call {name} in dataclass defaults	✔️ 🛠️
+    -- RUF010	explicit-f-string-type-conversion	Use explicit conversion flag	✔️ 🛠️
+    -- RUF011	ruff-static-key-dict-comprehension	Dictionary comprehension uses static key	❌ 🛠️
+    -- RUF012	mutable-class-default	Mutable class attributes should be annotated with typing.ClassVar	✔️ 🛠️
+    -- RUF013	implicit-optional	PEP 484 prohibits implicit Optional	✔️ 🛠️
+    elseif code == "RUF013" then
+      if lang == "es" then
+        return "PEP 484 prohíbe el uso implícito de `Optional`"
+      end
+      -- RUF015	unnecessary-iterable-allocation-for-first-element	Prefer next({iterable}) over single element slice	✔️ 🛠️
+      -- RUF016	invalid-index-type	Slice in indexed access to type {value_type} uses type {index_type} instead of an integer	✔️ 🛠️
+      -- RUF017	quadratic-list-summation	Avoid quadratic list summation	✔️ 🛠️
+      -- RUF018	assignment-in-assert	Avoid assignment expressions in assert statements	✔️ 🛠️
+      -- RUF019	unnecessary-key-check	Unnecessary key check before dictionary access	✔️ 🛠️
+      -- RUF020	never-union	{never_like} | T is equivalent to T	✔️ 🛠️
+      -- RUF021	parenthesize-chained-operators	Parenthesize a and b expressions when chaining and and or together, to make the precedence clear	🧪 🛠️
+      -- RUF022	unsorted-dunder-all	__all__ is not sorted	🧪 🛠️
+      -- RUF023	unsorted-dunder-slots	{}.__slots__ is not sorted	🧪 🛠️
+      -- RUF024	mutable-fromkeys-value	Do not pass mutable objects as values to dict.fromkeys	✔️ 🛠️
+      -- RUF025	unnecessary-dict-comprehension-for-iterable	Unnecessary dict comprehension for iterable; use dict.fromkeys instead	🧪 🛠️
+      -- RUF026	default-factory-kwarg	default_factory is a positional-only argument to defaultdict	✔️ 🛠️
+      -- RUF027	missing-f-string-syntax	Possible f-string without an f prefix	🧪 🛠️
+      -- RUF028	invalid-formatter-suppression-comment	This suppression comment is invalid because {}	🧪 🛠️
+      -- RUF029	unused-async	Function {name} is declared async, but doesn't await or use async features.	🧪 🛠️
+      -- RUF030	assert-with-print-message	print() expression in assert statement is likely unintentional	🧪 🛠️
+      -- RUF100	unused-noqa	Unused noqa directive	✔️ 🛠️
+      -- RUF101	redirected-noqa	{original} is a redirect to {target}	🧪 🛠️
+      -- RUF200	invalid-pyproject-toml	Failed to parse pyproject.toml: {message}	✔️ 🛠️
     end
   end
 

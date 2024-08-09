@@ -592,6 +592,12 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [UP013]	convert-typed-dict-functional-to-class	Convert {name} from TypedDict functional to class syntax	✔️ 🛠️
     -- 🔗🐍 [UP014]	convert-named-tuple-functional-to-class	Convert {name} from NamedTuple functional to class syntax	✔️ 🛠️
     -- 🔗🐍 [UP015]	redundant-open-modes	Unnecessary open mode parameters	✔️ 🛠️
+    elseif code == "UP015" then
+      if lang == "es" then
+        return "Parámetros de modo de apertura innecesarios"
+      elseif lang == "fr" then
+        return "Paramètres de mode d'ouverture inutiles"
+      end
     -- 🔗🐍 [UP017]	datetime-timezone-utc	Use datetime.UTC alias	✔️ 🛠️
     -- 🔗🐍 [UP018]	native-literals	Unnecessary {literal_type} call (rewrite as a literal)	✔️ 🛠️
     -- 🔗🐍 [UP019]	typing-text-str-alias	typing.Text is deprecated, use str	✔️ 🛠️
@@ -613,126 +619,133 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [UP035]	deprecated-import	Import from {target} instead: {names}	✔️ 🛠️
     elseif code == "UP035" then
       local target, names = message:match "Import from (.*) instead: (.*)"
+      if target == nil then
+        names, target = message:match "(.*) is deprecated, use (.*) instead"
+        if lang == "es" then
+          return string.format("%s está obsoleto, usa %s en su lugar", names, target)
+        end
+      end
+
       if lang == "es" then
         return string.format("Importa desde %s en lugar de: %s", target, names)
       end
-    -- 🔗🐍 [UP036	outdated-version-block	Version block is outdated for minimum Python version	✔️ 🛠️
-    -- 🔗🐍 [UP037	quoted-annotation	Remove quotes from type annotation	✔️ 🛠️
-    -- 🔗🐍 [UP038	non-pep604-isinstance	Use X | Y in {} call instead of (X, Y)	✔️ 🛠️
-    -- 🔗🐍 [UP039	unnecessary-class-parentheses	Unnecessary parentheses after class definition	✔️ 🛠️
-    -- 🔗🐍 [UP040	non-pep695-type-alias	Type alias {name} uses TypeAlias annotation instead of the type keyword	✔️ 🛠️
-    -- 🔗🐍 [UP041	timeout-error-alias	Replace aliased errors with TimeoutError	✔️ 🛠️
-    -- 🔗🐍 [UP042	replace-str-enum	Class {name} inherits from both str and enum.Enum	🧪 🛠️
-    -- 🔗🐍 [YTT101	sys-version-slice3	sys.version[:3] referenced (python3.10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT102	sys-version2	sys.version[2] referenced (python3.10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT103	sys-version-cmp-str3	sys.version compared to string (python3.10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT201	sys-version-info0-eq3	sys.version_info[0] == 3 referenced (python4), use >=	✔️ 🛠️
-    -- 🔗🐍 [YTT202	six-py3	six.PY3 referenced (python4), use not six.PY2	✔️ 🛠️
-    -- 🔗🐍 [YTT203	sys-version-info1-cmp-int	sys.version_info[1] compared to integer (python4), compare sys.version_info to tuple	✔️ 🛠️
-    -- 🔗🐍 [YTT204	sys-version-info-minor-cmp-int	sys.version_info.minor compared to integer (python4), compare sys.version_info to tuple	✔️ 🛠️
-    -- 🔗🐍 [YTT301	sys-version0	sys.version[0] referenced (python10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT302	sys-version-cmp-str10	sys.version compared to string (python10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT303	sys-version-slice1	sys.version[:1] referenced (python10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [ANN001	missing-type-function-argument	Missing type annotation for function argument {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN002	missing-type-args	Missing type annotation for *{name}	✔️ 🛠️
-    -- 🔗🐍 [ANN003	missing-type-kwargs	Missing type annotation for **{name}	✔️ 🛠️
-    -- 🔗🐍 [ANN101	missing-type-self	Missing type annotation for {name} in method	⚠️ 🛠️
-    -- 🔗🐍 [ANN102	missing-type-cls	Missing type annotation for {name} in classmethod	⚠️ 🛠️
-    -- 🔗🐍 [ANN201	missing-return-type-undocumented-public-function	Missing return type annotation for public function {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN202	missing-return-type-private-function	Missing return type annotation for private function {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN204	missing-return-type-special-method	Missing return type annotation for special method {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN205	missing-return-type-static-method	Missing return type annotation for staticmethod {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN206	missing-return-type-class-method	Missing return type annotation for classmethod {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN401	any-type	Dynamically typed expressions (typing.Any) are disallowed in {name}	✔️ 🛠️
-    -- 🔗🐍 [ASYNC100	blocking-http-call-in-async-function	Async functions should not call blocking HTTP methods	✔️ 🛠️
-    -- 🔗🐍 [ASYNC101	open-sleep-or-subprocess-in-async-function	Async functions should not call open, time.sleep, or subprocess methods	✔️ 🛠️
-    -- 🔗🐍 [ASYNC102	blocking-os-call-in-async-function	Async functions should not call synchronous os methods	✔️ 🛠️
-    -- 🔗🐍 [TRIO100	trio-timeout-without-await	A with {method_name}(...): context does not contain any await statements. This makes it pointless, as the timeout can only be triggered by a checkpoint.	✔️ 🛠️
-    -- 🔗🐍 [TRIO105	trio-sync-call	Call to {method_name} is not immediately awaited	✔️ 🛠️
-    -- 🔗🐍 [TRIO109	trio-async-function-with-timeout	Prefer trio.fail_after and trio.move_on_after over manual async timeout behavior	✔️ 🛠️
-    -- 🔗🐍 [TRIO110	trio-unneeded-sleep	Use trio.Event instead of awaiting trio.sleep in a while loop	✔️ 🛠️
-    -- 🔗🐍 [TRIO115	trio-zero-sleep-call	Use trio.lowlevel.checkpoint() instead of trio.sleep(0)	✔️ 🛠️
-    -- 🔗🐍 [S101	assert	Use of assert detected	✔️ 🛠️
-    -- 🔗🐍 [S102	exec-builtin	Use of exec detected	✔️ 🛠️
-    -- 🔗🐍 [S103	bad-file-permissions	os.chmod setting a permissive mask {mask:#o} on file or directory	✔️ 🛠️
-    -- 🔗🐍 [S104	hardcoded-bind-all-interfaces	Possible binding to all interfaces	✔️ 🛠️
-    -- 🔗🐍 [S105	hardcoded-password-string	Possible hardcoded password assigned to: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S106	hardcoded-password-func-arg	Possible hardcoded password assigned to argument: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S107	hardcoded-password-default	Possible hardcoded password assigned to function default: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S108	hardcoded-temp-file	Probable insecure usage of temporary file or directory: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S110	try-except-pass	try-except-pass detected, consider logging the exception	✔️ 🛠️
-    -- 🔗🐍 [S112	try-except-continue	try-except-continue detected, consider logging the exception	✔️ 🛠️
-    -- 🔗🐍 [S113	request-without-timeout	Probable use of requests call without timeout	✔️ 🛠️
-    -- 🔗🐍 [S201	flask-debug-true	Use of debug=True in Flask app detected	✔️ 🛠️
-    -- 🔗🐍 [S202	tarfile-unsafe-members	Uses of tarfile.extractall()	✔️ 🛠️
-    -- 🔗🐍 [S301	suspicious-pickle-usage	pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue	✔️ 🛠️
-    -- 🔗🐍 [S302	suspicious-marshal-usage	Deserialization with the marshal module is possibly dangerous	✔️ 🛠️
-    -- 🔗🐍 [S303	suspicious-insecure-hash-usage	Use of insecure MD2, MD4, MD5, or SHA1 hash function	✔️ 🛠️
-    -- 🔗🐍 [S304	suspicious-insecure-cipher-usage	Use of insecure cipher, replace with a known secure cipher such as AES	✔️ 🛠️
-    -- 🔗🐍 [S305	suspicious-insecure-cipher-mode-usage	Use of insecure block cipher mode, replace with a known secure mode such as CBC or CTR	✔️ 🛠️
-    -- 🔗🐍 [S306	suspicious-mktemp-usage	Use of insecure and deprecated function (mktemp)	✔️ 🛠️
-    -- 🔗🐍 [S307	suspicious-eval-usage	Use of possibly insecure function; consider using ast.literal_eval	✔️ 🛠️
-    -- 🔗🐍 [S308	suspicious-mark-safe-usage	Use of mark_safe may expose cross-site scripting vulnerabilities	✔️ 🛠️
-    -- 🔗🐍 [S310	suspicious-url-open-usage	Audit URL open for permitted schemes. Allowing use of file: or custom schemes is often unexpected.	✔️ 🛠️
-    -- 🔗🐍 [S311	suspicious-non-cryptographic-random-usage	Standard pseudo-random generators are not suitable for cryptographic purposes	✔️ 🛠️
-    -- 🔗🐍 [S312	suspicious-telnet-usage	Telnet-related functions are being called. Telnet is considered insecure. Use SSH or some other encrypted protocol.	✔️ 🛠️
-    -- 🔗🐍 [S313	suspicious-xmlc-element-tree-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S314	suspicious-xml-element-tree-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S315	suspicious-xml-expat-reader-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S316	suspicious-xml-expat-builder-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S317	suspicious-xml-sax-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S318	suspicious-xml-mini-dom-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S319	suspicious-xml-pull-dom-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S320	suspicious-xmle-tree-usage	Using lxml to parse untrusted data is known to be vulnerable to XML attacks	✔️ 🛠️
-    -- 🔗🐍 [S321	suspicious-ftp-lib-usage	FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.	✔️ 🛠️
-    -- 🔗🐍 [S323	suspicious-unverified-context-usage	Python allows using an insecure context via the _create_unverified_context that reverts to the previous behavior that does not validate certificates or perform hostname checks.	✔️ 🛠️
-    -- 🔗🐍 [S324	hashlib-insecure-hash-function	Probable use of insecure hash functions in {library}: {string}	✔️ 🛠️
-    -- 🔗🐍 [S401	suspicious-telnetlib-import	telnetlib and related modules are considered insecure. Use SSH or another encrypted protocol.	🧪 🛠️
-    -- 🔗🐍 [S402	suspicious-ftplib-import	ftplib and related modules are considered insecure. Use SSH, SFTP, SCP, or another encrypted protocol.	🧪 🛠️
-    -- 🔗🐍 [S403	suspicious-pickle-import	pickle, cPickle, dill, and shelve modules are possibly insecure	🧪 🛠️
-    -- 🔗🐍 [S404	suspicious-subprocess-import	subprocess module is possibly insecure	🧪 🛠️
-    -- 🔗🐍 [S405	suspicious-xml-etree-import	xml.etree methods are vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S406	suspicious-xml-sax-import	xml.sax methods are vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S407	suspicious-xml-expat-import	xml.dom.expatbuilder is vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S408	suspicious-xml-minidom-import	xml.dom.minidom is vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S409	suspicious-xml-pulldom-import	xml.dom.pulldom is vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S410	suspicious-lxml-import	lxml is vulnerable to XML attacks	❌ 🛠️
-    -- 🔗🐍 [S411	suspicious-xmlrpc-import	XMLRPC is vulnerable to remote XML attacks	🧪 🛠️
-    -- 🔗🐍 [S412	suspicious-httpoxy-import	httpoxy is a set of vulnerabilities that affect application code running inCGI, or CGI-like environments. The use of CGI for web applications should be avoided	🧪 🛠️
-    -- 🔗🐍 [S413	suspicious-pycrypto-import	pycrypto library is known to have publicly disclosed buffer overflow vulnerability	🧪 🛠️
-    -- 🔗🐍 [S415	suspicious-pyghmi-import	An IPMI-related module is being imported. Prefer an encrypted protocol over IPMI.	🧪 🛠️
-    -- 🔗🐍 [S501	request-with-no-cert-validation	Probable use of {string} call with verify=False disabling SSL certificate checks	✔️ 🛠️
-    -- 🔗🐍 [S502	ssl-insecure-version	Call made with insecure SSL protocol: {protocol}	✔️ 🛠️
-    -- 🔗🐍 [S503	ssl-with-bad-defaults	Argument default set to insecure SSL protocol: {protocol}	✔️ 🛠️
-    -- 🔗🐍 [S504	ssl-with-no-version	ssl.wrap_socket called without an `ssl_version``	✔️ 🛠️
-    -- 🔗🐍 [S505	weak-cryptographic-key	{cryptographic_key} key sizes below {minimum_key_size} bits are considered breakable	✔️ 🛠️
-    -- 🔗🐍 [S506	unsafe-yaml-load	Probable use of unsafe loader {name} with yaml.load. Allows instantiation of arbitrary objects. Consider yaml.safe_load.	✔️ 🛠️
-    -- 🔗🐍 [S507	ssh-no-host-key-verification	Paramiko call with policy set to automatically trust the unknown host key	✔️ 🛠️
-    -- 🔗🐍 [S508	snmp-insecure-version	The use of SNMPv1 and SNMPv2 is insecure. Use SNMPv3 if able.	✔️ 🛠️
-    -- 🔗🐍 [S509	snmp-weak-cryptography	You should not use SNMPv3 without encryption. noAuthNoPriv & authNoPriv is insecure.	✔️ 🛠️
-    -- 🔗🐍 [S601	paramiko-call	Possible shell injection via Paramiko call; check inputs are properly sanitized	✔️ 🛠️
-    -- 🔗🐍 [S602	subprocess-popen-with-shell-equals-true	subprocess call with shell=True seems safe, but may be changed in the future; consider rewriting without shell	✔️ 🛠️
-    -- 🔗🐍 [S603	subprocess-without-shell-equals-true	subprocess call: check for execution of untrusted input	✔️ 🛠️
-    -- 🔗🐍 [S604	call-with-shell-equals-true	Function call with shell=True parameter identified, security issue	✔️ 🛠️
-    -- 🔗🐍 [S605	start-process-with-a-shell	Starting a process with a shell: seems safe, but may be changed in the future; consider rewriting without shell	✔️ 🛠️
-    -- 🔗🐍 [S606	start-process-with-no-shell	Starting a process without a shell	✔️ 🛠️
-    -- 🔗🐍 [S607	start-process-with-partial-path	Starting a process with a partial executable path	✔️ 🛠️
-    -- 🔗🐍 [S608	hardcoded-sql-expression	Possible SQL injection vector through string-based query construction	✔️ 🛠️
-    -- 🔗🐍 [S609	unix-command-wildcard-injection	Possible wildcard injection in call due to * usage	✔️ 🛠️
-    -- 🔗🐍 [S610	django-extra	Use of Django extra can lead to SQL injection vulnerabilities	🧪 🛠️
-    -- 🔗🐍 [S611	django-raw-sql	Use of RawSQL can lead to SQL injection vulnerabilities	✔️ 🛠️
-    -- 🔗🐍 [S612	logging-config-insecure-listen	Use of insecure logging.config.listen detected	✔️ 🛠️
-    -- 🔗🐍 [S701	jinja2-autoescape-false	Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Ensure autoescape=True or use the select_autoescape function.	✔️ 🛠️
-    -- 🔗🐍 [S702	mako-templates	Mako templates allow HTML and JavaScript rendering by default and are inherently open to XSS attacks	✔️ 🛠️
-    -- 🔗🐍 [BLE001	blind-except	Do not catch blind exception: {name}	✔️ 🛠️
-    -- 🔗🐍 [FBT001	boolean-type-hint-positional-argument	Boolean-typed positional argument in function definition	✔️ 🛠️
-    -- 🔗🐍 [FBT002	boolean-default-value-positional-argument	Boolean default positional argument in function definition	✔️ 🛠️
-    -- 🔗🐍 [FBT003	boolean-positional-value-in-call	Boolean positional value in function call	✔️ 🛠️
-    -- 🔗🐍 [B002	unary-prefix-increment-decrement	Python does not support the unary prefix increment operator (++)	✔️ 🛠️
-    -- 🔗🐍 [B003	assignment-to-os-environ	Assigning to os.environ doesn't clear the environment	✔️ 🛠️
-    -- 🔗🐍 [B004	unreliable-callable-check	Using hasattr(x, "__call__") to test if x is callable is unreliable. Use callable(x) for consistent results.	✔️ 🛠️
-    -- 🔗🐍 [B005	strip-with-multi-characters	Using .strip() with multi-character strings is misleading	✔️ 🛠️
-    -- 🔗🐍 [B006	mutable-argument-default	Do not use mutable data structures for argument defaults	✔️ 🛠️
+      -- 🔗🐍 [UP036	outdated-version-block	Version block is outdated for minimum Python version	✔️ 🛠️
+      -- 🔗🐍 [UP037	quoted-annotation	Remove quotes from type annotation	✔️ 🛠️
+      -- 🔗🐍 [UP038	non-pep604-isinstance	Use X | Y in {} call instead of (X, Y)	✔️ 🛠️
+      -- 🔗🐍 [UP039	unnecessary-class-parentheses	Unnecessary parentheses after class definition	✔️ 🛠️
+      -- 🔗🐍 [UP040	non-pep695-type-alias	Type alias {name} uses TypeAlias annotation instead of the type keyword	✔️ 🛠️
+      -- 🔗🐍 [UP041	timeout-error-alias	Replace aliased errors with TimeoutError	✔️ 🛠️
+      -- 🔗🐍 [UP042	replace-str-enum	Class {name} inherits from both str and enum.Enum	🧪 🛠️
+      -- 🔗🐍 [YTT101	sys-version-slice3	sys.version[:3] referenced (python3.10), use sys.version_info	✔️ 🛠️
+      -- 🔗🐍 [YTT102	sys-version2	sys.version[2] referenced (python3.10), use sys.version_info	✔️ 🛠️
+      -- 🔗🐍 [YTT103	sys-version-cmp-str3	sys.version compared to string (python3.10), use sys.version_info	✔️ 🛠️
+      -- 🔗🐍 [YTT201	sys-version-info0-eq3	sys.version_info[0] == 3 referenced (python4), use >=	✔️ 🛠️
+      -- 🔗🐍 [YTT202	six-py3	six.PY3 referenced (python4), use not six.PY2	✔️ 🛠️
+      -- 🔗🐍 [YTT203	sys-version-info1-cmp-int	sys.version_info[1] compared to integer (python4), compare sys.version_info to tuple	✔️ 🛠️
+      -- 🔗🐍 [YTT204	sys-version-info-minor-cmp-int	sys.version_info.minor compared to integer (python4), compare sys.version_info to tuple	✔️ 🛠️
+      -- 🔗🐍 [YTT301	sys-version0	sys.version[0] referenced (python10), use sys.version_info	✔️ 🛠️
+      -- 🔗🐍 [YTT302	sys-version-cmp-str10	sys.version compared to string (python10), use sys.version_info	✔️ 🛠️
+      -- 🔗🐍 [YTT303	sys-version-slice1	sys.version[:1] referenced (python10), use sys.version_info	✔️ 🛠️
+      -- 🔗🐍 [ANN001	missing-type-function-argument	Missing type annotation for function argument {name}	✔️ 🛠️
+      -- 🔗🐍 [ANN002	missing-type-args	Missing type annotation for *{name}	✔️ 🛠️
+      -- 🔗🐍 [ANN003	missing-type-kwargs	Missing type annotation for **{name}	✔️ 🛠️
+      -- 🔗🐍 [ANN101	missing-type-self	Missing type annotation for {name} in method	⚠️ 🛠️
+      -- 🔗🐍 [ANN102	missing-type-cls	Missing type annotation for {name} in classmethod	⚠️ 🛠️
+      -- 🔗🐍 [ANN201	missing-return-type-undocumented-public-function	Missing return type annotation for public function {name}	✔️ 🛠️
+      -- 🔗🐍 [ANN202	missing-return-type-private-function	Missing return type annotation for private function {name}	✔️ 🛠️
+      -- 🔗🐍 [ANN204	missing-return-type-special-method	Missing return type annotation for special method {name}	✔️ 🛠️
+      -- 🔗🐍 [ANN205	missing-return-type-static-method	Missing return type annotation for staticmethod {name}	✔️ 🛠️
+      -- 🔗🐍 [ANN206	missing-return-type-class-method	Missing return type annotation for classmethod {name}	✔️ 🛠️
+      -- 🔗🐍 [ANN401	any-type	Dynamically typed expressions (typing.Any) are disallowed in {name}	✔️ 🛠️
+      -- 🔗🐍 [ASYNC100	blocking-http-call-in-async-function	Async functions should not call blocking HTTP methods	✔️ 🛠️
+      -- 🔗🐍 [ASYNC101	open-sleep-or-subprocess-in-async-function	Async functions should not call open, time.sleep, or subprocess methods	✔️ 🛠️
+      -- 🔗🐍 [ASYNC102	blocking-os-call-in-async-function	Async functions should not call synchronous os methods	✔️ 🛠️
+      -- 🔗🐍 [TRIO100	trio-timeout-without-await	A with {method_name}(...): context does not contain any await statements. This makes it pointless, as the timeout can only be triggered by a checkpoint.	✔️ 🛠️
+      -- 🔗🐍 [TRIO105	trio-sync-call	Call to {method_name} is not immediately awaited	✔️ 🛠️
+      -- 🔗🐍 [TRIO109	trio-async-function-with-timeout	Prefer trio.fail_after and trio.move_on_after over manual async timeout behavior	✔️ 🛠️
+      -- 🔗🐍 [TRIO110	trio-unneeded-sleep	Use trio.Event instead of awaiting trio.sleep in a while loop	✔️ 🛠️
+      -- 🔗🐍 [TRIO115	trio-zero-sleep-call	Use trio.lowlevel.checkpoint() instead of trio.sleep(0)	✔️ 🛠️
+      -- 🔗🐍 [S101	assert	Use of assert detected	✔️ 🛠️
+      -- 🔗🐍 [S102	exec-builtin	Use of exec detected	✔️ 🛠️
+      -- 🔗🐍 [S103	bad-file-permissions	os.chmod setting a permissive mask {mask:#o} on file or directory	✔️ 🛠️
+      -- 🔗🐍 [S104	hardcoded-bind-all-interfaces	Possible binding to all interfaces	✔️ 🛠️
+      -- 🔗🐍 [S105	hardcoded-password-string	Possible hardcoded password assigned to: "{}"	✔️ 🛠️
+      -- 🔗🐍 [S106	hardcoded-password-func-arg	Possible hardcoded password assigned to argument: "{}"	✔️ 🛠️
+      -- 🔗🐍 [S107	hardcoded-password-default	Possible hardcoded password assigned to function default: "{}"	✔️ 🛠️
+      -- 🔗🐍 [S108	hardcoded-temp-file	Probable insecure usage of temporary file or directory: "{}"	✔️ 🛠️
+      -- 🔗🐍 [S110	try-except-pass	try-except-pass detected, consider logging the exception	✔️ 🛠️
+      -- 🔗🐍 [S112	try-except-continue	try-except-continue detected, consider logging the exception	✔️ 🛠️
+      -- 🔗🐍 [S113	request-without-timeout	Probable use of requests call without timeout	✔️ 🛠️
+      -- 🔗🐍 [S201	flask-debug-true	Use of debug=True in Flask app detected	✔️ 🛠️
+      -- 🔗🐍 [S202	tarfile-unsafe-members	Uses of tarfile.extractall()	✔️ 🛠️
+      -- 🔗🐍 [S301	suspicious-pickle-usage	pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue	✔️ 🛠️
+      -- 🔗🐍 [S302	suspicious-marshal-usage	Deserialization with the marshal module is possibly dangerous	✔️ 🛠️
+      -- 🔗🐍 [S303	suspicious-insecure-hash-usage	Use of insecure MD2, MD4, MD5, or SHA1 hash function	✔️ 🛠️
+      -- 🔗🐍 [S304	suspicious-insecure-cipher-usage	Use of insecure cipher, replace with a known secure cipher such as AES	✔️ 🛠️
+      -- 🔗🐍 [S305	suspicious-insecure-cipher-mode-usage	Use of insecure block cipher mode, replace with a known secure mode such as CBC or CTR	✔️ 🛠️
+      -- 🔗🐍 [S306	suspicious-mktemp-usage	Use of insecure and deprecated function (mktemp)	✔️ 🛠️
+      -- 🔗🐍 [S307	suspicious-eval-usage	Use of possibly insecure function; consider using ast.literal_eval	✔️ 🛠️
+      -- 🔗🐍 [S308	suspicious-mark-safe-usage	Use of mark_safe may expose cross-site scripting vulnerabilities	✔️ 🛠️
+      -- 🔗🐍 [S310	suspicious-url-open-usage	Audit URL open for permitted schemes. Allowing use of file: or custom schemes is often unexpected.	✔️ 🛠️
+      -- 🔗🐍 [S311	suspicious-non-cryptographic-random-usage	Standard pseudo-random generators are not suitable for cryptographic purposes	✔️ 🛠️
+      -- 🔗🐍 [S312	suspicious-telnet-usage	Telnet-related functions are being called. Telnet is considered insecure. Use SSH or some other encrypted protocol.	✔️ 🛠️
+      -- 🔗🐍 [S313	suspicious-xmlc-element-tree-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S314	suspicious-xml-element-tree-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S315	suspicious-xml-expat-reader-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S316	suspicious-xml-expat-builder-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S317	suspicious-xml-sax-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S318	suspicious-xml-mini-dom-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S319	suspicious-xml-pull-dom-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
+      -- 🔗🐍 [S320	suspicious-xmle-tree-usage	Using lxml to parse untrusted data is known to be vulnerable to XML attacks	✔️ 🛠️
+      -- 🔗🐍 [S321	suspicious-ftp-lib-usage	FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.	✔️ 🛠️
+      -- 🔗🐍 [S323	suspicious-unverified-context-usage	Python allows using an insecure context via the _create_unverified_context that reverts to the previous behavior that does not validate certificates or perform hostname checks.	✔️ 🛠️
+      -- 🔗🐍 [S324	hashlib-insecure-hash-function	Probable use of insecure hash functions in {library}: {string}	✔️ 🛠️
+      -- 🔗🐍 [S401	suspicious-telnetlib-import	telnetlib and related modules are considered insecure. Use SSH or another encrypted protocol.	🧪 🛠️
+      -- 🔗🐍 [S402	suspicious-ftplib-import	ftplib and related modules are considered insecure. Use SSH, SFTP, SCP, or another encrypted protocol.	🧪 🛠️
+      -- 🔗🐍 [S403	suspicious-pickle-import	pickle, cPickle, dill, and shelve modules are possibly insecure	🧪 🛠️
+      -- 🔗🐍 [S404	suspicious-subprocess-import	subprocess module is possibly insecure	🧪 🛠️
+      -- 🔗🐍 [S405	suspicious-xml-etree-import	xml.etree methods are vulnerable to XML attacks	🧪 🛠️
+      -- 🔗🐍 [S406	suspicious-xml-sax-import	xml.sax methods are vulnerable to XML attacks	🧪 🛠️
+      -- 🔗🐍 [S407	suspicious-xml-expat-import	xml.dom.expatbuilder is vulnerable to XML attacks	🧪 🛠️
+      -- 🔗🐍 [S408	suspicious-xml-minidom-import	xml.dom.minidom is vulnerable to XML attacks	🧪 🛠️
+      -- 🔗🐍 [S409	suspicious-xml-pulldom-import	xml.dom.pulldom is vulnerable to XML attacks	🧪 🛠️
+      -- 🔗🐍 [S410	suspicious-lxml-import	lxml is vulnerable to XML attacks	❌ 🛠️
+      -- 🔗🐍 [S411	suspicious-xmlrpc-import	XMLRPC is vulnerable to remote XML attacks	🧪 🛠️
+      -- 🔗🐍 [S412	suspicious-httpoxy-import	httpoxy is a set of vulnerabilities that affect application code running inCGI, or CGI-like environments. The use of CGI for web applications should be avoided	🧪 🛠️
+      -- 🔗🐍 [S413	suspicious-pycrypto-import	pycrypto library is known to have publicly disclosed buffer overflow vulnerability	🧪 🛠️
+      -- 🔗🐍 [S415	suspicious-pyghmi-import	An IPMI-related module is being imported. Prefer an encrypted protocol over IPMI.	🧪 🛠️
+      -- 🔗🐍 [S501	request-with-no-cert-validation	Probable use of {string} call with verify=False disabling SSL certificate checks	✔️ 🛠️
+      -- 🔗🐍 [S502	ssl-insecure-version	Call made with insecure SSL protocol: {protocol}	✔️ 🛠️
+      -- 🔗🐍 [S503	ssl-with-bad-defaults	Argument default set to insecure SSL protocol: {protocol}	✔️ 🛠️
+      -- 🔗🐍 [S504	ssl-with-no-version	ssl.wrap_socket called without an `ssl_version``	✔️ 🛠️
+      -- 🔗🐍 [S505	weak-cryptographic-key	{cryptographic_key} key sizes below {minimum_key_size} bits are considered breakable	✔️ 🛠️
+      -- 🔗🐍 [S506	unsafe-yaml-load	Probable use of unsafe loader {name} with yaml.load. Allows instantiation of arbitrary objects. Consider yaml.safe_load.	✔️ 🛠️
+      -- 🔗🐍 [S507	ssh-no-host-key-verification	Paramiko call with policy set to automatically trust the unknown host key	✔️ 🛠️
+      -- 🔗🐍 [S508	snmp-insecure-version	The use of SNMPv1 and SNMPv2 is insecure. Use SNMPv3 if able.	✔️ 🛠️
+      -- 🔗🐍 [S509	snmp-weak-cryptography	You should not use SNMPv3 without encryption. noAuthNoPriv & authNoPriv is insecure.	✔️ 🛠️
+      -- 🔗🐍 [S601	paramiko-call	Possible shell injection via Paramiko call; check inputs are properly sanitized	✔️ 🛠️
+      -- 🔗🐍 [S602	subprocess-popen-with-shell-equals-true	subprocess call with shell=True seems safe, but may be changed in the future; consider rewriting without shell	✔️ 🛠️
+      -- 🔗🐍 [S603	subprocess-without-shell-equals-true	subprocess call: check for execution of untrusted input	✔️ 🛠️
+      -- 🔗🐍 [S604	call-with-shell-equals-true	Function call with shell=True parameter identified, security issue	✔️ 🛠️
+      -- 🔗🐍 [S605	start-process-with-a-shell	Starting a process with a shell: seems safe, but may be changed in the future; consider rewriting without shell	✔️ 🛠️
+      -- 🔗🐍 [S606	start-process-with-no-shell	Starting a process without a shell	✔️ 🛠️
+      -- 🔗🐍 [S607	start-process-with-partial-path	Starting a process with a partial executable path	✔️ 🛠️
+      -- 🔗🐍 [S608	hardcoded-sql-expression	Possible SQL injection vector through string-based query construction	✔️ 🛠️
+      -- 🔗🐍 [S609	unix-command-wildcard-injection	Possible wildcard injection in call due to * usage	✔️ 🛠️
+      -- 🔗🐍 [S610	django-extra	Use of Django extra can lead to SQL injection vulnerabilities	🧪 🛠️
+      -- 🔗🐍 [S611	django-raw-sql	Use of RawSQL can lead to SQL injection vulnerabilities	✔️ 🛠️
+      -- 🔗🐍 [S612	logging-config-insecure-listen	Use of insecure logging.config.listen detected	✔️ 🛠️
+      -- 🔗🐍 [S701	jinja2-autoescape-false	Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Ensure autoescape=True or use the select_autoescape function.	✔️ 🛠️
+      -- 🔗🐍 [S702	mako-templates	Mako templates allow HTML and JavaScript rendering by default and are inherently open to XSS attacks	✔️ 🛠️
+      -- 🔗🐍 [BLE001	blind-except	Do not catch blind exception: {name}	✔️ 🛠️
+      -- 🔗🐍 [FBT001	boolean-type-hint-positional-argument	Boolean-typed positional argument in function definition	✔️ 🛠️
+      -- 🔗🐍 [FBT002	boolean-default-value-positional-argument	Boolean default positional argument in function definition	✔️ 🛠️
+      -- 🔗🐍 [FBT003	boolean-positional-value-in-call	Boolean positional value in function call	✔️ 🛠️
+      -- 🔗🐍 [B002	unary-prefix-increment-decrement	Python does not support the unary prefix increment operator (++)	✔️ 🛠️
+      -- 🔗🐍 [B003	assignment-to-os-environ	Assigning to os.environ doesn't clear the environment	✔️ 🛠️
+      -- 🔗🐍 [B004	unreliable-callable-check	Using hasattr(x, "__call__") to test if x is callable is unreliable. Use callable(x) for consistent results.	✔️ 🛠️
+      -- 🔗🐍 [B005	strip-with-multi-characters	Using .strip() with multi-character strings is misleading	✔️ 🛠️
+      -- 🔗🐍 [B006	mutable-argument-default	Do not use mutable data structures for argument defaults	✔️ 🛠️
     elseif code == "B007" then
       -- 🔗🐍 [B007]	unused-loop-control-variable	Loop control variable {name} not used within loop body	✔️ 🛠️
       local name = message:match "Loop control variable ([^']+) not used within loop body"

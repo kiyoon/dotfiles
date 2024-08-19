@@ -18,14 +18,14 @@
                 },
                 "rules": [
                     {
-                        "description": "R cmd/alt to hangul (ctrl option cmd spacebar) in Gureum, or f18",
+                        "description": "R cmd/alt to hangul (ctrl option cmd spacebar) in Gureum, or with Spanish or French change to Guerum and hangul",
                         "manipulators": [
                             {
                                 "conditions": [
                                     {
                                         "input_sources": [
                                             {
-                                                "input_source_id": "org.youknowone.inputmethod.Gureum"
+                                                "input_source_id": "^org.youknowone.inputmethod.Gureum.*$"
                                             }
                                         ],
                                         "type": "input_source_if"
@@ -56,10 +56,10 @@
                                     {
                                         "input_sources": [
                                             {
-                                                "input_source_id": "org.youknowone.inputmethod.Gureum.han2"
+                                                "input_source_id": "^com\\.apple\\.keylayout\\.Spanish-ISO$"
                                             }
                                         ],
-                                        "type": "input_source_unless"
+                                        "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
@@ -72,7 +72,26 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "f18"
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_command",
+                                            "left_shift"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -82,7 +101,45 @@
                                     {
                                         "input_sources": [
                                             {
-                                                "input_source_id": "org.youknowone.inputmethod.Gureum"
+                                                "input_source_id": "com.apple.keylayout.Canadian-CSA"
+                                            }
+                                        ],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_command",
+                                            "left_shift"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^org.youknowone.inputmethod.Gureum.*$"
                                             }
                                         ],
                                         "type": "input_source_if"
@@ -113,10 +170,10 @@
                                     {
                                         "input_sources": [
                                             {
-                                                "input_source_id": "org.youknowone.inputmethod.Gureum.han2"
+                                                "input_source_id": "^com\\.apple\\.keylayout\\.Spanish-ISO$"
                                             }
                                         ],
-                                        "type": "input_source_unless"
+                                        "type": "input_source_if"
                                     }
                                 ],
                                 "from": {
@@ -129,7 +186,64 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "f18"
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_command",
+                                            "left_shift"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "com.apple.keylayout.Canadian-CSA"
+                                            }
+                                        ],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_alt",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_command",
+                                            "left_shift"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -319,21 +433,21 @@
                     "simple_modifications": [
                         {
                             "from": {
-                                "key_code": "left_option"
-                            },
-                            "to": [
-                                {
-                                    "key_code": "left_command"
-                                }
-                            ]
-                        },
-                        {
-                            "from": {
                                 "key_code": "left_command"
                             },
                             "to": [
                                 {
                                     "key_code": "left_option"
+                                }
+                            ]
+                        },
+                        {
+                            "from": {
+                                "key_code": "left_option"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_command"
                                 }
                             ]
                         },
@@ -348,6 +462,28 @@
                             ]
                         }
                     ],
+                    "treat_as_built_in_keyboard": false
+                },
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "fn_function_keys": [],
+                    "game_pad_swap_sticks": false,
+                    "identifiers": {
+                        "is_game_pad": false,
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": 1584,
+                        "vendor_id": 13364
+                    },
+                    "ignore": false,
+                    "manipulate_caps_lock_led": true,
+                    "mouse_flip_horizontal_wheel": false,
+                    "mouse_flip_vertical_wheel": false,
+                    "mouse_flip_x": false,
+                    "mouse_flip_y": false,
+                    "mouse_swap_wheels": false,
+                    "mouse_swap_xy": false,
+                    "simple_modifications": [],
                     "treat_as_built_in_keyboard": false
                 }
             ],

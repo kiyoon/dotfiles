@@ -11,6 +11,8 @@ else
     M.lang = "es"
   elseif vim.startswith(lang_env, "fr") then
     M.lang = "fr"
+  elseif vim.startswith(lang_env, "pt_BR") then
+    M.lang = "pt-br"
   else
     M.lang = "en"
   end

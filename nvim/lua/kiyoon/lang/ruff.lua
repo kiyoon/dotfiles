@@ -605,6 +605,8 @@ M.translate_ruff_message = function(code, message)
         return "Parámetros de modo de apertura innecesarios"
       elseif lang == "fr" then
         return "Paramètres de mode d'ouverture inutiles"
+      elseif lang == "pt-br" then
+        return "Parâmetros de modo de abertura desnecessários"
       end
     -- 🔗🐍 [UP017]	datetime-timezone-utc	Use datetime.UTC alias	✔️ 🛠️
     -- 🔗🐍 [UP018]	native-literals	Unnecessary {literal_type} call (rewrite as a literal)	✔️ 🛠️

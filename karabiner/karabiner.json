@@ -47,6 +47,10 @@
                                     },
                                     {
                                         "key_code": "spacebar",
+                                        "modifiers": ["left_control", "left_option"]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
                                         "modifiers": ["left_control", "left_command", "left_shift"]
                                     }
                                 ],
@@ -56,6 +60,33 @@
                                 "conditions": [
                                     {
                                         "input_sources": [{ "input_source_id": "com.apple.keylayout.Canadian-CSA" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": ["left_control", "left_option"]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": ["left_control", "left_option"]
+                                    },
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": ["left_control", "left_command", "left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "input_source_id": "com.apple.keylayout.Brazilian-Pro" }],
                                         "type": "input_source_if"
                                     }
                                 ],

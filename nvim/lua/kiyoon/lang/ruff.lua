@@ -3,7 +3,7 @@ local lang = require("kiyoon.lang").lang
 M = {}
 
 M.translate_ruff_message = function(code, message)
-  if vim.list_contains({ "es", "fr" }, lang) then
+  if lang ~= "en" then
     if code == "F401" then
       local name = message:match "([^ ]+) imported but unused"
       if lang == "es" then
@@ -135,6 +135,10 @@ M.translate_ruff_message = function(code, message)
       -- 🔗🐍 [F541]	f-string-missing-placeholders	f-string without any placeholders	✔️ 🛠️
       if lang == "es" then
         return "f-cadena sin marcadores"
+      elseif lang == "fr" then
+        return "f-chaîne sans aucun marqueur"
+      elseif lang == "pt-br" then
+        return "f-string sem marcadores"
       end
     -- 🔗🐍 [F601]	multi-value-repeated-key-literal	Dictionary key literal {name} repeated	✔️ 🛠️
     -- 🔗🐍 [F602]	multi-value-repeated-key-variable	Dictionary key {name} repeated	✔️ 🛠️
@@ -296,6 +300,10 @@ M.translate_ruff_message = function(code, message)
       local name = message:match "Ambiguous variable name: (.*)"
       if lang == "es" then
         return string.format("Nombre de variable ambiguo: %s", name)
+      elseif lang == "fr" then
+        return string.format("Nom de variable ambigu: %s", name)
+      elseif lang == "pt-br" then
+        return string.format("Nome de variável ambíguo: %s", name)
       end
     elseif code == "E742" then
       -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️

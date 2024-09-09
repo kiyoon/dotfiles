@@ -38,6 +38,10 @@ if lang == "es" then
   M.cmd_env = { LC_ALL = "es-ES.UTF-8" }
 elseif lang == "fr" then
   M.cmd_env = { LC_ALL = "fr-FR.UTF-8" }
+elseif lang == "pt-BR" then
+  M.cmd_env = { LC_ALL = "pt-BR.UTF-8" }
+elseif lang == "pt-PT" then
+  M.cmd_env = { LC_ALL = "pt-PT.UTF-8" }
 end
 
 return M

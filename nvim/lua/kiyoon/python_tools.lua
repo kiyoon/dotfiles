@@ -8,6 +8,13 @@ local bufnr_to_ruff_per_line = {}
 ---Save the changedtick of the buffer when ruff is run
 local bufnr_to_ruff_changedtick = {}
 
+local function tbl_reverse(tab)
+  for i = 1, math.floor(#tab / 2), 1 do
+    tab[i], tab[#tab - i + 1] = tab[#tab - i + 1], tab[i]
+  end
+  return tab
+end
+
 ---It also caches the results so repeated calls are fast
 M.run_ruff = function(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
@@ -162,11 +169,16 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
         goto continue
       end
 
-      -- each fix may have multiple edits
+      local fixes_in_current_edit = {}
       for _, edit in ipairs(fix["edits"]) do
         edit["message"] = fix["message"]
-        table.insert(all_fixes, edit)
+        table.insert(fixes_in_current_edit, edit)
       end
+      -- NOTE: each fix may have multiple edits
+      -- In this case, we have to reverse the order of the edits
+      -- Otherwise, the prior edits will ruin the later edits
+      fixes_in_current_edit = tbl_reverse(fixes_in_current_edit)
+      vim.list_extend(all_fixes, fixes_in_current_edit)
       -- table.insert(all_fixes, fix)
     end
     ::continue::
@@ -181,8 +193,8 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
   for _, fix in pairs(all_fixes) do
     apply_ruff_fix(fix)
     notify_diff(bufnr, prev_buf_str, fix["message"])
-    -- TODO: for now, only apply the first fix
-    break
+    -- TODO: check if applying all fixes is correct
+    -- break
   end
 end
 
@@ -220,8 +232,13 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
         if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
           local fix = ruff_output["fix"]
           if fix ~= vim.NIL then
-            -- each fix may have multiple edits
-            apply_ruff_fix(fix["edits"][1])
+            -- NOTE: each fix may have multiple edits
+            -- In this case, we have to reverse the order of the edits
+            -- Otherwise, the prior edits will ruin the later edits
+            local fixes_in_current_edit = tbl_reverse(fix["edits"])
+            for _, edit in ipairs(fixes_in_current_edit) do
+              apply_ruff_fix(edit)
+            end
             fixed = true
             num_fixed = num_fixed + 1
             break

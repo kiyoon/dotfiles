@@ -779,25 +779,33 @@ M.translate_ruff_message = function(code, message)
       elseif lang == "fr" then
         return "Expression inutile trouvée. Attribuez-la à une variable ou supprimez-la."
       end
-    -- 🔗🐍 [B019	cached-instance-method	Use of functools.lru_cache or functools.cache on methods can lead to memory leaks	✔️ 🛠️
-    -- 🔗🐍 [B020	loop-variable-overrides-iterator	Loop control variable {name} overrides iterable it iterates	✔️ 🛠️
-    -- 🔗🐍 [B021	f-string-docstring	f-string used as docstring. Python will interpret this as a joined string, rather than a docstring.	✔️ 🛠️
-    -- 🔗🐍 [B022	useless-contextlib-suppress	No arguments passed to contextlib.suppress. No exceptions will be suppressed and therefore this context manager is redundant	✔️ 🛠️
-    -- 🔗🐍 [B023	function-uses-loop-variable	Function definition does not bind loop variable {name}	✔️ 🛠️
-    -- 🔗🐍 [B024	abstract-base-class-without-abstract-method	{name} is an abstract base class, but it has no abstract methods	✔️ 🛠️
-    -- 🔗🐍 [B025	duplicate-try-block-exception	try-except block with duplicate exception {name}	✔️ 🛠️
-    -- 🔗🐍 [B026	star-arg-unpacking-after-keyword-arg	Star-arg unpacking after a keyword argument is strongly discouraged	✔️ 🛠️
-    -- 🔗🐍 [B027	empty-method-without-abstract-decorator	{name} is an empty method in an abstract base class, but has no abstract decorator	✔️ 🛠️
-    -- 🔗🐍 [B028	no-explicit-stacklevel	No explicit stacklevel keyword argument found	✔️ 🛠️
-    -- 🔗🐍 [B029	except-with-empty-tuple	Using except (): with an empty tuple does not catch anything; add exceptions to handle	✔️ 🛠️
-    -- 🔗🐍 [B030	except-with-non-exception-classes	except handlers should only be exception classes or tuples of exception classes	✔️ 🛠️
-    -- 🔗🐍 [B031	reuse-of-groupby-generator	Using the generator returned from itertools.groupby() more than once will do nothing on the second usage	✔️ 🛠️
-    -- 🔗🐍 [B032	unintentional-type-annotation	Possible unintentional type annotation (using :). Did you mean to assign (using =)?	✔️ 🛠️
-    -- 🔗🐍 [B033	duplicate-value	Sets should not contain duplicate item {value}	✔️ 🛠️
-    -- 🔗🐍 [B034	re-sub-positional-args	{method} should pass {param_name} and flags as keyword arguments to avoid confusion due to unintuitive argument positions	✔️ 🛠️
-    -- 🔗🐍 [B035	static-key-dict-comprehension	Dictionary comprehension uses static key: {key}	✔️ 🛠️
-    -- 🔗🐍 [B904	raise-without-from-inside-except	Within an except clause, raise exceptions with raise ... from err or raise ... from None to distinguish them from errors in exception handling	✔️ 🛠️
-    -- 🔗🐍 [B905	zip-without-explicit-strict	zip() without an explicit strict= parameter	✔️ 🛠️
+      -- 🔗🐍 [B019	cached-instance-method	Use of functools.lru_cache or functools.cache on methods can lead to memory leaks	✔️ 🛠️
+      -- 🔗🐍 [B020	loop-variable-overrides-iterator	Loop control variable {name} overrides iterable it iterates	✔️ 🛠️
+      -- 🔗🐍 [B021	f-string-docstring	f-string used as docstring. Python will interpret this as a joined string, rather than a docstring.	✔️ 🛠️
+      -- 🔗🐍 [B022	useless-contextlib-suppress	No arguments passed to contextlib.suppress. No exceptions will be suppressed and therefore this context manager is redundant	✔️ 🛠️
+      -- 🔗🐍 [B023	function-uses-loop-variable	Function definition does not bind loop variable {name}	✔️ 🛠️
+      -- 🔗🐍 [B024	abstract-base-class-without-abstract-method	{name} is an abstract base class, but it has no abstract methods	✔️ 🛠️
+      -- 🔗🐍 [B025	duplicate-try-block-exception	try-except block with duplicate exception {name}	✔️ 🛠️
+      -- 🔗🐍 [B026	star-arg-unpacking-after-keyword-arg	Star-arg unpacking after a keyword argument is strongly discouraged	✔️ 🛠️
+      -- 🔗🐍 [B027	empty-method-without-abstract-decorator	{name} is an empty method in an abstract base class, but has no abstract decorator	✔️ 🛠️
+      -- 🔗🐍 [B028	no-explicit-stacklevel	No explicit stacklevel keyword argument found	✔️ 🛠️
+      -- 🔗🐍 [B029	except-with-empty-tuple	Using except (): with an empty tuple does not catch anything; add exceptions to handle	✔️ 🛠️
+      -- 🔗🐍 [B030	except-with-non-exception-classes	except handlers should only be exception classes or tuples of exception classes	✔️ 🛠️
+      -- 🔗🐍 [B031	reuse-of-groupby-generator	Using the generator returned from itertools.groupby() more than once will do nothing on the second usage	✔️ 🛠️
+      -- 🔗🐍 [B032	unintentional-type-annotation	Possible unintentional type annotation (using :). Did you mean to assign (using =)?	✔️ 🛠️
+      -- 🔗🐍 [B033	duplicate-value	Sets should not contain duplicate item {value}	✔️ 🛠️
+      -- 🔗🐍 [B034	re-sub-positional-args	{method} should pass {param_name} and flags as keyword arguments to avoid confusion due to unintuitive argument positions	✔️ 🛠️
+      -- 🔗🐍 [B035	static-key-dict-comprehension	Dictionary comprehension uses static key: {key}	✔️ 🛠️
+      -- 🔗🐍 [B904	raise-without-from-inside-except	Within an except clause, raise exceptions with raise ... from err or raise ... from None to distinguish them from errors in exception handling	✔️ 🛠️
+      -- 🔗🐍 [B905]	zip-without-explicit-strict	zip() without an explicit strict= parameter	✔️ 🛠️
+    elseif code == "B905" then
+      if lang == "es" then
+        return "`zip()` sin un parámetro `strict=` explícito"
+      elseif lang == "fr" then
+        return "`zip()` sans un paramètre `strict=` explicite"
+      elseif lang == "pt-br" then
+        return "`zip()` sem um parâmetro `strict=` explícito"
+      end
     -- 🔗🐍 [B909	loop-iterator-mutation	Mutation to loop iterable {name} during iteration	🧪 🛠️
     -- 🔗🐍 [A001	builtin-variable-shadowing	Variable {name} is shadowing a Python builtin	✔️ 🛠️
     -- 🔗🐍 [A002	builtin-argument-shadowing	Argument {name} is shadowing a Python builtin	✔️ 🛠️
@@ -807,10 +815,50 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [COM819	prohibited-trailing-comma	Trailing comma prohibited	✔️ 🛠️
     -- 🔗🐍 [CPY001	missing-copyright-notice	Missing copyright notice at top of file	🧪 🛠️
     -- 🔗🐍 [C400	unnecessary-generator-list	Unnecessary generator (rewrite using list())	✔️ 🛠️
+    elseif code == "C400" then
+      if lang == "es" then
+        return "Generador innecesario (reescribe usando `list()`)"
+      elseif lang == "pt-br" then
+        return "Gerador desnecessário (reescreva usando `list()`)"
+      elseif lang == "fr" then
+        return "Générateur inutile (réécrire en utilisant `list()`)"
+      end
     -- 🔗🐍 [C401	unnecessary-generator-set	Unnecessary generator (rewrite using set()	✔️ 🛠️
+    elseif code == "C401" then
+      if lang == "es" then
+        return "Generador innecesario (reescribe usando `set()`)"
+      elseif lang == "pt-br" then
+        return "Gerador desnecessário (reescreva usando `set()`)"
+      elseif lang == "fr" then
+        return "Générateur inutile (réécrire en utilisant `set()`)"
+      end
     -- 🔗🐍 [C402	unnecessary-generator-dict	Unnecessary generator (rewrite as a dict comprehension)	✔️ 🛠️
-    -- 🔗🐍 [C403	unnecessary-list-comprehension-set	Unnecessary list comprehension (rewrite as a set comprehension)	✔️ 🛠️
-    -- 🔗🐍 [C404	unnecessary-list-comprehension-dict	Unnecessary list comprehension (rewrite as a dict comprehension)	✔️ 🛠️
+    elseif code == "C402" then
+      if lang == "es" then
+        return "Generador innecesario (reescribe como una comprensión de diccionario)"
+      elseif lang == "pt-br" then
+        return "Gerador desnecessário (reescreva como uma compreensão de dicionário)"
+      elseif lang == "fr" then
+        return "Générateur inutile (réécrire comme une compréhension de dictionnaire)"
+      end
+    -- 🔗🐍 [C403]	unnecessary-list-comprehension-set	Unnecessary list comprehension (rewrite as a set comprehension)	✔️ 🛠️
+    elseif code == "C403" then
+      if lang == "es" then
+        return "Comprensión de lista innecesaria (reescribe como una comprensión de conjunto)"
+      elseif lang == "pt-br" then
+        return "Compreensão de lista desnecessária (reescreva como uma compreensão de conjunto)"
+      elseif lang == "fr" then
+        return "Compréhension de liste inutile (réécrire comme une compréhension d'ensemble)"
+      end
+    -- 🔗🐍 [C404]	unnecessary-list-comprehension-dict	Unnecessary list comprehension (rewrite as a dict comprehension)	✔️ 🛠️
+    elseif code == "C404" then
+      if lang == "es" then
+        return "Comprensión de lista innecesaria (reescribe como una comprensión de diccionario)"
+      elseif lang == "pt-br" then
+        return "Compreensão de lista desnecessária (reescreva como uma compreensão de dicionário)"
+      elseif lang == "fr" then
+        return "Compréhension de liste inutile (réécrire comme une compréhension de dictionnaire)"
+      end
     -- 🔗🐍 [C405	unnecessary-literal-set	Unnecessary {obj_type} literal (rewrite as a set literal)	✔️ 🛠️
     -- 🔗🐍 [C406	unnecessary-literal-dict	Unnecessary {obj_type} literal (rewrite as a dict literal)	✔️ 🛠️
     -- 🔗🐍 [C408	unnecessary-collection-call	Unnecessary {obj_type} call (rewrite as a literal)	✔️ 🛠️
@@ -882,6 +930,10 @@ M.translate_ruff_message = function(code, message)
       -- 🔗🐍 [T201	print	print found	✔️ 🛠️
       if lang == "es" then
         return "`print` encontrado"
+      elseif lang == "pt-br" then
+        return "`print` encontrado"
+      elseif lang == "fr" then
+        return "`print` trouvé"
       end
     elseif code == "T203" then
       -- 🔗🐍 [T203	p-print	pprint found	✔️ 🛠️
@@ -1044,6 +1096,19 @@ M.translate_ruff_message = function(code, message)
       local function_name = message:match "Replace `(.*)` with"
       if lang == "es" then
         return string.format("Reemplace `%s` con `Path.glob` o `Path.rglob`", function_name)
+      end
+    -- NPY001	numpy-deprecated-type-alias	Type alias np.{type_name} is deprecated, replace with builtin type	✔️ 🛠️
+    -- NPY002	numpy-legacy-random	Replace legacy np.random.{method_name} call with np.random.Generator	✔️ 🛠️
+    -- NPY003	numpy-deprecated-function	np.{existing} is deprecated; use np.{replacement} instead	✔️ 🛠️
+    -- NPY201	numpy2-deprecation	np.{existing} will be removed in NumPy 2.0. {migration_guide}	✔️ 🛠️
+    elseif code == "NPY201" then
+      local existing, migration_guide = message:match "np%.(.*) will be removed in NumPy 2%.0%. (.*)"
+      if lang == "es" then
+        return string.format("np.%s será eliminado en NumPy 2.0. %s", existing, migration_guide)
+      elseif lang == "pt-br" then
+        return string.format("np.%s será removido no NumPy 2.0. %s", existing, migration_guide)
+      elseif lang == "fr" then
+        return string.format("np.%s sera supprimé dans NumPy 2.0. %s", existing, migration_guide)
       end
     -- RUF001	ambiguous-unicode-character-string	String contains ambiguous {}. Did you mean {}?	✔️ 🛠️
     -- RUF002	ambiguous-unicode-character-docstring	Docstring contains ambiguous {}. Did you mean {}?	✔️ 🛠️

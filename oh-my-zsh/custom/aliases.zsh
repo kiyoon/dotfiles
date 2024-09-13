@@ -125,7 +125,6 @@ alias rb='gio trash'
 # git
 alias cdg='cd $(git rev-parse --show-toplevel)'
 alias groot='git rev-parse --show-toplevel'
-alias gc='git commit --verbose --gpg-sign'
 alias glr='git pull --rebase'
 
 gglr() {
@@ -137,6 +136,15 @@ gglr() {
 			[[ "$#" == 0 ]] && local b="$(git_current_branch)"
 			git pull --rebase origin "${b:=$1}"
 	fi
+}
+
+ssh_add_if_notyet() {
+	ssh-add -l | grep -q `ssh-keygen -lf ~/.ssh/id_ed25519 | awk '{print $2}'` || ssh-add ~/.ssh/id_ed25519
+}
+unalias gc  # defined in oh-my-zsh git plugin
+gc () {
+	ssh_add_if_notyet
+	git commit --verbose --gpg-sign "$@"
 }
 
 

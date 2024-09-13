@@ -146,6 +146,10 @@ t() {
 
 }
 
+ssh_delete() {
+	ssh-add -d ~/.ssh/id_ed25519
+}
+
 git_config() {
 	git config --global user.email "kiyoon@users.noreply.github.com"
 	git config --global user.name "Kiyoon Kim"
@@ -154,6 +158,7 @@ git_config() {
 	git config --global url.ssh://git@github.com/.insteadOf https://github.com/
 	git config --global gpg.format ssh
 	git config --global user.signingkey ~/.ssh/id_ed25519.pub
+	git config --global commit.gpgsign true
 
 }
 

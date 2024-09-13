@@ -51,7 +51,7 @@ return {
   --- NOTE: Python
   {
     "kiyoon/python-import.nvim",
-    build = "bash scripts/build_with_uv.sh ~/.virtualenvs/python-import",
+    build = "uv tool install . --force --reinstall",
     keys = {
       {
         "<M-CR>",

@@ -31,7 +31,9 @@ yabai -m signal --add event=window_created action='
 # apps to not manage (ignore)
 yabai -m rule --add app="^System Preferences$" manage=off
 yabai -m rule --add app="^Ajustes del Sistema$" manage=off
+yabai -m rule --add app="^Ajustes do Sistema$" manage=off
 yabai -m rule --add app="^Utilidad de Compresión$" manage=off
+yabai -m rule --add app="^Utilitário de Compressão$" manage=off
 yabai -m rule --add app="^Karabiner-Elements$" manage=off
 yabai -m rule --add app="^Finder$" title="(Copiar|Conectar|Mover)" manage=off
 

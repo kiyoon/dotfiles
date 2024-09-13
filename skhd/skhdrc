@@ -131,6 +131,10 @@ shift + alt - home : yabai -m window --space 1 && \
                    yabai -m space --focus 1
 
 
+# Move to another display keeping the focus
+# https://github.com/koekeishiya/yabai/issues/225
+shift + alt - d : WIN_ID=$(yabai -m query --windows --window | jq '.id') && yabai -m window --display recent && yabai -m window --focus $WIN_ID
+
 # https://github.com/koekeishiya/skhd/issues/164
 
 :: resize

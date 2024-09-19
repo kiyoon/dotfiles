@@ -13,11 +13,9 @@ if command -v brew &> /dev/null; then
 		$PIP3 install --user --break-system-packages polars
 
 		# Lint
-		pipx install ruff
+        brew install ruff
 
 		# Formatter
-		pipx install isort
-		pipx install black
 		brew install stylua
 		brew install prettier
 

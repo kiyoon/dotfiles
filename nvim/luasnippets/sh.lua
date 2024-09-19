@@ -37,7 +37,7 @@ return {
       "",
       [[child_pid=$(ps -ef | awk -v shell_pid=$shell_pid '$3==shell_pid {print $2}')]],
       [[echo "child_pid: $child_pid"]],
-      'while [[ -n "$child_pid" ]] && [[ -d /proc/$child_pid ]]; do',
+      'while [[ -n "$child_pid" ]] && ps -p "$child_pid" > /dev/null; do',
       "\tsleep 1",
       [[done]],
       "",

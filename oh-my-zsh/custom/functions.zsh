@@ -134,13 +134,13 @@ t() {
 	# 2. If not inside tmux
 	# If /tmp/t_pwd.txt exists, cd to that directory
 
+	tmpdir=$(dirname $(mktemp -u))
 	if [ -n "$TMUX" ]; then
-		tmpdir=$(dirname $(mktemp -u))
 		echo "$(pwd)" > $tmpdir/t_pwd.txt
 		tmux detach
 	else
-		if [ -f /tmp/t_pwd.txt ]; then
-			cd "$(cat /tmp/t_pwd.txt)"
+		if [ -f $tmpdir/t_pwd.txt ]; then
+			cd "$(cat $tmpdir/t_pwd.txt)"
 		fi
 	fi
 

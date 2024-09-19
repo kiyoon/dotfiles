@@ -126,7 +126,6 @@ plugins=(
 	fzf
 	zoxide
 	thefuck
-	virtualenvwrapper
 )
 
 export DISABLE_VENV_CD=1  # disable virtualenvwrapper plugin to automatically activate on cd

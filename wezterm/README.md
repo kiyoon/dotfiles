@@ -1,5 +1,13 @@
 # WezTerm config and usage
 
+> [!WARNING]
+> If you set `config.term = "wezterm"`, you must download the terminfo file using `terminfo.sh` on your local computer and every server you connect to.
+> If not, you will see weird things happening in the terminal.
+>
+> You get extended features such as image protocols and undercurl (curly underline).
+>
+> You can change to `config.term = "xterm-256color"` for better compatibility.
+
 ## Keys
 
 - `Ctrl + Shift + Space`: [Quick select mode](https://wezfurlong.org/wezterm/quickselect.html)

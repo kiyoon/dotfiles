@@ -2086,6 +2086,9 @@ return {
   {
     -- see the image.nvim readme for more information about configuring this plugin
     "3rd/image.nvim",
+    dependencies = {
+      "kiyoon/magick.nvim",
+    },
     opts = {
       backend = "kitty",
       integrations = {

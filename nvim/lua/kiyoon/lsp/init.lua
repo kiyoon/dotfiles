@@ -81,11 +81,7 @@ install_pkg_background "actionlint"
 --   end,
 -- } -- make sure to call this before lspconfig
 
-local lspconfig_status_ok, lspconfig = pcall(require, "lspconfig")
-if not lspconfig_status_ok then
-  return
-end
-
+local lspconfig = require "lspconfig"
 local handlers = require "kiyoon.lsp.handlers"
 handlers.setup()
 

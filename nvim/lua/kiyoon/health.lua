@@ -3,10 +3,10 @@ local M = {}
 function M.check()
   vim.health.start "kiyoon/dotfiles"
 
-  if vim.fn.has "nvim-0.9.0" == 1 then
-    vim.health.ok "Using Neovim >= 0.9.0"
+  if vim.fn.has "nvim-0.10.0" == 1 then
+    vim.health.ok "Using Neovim >= 0.10.0"
   else
-    vim.health.error "Neovim >= 0.9.0 is required"
+    vim.health.error "Neovim >= 0.10.0 is required"
   end
 
   for _, cmd in ipairs { "git", "rg", "fd" } do

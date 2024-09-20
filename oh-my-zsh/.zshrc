@@ -182,9 +182,14 @@ git_root=$(git rev-parse --show-toplevel 2> /dev/null)
 if [[ -n "$git_root" ]]; then
 	basename_git_root=$(basename "$git_root")
 	if [[ -d "$MINICONDA_PATH/envs/$basename_git_root" ]]; then
+		# Before activating, deactivate any existing env
+		while [[ -n "$VIRTUAL_ENV" ]]; do
+			deactivate
+		done
+		while [[ -n "$CONDA_PREFIX" ]]; do
+			conda deactivate
+		done
 		conda activate $basename_git_root
-	elif [[ -d "$WORKON_HOME/$basename_git_root" ]]; then
-		workon $basename_git_root
 	fi
 fi
 

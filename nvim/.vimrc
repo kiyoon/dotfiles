@@ -339,6 +339,7 @@ autocmd FileType python vnoremap <leader>i "sy:call AddPythonImport(@s)<CR>
 " This is not a practical common but it's for example sake.
 "nnoremap <expr> + search('import') > 0 ? 'Oimport os' : 'ggOimport os'
 
+" nvim 0.10 automatically uses osc52
 " if has('clipboard')
 "   set clipboard^=unnamed,unnamedplus
 " endif

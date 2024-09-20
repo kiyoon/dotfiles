@@ -383,29 +383,6 @@ return {
     end,
   },
   {
-    "ojroques/nvim-osc52",
-    event = "TextYankPost",
-    config = function()
-      require("osc52").setup {
-        tmux_passthrough = true,
-      }
-      -- Every time you yank to + register, copy it to system clipboard using OSC52.
-      -- Use a terminal that supports OSC52,
-      -- then the clipboard copy will work even from remote SSH to local machine.
-      local function copy()
-        if vim.v.event.operator == "y" and vim.v.event.regname == "+" then
-          require("osc52").copy_register "+"
-        end
-      end
-
-      vim.api.nvim_create_autocmd("TextYankPost", { callback = copy })
-
-      -- Because we lazy-load on TextYankPost, the above autocmd will not be executed at first.
-      -- So we need to manually call it once.
-      copy()
-    end,
-  },
-  {
     "github/copilot.vim",
     -- event = "InsertEnter",
     -- cmd = { "Copilot" },

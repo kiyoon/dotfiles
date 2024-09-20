@@ -17,6 +17,9 @@ require("tmux").setup {
 -- configure keybindings manually.
 local yanky = require "yanky"
 yanky.setup {
+  ring = {
+    ignore_registers = { "_", "+", "*" },
+  },
   highlight = {
     on_put = true,
     on_yank = true,

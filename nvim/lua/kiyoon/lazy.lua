@@ -1692,6 +1692,75 @@ return {
 
   --- NOTE: DAP (Debugger)
   {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    config = function()
+      local dapui = require "dapui"
+      local dap = require "dap"
+      dapui.setup {
+        expand_lines = true,
+        icons = { expanded = "", collapsed = "", circular = "" },
+        mappings = {
+          -- Use a table to apply multiple mappings
+          expand = { "<CR>", "<2-LeftMouse>" },
+          open = "o",
+          remove = "d",
+          edit = "e",
+          repl = "r",
+          toggle = "t",
+        },
+        layouts = {
+          {
+            elements = {
+              { id = "scopes", size = 0.33 },
+              { id = "breakpoints", size = 0.17 },
+              { id = "stacks", size = 0.25 },
+              { id = "watches", size = 0.25 },
+            },
+            size = 0.33,
+            position = "right",
+          },
+          {
+            elements = {
+              { id = "repl", size = 0.45 },
+              { id = "console", size = 0.55 },
+            },
+            size = 0.27,
+            position = "bottom",
+          },
+        },
+        floating = {
+          max_height = 0.9,
+          max_width = 0.5, -- Floats will be treated as percentage of your screen.
+          border = vim.g.border_chars, -- Border style. Can be 'single', 'double' or 'rounded'
+          mappings = {
+            close = { "q", "<Esc>" },
+          },
+        },
+      }
+
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+
+      -- dap.listeners.before.event_terminated["dapui_config"] = function()
+      --   dapui.close()
+      -- end
+      --
+      -- dap.listeners.before.event_exited["dapui_config"] = function()
+      --   dapui.close()
+      -- end
+    end,
+  },
+  {
+    "theHamsta/nvim-dap-virtual-text",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    opts = {},
+  },
+  {
     "mfussenegger/nvim-dap",
     keys = {
       -- Save breakpoints to file automatically.
@@ -1711,10 +1780,6 @@ return {
         "<cmd>lua require('kiyoon.dap').load_files_with_breakpoints()<cr>",
         desc = "Load files with breakpoints",
       },
-    },
-    dependencies = {
-      "rcarriga/nvim-dap-ui",
-      "theHamsta/nvim-dap-virtual-text",
     },
     init = function()
       vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticSignError", linehl = "", numhl = "" })

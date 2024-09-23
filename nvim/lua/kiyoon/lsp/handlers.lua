@@ -24,6 +24,7 @@ local ruff_codes_to_ignore = {
 local basedpyright_codes_to_ignore = {
   reportUnusedVariable = true,
   reportUnusedImport = true,
+  reportUnusedParameter = true,
 }
 
 local M = {}

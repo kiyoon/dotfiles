@@ -2,6 +2,7 @@ local lang = require("kiyoon.lang").lang
 
 M = {}
 
+---Ensure translations are always in the order: es, pt-br, and fr
 M.translate_ruff_message = function(code, message)
   if lang ~= "en" then
     if code == "F401" then
@@ -9,6 +10,11 @@ M.translate_ruff_message = function(code, message)
       if lang == "es" then
         return string.format(
           "%s importado pero nunca usado; considera usar `importlib.util.find_spec` para probar la disponibilidad",
+          name
+        )
+      elseif lang == "pt-br" then
+        return string.format(
+          "%s importado mas nunca usado; considere usar `importlib.util.find_spec` para testar a disponibilidade",
           name
         )
       elseif lang == "fr" then
@@ -22,6 +28,8 @@ M.translate_ruff_message = function(code, message)
       local name, row = message:match "Import ([^ ]+) from line ([0-9]+) shadowed by loop variable"
       if lang == "es" then
         return string.format("Importación de %s desde la línea %s sombreada por variable de bucle", name, row)
+      elseif lang == "pt-br" then
+        return string.format("Importação de %s da linha %s sombreada por variável de loop", name, row)
       elseif lang == "fr" then
         return string.format("Importation de %s depuis la ligne %s masquée par une variable de boucle", name, row)
       end
@@ -30,6 +38,8 @@ M.translate_ruff_message = function(code, message)
       local name = message:match "from ([^ ]+) import"
       if lang == "es" then
         return string.format("`from %s import *` usado; incapaz de detectar nombres indefinido", name)
+      elseif lang == "pt-br" then
+        return string.format("`from %s import *` usado; incapaz de detectar nomes indefinidos", name)
       elseif lang == "fr" then
         return string.format("`from %s import *` utilisé; impossible de détecter les noms indéfinis", name)
       end
@@ -37,6 +47,10 @@ M.translate_ruff_message = function(code, message)
       -- `from __future__` imports must occur at the beginning of the file
       if lang == "es" then
         return "Las importaciones de `from __future__` deben ocurrir al principio del archivo"
+      elseif lang == "pt-br" then
+        return "As importações `from __future__` devem ocorrer no início do arquivo"
+      elseif lang == "fr" then
+        return "Les importations `from __future__` doivent se produire au début du fichier"
       end
     elseif code == "F405" then
       -- {name} may be undefined, or defined from star imports
@@ -236,11 +250,31 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [E305]	blank-lines-after-function-or-class	Expected 2 blank lines after class or function definition, found ({blank_lines})	🧪 🛠️
     -- 🔗🐍 [E306]	blank-lines-before-nested-definition	Expected 1 blank line before a nested definition, found 0	🧪 🛠️
     -- 🔗🐍 [E401]	multiple-imports-on-one-line	Multiple imports on one line	✔️ 🛠️
+    elseif code == "E401" then
+      if lang == "es" then
+        return "Múltiples importaciones en una línea"
+      elseif lang == "pt-br" then
+        return "Múltiplas importações em uma linha"
+      elseif lang == "fr" then
+        return "Importations multiples sur une ligne"
+      end
     -- 🔗🐍 [E402]	module-import-not-at-top-of-file	Module level import not at top of cell	✔️ 🛠️
+    elseif code == "E402" then
+      if lang == "es" then
+        return "Importación a nivel de módulo no al principio del archivo"
+      elseif lang == "pt-br" then
+        return "Importação de nível de módulo não no início do arquivo"
+      elseif lang == "fr" then
+        return "Importation de niveau de module pas au début du fichier"
+      end
     elseif code == "E501" then
       local width, limit = message:match "Line too long %((%d+) > (%d+)%)"
       if lang == "es" then
         return string.format("Línea demasiado larga (%s > %s)", width, limit)
+      elseif lang == "pt-br" then
+        return string.format("Linha muito longa (%s > %s)", width, limit)
+      elseif lang == "fr" then
+        return string.format("Ligne trop longue (%s > %s)", width, limit)
       end
     elseif code == "E502" then
       if lang == "es" then

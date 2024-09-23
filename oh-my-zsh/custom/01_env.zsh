@@ -67,21 +67,6 @@ fi
 bindkey "^[OF" end-of-line
 bindkey "^[OH" beginning-of-line
 
-# NOTE: virtualenvwrapper settings.
-# mkvirtualenv <name>
-# mkvirtualenv <name> -p <python3>
-# workon <name>
-# deactivate
-# rmvirtualenv <name>
-# lsvirtualenv
-# lssitepackages
-# It will automatically activate the virtualenv when you cd into a git repo with the same name as the virtualenv
-# or when you cd into a directory with a .venv file in it.
-
-export WORKON_HOME=~/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON="/usr/bin/python3"  # Usage of python3
-
-
 # Force resetting TERM_PROGRAM to wezterm
 # This is required to view images over ssh or maybe tmux
 if [[ "$TERM" == "wezterm" ]]; then
@@ -90,7 +75,6 @@ if [[ "$TERM" == "wezterm" ]]; then
 		export TERM_PROGRAM_VERSION=20230712-072601-f4abf8fd
 	fi
 fi
-
 
 ## fzf-tab completion
 

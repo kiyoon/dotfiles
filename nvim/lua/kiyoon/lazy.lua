@@ -485,7 +485,7 @@ return {
     },
     config = function()
       require("gp").setup {
-        openai_api_key = { "pass", "API/openai" },
+        openai_api_key = { "pass", "API-dear/openai" },
         agents = {
           {
             name = "ChatGPT4o",

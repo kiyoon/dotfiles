@@ -304,33 +304,37 @@ M.translate_ruff_message = function(code, message)
           cond
         )
       end
+    -- 🔗🐍 [E713]	not-in-test	Test for membership should be not in	✔️ 🛠️
     elseif code == "E713" then
-      -- 🔗🐍 [E713]	not-in-test	Test for membership should be not in	✔️ 🛠️
       if lang == "es" then
         return "Prueba de membresía debería ser `not in`"
       end
+    -- 🔗🐍 [E714]	not-is-test	Test for object identity should be is not	✔️ 🛠️
     elseif code == "E714" then
-      -- 🔗🐍 [E714]	not-is-test	Test for object identity should be is not	✔️ 🛠️
       if lang == "es" then
         return "Prueba de identidad de objeto debería ser `is not`"
       end
+    -- 🔗🐍 [E721]	type-comparison	Do not compare types, use isinstance()	✔️ 🛠️
     elseif code == "E721" then
-      -- 🔗🐍 [E721]	type-comparison	Do not compare types, use isinstance()	✔️ 🛠️
       if lang == "es" then
         return "No compares tipos, usa `isinstance()`"
       end
+    -- 🔗🐍 [E722]	bare-except	Do not use bare except	✔️ 🛠️
     elseif code == "E722" then
-      -- 🔗🐍 [E722]	bare-except	Do not use bare except	✔️ 🛠️
       if lang == "es" then
         return "No uses `except` sin especificar la excepción"
+      elseif lang == "pt-br" then
+        return "Não use except sem especificar a exceção"
+      elseif lang == "fr" then
+        return "N'utilisez pas except sans spécifier l'exception"
       end
+    -- 🔗🐍 [E731]	lambda-assignment	Do not assign a lambda expression, use a def	✔️ 🛠️
     elseif code == "E731" then
-      -- 🔗🐍 [E731]	lambda-assignment	Do not assign a lambda expression, use a def	✔️ 🛠️
       if lang == "es" then
         return "No asignes una expresión lambda, usa un `def`"
       end
+    -- 🔗🐍 [E741]	ambiguous-variable-name	Ambiguous variable name: {name}	✔️ 🛠️
     elseif code == "E741" then
-      -- 🔗🐍 [E741]	ambiguous-variable-name	Ambiguous variable name: {name}	✔️ 🛠️
       local name = message:match "Ambiguous variable name: (.*)"
       if lang == "es" then
         return string.format("Nombre de variable ambiguo: %s", name)
@@ -339,8 +343,8 @@ M.translate_ruff_message = function(code, message)
       elseif lang == "pt-br" then
         return string.format("Nome de variável ambíguo: %s", name)
       end
+    -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️
     elseif code == "E742" then
-      -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️
       local name = message:match "Ambiguous class name: (.*)"
       if lang == "es" then
         return string.format("Nombre de clase ambiguo: %s", name)
@@ -433,6 +437,10 @@ M.translate_ruff_message = function(code, message)
     elseif code == "D205" then
       if lang == "es" then
         return "Se requiere 1 línea en blanco entre la línea de resumen y la descripción"
+      elseif lang == "pt-br" then
+        return "É necessário 1 linha em branco entre a linha de resumo e a descrição"
+      elseif lang == "fr" then
+        return "1 ligne vide requise entre la ligne de résumé et la description"
       end
     -- 🔗🐍 [D206]	indent-with-spaces	Docstring should be indented with spaces, not tabs	✔️ 🛠️
     elseif code == "D206" then
@@ -597,6 +605,10 @@ M.translate_ruff_message = function(code, message)
     elseif code == "D415" then
       if lang == "es" then
         return "La primera línea debería terminar con un punto, signo de interrogación o signo de exclamación"
+      elseif lang == "pt-br" then
+        return "A primeira linha deve terminar com um ponto, ponto de interrogação ou ponto de exclamação"
+      elseif lang == "fr" then
+        return "La première ligne doit se terminer par un point, un point d'interrogation ou un point d'exclamation"
       end
     -- 🔗🐍 [D416]	section-name-ends-in-colon	Section name should end with a colon ("{name}")	✔️ 🛠️
     elseif code == "D416" then
@@ -673,115 +685,115 @@ M.translate_ruff_message = function(code, message)
       if lang == "es" then
         return string.format("Importa desde %s en lugar de: %s", target, names)
       end
-    -- 🔗🐍 [UP036	outdated-version-block	Version block is outdated for minimum Python version	✔️ 🛠️
-    -- 🔗🐍 [UP037	quoted-annotation	Remove quotes from type annotation	✔️ 🛠️
-    -- 🔗🐍 [UP038	non-pep604-isinstance	Use X | Y in {} call instead of (X, Y)	✔️ 🛠️
-    -- 🔗🐍 [UP039	unnecessary-class-parentheses	Unnecessary parentheses after class definition	✔️ 🛠️
-    -- 🔗🐍 [UP040	non-pep695-type-alias	Type alias {name} uses TypeAlias annotation instead of the type keyword	✔️ 🛠️
-    -- 🔗🐍 [UP041	timeout-error-alias	Replace aliased errors with TimeoutError	✔️ 🛠️
-    -- 🔗🐍 [UP042	replace-str-enum	Class {name} inherits from both str and enum.Enum	🧪 🛠️
-    -- 🔗🐍 [YTT101	sys-version-slice3	sys.version[:3] referenced (python3.10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT102	sys-version2	sys.version[2] referenced (python3.10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT103	sys-version-cmp-str3	sys.version compared to string (python3.10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT201	sys-version-info0-eq3	sys.version_info[0] == 3 referenced (python4), use >=	✔️ 🛠️
-    -- 🔗🐍 [YTT202	six-py3	six.PY3 referenced (python4), use not six.PY2	✔️ 🛠️
-    -- 🔗🐍 [YTT203	sys-version-info1-cmp-int	sys.version_info[1] compared to integer (python4), compare sys.version_info to tuple	✔️ 🛠️
-    -- 🔗🐍 [YTT204	sys-version-info-minor-cmp-int	sys.version_info.minor compared to integer (python4), compare sys.version_info to tuple	✔️ 🛠️
-    -- 🔗🐍 [YTT301	sys-version0	sys.version[0] referenced (python10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT302	sys-version-cmp-str10	sys.version compared to string (python10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [YTT303	sys-version-slice1	sys.version[:1] referenced (python10), use sys.version_info	✔️ 🛠️
-    -- 🔗🐍 [ANN001	missing-type-function-argument	Missing type annotation for function argument {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN002	missing-type-args	Missing type annotation for *{name}	✔️ 🛠️
-    -- 🔗🐍 [ANN003	missing-type-kwargs	Missing type annotation for **{name}	✔️ 🛠️
-    -- 🔗🐍 [ANN101	missing-type-self	Missing type annotation for {name} in method	⚠️ 🛠️
-    -- 🔗🐍 [ANN102	missing-type-cls	Missing type annotation for {name} in classmethod	⚠️ 🛠️
-    -- 🔗🐍 [ANN201	missing-return-type-undocumented-public-function	Missing return type annotation for public function {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN202	missing-return-type-private-function	Missing return type annotation for private function {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN204	missing-return-type-special-method	Missing return type annotation for special method {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN205	missing-return-type-static-method	Missing return type annotation for staticmethod {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN206	missing-return-type-class-method	Missing return type annotation for classmethod {name}	✔️ 🛠️
-    -- 🔗🐍 [ANN401	any-type	Dynamically typed expressions (typing.Any) are disallowed in {name}	✔️ 🛠️
-    -- 🔗🐍 [ASYNC100	blocking-http-call-in-async-function	Async functions should not call blocking HTTP methods	✔️ 🛠️
-    -- 🔗🐍 [ASYNC101	open-sleep-or-subprocess-in-async-function	Async functions should not call open, time.sleep, or subprocess methods	✔️ 🛠️
-    -- 🔗🐍 [ASYNC102	blocking-os-call-in-async-function	Async functions should not call synchronous os methods	✔️ 🛠️
-    -- 🔗🐍 [TRIO100	trio-timeout-without-await	A with {method_name}(...): context does not contain any await statements. This makes it pointless, as the timeout can only be triggered by a checkpoint.	✔️ 🛠️
-    -- 🔗🐍 [TRIO105	trio-sync-call	Call to {method_name} is not immediately awaited	✔️ 🛠️
-    -- 🔗🐍 [TRIO109	trio-async-function-with-timeout	Prefer trio.fail_after and trio.move_on_after over manual async timeout behavior	✔️ 🛠️
-    -- 🔗🐍 [TRIO110	trio-unneeded-sleep	Use trio.Event instead of awaiting trio.sleep in a while loop	✔️ 🛠️
-    -- 🔗🐍 [TRIO115	trio-zero-sleep-call	Use trio.lowlevel.checkpoint() instead of trio.sleep(0)	✔️ 🛠️
-    -- 🔗🐍 [S101	assert	Use of assert detected	✔️ 🛠️
-    -- 🔗🐍 [S102	exec-builtin	Use of exec detected	✔️ 🛠️
-    -- 🔗🐍 [S103	bad-file-permissions	os.chmod setting a permissive mask {mask:#o} on file or directory	✔️ 🛠️
-    -- 🔗🐍 [S104	hardcoded-bind-all-interfaces	Possible binding to all interfaces	✔️ 🛠️
-    -- 🔗🐍 [S105	hardcoded-password-string	Possible hardcoded password assigned to: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S106	hardcoded-password-func-arg	Possible hardcoded password assigned to argument: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S107	hardcoded-password-default	Possible hardcoded password assigned to function default: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S108	hardcoded-temp-file	Probable insecure usage of temporary file or directory: "{}"	✔️ 🛠️
-    -- 🔗🐍 [S110	try-except-pass	try-except-pass detected, consider logging the exception	✔️ 🛠️
-    -- 🔗🐍 [S112	try-except-continue	try-except-continue detected, consider logging the exception	✔️ 🛠️
-    -- 🔗🐍 [S113	request-without-timeout	Probable use of requests call without timeout	✔️ 🛠️
-    -- 🔗🐍 [S201	flask-debug-true	Use of debug=True in Flask app detected	✔️ 🛠️
-    -- 🔗🐍 [S202	tarfile-unsafe-members	Uses of tarfile.extractall()	✔️ 🛠️
-    -- 🔗🐍 [S301	suspicious-pickle-usage	pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue	✔️ 🛠️
-    -- 🔗🐍 [S302	suspicious-marshal-usage	Deserialization with the marshal module is possibly dangerous	✔️ 🛠️
-    -- 🔗🐍 [S303	suspicious-insecure-hash-usage	Use of insecure MD2, MD4, MD5, or SHA1 hash function	✔️ 🛠️
-    -- 🔗🐍 [S304	suspicious-insecure-cipher-usage	Use of insecure cipher, replace with a known secure cipher such as AES	✔️ 🛠️
-    -- 🔗🐍 [S305	suspicious-insecure-cipher-mode-usage	Use of insecure block cipher mode, replace with a known secure mode such as CBC or CTR	✔️ 🛠️
-    -- 🔗🐍 [S306	suspicious-mktemp-usage	Use of insecure and deprecated function (mktemp)	✔️ 🛠️
-    -- 🔗🐍 [S307	suspicious-eval-usage	Use of possibly insecure function; consider using ast.literal_eval	✔️ 🛠️
-    -- 🔗🐍 [S308	suspicious-mark-safe-usage	Use of mark_safe may expose cross-site scripting vulnerabilities	✔️ 🛠️
-    -- 🔗🐍 [S310	suspicious-url-open-usage	Audit URL open for permitted schemes. Allowing use of file: or custom schemes is often unexpected.	✔️ 🛠️
-    -- 🔗🐍 [S311	suspicious-non-cryptographic-random-usage	Standard pseudo-random generators are not suitable for cryptographic purposes	✔️ 🛠️
-    -- 🔗🐍 [S312	suspicious-telnet-usage	Telnet-related functions are being called. Telnet is considered insecure. Use SSH or some other encrypted protocol.	✔️ 🛠️
-    -- 🔗🐍 [S313	suspicious-xmlc-element-tree-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S314	suspicious-xml-element-tree-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S315	suspicious-xml-expat-reader-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S316	suspicious-xml-expat-builder-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S317	suspicious-xml-sax-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S318	suspicious-xml-mini-dom-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S319	suspicious-xml-pull-dom-usage	Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents	✔️ 🛠️
-    -- 🔗🐍 [S320	suspicious-xmle-tree-usage	Using lxml to parse untrusted data is known to be vulnerable to XML attacks	✔️ 🛠️
-    -- 🔗🐍 [S321	suspicious-ftp-lib-usage	FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol.	✔️ 🛠️
-    -- 🔗🐍 [S323	suspicious-unverified-context-usage	Python allows using an insecure context via the _create_unverified_context that reverts to the previous behavior that does not validate certificates or perform hostname checks.	✔️ 🛠️
-    -- 🔗🐍 [S324	hashlib-insecure-hash-function	Probable use of insecure hash functions in {library}: {string}	✔️ 🛠️
-    -- 🔗🐍 [S401	suspicious-telnetlib-import	telnetlib and related modules are considered insecure. Use SSH or another encrypted protocol.	🧪 🛠️
-    -- 🔗🐍 [S402	suspicious-ftplib-import	ftplib and related modules are considered insecure. Use SSH, SFTP, SCP, or another encrypted protocol.	🧪 🛠️
-    -- 🔗🐍 [S403	suspicious-pickle-import	pickle, cPickle, dill, and shelve modules are possibly insecure	🧪 🛠️
-    -- 🔗🐍 [S404	suspicious-subprocess-import	subprocess module is possibly insecure	🧪 🛠️
-    -- 🔗🐍 [S405	suspicious-xml-etree-import	xml.etree methods are vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S406	suspicious-xml-sax-import	xml.sax methods are vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S407	suspicious-xml-expat-import	xml.dom.expatbuilder is vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S408	suspicious-xml-minidom-import	xml.dom.minidom is vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S409	suspicious-xml-pulldom-import	xml.dom.pulldom is vulnerable to XML attacks	🧪 🛠️
-    -- 🔗🐍 [S410	suspicious-lxml-import	lxml is vulnerable to XML attacks	❌ 🛠️
-    -- 🔗🐍 [S411	suspicious-xmlrpc-import	XMLRPC is vulnerable to remote XML attacks	🧪 🛠️
-    -- 🔗🐍 [S412	suspicious-httpoxy-import	httpoxy is a set of vulnerabilities that affect application code running inCGI, or CGI-like environments. The use of CGI for web applications should be avoided	🧪 🛠️
-    -- 🔗🐍 [S413	suspicious-pycrypto-import	pycrypto library is known to have publicly disclosed buffer overflow vulnerability	🧪 🛠️
-    -- 🔗🐍 [S415	suspicious-pyghmi-import	An IPMI-related module is being imported. Prefer an encrypted protocol over IPMI.	🧪 🛠️
-    -- 🔗🐍 [S501	request-with-no-cert-validation	Probable use of {string} call with verify=False disabling SSL certificate checks	✔️ 🛠️
-    -- 🔗🐍 [S502	ssl-insecure-version	Call made with insecure SSL protocol: {protocol}	✔️ 🛠️
-    -- 🔗🐍 [S503	ssl-with-bad-defaults	Argument default set to insecure SSL protocol: {protocol}	✔️ 🛠️
-    -- 🔗🐍 [S504	ssl-with-no-version	ssl.wrap_socket called without an `ssl_version``	✔️ 🛠️
-    -- 🔗🐍 [S505	weak-cryptographic-key	{cryptographic_key} key sizes below {minimum_key_size} bits are considered breakable	✔️ 🛠️
-    -- 🔗🐍 [S506	unsafe-yaml-load	Probable use of unsafe loader {name} with yaml.load. Allows instantiation of arbitrary objects. Consider yaml.safe_load.	✔️ 🛠️
-    -- 🔗🐍 [S507	ssh-no-host-key-verification	Paramiko call with policy set to automatically trust the unknown host key	✔️ 🛠️
-    -- 🔗🐍 [S508	snmp-insecure-version	The use of SNMPv1 and SNMPv2 is insecure. Use SNMPv3 if able.	✔️ 🛠️
-    -- 🔗🐍 [S509	snmp-weak-cryptography	You should not use SNMPv3 without encryption. noAuthNoPriv & authNoPriv is insecure.	✔️ 🛠️
-    -- 🔗🐍 [S601	paramiko-call	Possible shell injection via Paramiko call; check inputs are properly sanitized	✔️ 🛠️
-    -- 🔗🐍 [S602	subprocess-popen-with-shell-equals-true	subprocess call with shell=True seems safe, but may be changed in the future; consider rewriting without shell	✔️ 🛠️
-    -- 🔗🐍 [S603	subprocess-without-shell-equals-true	subprocess call: check for execution of untrusted input	✔️ 🛠️
-    -- 🔗🐍 [S604	call-with-shell-equals-true	Function call with shell=True parameter identified, security issue	✔️ 🛠️
-    -- 🔗🐍 [S605	start-process-with-a-shell	Starting a process with a shell: seems safe, but may be changed in the future; consider rewriting without shell	✔️ 🛠️
-    -- 🔗🐍 [S606	start-process-with-no-shell	Starting a process without a shell	✔️ 🛠️
-    -- 🔗🐍 [S607	start-process-with-partial-path	Starting a process with a partial executable path	✔️ 🛠️
-    -- 🔗🐍 [S608	hardcoded-sql-expression	Possible SQL injection vector through string-based query construction	✔️ 🛠️
-    -- 🔗🐍 [S609	unix-command-wildcard-injection	Possible wildcard injection in call due to * usage	✔️ 🛠️
-    -- 🔗🐍 [S610	django-extra	Use of Django extra can lead to SQL injection vulnerabilities	🧪 🛠️
-    -- 🔗🐍 [S611	django-raw-sql	Use of RawSQL can lead to SQL injection vulnerabilities	✔️ 🛠️
-    -- 🔗🐍 [S612	logging-config-insecure-listen	Use of insecure logging.config.listen detected	✔️ 🛠️
-    -- 🔗🐍 [S701	jinja2-autoescape-false	Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Ensure autoescape=True or use the select_autoescape function.	✔️ 🛠️
-    -- 🔗🐍 [S702	mako-templates	Mako templates allow HTML and JavaScript rendering by default and are inherently open to XSS attacks	✔️ 🛠️
-    -- 🔗🐍 [BLE001	blind-except	Do not catch blind exception: {name}	✔️ 🛠️
+    -- 🔗🐍 [UP036] outdated-version-block Version block is outdated for minimum Python version ✔️ 🛠️
+    -- 🔗🐍 [UP037] quoted-annotation Remove quotes from type annotation ✔️ 🛠️
+    -- 🔗🐍 [UP038] non-pep604-isinstance Use X | Y in {} call instead of (X, Y) ✔️ 🛠️
+    -- 🔗🐍 [UP039] unnecessary-class-parentheses Unnecessary parentheses after class definition ✔️ 🛠️
+    -- 🔗🐍 [UP040] non-pep695-type-alias Type alias {name} uses TypeAlias annotation instead of the type keyword ✔️ 🛠️
+    -- 🔗🐍 [UP041] timeout-error-alias Replace aliased errors with TimeoutError ✔️ 🛠️
+    -- 🔗🐍 [UP042] replace-str-enum Class {name} inherits from both str and enum.Enum 🧪 🛠️
+    -- 🔗🐍 [YTT101] sys-version-slice3 sys.version[:3] referenced (python3.10), use sys.version_info ✔️ 🛠️
+    -- 🔗🐍 [YTT102] sys-version2 sys.version[2] referenced (python3.10), use sys.version_info ✔️ 🛠️
+    -- 🔗🐍 [YTT103] sys-version-cmp-str3 sys.version compared to string (python3.10), use sys.version_info ✔️ 🛠️
+    -- 🔗🐍 [YTT201] sys-version-info0-eq3 sys.version_info[0] == 3 referenced (python4), use >= ✔️ 🛠️
+    -- 🔗🐍 [YTT202] six-py3 six.PY3 referenced (python4), use not six.PY2 ✔️ 🛠️
+    -- 🔗🐍 [YTT203] sys-version-info1-cmp-int sys.version_info[1] compared to integer (python4), compare sys.version_info to tuple ✔️ 🛠️
+    -- 🔗🐍 [YTT204] sys-version-info-minor-cmp-int sys.version_info.minor compared to integer (python4), compare sys.version_info to tuple ✔️ 🛠️
+    -- 🔗🐍 [YTT301] sys-version0 sys.version[0] referenced (python10), use sys.version_info ✔️ 🛠️
+    -- 🔗🐍 [YTT302] sys-version-cmp-str10 sys.version compared to string (python10), use sys.version_info ✔️ 🛠️
+    -- 🔗🐍 [YTT303] sys-version-slice1 sys.version[:1] referenced (python10), use sys.version_info ✔️ 🛠️
+    -- 🔗🐍 [ANN001] missing-type-function-argument Missing type annotation for function argument {name} ✔️ 🛠️
+    -- 🔗🐍 [ANN002] missing-type-args Missing type annotation for *{name} ✔️ 🛠️
+    -- 🔗🐍 [ANN003] missing-type-kwargs Missing type annotation for **{name} ✔️ 🛠️
+    -- 🔗🐍 [ANN101] missing-type-self Missing type annotation for {name} in method ⚠️ 🛠️
+    -- 🔗🐍 [ANN102] missing-type-cls Missing type annotation for {name} in classmethod ⚠️ 🛠️
+    -- 🔗🐍 [ANN201] missing-return-type-undocumented-public-function Missing return type annotation for public function {name} ✔️ 🛠️
+    -- 🔗🐍 [ANN202] missing-return-type-private-function Missing return type annotation for private function {name} ✔️ 🛠️
+    -- 🔗🐍 [ANN204] missing-return-type-special-method Missing return type annotation for special method {name} ✔️ 🛠️
+    -- 🔗🐍 [ANN205] missing-return-type-static-method Missing return type annotation for staticmethod {name} ✔️ 🛠️
+    -- 🔗🐍 [ANN206] missing-return-type-class-method Missing return type annotation for classmethod {name} ✔️ 🛠️
+    -- 🔗🐍 [ANN401] any-type Dynamically typed expressions (typing.Any) are disallowed in {name} ✔️ 🛠️
+    -- 🔗🐍 [ASYNC100] blocking-http-call-in-async-function Async functions should not call blocking HTTP methods ✔️ 🛠️
+    -- 🔗🐍 [ASYNC101] open-sleep-or-subprocess-in-async-function Async functions should not call open, time.sleep, or subprocess methods ✔️ 🛠️
+    -- 🔗🐍 [ASYNC102] blocking-os-call-in-async-function Async functions should not call synchronous os methods ✔️ 🛠️
+    -- 🔗🐍 [TRIO100] trio-timeout-without-await A with {method_name}(...): context does not contain any await statements. This makes it pointless, as the timeout can only be triggered by a checkpoint. ✔️ 🛠️
+    -- 🔗🐍 [TRIO105] trio-sync-call Call to {method_name} is not immediately awaited ✔️ 🛠️
+    -- 🔗🐍 [TRIO109] trio-async-function-with-timeout Prefer trio.fail_after and trio.move_on_after over manual async timeout behavior ✔️ 🛠️
+    -- 🔗🐍 [TRIO110] trio-unneeded-sleep Use trio.Event instead of awaiting trio.sleep in a while loop ✔️ 🛠️
+    -- 🔗🐍 [TRIO115] trio-zero-sleep-call Use trio.lowlevel.checkpoint() instead of trio.sleep(0) ✔️ 🛠️
+    -- 🔗🐍 [S101] assert Use of assert detected ✔️ 🛠️
+    -- 🔗🐍 [S102] exec-builtin Use of exec detected ✔️ 🛠️
+    -- 🔗🐍 [S103] bad-file-permissions os.chmod setting a permissive mask {mask:#o} on file or directory ✔️ 🛠️
+    -- 🔗🐍 [S104] hardcoded-bind-all-interfaces Possible binding to all interfaces ✔️ 🛠️
+    -- 🔗🐍 [S105] hardcoded-password-string Possible hardcoded password assigned to: "{}" ✔️ 🛠️
+    -- 🔗🐍 [S106] hardcoded-password-func-arg Possible hardcoded password assigned to argument: "{}" ✔️ 🛠️
+    -- 🔗🐍 [S107] hardcoded-password-default Possible hardcoded password assigned to function default: "{}" ✔️ 🛠️
+    -- 🔗🐍 [S108] hardcoded-temp-file Probable insecure usage of temporary file or directory: "{}" ✔️ 🛠️
+    -- 🔗🐍 [S110] try-except-pass try-except-pass detected, consider logging the exception ✔️ 🛠️
+    -- 🔗🐍 [S112] try-except-continue try-except-continue detected, consider logging the exception ✔️ 🛠️
+    -- 🔗🐍 [S113] request-without-timeout Probable use of requests call without timeout ✔️ 🛠️
+    -- 🔗🐍 [S201] flask-debug-true Use of debug=True in Flask app detected ✔️ 🛠️
+    -- 🔗🐍 [S202] tarfile-unsafe-members Uses of tarfile.extractall() ✔️ 🛠️
+    -- 🔗🐍 [S301] suspicious-pickle-usage pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue ✔️ 🛠️
+    -- 🔗🐍 [S302] suspicious-marshal-usage Deserialization with the marshal module is possibly dangerous ✔️ 🛠️
+    -- 🔗🐍 [S303] suspicious-insecure-hash-usage Use of insecure MD2, MD4, MD5, or SHA1 hash function ✔️ 🛠️
+    -- 🔗🐍 [S304] suspicious-insecure-cipher-usage Use of insecure cipher, replace with a known secure cipher such as AES ✔️ 🛠️
+    -- 🔗🐍 [S305] suspicious-insecure-cipher-mode-usage Use of insecure block cipher mode, replace with a known secure mode such as CBC or CTR ✔️ 🛠️
+    -- 🔗🐍 [S306] suspicious-mktemp-usage Use of insecure and deprecated function (mktemp) ✔️ 🛠️
+    -- 🔗🐍 [S307] suspicious-eval-usage Use of possibly insecure function; consider using ast.literal_eval ✔️ 🛠️
+    -- 🔗🐍 [S308] suspicious-mark-safe-usage Use of mark_safe may expose cross-site scripting vulnerabilities ✔️ 🛠️
+    -- 🔗🐍 [S310] suspicious-url-open-usage Audit URL open for permitted schemes. Allowing use of file: or custom schemes is often unexpected. ✔️ 🛠️
+    -- 🔗🐍 [S311] suspicious-non-cryptographic-random-usage Standard pseudo-random generators are not suitable for cryptographic purposes ✔️ 🛠️
+    -- 🔗🐍 [S312] suspicious-telnet-usage Telnet-related functions are being called. Telnet is considered insecure. Use SSH or some other encrypted protocol. ✔️ 🛠️
+    -- 🔗🐍 [S313] suspicious-xmlc-element-tree-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S314] suspicious-xml-element-tree-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S315] suspicious-xml-expat-reader-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S316] suspicious-xml-expat-builder-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S317] suspicious-xml-sax-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S318] suspicious-xml-mini-dom-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S319] suspicious-xml-pull-dom-usage Using xml to parse untrusted data is known to be vulnerable to XML attacks; use defusedxml equivalents ✔️ 🛠️
+    -- 🔗🐍 [S320] suspicious-xmle-tree-usage Using lxml to parse untrusted data is known to be vulnerable to XML attacks ✔️ 🛠️
+    -- 🔗🐍 [S321] suspicious-ftp-lib-usage FTP-related functions are being called. FTP is considered insecure. Use SSH/SFTP/SCP or some other encrypted protocol. ✔️ 🛠️
+    -- 🔗🐍 [S323] suspicious-unverified-context-usage Python allows using an insecure context via the _create_unverified_context that reverts to the previous behavior that does not validate certificates or perform hostname checks. ✔️ 🛠️
+    -- 🔗🐍 [S324] hashlib-insecure-hash-function Probable use of insecure hash functions in {library}: {string} ✔️ 🛠️
+    -- 🔗🐍 [S401] suspicious-telnetlib-import telnetlib and related modules are considered insecure. Use SSH or another encrypted protocol. 🧪 🛠️
+    -- 🔗🐍 [S402] suspicious-ftplib-import ftplib and related modules are considered insecure. Use SSH, SFTP, SCP, or another encrypted protocol. 🧪 🛠️
+    -- 🔗🐍 [S403] suspicious-pickle-import pickle, cPickle, dill, and shelve modules are possibly insecure 🧪 🛠️
+    -- 🔗🐍 [S404] suspicious-subprocess-import subprocess module is possibly insecure 🧪 🛠️
+    -- 🔗🐍 [S405] suspicious-xml-etree-import xml.etree methods are vulnerable to XML attacks 🧪 🛠️
+    -- 🔗🐍 [S406] suspicious-xml-sax-import xml.sax methods are vulnerable to XML attacks 🧪 🛠️
+    -- 🔗🐍 [S407] suspicious-xml-expat-import xml.dom.expatbuilder is vulnerable to XML attacks 🧪 🛠️
+    -- 🔗🐍 [S408] suspicious-xml-minidom-import xml.dom.minidom is vulnerable to XML attacks 🧪 🛠️
+    -- 🔗🐍 [S409] suspicious-xml-pulldom-import xml.dom.pulldom is vulnerable to XML attacks 🧪 🛠️
+    -- 🔗🐍 [S410] suspicious-lxml-import lxml is vulnerable to XML attacks ❌ 🛠️
+    -- 🔗🐍 [S411] suspicious-xmlrpc-import XMLRPC is vulnerable to remote XML attacks 🧪 🛠️
+    -- 🔗🐍 [S412] suspicious-httpoxy-import httpoxy is a set of vulnerabilities that affect application code running inCGI, or CGI-like environments. The use of CGI for web applications should be avoided 🧪 🛠️
+    -- 🔗🐍 [S413] suspicious-pycrypto-import pycrypto library is known to have publicly disclosed buffer overflow vulnerability 🧪 🛠️
+    -- 🔗🐍 [S415] suspicious-pyghmi-import An IPMI-related module is being imported. Prefer an encrypted protocol over IPMI. 🧪 🛠️
+    -- 🔗🐍 [S501] request-with-no-cert-validation Probable use of {string} call with verify=False disabling SSL certificate checks ✔️ 🛠️
+    -- 🔗🐍 [S502] ssl-insecure-version Call made with insecure SSL protocol: {protocol} ✔️ 🛠️
+    -- 🔗🐍 [S503] ssl-with-bad-defaults Argument default set to insecure SSL protocol: {protocol} ✔️ 🛠️
+    -- 🔗🐍 [S504] ssl-with-no-version ssl.wrap_socket called without an `ssl_version`` ✔️ 🛠️
+    -- 🔗🐍 [S505] weak-cryptographic-key {cryptographic_key} key sizes below {minimum_key_size} bits are considered breakable ✔️ 🛠️
+    -- 🔗🐍 [S506] unsafe-yaml-load Probable use of unsafe loader {name} with yaml.load. Allows instantiation of arbitrary objects. Consider yaml.safe_load. ✔️ 🛠️
+    -- 🔗🐍 [S507] ssh-no-host-key-verification Paramiko call with policy set to automatically trust the unknown host key ✔️ 🛠️
+    -- 🔗🐍 [S508] snmp-insecure-version The use of SNMPv1 and SNMPv2 is insecure. Use SNMPv3 if able. ✔️ 🛠️
+    -- 🔗🐍 [S509] snmp-weak-cryptography You should not use SNMPv3 without encryption. noAuthNoPriv & authNoPriv is insecure. ✔️ 🛠️
+    -- 🔗🐍 [S601] paramiko-call Possible shell injection via Paramiko call; check inputs are properly sanitized ✔️ 🛠️
+    -- 🔗🐍 [S602] subprocess-popen-with-shell-equals-true subprocess call with shell=True seems safe, but may be changed in the future; consider rewriting without shell ✔️ 🛠️
+    -- 🔗🐍 [S603] subprocess-without-shell-equals-true subprocess call: check for execution of untrusted input ✔️ 🛠️
+    -- 🔗🐍 [S604] call-with-shell-equals-true Function call with shell=True parameter identified, security issue ✔️ 🛠️
+    -- 🔗🐍 [S605] start-process-with-a-shell Starting a process with a shell: seems safe, but may be changed in the future; consider rewriting without shell ✔️ 🛠️
+    -- 🔗🐍 [S606] start-process-with-no-shell Starting a process without a shell ✔️ 🛠️
+    -- 🔗🐍 [S607] start-process-with-partial-path Starting a process with a partial executable path ✔️ 🛠️
+    -- 🔗🐍 [S608] hardcoded-sql-expression Possible SQL injection vector through string-based query construction ✔️ 🛠️
+    -- 🔗🐍 [S609] unix-command-wildcard-injection Possible wildcard injection in call due to * usage ✔️ 🛠️
+    -- 🔗🐍 [S610] django-extra Use of Django extra can lead to SQL injection vulnerabilities 🧪 🛠️
+    -- 🔗🐍 [S611] django-raw-sql Use of RawSQL can lead to SQL injection vulnerabilities ✔️ 🛠️
+    -- 🔗🐍 [S612] logging-config-insecure-listen Use of insecure logging.config.listen detected ✔️ 🛠️
+    -- 🔗🐍 [S701] jinja2-autoescape-false Using jinja2 templates with autoescape=False is dangerous and can lead to XSS. Ensure autoescape=True or use the select_autoescape function. ✔️ 🛠️
+    -- 🔗🐍 [S702] mako-templates Mako templates allow HTML and JavaScript rendering by default and are inherently open to XSS attacks ✔️ 🛠️
+    -- 🔗🐍 [BLE001] blind-except Do not catch blind exception: {name} ✔️ 🛠️
     -- 🔗🐍 [FBT001]	boolean-type-hint-positional-argument	Boolean-typed positional argument in function definition	✔️ 🛠️
     -- 🔗🐍 [FBT002]	boolean-default-value-positional-argument	Boolean default positional argument in function definition	✔️ 🛠️
     -- 🔗🐍 [FBT003]	boolean-positional-value-in-call	Boolean positional value in function call	✔️ 🛠️
@@ -804,6 +816,13 @@ M.translate_ruff_message = function(code, message)
       local name = message:match "Loop control variable ([^']+) not used within loop body"
       if lang == "es" then
         return string.format("El variable de control del bucle %s no se usa dentro del cuerpo del bucle", name)
+      elseif lang == "pt-br" then
+        return string.format("A variável de controle do loop %s não é usada dentro do corpo do loop", name)
+      elseif lang == "fr" then
+        return string.format(
+          "La variable de contrôle de la boucle %s n'est pas utilisée dans le corps de la boucle",
+          name
+        )
       end
       -- 🔗🐍 [B008]	function-call-in-default-argument	Do not perform function call {name} in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable	✔️ 🛠️
       -- 🔗🐍 [B009]	get-attr-with-constant	Do not call getattr with a constant attribute value. It is not any safer than normal property access.	✔️ 🛠️
@@ -978,27 +997,27 @@ M.translate_ruff_message = function(code, message)
       elseif lang == "fr" then
         return "`print` trouvé"
       end
-    -- 🔗🐍 [T203	p-print	pprint found	✔️ 🛠️
+    -- 🔗🐍 [T203] p-print	pprint found	✔️ 🛠️
     elseif code == "T203" then
       if lang == "es" then
         return "`pprint` encontrado"
       end
 
-    -- SIM101	duplicate-isinstance-call	Multiple isinstance calls for {name}, merge into a single call	✔️ 🛠️
-    -- SIM102	collapsible-if	Use a single if statement instead of nested if statements	✔️ 🛠️
-    -- SIM103	needless-bool	Return the condition {condition} directly	✔️ 🛠️
-    -- SIM105	suppressible-exception	Use contextlib.suppress({exception}) instead of try-except-pass	✔️ 🛠️
-    -- SIM107	return-in-try-except-finally	Don't use return in try-except and finally	✔️ 🛠️
-    -- SIM108	if-else-block-instead-of-if-exp	Use ternary operator {contents} instead of if-else-block	✔️ 🛠️
-    -- SIM109	compare-with-tuple	Use {replacement} instead of multiple equality comparisons	✔️ 🛠️
-    -- SIM110	reimplemented-builtin	Use {replacement} instead of for loop	✔️ 🛠️
-    -- SIM112	uncapitalized-environment-variables	Use capitalized environment variable {expected} instead of {actual}	✔️ 🛠️
-    -- SIM113	enumerate-for-loop	Use enumerate() for index variable {index} in for loop	✔️ 🛠️
-    -- SIM114	if-with-same-arms	Combine if branches using logical or operator	✔️ 🛠️
-    -- SIM115	open-file-with-context-handler	Use a context manager for opening files	✔️ 🛠️
-    -- SIM116	if-else-block-instead-of-dict-lookup	Use a dictionary instead of consecutive if statements	✔️ 🛠️
-    -- SIM117	multiple-with-statements	Use a single with statement with multiple contexts instead of nested with statements	✔️ 🛠️
-    -- SIM118	in-dict-keys	Use key {operator} dict instead of key {operator} dict.keys()	✔️ 🛠️
+    -- 🔗🐍 [SIM101]	duplicate-isinstance-call	Multiple isinstance calls for {name}, merge into a single call	✔️ 🛠️
+    -- 🔗🐍 [SIM102]	collapsible-if	Use a single if statement instead of nested if statements	✔️ 🛠️
+    -- 🔗🐍 [SIM103]	needless-bool	Return the condition {condition} directly	✔️ 🛠️
+    -- 🔗🐍 [SIM105]	suppressible-exception	Use contextlib.suppress({exception}) instead of try-except-pass	✔️ 🛠️
+    -- 🔗🐍 [SIM107]	return-in-try-except-finally	Don't use return in try-except and finally	✔️ 🛠️
+    -- 🔗🐍 [SIM108]	if-else-block-instead-of-if-exp	Use ternary operator {contents} instead of if-else-block	✔️ 🛠️
+    -- 🔗🐍 [SIM109]	compare-with-tuple	Use {replacement} instead of multiple equality comparisons	✔️ 🛠️
+    -- 🔗🐍 [SIM110]	reimplemented-builtin	Use {replacement} instead of for loop	✔️ 🛠️
+    -- 🔗🐍 [SIM112]	uncapitalized-environment-variables	Use capitalized environment variable {expected} instead of {actual}	✔️ 🛠️
+    -- 🔗🐍 [SIM113]	enumerate-for-loop	Use enumerate() for index variable {index} in for loop	✔️ 🛠️
+    -- 🔗🐍 [SIM114]	if-with-same-arms	Combine if branches using logical or operator	✔️ 🛠️
+    -- 🔗🐍 [SIM115]	open-file-with-context-handler	Use a context manager for opening files	✔️ 🛠️
+    -- 🔗🐍 [SIM116]	if-else-block-instead-of-dict-lookup	Use a dictionary instead of consecutive if statements	✔️ 🛠️
+    -- 🔗🐍 [SIM117]	multiple-with-statements	Use a single with statement with multiple contexts instead of nested with statements	✔️ 🛠️
+    -- 🔗🐍 [SIM118]	in-dict-keys	Use key {operator} dict instead of key {operator} dict.keys()	✔️ 🛠️
     elseif code == "SIM118" then
       print(message)
       local operator = message:match "key (.*) dict` instead of"
@@ -1009,248 +1028,248 @@ M.translate_ruff_message = function(code, message)
       elseif lang == "fr" then
         return string.format("Utilisez `clé %s dict` au lieu de la `clé %s dict.keys()`", operator, operator)
       end
-    -- SIM201	negate-equal-op	Use {left} != {right} instead of not {left} == {right}	✔️ 🛠️
-    -- SIM202	negate-not-equal-op	Use {left} == {right} instead of not {left} != {right}	✔️ 🛠️
-    -- SIM208	double-negation	Use {expr} instead of not (not {expr})	✔️ 🛠️
-    -- SIM210	if-expr-with-true-false	Remove unnecessary True if ... else False	✔️ 🛠️
-    -- SIM211	if-expr-with-false-true	Use not ... instead of False if ... else True	✔️ 🛠️
-    -- SIM212	if-expr-with-twisted-arms	Use {expr_else} if {expr_else} else {expr_body} instead of {expr_body} if not {expr_else} else {expr_else}	✔️ 🛠️
-    -- SIM220	expr-and-not-expr	Use False instead of {name} and not {name}	✔️ 🛠️
-    -- SIM221	expr-or-not-expr	Use True instead of {name} or not {name}	✔️ 🛠️
-    -- SIM222	expr-or-true	Use {expr} instead of {replaced}	✔️ 🛠️
-    -- SIM223	expr-and-false	Use {expr} instead of {replaced}	✔️ 🛠️
-    -- SIM300	yoda-conditions	Yoda condition detected	✔️ 🛠️
-    -- SIM401	if-else-block-instead-of-dict-get	Use {contents} instead of an if block	✔️ 🛠️
-    -- SIM910	dict-get-with-none-default	Use {expected} instead of {actual}	✔️ 🛠️
-    -- SIM911	zip-dict-keys-and-values	Use {expected} instead of {actual}	✔️ 🛠️
+    -- 🔗🐍 [SIM201]	Use {left} != {right} instead of not {left} == {right}	✔️ 🛠️
+    -- 🔗🐍 [SIM202]	Use {left} == {right} instead of not {left} != {right}	✔️ 🛠️
+    -- 🔗🐍 [SIM208]	Use {expr} instead of not (not {expr})	✔️ 🛠️
+    -- 🔗🐍 [SIM210]	Remove unnecessary True if ... else False	✔️ 🛠️
+    -- 🔗🐍 [SIM211]	Use not ... instead of False if ... else True	✔️ 🛠️
+    -- 🔗🐍 [SIM212]	Use {expr_else} if {expr_else} else {expr_body} instead of {expr_body} if not {expr_else} else {expr_else}	✔️ 🛠️
+    -- 🔗🐍 [SIM220]	Use False instead of {name} and not {name}	✔️ 🛠️
+    -- 🔗🐍 [SIM221]	Use True instead of {name} or not {name}	✔️ 🛠️
+    -- 🔗🐍 [SIM222]	Use {expr} instead of {replaced}	✔️ 🛠️
+    -- 🔗🐍 [SIM223]	Use {expr} instead of {replaced}	✔️ 🛠️
+    -- 🔗🐍 [SIM300]	Yoda condition detected	✔️ 🛠️
+    -- 🔗🐍 [SIM401]	Use {contents} instead of an if block	✔️ 🛠️
+    -- 🔗🐍 [SIM910]	Use {expected} instead of {actual}	✔️ 🛠️
+    -- 🔗🐍 [SIM911]	Use {expected} instead of {actual}	✔️ 🛠️
+    -- 🔗🐍 [PTH100]	os-path-abspath	os.path.abspath() should be replaced by Path.resolve()	✔️ 🛠️
     elseif code == "PTH100" then
-      -- 🔗🐍 [PTH100]	os-path-abspath	os.path.abspath() should be replaced by Path.resolve()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.abspath()` debería ser reemplazado por `Path.resolve()`"
       end
+    -- 🔗🐍 [PTH101]	os-chmod	os.chmod() should be replaced by Path.chmod()	✔️ 🛠️
     elseif code == "PTH101" then
-      -- 🔗🐍 [PTH101]	os-chmod	os.chmod() should be replaced by Path.chmod()	✔️ 🛠️
       if lang == "es" then
         return "`os.chmod()` debería ser reemplazado por `Path.chmod()`"
       end
+    -- 🔗🐍 [PTH102]	os-mkdir	os.mkdir() should be replaced by Path.mkdir()	✔️ 🛠️
     elseif code == "PTH102" then
-      -- 🔗🐍 [PTH102]	os-mkdir	os.mkdir() should be replaced by Path.mkdir()	✔️ 🛠️
       if lang == "es" then
         return "`os.mkdir()` debería ser reemplazado por `Path.mkdir()`"
       end
+    -- 🔗🐍 [PTH103]	os-makedirs	os.makedirs() should be replaced by Path.mkdir(parents=True)	✔️ 🛠️
     elseif code == "PTH103" then
-      -- 🔗🐍 [PTH103]	os-makedirs	os.makedirs() should be replaced by Path.mkdir(parents=True)	✔️ 🛠️
       if lang == "es" then
         return "`os.makedirs()` debería ser reemplazado por `Path.mkdir(parents=True)`"
       end
+    -- 🔗🐍 [PTH104]	os-rename	os.rename() should be replaced by Path.rename()	✔️ 🛠️
     elseif code == "PTH104" then
-      -- 🔗🐍 [PTH104]	os-rename	os.rename() should be replaced by Path.rename()	✔️ 🛠️
       if lang == "es" then
         return "`os.rename()` debería ser reemplazado por `Path.rename()`"
       end
     -- 🔗🐍 [PTH105]	os-replace	os.replace() should be replaced by Path.replace()	✔️ 🛠️
+    -- 🔗🐍 [PTH106]	os-rmdir	os.rmdir() should be replaced by Path.rmdir()	✔️ 🛠️
     elseif code == "PTH106" then
-      -- 🔗🐍 [PTH106]	os-rmdir	os.rmdir() should be replaced by Path.rmdir()	✔️ 🛠️
       if lang == "es" then
         return "`os.rmdir()` debería ser reemplazado por `Path.rmdir()`"
       end
+    -- 🔗🐍 [PTH107]	os-remove	os.remove() should be replaced by Path.unlink()	✔️ 🛠️
     elseif code == "PTH107" then
-      -- 🔗🐍 [PTH107]	os-remove	os.remove() should be replaced by Path.unlink()	✔️ 🛠️
       if lang == "es" then
         return "`os.remove()` debería ser reemplazado por `Path.unlink()`"
       end
+    -- 🔗🐍 [PTH108]	os-unlink	os.unlink() should be replaced by Path.unlink()	✔️ 🛠️
     elseif code == "PTH108" then
-      -- 🔗🐍 [PTH108]	os-unlink	os.unlink() should be replaced by Path.unlink()	✔️ 🛠️
       if lang == "es" then
         return "`os.unlink()` debería ser reemplazado por `Path.unlink()`"
       end
+    -- 🔗🐍 [PTH109]	os-getcwd	os.getcwd() should be replaced by Path.cwd()	✔️ 🛠️
     elseif code == "PTH109" then
-      -- 🔗🐍 [PTH109]	os-getcwd	os.getcwd() should be replaced by Path.cwd()	✔️ 🛠️
       if lang == "es" then
         return "`os.getcwd()` debería ser reemplazado por `Path.cwd()`"
       end
+    -- 🔗🐍 [PTH110]	os-path-exists	os.path.exists() should be replaced by Path.exists()	✔️ 🛠️
     elseif code == "PTH110" then
-      -- 🔗🐍 [PTH110]	os-path-exists	os.path.exists() should be replaced by Path.exists()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.exists()` debería ser reemplazado por `Path.exists()`"
       end
+    -- 🔗🐍 [PTH111]	os-path-expanduser	os.path.expanduser() should be replaced by Path.expanduser()	✔️ 🛠️
     elseif code == "PTH111" then
-      -- 🔗🐍 [PTH111]	os-path-expanduser	os.path.expanduser() should be replaced by Path.expanduser()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.expanduser()` debería ser reemplazado por `Path.expanduser()`"
       end
+    -- 🔗🐍 [PTH112]	os-path-isdir	os.path.isdir() should be replaced by Path.is_dir()	✔️ 🛠️
     elseif code == "PTH112" then
-      -- 🔗🐍 [PTH112]	os-path-isdir	os.path.isdir() should be replaced by Path.is_dir()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.isdir()` debería ser reemplazado por `Path.is_dir()`"
       end
+    -- 🔗🐍 [PTH113]	os-path-isfile	os.path.isfile() should be replaced by Path.is_file()	✔️ 🛠️
     elseif code == "PTH113" then
-      -- 🔗🐍 [PTH113]	os-path-isfile	os.path.isfile() should be replaced by Path.is_file()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.isfile()` debería ser reemplazado por `Path.is_file()`"
       end
+    -- 🔗🐍 [PTH114]	os-path-islink	os.path.islink() should be replaced by Path.is_symlink()	✔️ 🛠️
     elseif code == "PTH114" then
-      -- 🔗🐍 [PTH114]	os-path-islink	os.path.islink() should be replaced by Path.is_symlink()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.islink()` debería ser reemplazado por `Path.is_symlink()`"
       end
+    -- 🔗🐍 [PTH115]	os-readlink	os.readlink() should be replaced by Path.readlink()	✔️ 🛠️
     elseif code == "PTH115" then
-      -- 🔗🐍 [PTH115]	os-readlink	os.readlink() should be replaced by Path.readlink()	✔️ 🛠️
       if lang == "es" then
         return "`os.readlink()` debería ser reemplazado por `Path.readlink()`"
       end
+    -- 🔗🐍 [PTH116]	os-stat	os.stat() should be replaced by Path.stat(), Path.owner(), or Path.group()	✔️ 🛠️
     elseif code == "PTH116" then
-      -- 🔗🐍 [PTH116]	os-stat	os.stat() should be replaced by Path.stat(), Path.owner(), or Path.group()	✔️ 🛠️
       if lang == "es" then
         return "`os.stat()` debería ser reemplazado por `Path.stat()`, `Path.owner()`, o `Path.group()`"
       end
+    -- 🔗🐍 [PTH117]	os-path-isabs	os.path.isabs() should be replaced by Path.is_absolute()	✔️ 🛠️
     elseif code == "PTH117" then
-      -- 🔗🐍 [PTH117]	os-path-isabs	os.path.isabs() should be replaced by Path.is_absolute()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.isabs()` debería ser reemplazado por `Path.is_absolute()`"
       end
+    -- 🔗🐍 [PTH118]	os-path-join	os.{module}.join() should be replaced by Path with / operator	✔️ 🛠️
     elseif code == "PTH118" then
-      -- 🔗🐍 [PTH118]	os-path-join	os.{module}.join() should be replaced by Path with / operator	✔️ 🛠️
       if lang == "es" then
         return "`os.path.join()` debería ser reemplazado por `Path` con el operador `/`"
       end
+    -- 🔗🐍 [PTH119]	os-path-basename	os.path.basename() should be replaced by Path.name	✔️ 🛠️
     elseif code == "PTH119" then
-      -- 🔗🐍 [PTH119]	os-path-basename	os.path.basename() should be replaced by Path.name	✔️ 🛠️
       if lang == "es" then
         return "`os.path.basename()` debería ser reemplazado por `Path.name`"
       end
+    -- 🔗🐍 [PTH120]	os-path-dirname	os.path.dirname() should be replaced by Path.parent	✔️ 🛠️
     elseif code == "PTH120" then
-      -- 🔗🐍 [PTH120]	os-path-dirname	os.path.dirname() should be replaced by Path.parent	✔️ 🛠️
       if lang == "es" then
         return "`os.path.dirname()` debería ser reemplazado por `Path.parent`"
       end
+    -- 🔗🐍 [PTH121]	os-path-samefile	os.path.samefile() should be replaced by Path.samefile()	✔️ 🛠️
     elseif code == "PTH121" then
-      -- 🔗🐍 [PTH121]	os-path-samefile	os.path.samefile() should be replaced by Path.samefile()	✔️ 🛠️
       if lang == "es" then
         return "`os.path.samefile()` debería ser reemplazado por `Path.samefile()`"
       end
+    -- 🔗🐍 [PTH122]	os-path-splitext	os.path.splitext() should be replaced by Path.suffix, Path.stem, and Path.parent	✔️ 🛠️
     elseif code == "PTH122" then
-      -- 🔗🐍 [PTH122]	os-path-splitext	os.path.splitext() should be replaced by Path.suffix, Path.stem, and Path.parent	✔️ 🛠️
       if lang == "es" then
         return "`os.path.splitext()` debería ser reemplazado por `Path.suffix`, `Path.stem`, y `Path.parent`"
       end
+    -- 🔗🐍 [PTH123]	builtin-open	open() should be replaced by Path.open()	✔️ 🛠️
     elseif code == "PTH123" then
-      -- 🔗🐍 [PTH123]	builtin-open	open() should be replaced by Path.open()	✔️ 🛠️
       if lang == "es" then
         return "`open()` debería ser reemplazado por `Path.open()`"
       end
+    -- 🔗🐍 [PTH124]	py-path	py.path is in maintenance mode, use pathlib instead	✔️ 🛠️
     elseif code == "PTH124" then
-      -- 🔗🐍 [PTH124]	py-path	py.path is in maintenance mode, use pathlib instead	✔️ 🛠️
       if lang == "es" then
         return "`py.path` está en modo de mantenimiento, use `pathlib` en su lugar"
       end
+    -- 🔗🐍 [PTH201]	path-constructor-current-directory	Do not pass the current directory explicitly to Path	✔️ 🛠️
     elseif code == "PTH201" then
-      -- 🔗🐍 [PTH201]	path-constructor-current-directory	Do not pass the current directory explicitly to Path	✔️ 🛠️
       if lang == "es" then
         return "No pase el directorio actual explícitamente a `Path`"
       end
+    -- 🔗🐍 [PTH202]	os-path-getsize	os.path.getsize should be replaced by Path.stat().st_size	✔️ 🛠️
     elseif code == "PTH202" then
-      -- 🔗🐍 [PTH202]	os-path-getsize	os.path.getsize should be replaced by Path.stat().st_size	✔️ 🛠️
       if lang == "es" then
         return "`os.path.getsize` debería ser reemplazado por `Path.stat().st_size`"
       end
+    -- 🔗🐍 [PTH203]	os-path-getatime	os.path.getatime should be replaced by Path.stat().st_atime	✔️ 🛠️
     elseif code == "PTH203" then
-      -- 🔗🐍 [PTH203]	os-path-getatime	os.path.getatime should be replaced by Path.stat().st_atime	✔️ 🛠️
       if lang == "es" then
         return "`os.path.getatime` debería ser reemplazado por `Path.stat().st_atime`"
       end
+    -- 🔗🐍 [PTH204]	os-path-getmtime	os.path.getmtime should be replaced by Path.stat().st_mtime	✔️ 🛠️
     elseif code == "PTH204" then
-      -- 🔗🐍 [PTH204]	os-path-getmtime	os.path.getmtime should be replaced by Path.stat().st_mtime	✔️ 🛠️
       if lang == "es" then
         return "`os.path.getmtime` debería ser reemplazado por `Path.stat().st_mtime`"
       end
+    -- 🔗🐍 [PTH205]	os-path-getctime	os.path.getctime should be replaced by Path.stat().st_ctime	✔️ 🛠️
     elseif code == "PTH205" then
-      -- 🔗🐍 [PTH205]	os-path-getctime	os.path.getctime should be replaced by Path.stat().st_ctime	✔️ 🛠️
       if lang == "es" then
         return "`os.path.getctime` debería ser reemplazado por `Path.stat().st_ctime`"
       end
+    -- 🔗🐍 [PTH206]	os-sep-split	Replace .split(os.sep) with Path.parts	✔️ 🛠️
     elseif code == "PTH206" then
-      -- 🔗🐍 [PTH206]	os-sep-split	Replace .split(os.sep) with Path.parts	✔️ 🛠️
       if lang == "es" then
         return "Reemplace `.split(os.sep)` con `Path.parts`"
       end
+    -- 🔗🐍 [PTH207]	glob	Replace {function} with Path.glob or Path.rglob	✔️ 🛠️
     elseif code == "PTH207" then
-      -- 🔗🐍 [PTH207]	glob	Replace {function} with Path.glob or Path.rglob	✔️ 🛠️
       local function_name = message:match "Replace `(.*)` with"
       if lang == "es" then
         return string.format("Reemplace `%s` con `Path.glob` o `Path.rglob`", function_name)
       end
-    -- PLC0105	type-name-incorrect-variance	{kind} name "{param_name}" does not reflect its {variance}; consider renaming it to "{replacement_name}"	✔️ 🛠️
-    -- PLC0131	type-bivariance	{kind} cannot be both covariant and contravariant	✔️ 🛠️
-    -- PLC0132	type-param-name-mismatch	{kind} name {param_name} does not match assigned variable name {var_name}	✔️ 🛠️
-    -- PLC0205	single-string-slots	Class __slots__ should be a non-string iterable	✔️ 🛠️
-    -- PLC0206	dict-index-missing-items	Extracting value from dictionary without calling .items()	🧪 🛠️
-    -- PLC0208	iteration-over-set	Use a sequence type instead of a set when iterating over values	✔️ 🛠️
-    -- PLC0414	useless-import-alias	Import alias does not rename original package	✔️ 🛠️
-    -- PLC0415	import-outside-top-level	import should be at the top-level of a file	🧪 🛠️
-    -- PLC1901	compare-to-empty-string	{existing} can be simplified to {replacement} as an empty string is falsey	🧪 🛠️
-    -- PLC2401	non-ascii-name	{kind} name {name} contains a non-ASCII character	✔️ 🛠️
-    -- PLC2403	non-ascii-import-name	Module alias {name} contains a non-ASCII character	✔️ 🛠️
-    -- PLC2701	import-private-name	Private name import {name} from external module {module}	🧪 🛠️
-    -- PLC2801	unnecessary-dunder-call	Unnecessary dunder call to {method}. {replacement}.	🧪 🛠️
-    -- PLC3002	unnecessary-direct-lambda-call	Lambda expression called directly. Execute the expression inline instead.	✔️
-    -- PLE0100	yield-in-init	__init__ method is a generator	✔️ 🛠️
-    -- PLE0101	return-in-init	Explicit return in __init__	✔️ 🛠️
-    -- PLE0115	nonlocal-and-global	Name {name} is both nonlocal and global	✔️ 🛠️
-    -- PLE0116	continue-in-finally	continue not supported inside finally clause	✔️ 🛠️
-    -- PLE0117	nonlocal-without-binding	Nonlocal name {name} found without binding	✔️ 🛠️
-    -- PLE0118	load-before-global-declaration	Name {name} is used prior to global declaration on {row}	✔️ 🛠️
-    -- PLE0237	non-slot-assignment	Attribute {name} is not defined in class's __slots__	✔️ 🛠️
-    -- PLE0241	duplicate-bases	Duplicate base {base} for class {class}	✔️ 🛠️
-    -- PLE0302	unexpected-special-method-signature	The special method {} expects {}, {} {} given	✔️ 🛠️
-    -- PLE0303	invalid-length-return-type	__len__ does not return a non-negative integer	✔️ 🛠️
-    -- PLE0304	invalid-bool-return-type	__bool__ does not return bool	🧪 🛠️
-    -- PLE0305	invalid-index-return-type	__index__ does not return an integer	✔️ 🛠️
-    -- PLE0307	invalid-str-return-type	__str__ does not return str	✔️ 🛠️
-    -- PLE0308	invalid-bytes-return-type	__bytes__ does not return bytes	✔️ 🛠️
-    -- PLE0309	invalid-hash-return-type	__hash__ does not return an integer	✔️ 🛠️
-    -- PLE0604	invalid-all-object	Invalid object in __all__, must contain only strings	✔️ 🛠️
-    -- PLE0605	invalid-all-format	Invalid format for __all__, must be tuple or list	✔️ 🛠️
-    -- PLE0643	potential-index-error	Expression is likely to raise IndexError	✔️ 🛠️
-    -- PLE0704	misplaced-bare-raise	Bare raise statement is not inside an exception handler	✔️ 🛠️
-    -- PLE1132	repeated-keyword-argument	Repeated keyword argument: {duplicate_keyword}	✔️ 🛠️
-    -- PLE1141	dict-iter-missing-items	Unpacking a dictionary in iteration without calling .items()	🧪 🛠️
-    -- PLE1142	await-outside-async	await should be used within an async function	✔️ 🛠️
-    -- PLE1205	logging-too-many-args	Too many arguments for logging format string	✔️ 🛠️
-    -- PLE1206	logging-too-few-args	Not enough arguments for logging format string	✔️ 🛠️
-    -- PLE1300	bad-string-format-character	Unsupported format character '{format_char}'	✔️ 🛠️
-    -- PLE1307	bad-string-format-type	Format type does not match argument type	✔️ 🛠️
-    -- PLE1310	bad-str-strip-call	String {strip} call contains duplicate characters (did you mean {removal}?)	✔️ 🛠️
-    -- PLE1507	invalid-envvar-value	Invalid type for initial os.getenv argument; expected str	✔️ 🛠️
-    -- PLE1519	singledispatch-method	@singledispatch decorator should not be used on methods	✔️ 🛠️
-    -- PLE1520	singledispatchmethod-function	@singledispatchmethod decorator should not be used on non-method functions	✔️ 🛠️
-    -- PLE1700	yield-from-in-async-function	yield from statement in async function; use async for instead	✔️ 🛠️
-    -- PLE2502	bidirectional-unicode	Contains control characters that can permit obfuscated code	✔️ 🛠️
-    -- PLE2510	invalid-character-backspace	Invalid unescaped character backspace, use "\b" instead	✔️ 🛠️
-    -- PLE2512	invalid-character-sub	Invalid unescaped character SUB, use "\x1A" instead	✔️ 🛠️
-    -- PLE2513	invalid-character-esc	Invalid unescaped character ESC, use "\x1B" instead	✔️ 🛠️
-    -- PLE2514	invalid-character-nul	Invalid unescaped character NUL, use "\0" instead	✔️ 🛠️
-    -- PLE2515	invalid-character-zero-width-space	Invalid unescaped character zero-width-space, use "\u200B" instead	✔️ 🛠️
-    -- PLE4703	modified-iterating-set	Iterated set {name} is modified within the for loop	🧪 🛠️
-    -- PLR0124	comparison-with-itself	Name compared with itself, consider replacing {actual}	✔️ 🛠️
-    -- PLR0133	comparison-of-constant	Two constants compared in a comparison, consider replacing {left_constant} {op} {right_constant}	✔️ 🛠️
-    -- PLR0202	no-classmethod-decorator	Class method defined without decorator	🧪 🛠️
-    -- PLR0203	no-staticmethod-decorator	Static method defined without decorator	🧪 🛠️
-    -- PLR0206	property-with-parameters	Cannot have defined parameters for properties	✔️ 🛠️
-    -- PLR0402	manual-from-import	Use from {module} import {name} in lieu of alias	✔️ 🛠️
-    -- PLR0904	too-many-public-methods	Too many public methods ({methods} > {max_methods})	🧪 🛠️
-    -- PLR0911	too-many-return-statements	Too many return statements ({returns} > {max_returns})	✔️ 🛠️
-    -- PLR0912	too-many-branches	Too many branches ({branches} > {max_branches})	✔️ 🛠️
-    -- PLR0913	too-many-arguments	Too many arguments in function definition ({c_args} > {max_args})	✔️ 🛠️
-    -- PLR0914	too-many-locals	Too many local variables ({current_amount}/{max_amount})	🧪 🛠️
-    -- PLR0915	too-many-statements	Too many statements ({statements} > {max_statements})	✔️ 🛠️
-    -- PLR0916	too-many-boolean-expressions	Too many Boolean expressions ({expressions} > {max_expressions})	🧪 🛠️
-    -- PLR0917	too-many-positional-arguments	Too many positional arguments ({c_pos}/{max_pos})	🧪 🛠️
-    -- PLR1701	repeated-isinstance-calls	Merge isinstance calls: {expression}	❌ 🛠️
-    -- PLR1702	too-many-nested-blocks	Too many nested blocks ({nested_blocks} > {max_nested_blocks})	🧪 🛠️
-    -- PLR1704	redefined-argument-from-local	Redefining argument with the local name {name}	✔️ 🛠️
-    -- PLR1706	and-or-ternary	Consider using if-else expression	❌ 🛠️
-    -- PLR1711	useless-return	Useless return statement at end of function	✔️ 🛠️
+    -- 🔗🐍 [PLC0105]	type-name-incorrect-variance	{kind} name "{param_name}" does not reflect its {variance}; consider renaming it to "{replacement_name}"	✔️ 🛠️
+    -- 🔗🐍 [PLC0131]	type-bivariance	{kind} cannot be both covariant and contravariant	✔️ 🛠️
+    -- 🔗🐍 [PLC0132]	type-param-name-mismatch	{kind} name {param_name} does not match assigned variable name {var_name}	✔️ 🛠️
+    -- 🔗🐍 [PLC0205]	single-string-slots	Class __slots__ should be a non-string iterable	✔️ 🛠️
+    -- 🔗🐍 [PLC0206]	dict-index-missing-items	Extracting value from dictionary without calling .items()	🧪 🛠️
+    -- 🔗🐍 [PLC0208]	iteration-over-set	Use a sequence type instead of a set when iterating over values	✔️ 🛠️
+    -- 🔗🐍 [PLC0414]	useless-import-alias	Import alias does not rename original package	✔️ 🛠️
+    -- 🔗🐍 [PLC0415]	import-outside-top-level	import should be at the top-level of a file	🧪 🛠️
+    -- 🔗🐍 [PLC1901]	compare-to-empty-string	{existing} can be simplified to {replacement} as an empty string is falsey	🧪 🛠️
+    -- 🔗🐍 [PLC2401]	non-ascii-name	{kind} name {name} contains a non-ASCII character	✔️ 🛠️
+    -- 🔗🐍 [PLC2403]	non-ascii-import-name	Module alias {name} contains a non-ASCII character	✔️ 🛠️
+    -- 🔗🐍 [PLC2701]	import-private-name	Private name import {name} from external module {module}	🧪 🛠️
+    -- 🔗🐍 [PLC2801]	unnecessary-dunder-call	Unnecessary dunder call to {method}. {replacement}.	🧪 🛠️
+    -- 🔗🐍 [PLC3002]	unnecessary-direct-lambda-call	Lambda expression called directly. Execute the expression inline instead.	✔️
+    -- 🔗🐍 [PLE0100]	yield-in-init	__init__ method is a generator	✔️ 🛠️
+    -- 🔗🐍 [PLE0101]	return-in-init	Explicit return in __init__	✔️ 🛠️
+    -- 🔗🐍 [PLE0115]	nonlocal-and-global	Name {name} is both nonlocal and global	✔️ 🛠️
+    -- 🔗🐍 [PLE0116]	continue-in-finally	continue not supported inside finally clause	✔️ 🛠️
+    -- 🔗🐍 [PLE0117]	nonlocal-without-binding	Nonlocal name {name} found without binding	✔️ 🛠️
+    -- 🔗🐍 [PLE0118]	load-before-global-declaration	Name {name} is used prior to global declaration on {row}	✔️ 🛠️
+    -- 🔗🐍 [PLE0237]	non-slot-assignment	Attribute {name} is not defined in class's __slots__	✔️ 🛠️
+    -- 🔗🐍 [PLE0241]	duplicate-bases	Duplicate base {base} for class {class}	✔️ 🛠️
+    -- 🔗🐍 [PLE0302]	unexpected-special-method-signature	The special method {} expects {}, {} {} given	✔️ 🛠️
+    -- 🔗🐍 [PLE0303]	invalid-length-return-type	__len__ does not return a non-negative integer	✔️ 🛠️
+    -- 🔗🐍 [PLE0304]	invalid-bool-return-type	__bool__ does not return bool	🧪 🛠️
+    -- 🔗🐍 [PLE0305]	invalid-index-return-type	__index__ does not return an integer	✔️ 🛠️
+    -- 🔗🐍 [PLE0307]	invalid-str-return-type	__str__ does not return str	✔️ 🛠️
+    -- 🔗🐍 [PLE0308]	invalid-bytes-return-type	__bytes__ does not return bytes	✔️ 🛠️
+    -- 🔗🐍 [PLE0309]	invalid-hash-return-type	__hash__ does not return an integer	✔️ 🛠️
+    -- 🔗🐍 [PLE0604]	invalid-all-object	Invalid object in __all__, must contain only strings	✔️ 🛠️
+    -- 🔗🐍 [PLE0605]	invalid-all-format	Invalid format for __all__, must be tuple or list	✔️ 🛠️
+    -- 🔗🐍 [PLE0643]	potential-index-error	Expression is likely to raise IndexError	✔️ 🛠️
+    -- 🔗🐍 [PLE0704]	misplaced-bare-raise	Bare raise statement is not inside an exception handler	✔️ 🛠️
+    -- 🔗🐍 [PLE1132]	repeated-keyword-argument	Repeated keyword argument: {duplicate_keyword}	✔️ 🛠️
+    -- 🔗🐍 [PLE1141]	dict-iter-missing-items	Unpacking a dictionary in iteration without calling .items()	🧪 🛠️
+    -- 🔗🐍 [PLE1142]	await-outside-async	await should be used within an async function	✔️ 🛠️
+    -- 🔗🐍 [PLE1205]	logging-too-many-args	Too many arguments for logging format string	✔️ 🛠️
+    -- 🔗🐍 [PLE1206]	logging-too-few-args	Not enough arguments for logging format string	✔️ 🛠️
+    -- 🔗🐍 [PLE1300]	bad-string-format-character	Unsupported format character '{format_char}'	✔️ 🛠️
+    -- 🔗🐍 [PLE1307]	bad-string-format-type	Format type does not match argument type	✔️ 🛠️
+    -- 🔗🐍 [PLE1310]	bad-str-strip-call	String {strip} call contains duplicate characters (did you mean {removal}?)	✔️ 🛠️
+    -- 🔗🐍 [PLE1507]	invalid-envvar-value	Invalid type for initial os.getenv argument; expected str	✔️ 🛠️
+    -- 🔗🐍 [PLE1519]	singledispatch-method	@singledispatch decorator should not be used on methods	✔️ 🛠️
+    -- 🔗🐍 [PLE1520]	singledispatchmethod-function	@singledispatchmethod decorator should not be used on non-method functions	✔️ 🛠️
+    -- 🔗🐍 [PLE1700]	yield-from-in-async-function	yield from statement in async function; use async for instead	✔️ 🛠️
+    -- 🔗🐍 [PLE2502]	bidirectional-unicode	Contains control characters that can permit obfuscated code	✔️ 🛠️
+    -- 🔗🐍 [PLE2510]	invalid-character-backspace	Invalid unescaped character backspace, use "\b" instead	✔️ 🛠️
+    -- 🔗🐍 [PLE2512]	invalid-character-sub	Invalid unescaped character SUB, use "\x1A" instead	✔️ 🛠️
+    -- 🔗🐍 [PLE2513]	invalid-character-esc	Invalid unescaped character ESC, use "\x1B" instead	✔️ 🛠️
+    -- 🔗🐍 [PLE2514]	invalid-character-nul	Invalid unescaped character NUL, use "\0" instead	✔️ 🛠️
+    -- 🔗🐍 [PLE2515]	invalid-character-zero-width-space	Invalid unescaped character zero-width-space, use "\u200B" instead	✔️ 🛠️
+    -- 🔗🐍 [PLE4703]	modified-iterating-set	Iterated set {name} is modified within the for loop	🧪 🛠️
+    -- 🔗🐍 [PLR0124]	comparison-with-itself	Name compared with itself, consider replacing {actual}	✔️ 🛠️
+    -- 🔗🐍 [PLR0133]	comparison-of-constant	Two constants compared in a comparison, consider replacing {left_constant} {op} {right_constant}	✔️ 🛠️
+    -- 🔗🐍 [PLR0202]	no-classmethod-decorator	Class method defined without decorator	🧪 🛠️
+    -- 🔗🐍 [PLR0203]	no-staticmethod-decorator	Static method defined without decorator	🧪 🛠️
+    -- 🔗🐍 [PLR0206]	property-with-parameters	Cannot have defined parameters for properties	✔️ 🛠️
+    -- 🔗🐍 [PLR0402]	manual-from-import	Use from {module} import {name} in lieu of alias	✔️ 🛠️
+    -- 🔗🐍 [PLR0904]	too-many-public-methods	Too many public methods ({methods} > {max_methods})	🧪 🛠️
+    -- 🔗🐍 [PLR0911]	too-many-return-statements	Too many return statements ({returns} > {max_returns})	✔️ 🛠️
+    -- 🔗🐍 [PLR0912]	too-many-branches	Too many branches ({branches} > {max_branches})	✔️ 🛠️
+    -- 🔗🐍 [PLR0913]	too-many-arguments	Too many arguments in function definition ({c_args} > {max_args})	✔️ 🛠️
+    -- 🔗🐍 [PLR0914]	too-many-locals	Too many local variables ({current_amount}/{max_amount})	🧪 🛠️
+    -- 🔗🐍 [PLR0915]	too-many-statements	Too many statements ({statements} > {max_statements})	✔️ 🛠️
+    -- 🔗🐍 [PLR0916]	too-many-boolean-expressions	Too many Boolean expressions ({expressions} > {max_expressions})	🧪 🛠️
+    -- 🔗🐍 [PLR0917]	too-many-positional-arguments	Too many positional arguments ({c_pos}/{max_pos})	🧪 🛠️
+    -- 🔗🐍 [PLR1701]	repeated-isinstance-calls	Merge isinstance calls: {expression}	❌ 🛠️
+    -- 🔗🐍 [PLR1702]	too-many-nested-blocks	Too many nested blocks ({nested_blocks} > {max_nested_blocks})	🧪 🛠️
+    -- 🔗🐍 [PLR1704]	redefined-argument-from-local	Redefining argument with the local name {name}	✔️ 🛠️
+    -- 🔗🐍 [PLR1706]	and-or-ternary	Consider using if-else expression	❌ 🛠️
+    -- 🔗🐍 [PLR1711]	useless-return	Useless return statement at end of function	✔️ 🛠️
     elseif code == "PLR1711" then
       if lang == "es" then
         return "Declaración de retorno inútil al final de la función"
@@ -1259,57 +1278,83 @@ M.translate_ruff_message = function(code, message)
       elseif lang == "fr" then
         return "Déclaration de retour inutile à la fin de la fonction"
       end
-    -- PLR1714	repeated-equality-comparison	Consider merging multiple comparisons: {expression}. Use a set if the elements are hashable.	✔️ 🛠️
-    -- PLR1722	sys-exit-alias	Use sys.exit() instead of {name}	✔️ 🛠️
-    -- PLR1730	if-stmt-min-max	Replace if statement with {replacement}	✔️ 🛠️
-    -- PLR1733	unnecessary-dict-index-lookup	Unnecessary lookup of dictionary value by key	🧪 🛠️
-    -- PLR1736	unnecessary-list-index-lookup	List index lookup in enumerate() loop	✔️ 🛠️
-    -- PLR2004	magic-value-comparison	Magic value used in comparison, consider replacing {value} with a constant variable	✔️ 🛠️
-    -- PLR2044	empty-comment	Line with empty comment	✔️ 🛠️
-    -- PLR5501	collapsible-else-if	Use elif instead of else then if, to reduce indentation	✔️ 🛠️
-    -- PLR6104	non-augmented-assignment	Use {operator} to perform an augmented assignment directly	🧪 🛠️
-    -- PLR6201	literal-membership	Use a set literal when testing for membership	🧪 🛠️
-    -- PLR6301	no-self-use	Method {method_name} could be a function, class method, or static method	🧪 🛠️
-    -- PLW0108	unnecessary-lambda	Lambda may be unnecessary; consider inlining inner function	🧪 🛠️
-    -- PLW0120	useless-else-on-loop	else clause on loop without a break statement; remove the else and dedent its contents	✔️ 🛠️
-    -- PLW0127	self-assigning-variable	Self-assignment of variable {name}	✔️ 🛠️
-    -- PLW0128	redeclared-assigned-name	Redeclared variable {name} in assignment	✔️ 🛠️
-    -- PLW0129	assert-on-string-literal	Asserting on an empty string literal will never pass	✔️ 🛠️
-    -- PLW0131	named-expr-without-context	Named expression used without context	✔️ 🛠️
-    -- PLW0133	useless-exception-statement	Missing raise statement on exception	✔️ 🛠️
-    -- PLW0177	nan-comparison	Comparing against a NaN value; use math.isnan instead	🧪 🛠️
-    -- PLW0211	bad-staticmethod-argument	First argument of a static method should not be named {argument_name}	✔️ 🛠️
-    -- PLW0245	super-without-brackets	super call is missing parentheses	✔️ 🛠️
-    -- PLW0406	import-self	Module {name} imports itself	✔️ 🛠️
-    -- PLW0602	global-variable-not-assigned	Using global for {name} but no assignment is done	✔️ 🛠️
-    -- PLW0603	global-statement	Using the global statement to update {name} is discouraged	✔️ 🛠️
-    -- PLW0604	global-at-module-level	global at module level is redundant	✔️ 🛠️
-    -- PLW0642	self-or-cls-assignment	Reassigned {} variable in {method_type} method	✔️ 🛠️
-    -- PLW0711	binary-op-exception	Exception to catch is the result of a binary and operation	✔️ 🛠️
-    -- PLW1501	bad-open-mode	{mode} is not a valid mode for open	✔️ 🛠️
-    -- PLW1508	invalid-envvar-default	Invalid type for environment variable default; expected str or None	✔️ 🛠️
-    -- PLW1509	subprocess-popen-preexec-fn	preexec_fn argument is unsafe when using threads	✔️ 🛠️
-    -- PLW1510	subprocess-run-without-check	subprocess.run without explicit check argument	✔️ 🛠️
-    -- PLW1514	unspecified-encoding	{function_name} in text mode without explicit encoding argument	🧪 🛠️
-    -- PLW1641	eq-without-hash	Object does not implement __hash__ method	🧪 🛠️
-    -- PLW2101	useless-with-lock	Threading lock directly created in with statement has no effect	✔️ 🛠️
-    -- PLW2901	redefined-loop-name	Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target	✔️ 🛠️
-    -- PLW3201	bad-dunder-method-name	Dunder method {name} has no special meaning in Python 3	🧪 🛠️
-    -- PLW3301	nested-min-max	Nested {func} calls can be flattened	✔️ 🛠️
-    -- TRY002	raise-vanilla-class	Create your own exception	✔️ 🛠️
-    -- TRY003	raise-vanilla-args	Avoid specifying long messages outside the exception class	✔️ 🛠️
-    -- TRY004	type-check-without-type-error	Prefer TypeError exception for invalid type	✔️ 🛠️
-    -- TRY200	reraise-no-cause	Use raise from to specify exception cause	❌ 🛠️
-    -- TRY201	verbose-raise	Use raise without specifying exception name	✔️ 🛠️
-    -- TRY300	try-consider-else	Consider moving this statement to an else block	✔️ 🛠️
-    -- TRY301	raise-within-try	Abstract raise to an inner function	✔️ 🛠️
-    -- TRY302	useless-try-except	Remove exception handler; error is immediately re-raised	✔️ 🛠️
-    -- TRY400	error-instead-of-exception	Use logging.exception instead of logging.error	✔️ 🛠️
-    -- TRY401	verbose-log-message	Redundant exception object included in logging.exception call	✔️ 🛠️
-    -- NPY001	numpy-deprecated-type-alias	Type alias np.{type_name} is deprecated, replace with builtin type	✔️ 🛠️
-    -- NPY002	numpy-legacy-random	Replace legacy np.random.{method_name} call with np.random.Generator	✔️ 🛠️
-    -- NPY003	numpy-deprecated-function	np.{existing} is deprecated; use np.{replacement} instead	✔️ 🛠️
-    -- NPY201	numpy2-deprecation	np.{existing} will be removed in NumPy 2.0. {migration_guide}	✔️ 🛠️
+    -- 🔗🐍 [PLR1714]	repeated-equality-comparison	Consider merging multiple comparisons: {expression}. Use a set if the elements are hashable.	✔️ 🛠️
+    -- 🔗🐍 [PLR1722]	sys-exit-alias	Use sys.exit() instead of {name}	✔️ 🛠️
+    -- 🔗🐍 [PLR1730]	if-stmt-min-max	Replace if statement with {replacement}	✔️ 🛠️
+    -- 🔗🐍 [PLR1733]	unnecessary-dict-index-lookup	Unnecessary lookup of dictionary value by key	🧪 🛠️
+    -- 🔗🐍 [PLR1736]	unnecessary-list-index-lookup	List index lookup in enumerate() loop	✔️ 🛠️
+    -- 🔗🐍 [PLR2004]	magic-value-comparison	Magic value used in comparison, consider replacing {value} with a constant variable	✔️ 🛠️
+    elseif code == "PLR2004" then
+      local value = message:match "consider replacing (.*) with"
+      if lang == "es" then
+        return string.format(
+          "Valor mágico usado en la comparación, considere reemplazar %s con una variable constante",
+          value
+        )
+      elseif lang == "pt-br" then
+        return string.format(
+          "Valor mágico usado na comparação, considere substituir %s por uma variável constante",
+          value
+        )
+      elseif lang == "fr" then
+        return string.format(
+          "Valeur magique utilisée dans la comparaison, envisagez de remplacer %s par une variable constante",
+          value
+        )
+      end
+    -- 🔗🐍 [PLR2044]	empty-comment	Line with empty comment	✔️ 🛠️
+    -- 🔗🐍 [PLR5501]	collapsible-else-if	Use elif instead of else then if, to reduce indentation	✔️ 🛠️
+    -- 🔗🐍 [PLR6104]	non-augmented-assignment	Use {operator} to perform an augmented assignment directly	🧪 🛠️
+    -- 🔗🐍 [PLR6201]	literal-membership	Use a set literal when testing for membership	🧪 🛠️
+    -- 🔗🐍 [PLR6301]	no-self-use	Method {method_name} could be a function, class method, or static method	🧪 🛠️
+    -- 🔗🐍 [PLW0108]	unnecessary-lambda	Lambda may be unnecessary; consider inlining inner function	🧪 🛠️
+    -- 🔗🐍 [PLW0120]	useless-else-on-loop	else clause on loop without a break statement; remove the else and dedent its contents	✔️ 🛠️
+    -- 🔗🐍 [PLW0127]	self-assigning-variable	Self-assignment of variable {name}	✔️ 🛠️
+    -- 🔗🐍 [PLW0128]	redeclared-assigned-name	Redeclared variable {name} in assignment	✔️ 🛠️
+    -- 🔗🐍 [PLW0129]	assert-on-string-literal	Asserting on an empty string literal will never pass	✔️ 🛠️
+    -- 🔗🐍 [PLW0131]	named-expr-without-context	Named expression used without context	✔️ 🛠️
+    -- 🔗🐍 [PLW0133]	useless-exception-statement	Missing raise statement on exception	✔️ 🛠️
+    -- 🔗🐍 [PLW0177]	nan-comparison	Comparing against a NaN value; use math.isnan instead	🧪 🛠️
+    -- 🔗🐍 [PLW0211]	bad-staticmethod-argument	First argument of a static method should not be named {argument_name}	✔️ 🛠️
+    -- 🔗🐍 [PLW0245]	super-without-brackets	super call is missing parentheses	✔️ 🛠️
+    -- 🔗🐍 [PLW0406]	import-self	Module {name} imports itself	✔️ 🛠️
+    -- 🔗🐍 [PLW0602]	global-variable-not-assigned	Using global for {name} but no assignment is done	✔️ 🛠️
+    -- 🔗🐍 [PLW0603]	global-statement	Using the global statement to update {name} is discouraged	✔️ 🛠️
+    -- 🔗🐍 [PLW0604]	global-at-module-level	global at module level is redundant	✔️ 🛠️
+    -- 🔗🐍 [PLW0642]	self-or-cls-assignment	Reassigned {} variable in {method_type} method	✔️ 🛠️
+    -- 🔗🐍 [PLW0711]	binary-op-exception	Exception to catch is the result of a binary and operation	✔️ 🛠️
+    -- 🔗🐍 [PLW1501]	bad-open-mode	{mode} is not a valid mode for open	✔️ 🛠️
+    -- 🔗🐍 [PLW1508]	invalid-envvar-default	Invalid type for environment variable default; expected str or None	✔️ 🛠️
+    -- 🔗🐍 [PLW1509]	subprocess-popen-preexec-fn	preexec_fn argument is unsafe when using threads	✔️ 🛠️
+    -- 🔗🐍 [PLW1510]	subprocess-run-without-check	subprocess.run without explicit check argument	✔️ 🛠️
+    -- 🔗🐍 [PLW1514]	unspecified-encoding	{function_name} in text mode without explicit encoding argument	🧪 🛠️
+    -- 🔗🐍 [PLW1641]	eq-without-hash	Object does not implement __hash__ method	🧪 🛠️
+    -- 🔗🐍 [PLW2101]	useless-with-lock	Threading lock directly created in with statement has no effect	✔️ 🛠️
+    -- 🔗🐍 [PLW2901]	redefined-loop-name	Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target	✔️ 🛠️
+    -- 🔗🐍 [PLW3201]	bad-dunder-method-name	Dunder method {name} has no special meaning in Python 3	🧪 🛠️
+    -- 🔗🐍 [PLW3301]	nested-min-max	Nested {func} calls can be flattened	✔️ 🛠️
+    -- 🔗🐍 [TRY002]	raise-vanilla-class	Create your own exception	✔️ 🛠️
+    elseif code == "TRY002" then
+      if lang == "es" then
+        return "Cree su propia excepción"
+      elseif lang == "pt-br" then
+        return "Crie sua própria exceção"
+      elseif lang == "fr" then
+        return "Créez votre propre exception"
+      end
+    -- 🔗🐍 [TRY003]	raise-vanilla-args	Avoid specifying long messages outside the exception class	✔️ 🛠️
+    -- 🔗🐍 [TRY004]	type-check-without-type-error	Prefer TypeError exception for invalid type	✔️ 🛠️
+    -- 🔗🐍 [TRY200]	reraise-no-cause	Use raise from to specify exception cause	❌ 🛠️
+    -- 🔗🐍 [TRY201]	verbose-raise	Use raise without specifying exception name	✔️ 🛠️
+    -- 🔗🐍 [TRY300]	try-consider-else	Consider moving this statement to an else block	✔️ 🛠️
+    -- 🔗🐍 [TRY301]	raise-within-try	Abstract raise to an inner function	✔️ 🛠️
+    -- 🔗🐍 [TRY302]	useless-try-except	Remove exception handler; error is immediately re-raised	✔️ 🛠️
+    -- 🔗🐍 [TRY400]	error-instead-of-exception	Use logging.exception instead of logging.error	✔️ 🛠️
+    -- 🔗🐍 [TRY401]	verbose-log-message	Redundant exception object included in logging.exception call	✔️ 🛠️
+    -- 🔗🐍 [NPY001]	numpy-deprecated-type-alias	Type alias np.{type_name} is deprecated, replace with builtin type	✔️ 🛠️
+    -- 🔗🐍 [NPY002]	numpy-legacy-random	Replace legacy np.random.{method_name} call with np.random.Generator	✔️ 🛠️
+    -- 🔗🐍 [NPY003]	numpy-deprecated-function	np.{existing} is deprecated; use np.{replacement} instead	✔️ 🛠️
+    -- 🔗🐍 [NPY201]	numpy2-deprecation	np.{existing} will be removed in NumPy 2.0. {migration_guide}	✔️ 🛠️
     elseif code == "NPY201" then
       local existing, migration_guide = message:match "np%.(.*) will be removed in NumPy 2%.0%. (.*)"
       if lang == "es" then
@@ -1319,41 +1364,42 @@ M.translate_ruff_message = function(code, message)
       elseif lang == "fr" then
         return string.format("np.%s sera supprimé dans NumPy 2.0. %s", existing, migration_guide)
       end
-    -- RUF001	ambiguous-unicode-character-string	String contains ambiguous {}. Did you mean {}?	✔️ 🛠️
-    -- RUF002	ambiguous-unicode-character-docstring	Docstring contains ambiguous {}. Did you mean {}?	✔️ 🛠️
-    -- RUF003	ambiguous-unicode-character-comment	Comment contains ambiguous {}. Did you mean {}?	✔️ 🛠️
-    -- RUF005	collection-literal-concatenation	Consider {expression} instead of concatenation	✔️ 🛠️
-    -- RUF006	asyncio-dangling-task	Store a reference to the return value of {expr}.{method}	✔️ 🛠️
-    -- RUF007	zip-instead-of-pairwise	Prefer itertools.pairwise() over zip() when iterating over successive pairs	✔️ 🛠️
-    -- RUF008	mutable-dataclass-default	Do not use mutable default values for dataclass attributes	✔️ 🛠️
-    -- RUF009	function-call-in-dataclass-default-argument	Do not perform function call {name} in dataclass defaults	✔️ 🛠️
-    -- RUF010	explicit-f-string-type-conversion	Use explicit conversion flag	✔️ 🛠️
-    -- RUF011	ruff-static-key-dict-comprehension	Dictionary comprehension uses static key	❌ 🛠️
-    -- RUF012	mutable-class-default	Mutable class attributes should be annotated with typing.ClassVar	✔️ 🛠️
-    -- RUF013	implicit-optional	PEP 484 prohibits implicit Optional	✔️ 🛠️
+    -- change the linter code at front to "🔗🐍 [code]" format including the brackets
+    -- 🔗🐍 [RUF001]	ambiguous-unicode-character-string	String contains ambiguous {}. Did you mean {}?	✔️ 🛠️
+    -- 🔗🐍 [RUF002]	ambiguous-unicode-character-docstring	Docstring contains ambiguous {}. Did you mean {}?	✔️ 🛠️
+    -- 🔗🐍 [RUF003]	ambiguous-unicode-character-comment	Comment contains ambiguous {}. Did you mean {}?	✔️ 🛠️
+    -- 🔗🐍 [RUF005]	collection-literal-concatenation	Consider {expression} instead of concatenation	✔️ 🛠️
+    -- 🔗🐍 [RUF006]	asyncio-dangling-task	Store a reference to the return value of {expr}.{method}	✔️ 🛠️
+    -- 🔗🐍 [RUF007]	zip-instead-of-pairwise	Prefer itertools.pairwise() over zip() when iterating over successive pairs	✔️ 🛠️
+    -- 🔗🐍 [RUF008]	mutable-dataclass-default	Do not use mutable default values for dataclass attributes	✔️ 🛠️
+    -- 🔗🐍 [RUF009]	function-call-in-dataclass-default-argument	Do not perform function call {name} in dataclass defaults	✔️ 🛠️
+    -- 🔗🐍 [RUF010]	explicit-f-string-type-conversion	Use explicit conversion flag	✔️ 🛠️
+    -- 🔗🐍 [RUF011]	ruff-static-key-dict-comprehension	Dictionary comprehension uses static key	❌ 🛠️
+    -- 🔗🐍 [RUF012]	mutable-class-default	Mutable class attributes should be annotated with typing.ClassVar	✔️ 🛠️
+    -- 🔗🐍 [RUF013]	implicit-optional	PEP 484 prohibits implicit Optional	✔️ 🛠️
     elseif code == "RUF013" then
       if lang == "es" then
         return "PEP 484 prohíbe el uso implícito de `Optional`"
       end
-      -- RUF015	unnecessary-iterable-allocation-for-first-element	Prefer next({iterable}) over single element slice	✔️ 🛠️
-      -- RUF016	invalid-index-type	Slice in indexed access to type {value_type} uses type {index_type} instead of an integer	✔️ 🛠️
-      -- RUF017	quadratic-list-summation	Avoid quadratic list summation	✔️ 🛠️
-      -- RUF018	assignment-in-assert	Avoid assignment expressions in assert statements	✔️ 🛠️
-      -- RUF019	unnecessary-key-check	Unnecessary key check before dictionary access	✔️ 🛠️
-      -- RUF020	never-union	{never_like} | T is equivalent to T	✔️ 🛠️
-      -- RUF021	parenthesize-chained-operators	Parenthesize a and b expressions when chaining and and or together, to make the precedence clear	🧪 🛠️
-      -- RUF022	unsorted-dunder-all	__all__ is not sorted	🧪 🛠️
-      -- RUF023	unsorted-dunder-slots	{}.__slots__ is not sorted	🧪 🛠️
-      -- RUF024	mutable-fromkeys-value	Do not pass mutable objects as values to dict.fromkeys	✔️ 🛠️
-      -- RUF025	unnecessary-dict-comprehension-for-iterable	Unnecessary dict comprehension for iterable; use dict.fromkeys instead	🧪 🛠️
-      -- RUF026	default-factory-kwarg	default_factory is a positional-only argument to defaultdict	✔️ 🛠️
-      -- RUF027	missing-f-string-syntax	Possible f-string without an f prefix	🧪 🛠️
-      -- RUF028	invalid-formatter-suppression-comment	This suppression comment is invalid because {}	🧪 🛠️
-      -- RUF029	unused-async	Function {name} is declared async, but doesn't await or use async features.	🧪 🛠️
-      -- RUF030	assert-with-print-message	print() expression in assert statement is likely unintentional	🧪 🛠️
-      -- RUF100	unused-noqa	Unused noqa directive	✔️ 🛠️
-      -- RUF101	redirected-noqa	{original} is a redirect to {target}	🧪 🛠️
-      -- RUF200	invalid-pyproject-toml	Failed to parse pyproject.toml: {message}	✔️ 🛠️
+      -- 🔗🐍 [RUF015]	unnecessary-iterable-allocation-for-first-element	Prefer next({iterable}) over single element slice	✔️ 🛠️
+      -- 🔗🐍 [RUF016]	invalid-index-type	Slice in indexed access to type {value_type} uses type {index_type} instead of an integer	✔️ 🛠️
+      -- 🔗🐍 [RUF017]	quadratic-list-summation	Avoid quadratic list summation	✔️ 🛠️
+      -- 🔗🐍 [RUF018]	assignment-in-assert	Avoid assignment expressions in assert statements	✔️ 🛠️
+      -- 🔗🐍 [RUF019]	unnecessary-key-check	Unnecessary key check before dictionary access	✔️ 🛠️
+      -- 🔗🐍 [RUF020]	never-union	{never_like} | T is equivalent to T	✔️ 🛠️
+      -- 🔗🐍 [RUF021]	parenthesize-chained-operators	Parenthesize a and b expressions when chaining and and or together, to make the precedence clear	🧪 🛠️
+      -- 🔗🐍 [RUF022]	unsorted-dunder-all	__all__ is not sorted	🧪 🛠️
+      -- 🔗🐍 [RUF023]	unsorted-dunder-slots	{}.__slots__ is not sorted	🧪 🛠️
+      -- 🔗🐍 [RUF024]	mutable-fromkeys-value	Do not pass mutable objects as values to dict.fromkeys	✔️ 🛠️
+      -- 🔗🐍 [RUF025]	unnecessary-dict-comprehension-for-iterable	Unnecessary dict comprehension for iterable; use dict.fromkeys instead	🧪 🛠️
+      -- 🔗🐍 [RUF026]	default-factory-kwarg	default_factory is a positional-only argument to defaultdict	✔️ 🛠️
+      -- 🔗🐍 [RUF027]	missing-f-string-syntax	Possible f-string without an f prefix	🧪 🛠️
+      -- 🔗🐍 [RUF028]	invalid-formatter-suppression-comment	This suppression comment is invalid because {}	🧪 🛠️
+      -- 🔗🐍 [RUF029]	unused-async	Function {name} is declared async, but doesn't await or use async features.	🧪 🛠️
+      -- 🔗🐍 [RUF030]	assert-with-print-message	print() expression in assert statement is likely unintentional	🧪 🛠️
+      -- 🔗🐍 [RUF100]	unused-noqa	Unused noqa directive	✔️ 🛠️
+      -- 🔗🐍 [RUF101]	redirected-noqa	{original} is a redirect to {target}	🧪 🛠️
+      -- 🔗🐍 [RUF200]	invalid-pyproject-toml	Failed to parse pyproject.toml: {message}	✔️ 🛠️
     end
   end
 

@@ -106,9 +106,6 @@ plugins=(
 	zsh-history-substring-search
 	conda-zsh-completion
 	web-search				# google, ddg, ...
-	copypath
-	copyfile
-	copybuffer				# Ctrl+o to copy shell line
 	cp						# cpv to rsync
 	colored-man-pages
 	colorize				# ccat
@@ -126,6 +123,11 @@ plugins=(
 	fzf
 	zoxide
 	thefuck
+
+	# The below are implemented on my own (customised)
+	# copypath
+	# copyfile
+	# copybuffer				# Ctrl+o to copy shell line
 )
 
 export DISABLE_VENV_CD=1  # disable virtualenvwrapper plugin to automatically activate on cd

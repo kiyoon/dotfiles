@@ -196,3 +196,38 @@ tgz() {
 	fi
 }
 
+osc52copy() {
+	if [ -z "$1" ]; then
+		echo "Usage: osc52copy [text]"
+		return 1
+	fi
+	#printf $'\e]52;c;%s\a' "$(base64 <<<'hello world')"
+	printf $'\e]52;c;%s\a' "$(base64 <<< "$1")"
+}
+
+# Inspired from oh-my-zsh/plugins/copypath but uses osc52
+cppath() {
+	# If no argument passed, use current directory
+	local file=$(realpath "${1:-.}")
+	osc52copy "$file"
+}
+
+# copy the contents of a file to the clipboard
+cpfile() {
+	if [ -z "$1" ]; then
+		echo "Usage: cpfile [file]"
+		return 1
+	fi
+	osc52copy "$(\cat "$1")"
+}
+
+# Ctrl+O to copy current command to clipboard
+cpbuffer() {
+	if [ -z "$BUFFER" ]; then
+		echo "No command to copy"
+		return 1
+	fi
+	osc52copy "$BUFFER"
+}
+zle -N cpbuffer
+bindkey "^O" cpbuffer

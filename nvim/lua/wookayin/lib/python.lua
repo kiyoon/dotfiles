@@ -118,7 +118,7 @@ M.toggle_typing = function(name)
   -- Climb up and find the closest ancestor node whose children has a `type` node:
   while
     (node ~= nil)
-    and not vim.tbl_contains({
+    and not vim.list_contains({
       "assignment",
       "typed_default_parameter",
       "typed_parameter",
@@ -204,7 +204,7 @@ M.toggle_typing_none = function()
   -- Climb up and find the closest ancestor node whose children has a `type` node:
   while
     (node ~= nil)
-    and not vim.tbl_contains({
+    and not vim.list_contains({
       "assignment",
       "typed_default_parameter",
       "typed_parameter",
@@ -224,7 +224,9 @@ M.toggle_typing_none = function()
   end
   -- Check range
 
-  local unpack_generic = function(node)
+  ---@param node TSNode?
+  ---@param wrapper_name string e.g., "Optional", "Annotated"
+  local unpack_generic = function(node, wrapper_name)
     -- Determine if `node` represents `Optional[...]` (w.r.t `name`), for example.
     --  type: (type)
     --    (generic_type)
@@ -235,7 +237,7 @@ M.toggle_typing_none = function()
     node = node:named_child(0)
     if has_type(node, "generic_type") then
       node = node:named_child(0)
-      if has_type(node, "identifier") and get_text(node) == "Optional" then
+      if has_type(node, "identifier") and get_text(node) == wrapper_name then
         ---@cast node TSNode
         node = node:next_named_sibling() -- 0.9.0 only
       end
@@ -268,26 +270,33 @@ M.toggle_typing_none = function()
     return nil
   end
 
-  local T_node = unpack_generic(type_node) ---@type TSNode?
-  local new_text ---@type string
-  if T_node then
-    -- replace: e.g., Optional[T] => T | None
-    new_text = get_text(T_node) .. " | None"
+  local annotated_type_node = unpack_generic(type_node, "Annotated") ---@type TSNode?
+  if annotated_type_node then
+    -- replace: e.g., Annotated[T, str] => Annotated[T | None, str]
+    local srow, scol, erow, ecol = annotated_type_node:range()
+    vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, { get_text(annotated_type_node) .. " | None" })
   else
-    local without_none_node = ends_with_none(type_node)
-    if without_none_node then
-      -- replace: e.g., T | None => T
-      new_text = get_text(without_none_node)
+    local T_node = unpack_generic(type_node, "Optional") ---@type TSNode?
+    local new_text ---@type string
+    if T_node then
+      -- replace: e.g., Optional[T] => T | None
+      new_text = get_text(T_node) .. " | None"
     else
-      -- replace: e.g., T => T | None
-      new_text = get_text(type_node) .. " | None"
+      local without_none_node = ends_with_none(type_node)
+      if without_none_node then
+        -- replace: e.g., T | None => T
+        new_text = get_text(without_none_node)
+      else
+        -- replace: e.g., T => T | None
+        new_text = get_text(type_node) .. " | None"
+      end
     end
-  end
 
-  -- treesitter range is 0-indexed and end-exclusive
-  -- nvim_buf_set_text() also uses 0-indexed and end-exclusive indexing
-  local srow, scol, erow, ecol = type_node:range()
-  vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, { new_text })
+    -- treesitter range is 0-indexed and end-exclusive
+    -- nvim_buf_set_text() also uses 0-indexed and end-exclusive indexing
+    local srow, scol, erow, ecol = type_node:range()
+    vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, { new_text })
+  end
 
   -- Restore cursor
   vim.api.nvim_win_set_cursor(winnr, cursor)

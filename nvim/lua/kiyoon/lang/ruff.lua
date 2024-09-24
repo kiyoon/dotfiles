@@ -811,6 +811,14 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [B004]	unreliable-callable-check	Using hasattr(x, "__call__") to test if x is callable is unreliable. Use callable(x) for consistent results.	✔️ 🛠️
     -- 🔗🐍 [B005]	strip-with-multi-characters	Using .strip() with multi-character strings is misleading	✔️ 🛠️
     -- 🔗🐍 [B006]	mutable-argument-default	Do not use mutable data structures for argument defaults	✔️ 🛠️
+    elseif code == "B006" then
+      if lang == "es" then
+        return "No uses estructuras de datos mutables para argumentos predeterminados"
+      elseif lang == "pt-br" then
+        return "Não use estruturas de dados mutáveis para argumentos padrão"
+      elseif lang == "fr" then
+        return "N'utilisez pas de structures de données mutables pour les arguments par défaut"
+      end
     -- 🔗🐍 [B007]	unused-loop-control-variable	Loop control variable {name} not used within loop body	✔️ 🛠️
     elseif code == "B007" then
       local name = message:match "Loop control variable ([^']+) not used within loop body"
@@ -1380,6 +1388,10 @@ M.translate_ruff_message = function(code, message)
     elseif code == "RUF013" then
       if lang == "es" then
         return "PEP 484 prohíbe el uso implícito de `Optional`"
+      elseif lang == "pt-br" then
+        return "PEP 484 proíbe o uso implícito de `Optional`"
+      elseif lang == "fr" then
+        return "PEP 484 interdit l'utilisation implicite de `Optional`"
       end
       -- 🔗🐍 [RUF015]	unnecessary-iterable-allocation-for-first-element	Prefer next({iterable}) over single element slice	✔️ 🛠️
       -- 🔗🐍 [RUF016]	invalid-index-type	Slice in indexed access to type {value_type} uses type {index_type} instead of an integer	✔️ 🛠️

@@ -1,19 +1,34 @@
-# tmux-conf
+# .tmux.conf
 
 My IDE-like Tmux configuration and tutorial!
 
-## Installation
+**🔑 Key features:**
 
-```bash
-./install-plugins.sh
-```
+- Battery, CPU, GPU, RAM status with [tmux-dracula-fork](https://github.com/kiyoon/tmux-dracula)
+- File tree viewer with [treemux](https://github.com/kiyoon/treemux)
+- Seamless mouse support
+- PID and pane ID viewing for all panes, helping to write scripts instantly.
+- More intuitive keybindings
 
-# Useful tmux commands
+Tmux's default keybindings are quite unintuitive, so I've changed a few.
+
+- Prefix changed: `Ctrl+b` -> `Ctrl+a`: easier to type frequently and does not collide with vim scrolling.
+- Split vertically: `Ctrl+b + %` -> `Ctrl+a + -`
+- Split horizontally: `Ctrl+b + "` -> `Ctrl+a + \`
+- Open/split window on current directory: `Ctrl+a + C`, `Ctrl+a + _`, `Ctrl+a + |` (in US layout, just press shift to open on current directory)
+
+## 🛠️ Installation
+
+1. Make sure your terminal has nerd font set up
+2. Put `.tmux.conf` in your home directory
+3. Run `./install-plugins.sh`
+
+## 💻 Useful tmux commands
 
 First of all, launch tmux: `tmux`  
 or, `tmux new -s <session_name>`
 
-## Create window and navigate
+### Create window and navigate
 
 - Ctrl+a + c: create window
 - `echo $TMUX_PANE`: see pane number (%0, %1, ..)
@@ -26,7 +41,7 @@ or, `tmux new -s <session_name>`
 - Ctrl+a + ,: change window title
 - Ctrl+Shift+s+Left / Right: re-order windows
 
-## Detach and resume
+### Detach and resume
 
 - Ctrl+a + d: detach tmux session
 - `tmux ls`: list sessions
@@ -34,7 +49,7 @@ or, `tmux new -s <session_name>`
 - `tmux attach -t <session_name>`: attach session (specified by the number or name)
 - Ctrl+a + s: select and move session
 
-## Divide window (create pane) and navigate
+### Divide window (create pane) and navigate
 
 - Ctrl+a + \\: divide screen (vertical)
 - Ctrl+a + -: divide screen (horizontal)
@@ -47,7 +62,7 @@ or, `tmux new -s <session_name>`
 
 You can even use mouse right click.
 
-## Swap panes
+### Swap panes
 
 - Ctrl+a + {: swap with the prvious pane
 - Ctrl+a + }: swap with the next pane
@@ -55,12 +70,12 @@ You can even use mouse right click.
 - Ctrl+a + Ctrl+o: rotate pane clockwise
 - Ctrl+a + Alt+o: rotate pane anticlockwise
 
-## Change horizontal split to vertical (and vice verca)
+### Change horizontal split to vertical (and vice verca)
 
 - Ctrl+a + `:move-pane -h -t '.{up-of}'`: horizontal split to vertical
 - Ctrl+a + `:move-pane -t '.{left-of}'`: vertical split to horizontal
 
-## Copy / scroll
+### Copy / scroll
 
 - Ctrl+a + \[: Copy mode (use vim commands to scroll)
   - Ctrl+f: page down (front page)
@@ -71,19 +86,12 @@ You can even use mouse right click.
 - You can use mouse drag to copy.
 - Ctrl+a + =: see buffer list
 
-## Kill
+### Kill
 
 - Ctrl+a + x: kill current pane
 - Ctrl+a + X: kill session
 
-## Other tips
-
-- If you press Ctrl+s by mistake, it will freeze. Ctrl+q to unfreeze.
-- On a nested tmux, use Ctrl+a + a + \<command\>.
-- Ctrl+a `:attach -c /new/dir`: change default directory for new windows.
-- Shift + drag: bypass tmux mouse integration and select terminal.
-
-## Plugins
+### Plugins
 
 - Ctrl+a + I: Install plugins
 - Ctrl+a + U: Update plugins
@@ -92,7 +100,14 @@ You can even use mouse right click.
 - ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Tab\>: toggle file browser on the side
 - ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Backspace\>: toggle file browser on the side, and focus on it
 
-# Advanced: scripting with tmux
+### Other tips 💡
+
+- If you press Ctrl+s by mistake, it will freeze. Ctrl+q to unfreeze.
+- On a nested tmux, use Ctrl+a + a + \<command\>.
+- Ctrl+a `:attach -c /new/dir`: change default directory for new windows.
+- Shift + drag: bypass tmux mouse integration and select terminal.
+
+## 📜 Advanced: scripting with tmux
 
 - `tmux new-session -d -s <session_name>`: start a session in detached mode.
 - `tmux new-window -t <session_name>:<window_index>`: create a window. You can omit the index. You can add the command at the end, but it will automatically be closed when the command finishes.
@@ -102,7 +117,7 @@ You can even use mouse right click.
 - `tmux display -pt "${TMUX_PANE:?}" '#{pane_index}'`: get current pane index
 - `tmux list-panes -s -F '#D #{pane_pid} #{pane_current_command}'`: list pane's unique identifier, pid, and the commands. (`-s` for current session, `-a` for all sessions.)
 
-## Example: run batch job
+### Example: run batch job
 
 Below will create 3 windows and run python commands like:
 
@@ -128,7 +143,7 @@ do
 done
 ```
 
-# References
+## References
 
 - https://yesmeck.github.io/tmuxrc/
 - https://github.com/yesmeck/tmuxrc/blob/master/tmux.conf

@@ -795,7 +795,23 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [S702] mako-templates Mako templates allow HTML and JavaScript rendering by default and are inherently open to XSS attacks ✔️ 🛠️
     -- 🔗🐍 [BLE001] blind-except Do not catch blind exception: {name} ✔️ 🛠️
     -- 🔗🐍 [FBT001]	boolean-type-hint-positional-argument	Boolean-typed positional argument in function definition	✔️ 🛠️
+    elseif code == "FBT001" then
+      if lang == "es" then
+        return "Argumento posicional de tipo booleano en la definición de la función"
+      elseif lang == "pt-br" then
+        return "Argumento posicional de tipo booleano na definição da função"
+      elseif lang == "fr" then
+        return "Argument positionnel de type booléen dans la définition de la fonction"
+      end
     -- 🔗🐍 [FBT002]	boolean-default-value-positional-argument	Boolean default positional argument in function definition	✔️ 🛠️
+    elseif code == "FBT002" then
+      if lang == "es" then
+        return "Argumento posicional predeterminado booleano en la definición de la función"
+      elseif lang == "pt-br" then
+        return "Argumento posicional padrão booleano na definição da função"
+      elseif lang == "fr" then
+        return "Argument positionnel par défaut booléen dans la définition de la fonction"
+      end
     -- 🔗🐍 [FBT003]	boolean-positional-value-in-call	Boolean positional value in function call	✔️ 🛠️
     elseif code == "FBT003" then
       if lang == "es" then

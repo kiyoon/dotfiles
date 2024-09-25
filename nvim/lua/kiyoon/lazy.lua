@@ -1519,6 +1519,8 @@ return {
         html = { { "prettierd", "prettier" } },
         yaml = { "prettier" },
         json = { "prettier" },
+        c = { "clang-format" },
+        cpp = { "clang-format" },
       },
       -- Set up format-on-save
       format_on_save = { timeout_ms = 2000, lsp_fallback = true },

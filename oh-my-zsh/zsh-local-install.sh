@@ -4,11 +4,11 @@
 # Install zsh under ~/.local/bin/zsh
 
 INSTALL_DIR="$HOME/.local"
-mkdir -p "$HOME/bin" && cd "$HOME/bin"
+mkdir -p "$HOME/bin" && { cd "$HOME/bin" || { echo "Failure"; exit 1; } }
 
 wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-6.1.tar.gz
 tar xf ncurses-6.1.tar.gz
-cd ncurses-6.1
+cd ncurses-6.1 || { echo "Failure"; exit 1; }
 ./configure --prefix="$INSTALL_DIR" CXXFLAGS="-fPIC" CFLAGS="-fPIC"
 make -j && make install
 
@@ -26,7 +26,7 @@ if [[ ! -f $ZSH_SRC_NAME ]]; then
 fi
 
 tar xJvf "$ZSH_SRC_NAME" -C "$ZSH_PACK_DIR" --strip-components 1
-cd "$ZSH_PACK_DIR"
+cd "$ZSH_PACK_DIR" || { echo "Failure"; exit 1; }
 
 ./configure --prefix="$INSTALL_DIR" \
 	CPPFLAGS="-I$INSTALL_DIR/include" \

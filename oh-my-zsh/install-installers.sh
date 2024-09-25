@@ -9,7 +9,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install node
 else
 
-	if ! command -v $INSTALL_DIR/bin/npm &>/dev/null; then
+	if ! command -v "$INSTALL_DIR"/bin/npm &>/dev/null; then
 		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 	fi
 fi

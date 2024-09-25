@@ -18,7 +18,7 @@ else
 	# nvim_tag=nightly
 	nvim_tag=v0.10.1
 	mkdir ~/.local/bin -p
-	cd ~/.local/bin
+	cd ~/.local/bin || exit
 	curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim.appimage
 	chmod u+x ./nvim.appimage
 	./nvim.appimage --appimage-extract
@@ -28,7 +28,7 @@ else
 
 	# tmux latest version
 	mkdir ~/.local/bin -p
-	cd ~/.local/bin
+	cd ~/.local/bin || exit
 	curl -s https://api.github.com/repos/kiyoon/tmux-appimage/releases/latest |
 		grep "browser_download_url.*appimage" |
 		cut -d : -f 2,3 |

@@ -98,9 +98,9 @@ if ! command -v rg &> /dev/null; then
 		| grep "browser_download_url.*-x86_64-unknown-linux-musl.tar.gz" \
 		| cut -d : -f 2,3 \
 		| tr -d \" \
-		| wget -qi - -O - | tar -xz --strip-components=1 -C $TEMPDIR
-	mv $TEMPDIR/rg "$LOCALBIN"
-	rm -rf $TEMPDIR
+		| wget -qi - -O - | tar -xz --strip-components=1 -C "$TEMPDIR"
+	mv "$TEMPDIR"/rg "$LOCALBIN"
+	rm -rf "$TEMPDIR"
 else
 	echo "ripgrep found at $(which rg). Skipping installation."
 fi

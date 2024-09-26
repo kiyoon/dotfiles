@@ -1004,6 +1004,24 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [G201]	logging-exc-info	Logging .exception(...) should be used instead of .error(..., exc_info=True)	✔️ 🛠️
     -- 🔗🐍 [G202]	logging-redundant-exc-info	Logging statement has redundant exc_info	✔️ 🛠️
     -- 🔗🐍 [INP001]	implicit-namespace-package	File {filename} is part of an implicit namespace package. Add an __init__.py.	✔️ 🛠️
+    elseif code == "INP001" then
+      local filename = message:match "File ([^ ]+) is part of an implicit namespace package"
+      if lang == "es" then
+        return string.format(
+          "El archivo %s es parte de un paquete de espacio de nombres implícito. Agrega un `__init__.py`.",
+          filename
+        )
+      elseif lang == "pt-br" then
+        return string.format(
+          "O arquivo %s faz parte de um pacote de espaço de nomes implícito. Adicione um `__init__.py`.",
+          filename
+        )
+      elseif lang == "fr" then
+        return string.format(
+          "Le fichier %s fait partie d'un package d'espace de noms implicite. Ajoutez un `__init__.py`.",
+          filename
+        )
+      end
     -- 🔗🐍 [PIE790]	unnecessary-placeholder	Unnecessary pass statement	✔️ 🛠️
     -- 🔗🐍 [PIE794]	duplicate-class-field-definition	Class field {name} is defined multiple times	✔️ 🛠️
     -- 🔗🐍 [PIE796]	non-unique-enums	Enum contains duplicate value: {value}	✔️ 🛠️
@@ -1351,6 +1369,14 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLW1508]	invalid-envvar-default	Invalid type for environment variable default; expected str or None	✔️ 🛠️
     -- 🔗🐍 [PLW1509]	subprocess-popen-preexec-fn	preexec_fn argument is unsafe when using threads	✔️ 🛠️
     -- 🔗🐍 [PLW1510]	subprocess-run-without-check	subprocess.run without explicit check argument	✔️ 🛠️
+    elseif code == "PLW1510" then
+      if lang == "es" then
+        return "`subprocess.run` sin argumento `check` explícito"
+      elseif lang == "pt-br" then
+        return "`subprocess.run` sem argumento `check` explícito"
+      elseif lang == "fr" then
+        return "`subprocess.run` sans argument `check` explicite"
+      end
     -- 🔗🐍 [PLW1514]	unspecified-encoding	{function_name} in text mode without explicit encoding argument	🧪 🛠️
     -- 🔗🐍 [PLW1641]	eq-without-hash	Object does not implement __hash__ method	🧪 🛠️
     -- 🔗🐍 [PLW2101]	useless-with-lock	Threading lock directly created in with statement has no effect	✔️ 🛠️

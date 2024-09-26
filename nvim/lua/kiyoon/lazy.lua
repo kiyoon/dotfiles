@@ -1367,13 +1367,20 @@ return {
       require "kiyoon.cmp"
     end,
   },
+  -- {
+  --   "kiyoon/lsp-inlayhints.nvim",
+  --   event = "LSPAttach",
+  --   -- init = function()
+  --   --   vim.cmd [[hi link LspInlayHint Comment]]
+  --   --   vim.cmd [[hi LspInlayHint guifg=#d8d8d8 guibg=#3a3a3a]]
+  --   -- end,
+  --   config = function()
+  --     require "kiyoon.lsp.inlayhints"
+  --   end,
+  -- },
   {
-    "kiyoon/lsp-inlayhints.nvim",
-    event = "LSPAttach",
-    -- init = function()
-    --   vim.cmd [[hi link LspInlayHint Comment]]
-    --   vim.cmd [[hi LspInlayHint guifg=#d8d8d8 guibg=#3a3a3a]]
-    -- end,
+    "chrisgrieser/nvim-lsp-endhints",
+    event = "LspAttach",
     config = function()
       require "kiyoon.lsp.inlayhints"
     end,

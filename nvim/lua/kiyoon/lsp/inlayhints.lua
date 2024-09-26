@@ -1,26 +1,28 @@
-require("lsp-inlayhints").setup()
+-- require("lsp-inlayhints").setup()
+--
+-- vim.api.nvim_create_augroup("LspAttach_inlayhints", {})
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   group = "LspAttach_inlayhints",
+--   callback = function(args)
+--     if not (args.data and args.data.client_id) then
+--       return
+--     end
+--
+--     local bufnr = args.buf
+--     local client = vim.lsp.get_client_by_id(args.data.client_id)
+--
+--     if client.name == "null-ls" then
+--       return
+--     else
+--       require("lsp-inlayhints").on_attach(client, bufnr)
+--       -- if client.server_capabilities.inlayHintProvider then
+--       --   vim.lsp.inlay_hint.enable(true)
+--       -- end
+--     end
+--   end,
+-- })
 
-vim.api.nvim_create_augroup("LspAttach_inlayhints", {})
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = "LspAttach_inlayhints",
-  callback = function(args)
-    if not (args.data and args.data.client_id) then
-      return
-    end
-
-    local bufnr = args.buf
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-
-    if client.name == "null-ls" then
-      return
-    else
-      require("lsp-inlayhints").on_attach(client, bufnr)
-      -- if client.server_capabilities.inlayHintProvider then
-      --   vim.lsp.inlay_hint.enable(true)
-      -- end
-    end
-  end,
-})
+require("lsp-endhints").setup()
 
 -- Bake inlay type hints into the buffer
 -- Some functions taken from https://github.com/simrat39/inlay-hints.nvim
@@ -126,7 +128,7 @@ local function parse_hints(result)
 end
 
 local function inlay_type_hint_to_text_in_buffer()
-  local clients = vim.lsp.get_active_clients { bufnr = 0 }
+  local clients = vim.lsp.get_clients { bufnr = 0 }
   if not next(clients) then
     vim.notify("No active LSP clients", vim.log.levels.ERROR)
     return

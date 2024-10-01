@@ -397,14 +397,8 @@ augroup END
 
 if !exists('*Tj_save_and_exec')
   function! Tj_save_and_exec() abort
-    if &filetype == 'vim'
-      :silent! write
-      :source %
-    elseif &filetype == 'lua'
-      :silent! write
-      :luafile %
-    endif
-
+    :silent! write
+    :source %
     return
   endfunction
 endif
@@ -413,19 +407,7 @@ endif
 nnoremap <space><space>x <cmd>call Tj_save_and_exec()<CR>
 
 " Execute selection
-if !exists('*Exec_lua_or_vim')
-  function! Exec_lua_or_vim(content) abort
-    if &filetype == 'vim'
-      exec a:content
-    elseif &filetype == 'lua'
-	  let g:exec_lua_or_vim_content = a:content
-	  lua vim.cmd.lua(vim.g.exec_lua_or_vim_content)
-    endif
-
-    return
-  endfunction
-endif
-xnoremap <space><space>x "sy:call Exec_lua_or_vim(@s)<CR>
+xnoremap <space><space>x :so<CR>
 
 " Disable continuation of comments
 " It seems like plugins enable this

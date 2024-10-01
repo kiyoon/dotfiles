@@ -202,18 +202,6 @@ end, { desc = "tmux next window" })
 -- Align CSV columns. Much faster than rainbow_csv
 -- https://stackoverflow.com/questions/51471554/align-columns-in-comma-separated-file
 
--- Mac only
-if vim.fn.has "macunix" == 1 then
-  vim.api.nvim_create_user_command(
-    "CsvAlign",
-    ":set nowrap | %!sed 's/,/&^::,/g' | column -t -s'&^::' | sed 's/ ,/,/g'",
-    {}
-  )
--- Linux only
-elseif vim.fn.has "unix" == 1 then
-  vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
-end
-
 -- sql formatter for selection
 vim.keymap.set("x", "<space>pF", function()
   vim.cmd [['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']]

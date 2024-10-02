@@ -14,8 +14,8 @@
     - [nvim-treesitter-textobjects](https://github.com/nvim-treesitter/nvim-treesitter-textobjects): Language-aware text objects (e.g. `vam` to select a function, `vaa` to select an argument, etc. See below.)
 - LSP: Language Server Protocol. It is used for autocompletion and type checking.
     - [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig): Configuration for LSP servers.
-    - [pyright](https://github.com/microsoft/pyright): LSP server for Python (type checker)
-    - [lua-ls (lua-language-server)](https://github.com/LuaLS/lua-language-server): LSP server for Lua
+    - [basedpyright](https://github.com/DetachHead/basedpyright): LSP server for Python (type checker)
+    - [lua-ls (lua-language-server)](https://github.com/LuaLS/lua-language-server): LSP server for Lua (type checker, linting)
     - See [lua/kiyoon/lsp/init.lua](lua/kiyoon/lsp/init.lua).
 
 
@@ -33,7 +33,6 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 - Insert import statement at the beginning of the file. (Only for Python). Use it with normal or visual mode.
     - `\i`: Insert import and move cursor to that position.
     - `Alt+Enter`: Insert import and stay at the current position.
-    - See [`lua/kiyoon/python_import.lua`](lua/kiyoon/python_import.lua).
 - When you see a lightbulb in python file, it means ruff fixes are available. `<space>pa` to preview and apply ruff fixes.
 - `<space>tp` : Change `os.path` to `pathlib.Path` (e.g. `os.path.join(a, b) -> Path(a) / b`)
     - `<space>tP` to bypass wrapping the object with `Path()`. (e.g. `os.path.join(a, b) -> a / b`)
@@ -56,6 +55,7 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 - Alt + \[ or \] to see next suggestions for Github Copilot.
 - `\nt`: open Nvim Tree. `g?` to open help.
 
+
 ## Useful VIM commands
 
 - `va(`, `va{`, `va"`, ...: select opening to closing of parentheses (do more `a(` for wider range)
@@ -69,6 +69,12 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 - Choose block with `<C-v>` and press `I` or `A` (with shift). It will add the change to all the lines selected after pressing ESC.
 - Paste in insert mode: `<C-r>0` or `<C-r>"`. Used for pasting one line into multiple lines.
     - <https://vi.stackexchange.com/questions/42578/paste-in-visual-block-mode-without-deleting-the-character-under-vertically-multi>
+- In command or search mode (`:`, `/`, `?`), use `<C-f>` to open command line window.
+    - You can edit the command with vim navigation, and press `<Enter>` to execute.
+    - You can see the command history and execute previous commands.
+    - Another mapping exists: `q:`, `q/`, `q?` but I disabled `q:` because of the frequent typo of `q:` and `q;`.
+    - <https://vim.fandom.com/wiki/Using_command-line_history>
+
 
 ## Installing
 

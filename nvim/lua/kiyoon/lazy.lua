@@ -1984,10 +1984,10 @@ return {
     "folke/which-key.nvim",
     event = "VeryLazy",
     config = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 600
+      -- vim.o.timeout = true
+      -- vim.o.timeoutlen = 600
       require("which-key").setup {
-        delay = 0,
+        delay = 600,
       }
 
       -- Sync with tmux registers

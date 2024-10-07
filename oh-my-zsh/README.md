@@ -21,15 +21,16 @@ Install zsh locally. (🚨 warning: `sudo apt install zsh` may install an old ve
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/zsh-local-install.sh)"
 ```
 
-Add the lines below to your `~/.bashrc` (if you don't have root permission and can't do `chsh`):
+Install package managers.
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
-if [[ ($- == *i*) ]];
-then
-    export SHELL=$(which zsh)
-    exec zsh -l
-fi
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/install-installers.sh)"
+```
+
+Add settings to `~/.bashrc` that launches zsh when in bash login shell (if you don't have root permission and can't do `chsh`):
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/launch-zsh-in-bash.sh)"
 ```
 
 Install oh-my-zsh:
@@ -48,21 +49,7 @@ Install apps:
 
 ```zsh
 ##### tig, exa, gh, starship, ..
-bash apps-local-install.sh
-```
-
-(Optional) Additional settings:
-
-```zsh
-##### git
-git config --global user.email "kiyoon@users.noreply.github.com"
-git config --global user.name "Kiyoon Kim"
-git config --global core.editor nvim
-git config --global pull.rebase false
-git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-
-gh auth login
-gh alias set r repo
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/apps-local-install.sh)"
 ```
 
 (Optional) Apps when you have root permission:
@@ -72,4 +59,4 @@ sudo apt update -y
 sudo apt install -y xclip
 ```
 
-Copy `.zshrc` to `$HOME`.
+Copy/symlink `.zshrc` to `$HOME`.

@@ -174,13 +174,13 @@ return {
     },
     i(0),
   }),
-  s("argparse", {
-    func_node(function()
-      local content =
-        read_from_url "https://gist.githubusercontent.com/kiyoon/bd5334f03136bad752b358f71fc00eca/raw/argparse_example.py"
-      return content
-    end, {}),
-  }),
+  -- s("argparse", {
+  --   func_node(function()
+  --     local content =
+  --       read_from_url "https://gist.githubusercontent.com/kiyoon/bd5334f03136bad752b358f71fc00eca/raw/argparse_example.py"
+  --     return content
+  --   end, {}),
+  -- }),
   s("config", {
     func_node(function()
       local content =
@@ -196,5 +196,8 @@ return {
   }),
   s("mkdir", {
     t { "mkdir(parents=True, exist_ok=True)" },
+  }),
+  s("sdir", {
+    t { "SCRIPT_DIR = Path(__file__).resolve().parent" },
   }),
 }

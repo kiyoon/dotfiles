@@ -224,3 +224,5 @@ if [[ -n "$TMUX" ]]; then
 		tmux select-window -t $1.
 	}
 fi
+
+alias vii='NVIM_APPNAME=nvim-test nvim'

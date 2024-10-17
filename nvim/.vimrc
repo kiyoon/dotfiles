@@ -74,6 +74,18 @@ command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>write<bang> <a
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>write<bang> <args> | quit
 command! -bang Q quit<bang>
 nmap q: :q
+
+" map F1 to Esc because of typos
+inoremap <F1> <Esc>
+noremap <F1> :call MapF1()<CR>
+
+function! MapF1()
+  if &buftype == "help"
+    exec 'quit'
+  else
+    exec 'help'
+  endif
+endfunction
 " :w\ normally saves to the file named \ but this remap prevents it.
 " cnoremap w\ w<CR>
 

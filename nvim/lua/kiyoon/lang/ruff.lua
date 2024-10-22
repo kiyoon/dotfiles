@@ -57,102 +57,170 @@ M.translate_ruff_message = function(code, message)
       local name = message:match "([^ ]+) may be undefined"
       if lang == "es" then
         return string.format("%s puede ser indefinido, o definido desde importaciones de estrella", name)
+      elseif lang == "pt-br" then
+        return string.format("%s pode ser indefinido, ou definido a partir de importações de estrela", name)
+      elseif lang == "fr" then
+        return string.format("%s peut être indéfini, ou défini à partir d'importations d'étoiles", name)
       end
     elseif code == "F406" then
       -- from {name} import * only allowed at module level
       local name = message:match "from ([^ ]+) import"
       if lang == "es" then
         return string.format("`from %s import *` solo permitido a nivel de módulo", name)
+      elseif lang == "pt-br" then
+        return string.format("`from %s import *` permitido apenas no nível do módulo", name)
+      elseif lang == "fr" then
+        return string.format("`from %s import *` autorisé uniquement au niveau du module", name)
       end
     elseif code == "F407" then
       -- Future feature {name} is not defined
       local name = message:match "Future feature ([^ ]+) is not defined"
       if lang == "es" then
         return string.format("La característica futura %s no está definida", name)
+      elseif lang == "pt-br" then
+        return string.format("O recurso futuro %s não está definido", name)
+      elseif lang == "fr" then
+        return string.format("La fonctionnalité future %s n'est pas définie", name)
       end
     elseif code == "F501" then
       -- %-format string has invalid format string: {message}
       local mes = message:match "string has invalid format string: (.*)"
       if lang == "es" then
         return string.format("Cadena de formato %% tiene una cadena de formato inválida: %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("A string de formato %% tem uma string de formato inválida: %s", mes)
+      elseif lang == "fr" then
+        return string.format("La chaîne de format %% a une chaîne de format invalide: %s", mes)
       end
     elseif code == "F502" then
       if lang == "es" then
         return "Cadena de formato %% esperaba un mapeo pero obtuvo una secuencia"
+      elseif lang == "pt-br" then
+        return "A string de formato %% esperava um mapeamento mas obteve uma sequência"
+      elseif lang == "fr" then
+        return "La chaîne de format %% attendait une carte mais a obtenu une séquence"
       end
     elseif code == "F503" then
       if lang == "es" then
         return "Cadena de formato %% esperaba una secuencia pero obtuvo un mapeo"
+      elseif lang == "pt-br" then
+        return "A string de formato %% esperava uma sequência mas obteve um mapeamento"
+      elseif lang == "fr" then
+        return "La chaîne de format %% attendait une séquence mais a obtenu une carte"
       end
     elseif code == "F504" then
       -- %-format string has unused named argument(s): {message}
       local mes = message:match "string has unused named argument[(]s[)]: (.*)"
       if lang == "es" then
         return string.format("Cadena de formato %% tiene argumento(s) con nombre no usado: %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("A string de formato %% tem argumento(s) com nome não usado: %s", mes)
+      elseif lang == "fr" then
+        return string.format("La chaîne de format %% a des argument(s) nommé(s) non utilisé(s): %s", mes)
       end
     elseif code == "F505" then
       -- %-format string is missing argument(s) for placeholder(s): {message}
       local mes = message:match "string is missing argument[(]s[)] for placeholder[(]s[)]: (.*)"
       if lang == "es" then
         return string.format("Cadena de formato %% falta argumento(s) para marcador(es): %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("A string de formato %% está faltando argumento(s) para marcador(es): %s", mes)
+      elseif lang == "fr" then
+        return string.format("La chaîne de format %% manque d'argument(s) pour le(s) marqueur(s): %s", mes)
       end
     elseif code == "F506" then
       if lang == "es" then
         return "Cadena de formato %% tiene marcadores posicionales y con nombre mezclados"
+      elseif lang == "pt-br" then
+        return "A string de formato %% tem marcadores posicionais e com nome misturados"
+      elseif lang == "fr" then
+        return "La chaîne de format %% a des marqueurs positionnels et nommés mélangés"
       end
     elseif code == "F507" then
       -- %-format string has {wanted} placeholder(s) but {got} substitution(s)
       local wanted, got = message:match "string has ([0-9]+) placeholder[(]s[)] but ([0-9]+) substitution[(]s[)]"
       if lang == "es" then
         return string.format("Cadena de formato %% tiene %s marcador(es) pero %s sustitución(es)", wanted, got)
+      elseif lang == "pt-br" then
+        return string.format("A string de formato %% tem %s marcador(es) mas %s substituição(ões)", wanted, got)
+      elseif lang == "fr" then
+        return string.format("La chaîne de format %% a %s marqueur(s) mais %s substitution(s)", wanted, got)
       end
     elseif code == "F508" then
       if lang == "es" then
         return "Cadena de formato %% con especificador * requiere secuencia"
+      elseif lang == "pt-br" then
+        return "A string de formato %% com especificador * requer uma sequência"
+      elseif lang == "fr" then
+        return "La chaîne de format %% avec un spécificateur * nécessite une séquence"
       end
     elseif code == "F509" then
       -- %-format string has unsupported format character {char}
       local char = message:match "string has unsupported format character (.*)"
       if lang == "es" then
         return string.format("Cadena de formato %% tiene carácter de formato %s no soportado", char)
+      elseif lang == "pt-br" then
+        return string.format("A string de formato %% tem caractere de formato %s não suportado", char)
+      elseif lang == "fr" then
+        return string.format("La chaîne de format %% a un caractère de format %s non pris en charge", char)
       end
     elseif code == "F521" then
       -- 🔗🐍 [F521]	string-dot-format-invalid-format	.format call has invalid format string: {message}	✔️ 🛠️
       local mes = message:match "call has invalid format string: (.*)"
       if lang == "es" then
         return string.format("`.format` tiene una cadena de formato inválida: %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("`.format` tem uma string de formato inválida: %s", mes)
+      elseif lang == "fr" then
+        return string.format("`.format` a une chaîne de format invalide: %s", mes)
       end
     elseif code == "F522" then
       -- 🔗🐍 [F522]	string-dot-format-extra-named-arguments	.format call has unused named argument(s): {message}	✔️ 🛠️
       local mes = message:match "call has unused named argument[(]s[)]: (.*)"
       if lang == "es" then
         return string.format("`.format` tiene argumento(s) con nombre no usado: %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("`.format` tem argumento(s) com nome não usado: %s", mes)
+      elseif lang == "fr" then
+        return string.format("`.format` a des argument(s) nommé(s) non utilisé(s): %s", mes)
       end
     elseif code == "F523" then
       -- 🔗🐍 [F523]	string-dot-format-extra-positional-arguments	.format call has unused arguments at position(s): {message}	✔️ 🛠️
       local mes = message:match "call has unused arguments at position[(]s[)]: (.*)"
       if lang == "es" then
         return string.format("`.format` tiene argumento(s) no usado en posición(es): %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("`.format` tem argumento(s) não usado em posição(ões): %s", mes)
+      elseif lang == "fr" then
+        return string.format("`.format` a des argument(s) non utilisé(s) à la/aux position(s): %s", mes)
       end
     elseif code == "F524" then
       -- 🔗🐍 [F524]	string-dot-format-missing-arguments	.format call is missing argument(s) for placeholder(s): {message}	✔️ 🛠️
       local mes = message:match "call is missing argument[(]s[)] for placeholder[(]s[)]: (.*)"
       if lang == "es" then
         return string.format("`.format` falta argumento(s) para marcador(es): %s", mes)
+      elseif lang == "pt-br" then
+        return string.format("`.format` está faltando argumento(s) para marcador(es): %s", mes)
+      elseif lang == "fr" then
+        return string.format("`.format` manque d'argument(s) pour le(s) marqueur(s): %s", mes)
       end
     elseif code == "F525" then
       -- 🔗🐍 [F525]	string-dot-format-mixing-automatic	.format string mixes automatic and manual numbering	✔️ 🛠️
       if lang == "es" then
         return "Cadena de formato `.format` mezcla numeración automática y manual"
+      elseif lang == "pt-br" then
+        return "A string de formato `.format` mistura numeração automática e manual"
+      elseif lang == "fr" then
+        return "La chaîne de format `.format` mélange numérotation automatique et manuelle"
       end
     elseif code == "F541" then
       -- 🔗🐍 [F541]	f-string-missing-placeholders	f-string without any placeholders	✔️ 🛠️
       if lang == "es" then
         return "f-cadena sin marcadores"
-      elseif lang == "fr" then
-        return "f-chaîne sans aucun marqueur"
       elseif lang == "pt-br" then
         return "f-string sem marcadores"
+      elseif lang == "fr" then
+        return "f-chaîne sans aucun marqueur"
       end
     -- 🔗🐍 [F601]	multi-value-repeated-key-literal	Dictionary key literal {name} repeated	✔️ 🛠️
     -- 🔗🐍 [F602]	multi-value-repeated-key-variable	Dictionary key {name} repeated	✔️ 🛠️
@@ -173,41 +241,69 @@ M.translate_ruff_message = function(code, message)
       local name, row = message:match "Redefinition of unused ([^ ]+) from line ([0-9]+)"
       if lang == "es" then
         return string.format("Redefinición de %s no usado desde la línea %s", name, row)
+      elseif lang == "pt-br" then
+        return string.format("Redefinição de %s não usado da linha %s", name, row)
+      elseif lang == "fr" then
+        return string.format("Redéfinition de %s inutilisé depuis la ligne %s", name, row)
       end
     elseif code == "F821" then
       -- 🔗🐍 [F821]	undefined-name	Undefined name {name}	✔️ 🛠️
       local name = message:match "Undefined name ([^ ]+)"
       if lang == "es" then
         return string.format("Nombre %s indefinido", name)
+      elseif lang == "pt-br" then
+        return string.format("Nome %s indefinido", name)
+      elseif lang == "fr" then
+        return string.format("Nom %s indéfini", name)
       end
     elseif code == "F822" then
       -- 🔗🐍 [F822]	undefined-export	Undefined name {name} in __all__	✔️ 🛠️
       local name = message:match "Undefined name ([^ ]+) in"
       if lang == "es" then
         return string.format("Nombre %s indefinido en `__all__`", name)
+      elseif lang == "pt-br" then
+        return string.format("Nome %s indefinido em `__all__`", name)
+      elseif lang == "fr" then
+        return string.format("Nom %s indéfini dans `__all__`", name)
       end
     elseif code == "F823" then
       -- 🔗🐍 [F823]	undefined-local	Local variable {name} referenced before assignment	✔️ 🛠️
       local name = message:match "Local variable ([^ ]+) referenced before assignment"
       if lang == "es" then
         return string.format("Variable local %s referenciada antes de asignación", name)
+      elseif lang == "pt-br" then
+        return string.format("Variável local %s referenciada antes da atribuição", name)
+      elseif lang == "fr" then
+        return string.format("Variable locale %s référencée avant l'assignation", name)
       end
     elseif code == "F841" then
       -- 🔗🐍 [F841]	unused-variable	Local variable {name} is assigned to but never used	✔️ 🛠️
       local name = message:match "Local variable ([^ ]+) is assigned to but never used"
       if lang == "es" then
         return string.format("Variable local %s asignada pero nunca usada", name)
+      elseif lang == "pt-br" then
+        return string.format("Variável local %s atribuída mas nunca usada", name)
+      elseif lang == "fr" then
+        return string.format("Variable locale %s assignée mais jamais utilisée", name)
       end
     elseif code == "F842" then
       -- 🔗🐍 [F842]	unused-annotation	Local variable {name} is annotated but never used	✔️ 🛠️
       local name = message:match "Local variable ([^ ]+) is annotated but never used"
       if lang == "es" then
         return string.format("Variable local %s anotada pero nunca usada", name)
+      elseif lang == "pt-br" then
+        return string.format("Variável local %s anotada mas nunca usada", name)
+      elseif lang == "fr" then
+        return string.format("Variable locale %s annotée mais jamais utilisée", name)
       end
     elseif code == "F901" then
       -- 🔗🐍 [F901]	raise-not-implemented	raise NotImplemented should be raise NotImplementedError
       if lang == "es" then
         return "`raise NotImplemented` debería ser `raise NotImplementedError`"
+      elseif lang == "pt-br" then
+        return "`raise NotImplemented` deveria ser `raise NotImplementedError`"
+      elseif lang == "fr" then
+        return "`raise NotImplemented` devrait être `raise NotImplementedError`"
       end
     -- 🔗🐍 [E101]	mixed-spaces-and-tabs	Indentation contains mixed spaces and tabs	✔️ 🛠️
     -- 🔗🐍 [E111]	indentation-with-invalid-multiple	Indentation is not a multiple of {indent_width}	🧪 🛠️
@@ -279,22 +375,42 @@ M.translate_ruff_message = function(code, message)
     elseif code == "E502" then
       if lang == "es" then
         return "Barra invertida redundante"
+      elseif lang == "pt-br" then
+        return "Barra invertida redundante"
+      elseif lang == "fr" then
+        return "Barre oblique inversée redondante"
       end
     elseif code == "E701" then
       if lang == "es" then
         return "Múltiples declaraciones en una línea (dos puntos)"
+      elseif lang == "pt-br" then
+        return "Múltiplas declarações em uma linha (dois pontos)"
+      elseif lang == "fr" then
+        return "Déclarations multiples sur une ligne (deux points)"
       end
     elseif code == "E702" then
       if lang == "es" then
         return "Múltiples declaraciones en una línea (punto y coma)"
+      elseif lang == "pt-br" then
+        return "Múltiplas declarações em uma linha (ponto e vírgula)"
+      elseif lang == "fr" then
+        return "Déclarations multiples sur une ligne (point-virgule)"
       end
     elseif code == "E703" then
       if lang == "es" then
         return "La declaración termina con un punto y coma innecesario"
+      elseif lang == "pt-br" then
+        return "Declaração termina com ponto e vírgula desnecessário"
+      elseif lang == "fr" then
+        return "La déclaration se termine par un point-virgule inutile"
       end
     elseif code == "E711" then
       if lang == "es" then
         return "Comparación a `None` debería ser `cond is None`"
+      elseif lang == "pt-br" then
+        return "Comparação a `None` deveria ser `cond is None`"
+      elseif lang == "fr" then
+        return "La comparaison à `None` devrait être `cond is None`"
       end
     elseif code == "E712" then
       local cond = message:match "use `if (.*):` for truth checks"
@@ -303,21 +419,43 @@ M.translate_ruff_message = function(code, message)
           "Evita comparaciones de igualdad a `True`; usa `if %s:` para comprobaciones de verdad",
           cond
         )
+      elseif lang == "pt-br" then
+        return string.format(
+          "Evite comparações de igualdade a `True`; use `if %s:` para verificações de verdade",
+          cond
+        )
+      elseif lang == "fr" then
+        return string.format(
+          "Évitez les comparaisons d'égalité à `True`; utilisez `if %s:` pour les vérifications de vérité",
+          cond
+        )
       end
     -- 🔗🐍 [E713]	not-in-test	Test for membership should be not in	✔️ 🛠️
     elseif code == "E713" then
       if lang == "es" then
         return "Prueba de membresía debería ser `not in`"
+      elseif lang == "pt-br" then
+        return "Teste de associação deveria ser `not in`"
+      elseif lang == "fr" then
+        return "Le test d'appartenance devrait être `not in`"
       end
     -- 🔗🐍 [E714]	not-is-test	Test for object identity should be is not	✔️ 🛠️
     elseif code == "E714" then
       if lang == "es" then
         return "Prueba de identidad de objeto debería ser `is not`"
+      elseif lang == "pt-br" then
+        return "Teste de identidade de objeto deveria ser `is not`"
+      elseif lang == "fr" then
+        return "Le test d'identité d'objet devrait être `is not`"
       end
     -- 🔗🐍 [E721]	type-comparison	Do not compare types, use isinstance()	✔️ 🛠️
     elseif code == "E721" then
       if lang == "es" then
         return "No compares tipos, usa `isinstance()`"
+      elseif lang == "pt-br" then
+        return "Não compare tipos, use `isinstance()`"
+      elseif lang == "fr" then
+        return "Ne comparez pas les types, utilisez `isinstance()`"
       end
     -- 🔗🐍 [E722]	bare-except	Do not use bare except	✔️ 🛠️
     elseif code == "E722" then
@@ -332,28 +470,40 @@ M.translate_ruff_message = function(code, message)
     elseif code == "E731" then
       if lang == "es" then
         return "No asignes una expresión lambda, usa un `def`"
+      elseif lang == "pt-br" then
+        return "Não atribua uma expressão lambda, use um `def`"
+      elseif lang == "fr" then
+        return "N'attribuez pas une expression lambda, utilisez un `def`"
       end
     -- 🔗🐍 [E741]	ambiguous-variable-name	Ambiguous variable name: {name}	✔️ 🛠️
     elseif code == "E741" then
       local name = message:match "Ambiguous variable name: (.*)"
       if lang == "es" then
         return string.format("Nombre de variable ambiguo: %s", name)
-      elseif lang == "fr" then
-        return string.format("Nom de variable ambigu: %s", name)
       elseif lang == "pt-br" then
         return string.format("Nome de variável ambíguo: %s", name)
+      elseif lang == "fr" then
+        return string.format("Nom de variable ambigu: %s", name)
       end
     -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️
     elseif code == "E742" then
       local name = message:match "Ambiguous class name: (.*)"
       if lang == "es" then
         return string.format("Nombre de clase ambiguo: %s", name)
+      elseif lang == "pt-br" then
+        return string.format("Nome de classe ambíguo: %s", name)
+      elseif lang == "fr" then
+        return string.format("Nom de classe ambigu: %s", name)
       end
     elseif code == "E743" then
       -- 🔗🐍 [E743]	ambiguous-function-name	Ambiguous function name: {name}	✔️ 🛠️
       local name = message:match "Ambiguous function name: (.*)"
       if lang == "es" then
         return string.format("Nombre de función ambiguo: %s", name)
+      elseif lang == "pt-br" then
+        return string.format("Nome de função ambíguo: %s", name)
+      elseif lang == "fr" then
+        return string.format("Nom de fonction ambigu: %s", name)
       end
     -- 🔗🐍 [E902]	io-error	{message}	✔️ 🛠️
     -- 🔗🐍 [E999]	syntax-error	SyntaxError: {message}
@@ -375,11 +525,19 @@ M.translate_ruff_message = function(code, message)
     elseif code == "N804" then
       if lang == "es" then
         return "El primer argumento de un método debería llamarse `cls`"
+      elseif lang == "pt-br" then
+        return "O primeiro argumento de um método deveria ser chamado `cls`"
+      elseif lang == "fr" then
+        return "Le premier argument d'une méthode devrait être nommé `cls`"
       end
     -- 🔗🐍 [N805]	invalid-first-argument-name-for-method	First argument of a method should be named self	✔️ 🛠️
     elseif code == "N805" then
       if lang == "es" then
         return "El primer argumento de un método debería llamarse `self`"
+      elseif lang == "pt-br" then
+        return "O primeiro argumento de um método deveria ser chamado `self`"
+      elseif lang == "fr" then
+        return "Le premier argument d'une méthode devrait être nommé `self`"
       end
     -- 🔗🐍 [N806]	non-lowercase-variable-in-function	Variable {name} in function should be lowercase	✔️ 🛠️
     -- 🔗🐍 [N807]	dunder-function-name	Function name should not start and end with __	✔️ 🛠️
@@ -404,6 +562,10 @@ M.translate_ruff_message = function(code, message)
     elseif code == "D200" then
       if lang == "es" then
         return "Docstring de una línea debería caber en una línea"
+      elseif lang == "pt-br" then
+        return "Docstring de uma linha deveria caber em uma linha"
+      elseif lang == "fr" then
+        return "La docstring d'une ligne devrait tenir sur une ligne"
       end
     -- 🔗🐍 [D201]	no-blank-line-before-function	No blank lines allowed before function docstring (found {num_lines})	✔️ 🛠️
     elseif code == "D201" then
@@ -411,6 +573,16 @@ M.translate_ruff_message = function(code, message)
       if lang == "es" then
         return string.format(
           "No se permiten líneas en blanco antes de la docstring de la función (encontrado %s)",
+          num_lines
+        )
+      elseif lang == "pt-br" then
+        return string.format(
+          "Não são permitidas linhas em branco antes da docstring da função (encontrado %s)",
+          num_lines
+        )
+      elseif lang == "fr" then
+        return string.format(
+          "Aucune ligne vide n'est autorisée avant la docstring de la fonction (trouvée %s)",
           num_lines
         )
       end
@@ -422,16 +594,34 @@ M.translate_ruff_message = function(code, message)
           "No se permiten líneas en blanco después de la docstring de la función (encontrado %s)",
           num_lines
         )
+      elseif lang == "pt-br" then
+        return string.format(
+          "Não são permitidas linhas em branco após a docstring da função (encontrado %s)",
+          num_lines
+        )
+      elseif lang == "fr" then
+        return string.format(
+          "Aucune ligne vide n'est autorisée après la docstring de la fonction (trouvée %s)",
+          num_lines
+        )
       end
     -- 🔗🐍 [D203]	one-blank-line-before-class	1 blank line required before class docstring	✔️ 🛠️
     elseif code == "D203" then
       if lang == "es" then
         return "Se requiere 1 línea en blanco antes de la docstring de la clase"
+      elseif lang == "pt-br" then
+        return "É necessário 1 linha em branco antes da docstring da classe"
+      elseif lang == "fr" then
+        return "1 ligne vide requise avant la docstring de la classe"
       end
     -- 🔗🐍 [D204]	one-blank-line-after-class	1 blank line required after class docstring	✔️ 🛠️
     elseif code == "D204" then
       if lang == "es" then
         return "Se requiere 1 línea en blanco después de la docstring de la clase"
+      elseif lang == "pt-br" then
+        return "É necessário 1 linha em branco depois da docstring da classe"
+      elseif lang == "fr" then
+        return "1 ligne vide requise après la docstring de la classe"
       end
     -- 🔗🐍 [D205]	blank-line-after-summary	1 blank line required between summary line and description	✔️ 🛠️
     elseif code == "D205" then
@@ -446,11 +636,19 @@ M.translate_ruff_message = function(code, message)
     elseif code == "D206" then
       if lang == "es" then
         return "La docstring debería estar indentada con espacios, no con tabulaciones"
+      elseif lang == "pt-br" then
+        return "A docstring deveria ser indentada com espaços, não com tabulações"
+      elseif lang == "fr" then
+        return "La docstring devrait être indentée avec des espaces, pas des tabulations"
       end
     -- 🔗🐍 [D207]	under-indentation	Docstring is under-indented	✔️ 🛠️
     elseif code == "D207" then
       if lang == "es" then
         return "Docstring está sub-indentada"
+      elseif lang == "pt-br" then
+        return "Docstring está sub-indentada"
+      elseif lang == "fr" then
+        return "Docstring est sous-indentée"
       end
     -- 🔗🐍 [D208]	over-indentation	Docstring is over-indented	✔️ 🛠️
     elseif code == "D208" then
@@ -649,10 +847,10 @@ M.translate_ruff_message = function(code, message)
     elseif code == "UP015" then
       if lang == "es" then
         return "Parámetros de modo de apertura innecesarios"
-      elseif lang == "fr" then
-        return "Paramètres de mode d'ouverture inutiles"
       elseif lang == "pt-br" then
         return "Parâmetros de modo de abertura desnecessários"
+      elseif lang == "fr" then
+        return "Paramètres de mode d'ouverture inutiles"
       end
     -- 🔗🐍 [UP017]	datetime-timezone-utc	Use datetime.UTC alias	✔️ 🛠️
     -- 🔗🐍 [UP018]	native-literals	Unnecessary {literal_type} call (rewrite as a literal)	✔️ 🛠️
@@ -1088,158 +1286,282 @@ M.translate_ruff_message = function(code, message)
     elseif code == "PTH100" then
       if lang == "es" then
         return "`os.path.abspath()` debería ser reemplazado por `Path.resolve()`"
+      elseif lang == "pt-br" then
+        return "`os.path.abspath()` deve ser substituído por `Path.resolve()`"
+      elseif lang == "fr" then
+        return "`os.path.abspath()` devrait être remplacé par `Path.resolve()`"
       end
     -- 🔗🐍 [PTH101]	os-chmod	os.chmod() should be replaced by Path.chmod()	✔️ 🛠️
     elseif code == "PTH101" then
       if lang == "es" then
         return "`os.chmod()` debería ser reemplazado por `Path.chmod()`"
+      elseif lang == "pt-br" then
+        return "`os.chmod()` deve ser substituído por `Path.chmod()`"
+      elseif lang == "fr" then
+        return "`os.chmod()` devrait être remplacé par `Path.chmod()`"
       end
     -- 🔗🐍 [PTH102]	os-mkdir	os.mkdir() should be replaced by Path.mkdir()	✔️ 🛠️
     elseif code == "PTH102" then
       if lang == "es" then
         return "`os.mkdir()` debería ser reemplazado por `Path.mkdir()`"
+      elseif lang == "pt-br" then
+        return "`os.mkdir()` deve ser substituído por `Path.mkdir()`"
+      elseif lang == "fr" then
+        return "`os.mkdir()` devrait être remplacé par `Path.mkdir()`"
       end
     -- 🔗🐍 [PTH103]	os-makedirs	os.makedirs() should be replaced by Path.mkdir(parents=True)	✔️ 🛠️
     elseif code == "PTH103" then
       if lang == "es" then
         return "`os.makedirs()` debería ser reemplazado por `Path.mkdir(parents=True)`"
+      elseif lang == "pt-br" then
+        return "`os.makedirs()` deve ser substituído por `Path.mkdir(parents=True)`"
+      elseif lang == "fr" then
+        return "`os.makedirs()` devrait être remplacé par `Path.mkdir(parents=True)`"
       end
     -- 🔗🐍 [PTH104]	os-rename	os.rename() should be replaced by Path.rename()	✔️ 🛠️
     elseif code == "PTH104" then
       if lang == "es" then
         return "`os.rename()` debería ser reemplazado por `Path.rename()`"
+      elseif lang == "pt-br" then
+        return "`os.rename()` deve ser substituído por `Path.rename()`"
+      elseif lang == "fr" then
+        return "`os.rename()` devrait être remplacé par `Path.rename()`"
       end
     -- 🔗🐍 [PTH105]	os-replace	os.replace() should be replaced by Path.replace()	✔️ 🛠️
     -- 🔗🐍 [PTH106]	os-rmdir	os.rmdir() should be replaced by Path.rmdir()	✔️ 🛠️
     elseif code == "PTH106" then
       if lang == "es" then
         return "`os.rmdir()` debería ser reemplazado por `Path.rmdir()`"
+      elseif lang == "pt-br" then
+        return "`os.rmdir()` deve ser substituído por `Path.rmdir()`"
+      elseif lang == "fr" then
+        return "`os.rmdir()` devrait être remplacé par `Path.rmdir()`"
       end
     -- 🔗🐍 [PTH107]	os-remove	os.remove() should be replaced by Path.unlink()	✔️ 🛠️
     elseif code == "PTH107" then
       if lang == "es" then
         return "`os.remove()` debería ser reemplazado por `Path.unlink()`"
+      elseif lang == "pt-br" then
+        return "`os.remove()` deve ser substituído por `Path.unlink()`"
+      elseif lang == "fr" then
+        return "`os.remove()` devrait être remplacé par `Path.unlink()`"
       end
     -- 🔗🐍 [PTH108]	os-unlink	os.unlink() should be replaced by Path.unlink()	✔️ 🛠️
     elseif code == "PTH108" then
       if lang == "es" then
         return "`os.unlink()` debería ser reemplazado por `Path.unlink()`"
+      elseif lang == "pt-br" then
+        return "`os.unlink()` deve ser substituído por `Path.unlink()`"
+      elseif lang == "fr" then
+        return "`os.unlink()` devrait être remplacé par `Path.unlink()`"
       end
     -- 🔗🐍 [PTH109]	os-getcwd	os.getcwd() should be replaced by Path.cwd()	✔️ 🛠️
     elseif code == "PTH109" then
       if lang == "es" then
         return "`os.getcwd()` debería ser reemplazado por `Path.cwd()`"
+      elseif lang == "pt-br" then
+        return "`os.getcwd()` deve ser substituído por `Path.cwd()`"
+      elseif lang == "fr" then
+        return "`os.getcwd()` devrait être remplacé par `Path.cwd()`"
       end
     -- 🔗🐍 [PTH110]	os-path-exists	os.path.exists() should be replaced by Path.exists()	✔️ 🛠️
     elseif code == "PTH110" then
       if lang == "es" then
         return "`os.path.exists()` debería ser reemplazado por `Path.exists()`"
+      elseif lang == "pt-br" then
+        return "`os.path.exists()` deve ser substituído por `Path.exists()`"
+      elseif lang == "fr" then
+        return "`os.path.exists()` devrait être remplacé par `Path.exists()`"
       end
     -- 🔗🐍 [PTH111]	os-path-expanduser	os.path.expanduser() should be replaced by Path.expanduser()	✔️ 🛠️
     elseif code == "PTH111" then
       if lang == "es" then
         return "`os.path.expanduser()` debería ser reemplazado por `Path.expanduser()`"
+      elseif lang == "pt-br" then
+        return "`os.path.expanduser()` deve ser substituído por `Path.expanduser()`"
+      elseif lang == "fr" then
+        return "`os.path.expanduser()` devrait être remplacé par `Path.expanduser()`"
       end
     -- 🔗🐍 [PTH112]	os-path-isdir	os.path.isdir() should be replaced by Path.is_dir()	✔️ 🛠️
     elseif code == "PTH112" then
       if lang == "es" then
         return "`os.path.isdir()` debería ser reemplazado por `Path.is_dir()`"
+      elseif lang == "pt-br" then
+        return "`os.path.isdir()` deve ser substituído por `Path.is_dir()`"
+      elseif lang == "fr" then
+        return "`os.path.isdir()` devrait être remplacé par `Path.is_dir()`"
       end
     -- 🔗🐍 [PTH113]	os-path-isfile	os.path.isfile() should be replaced by Path.is_file()	✔️ 🛠️
     elseif code == "PTH113" then
       if lang == "es" then
         return "`os.path.isfile()` debería ser reemplazado por `Path.is_file()`"
+      elseif lang == "pt-br" then
+        return "`os.path.isfile()` deve ser substituído por `Path.is_file()`"
+      elseif lang == "fr" then
+        return "`os.path.isfile()` devrait être remplacé par `Path.is_file()`"
       end
     -- 🔗🐍 [PTH114]	os-path-islink	os.path.islink() should be replaced by Path.is_symlink()	✔️ 🛠️
     elseif code == "PTH114" then
       if lang == "es" then
         return "`os.path.islink()` debería ser reemplazado por `Path.is_symlink()`"
+      elseif lang == "pt-br" then
+        return "`os.path.islink()` deve ser substituído por `Path.is_symlink()`"
+      elseif lang == "fr" then
+        return "`os.path.islink()` devrait être remplacé par `Path.is_symlink()`"
       end
     -- 🔗🐍 [PTH115]	os-readlink	os.readlink() should be replaced by Path.readlink()	✔️ 🛠️
     elseif code == "PTH115" then
       if lang == "es" then
         return "`os.readlink()` debería ser reemplazado por `Path.readlink()`"
+      elseif lang == "pt-br" then
+        return "`os.readlink()` deve ser substituído por `Path.readlink()`"
+      elseif lang == "fr" then
+        return "`os.readlink()` devrait être remplacé par `Path.readlink()`"
       end
     -- 🔗🐍 [PTH116]	os-stat	os.stat() should be replaced by Path.stat(), Path.owner(), or Path.group()	✔️ 🛠️
     elseif code == "PTH116" then
       if lang == "es" then
         return "`os.stat()` debería ser reemplazado por `Path.stat()`, `Path.owner()`, o `Path.group()`"
+      elseif lang == "pt-br" then
+        return "`os.stat()` deve ser substituído por `Path.stat()`, `Path.owner()`, ou `Path.group()`"
+      elseif lang == "fr" then
+        return "`os.stat()` devrait être remplacé par `Path.stat()`, `Path.owner()`, ou `Path.group()`"
       end
     -- 🔗🐍 [PTH117]	os-path-isabs	os.path.isabs() should be replaced by Path.is_absolute()	✔️ 🛠️
     elseif code == "PTH117" then
       if lang == "es" then
         return "`os.path.isabs()` debería ser reemplazado por `Path.is_absolute()`"
+      elseif lang == "pt-br" then
+        return "`os.path.isabs()` deve ser substituído por `Path.is_absolute()`"
+      elseif lang == "fr" then
+        return "`os.path.isabs()` devrait être remplacé par `Path.is_absolute()`"
       end
     -- 🔗🐍 [PTH118]	os-path-join	os.{module}.join() should be replaced by Path with / operator	✔️ 🛠️
     elseif code == "PTH118" then
       if lang == "es" then
         return "`os.path.join()` debería ser reemplazado por `Path` con el operador `/`"
+      elseif lang == "pt-br" then
+        return "`os.path.join()` deve ser substituído por `Path` com o operador `/`"
+      elseif lang == "fr" then
+        return "`os.path.join()` devrait être remplacé par `Path` avec l'opérateur `/`"
       end
     -- 🔗🐍 [PTH119]	os-path-basename	os.path.basename() should be replaced by Path.name	✔️ 🛠️
     elseif code == "PTH119" then
       if lang == "es" then
         return "`os.path.basename()` debería ser reemplazado por `Path.name`"
+      elseif lang == "pt-br" then
+        return "`os.path.basename()` deve ser substituído por `Path.name`"
+      elseif lang == "fr" then
+        return "`os.path.basename()` devrait être remplacé par `Path.name`"
       end
     -- 🔗🐍 [PTH120]	os-path-dirname	os.path.dirname() should be replaced by Path.parent	✔️ 🛠️
     elseif code == "PTH120" then
       if lang == "es" then
         return "`os.path.dirname()` debería ser reemplazado por `Path.parent`"
+      elseif lang == "pt-br" then
+        return "`os.path.dirname()` deve ser substituído por `Path.parent`"
+      elseif lang == "fr" then
+        return "`os.path.dirname()` devrait être remplacé par `Path.parent`"
       end
     -- 🔗🐍 [PTH121]	os-path-samefile	os.path.samefile() should be replaced by Path.samefile()	✔️ 🛠️
     elseif code == "PTH121" then
       if lang == "es" then
         return "`os.path.samefile()` debería ser reemplazado por `Path.samefile()`"
+      elseif lang == "pt-br" then
+        return "`os.path.samefile()` deve ser substituído por `Path.samefile()`"
+      elseif lang == "fr" then
+        return "`os.path.samefile()` devrait être remplacé par `Path.samefile()`"
       end
     -- 🔗🐍 [PTH122]	os-path-splitext	os.path.splitext() should be replaced by Path.suffix, Path.stem, and Path.parent	✔️ 🛠️
     elseif code == "PTH122" then
       if lang == "es" then
         return "`os.path.splitext()` debería ser reemplazado por `Path.suffix`, `Path.stem`, y `Path.parent`"
+      elseif lang == "pt-br" then
+        return "`os.path.splitext()` deve ser substituído por `Path.suffix`, `Path.stem`, e `Path.parent`"
+      elseif lang == "fr" then
+        return "`os.path.splitext()` devrait être remplacé par `Path.suffix`, `Path.stem`, et `Path.parent`"
       end
     -- 🔗🐍 [PTH123]	builtin-open	open() should be replaced by Path.open()	✔️ 🛠️
     elseif code == "PTH123" then
       if lang == "es" then
         return "`open()` debería ser reemplazado por `Path.open()`"
+      elseif lang == "pt-br" then
+        return "`open()` deve ser substituído por `Path.open()`"
+      elseif lang == "fr" then
+        return "`open()` devrait être remplacé par `Path.open()`"
       end
     -- 🔗🐍 [PTH124]	py-path	py.path is in maintenance mode, use pathlib instead	✔️ 🛠️
     elseif code == "PTH124" then
       if lang == "es" then
         return "`py.path` está en modo de mantenimiento, use `pathlib` en su lugar"
+      elseif lang == "pt-br" then
+        return "`py.path` está em modo de manutenção, use `pathlib` em vez disso"
+      elseif lang == "fr" then
+        return "`py.path` est en mode de maintenance, utilisez `pathlib` à la place"
       end
     -- 🔗🐍 [PTH201]	path-constructor-current-directory	Do not pass the current directory explicitly to Path	✔️ 🛠️
     elseif code == "PTH201" then
       if lang == "es" then
         return "No pase el directorio actual explícitamente a `Path`"
+      elseif lang == "pt-br" then
+        return "Não passe o diretório atual explicitamente para `Path`"
+      elseif lang == "fr" then
+        return "Ne passez pas le répertoire courant explicitement à `Path`"
       end
     -- 🔗🐍 [PTH202]	os-path-getsize	os.path.getsize should be replaced by Path.stat().st_size	✔️ 🛠️
     elseif code == "PTH202" then
       if lang == "es" then
         return "`os.path.getsize` debería ser reemplazado por `Path.stat().st_size`"
+      elseif lang == "pt-br" then
+        return "`os.path.getsize` deve ser substituído por `Path.stat().st_size`"
+      elseif lang == "fr" then
+        return "`os.path.getsize` devrait être remplacé par `Path.stat().st_size`"
       end
     -- 🔗🐍 [PTH203]	os-path-getatime	os.path.getatime should be replaced by Path.stat().st_atime	✔️ 🛠️
     elseif code == "PTH203" then
       if lang == "es" then
         return "`os.path.getatime` debería ser reemplazado por `Path.stat().st_atime`"
+      elseif lang == "pt-br" then
+        return "`os.path.getatime` deve ser substituído por `Path.stat().st_atime`"
+      elseif lang == "fr" then
+        return "`os.path.getatime` devrait être remplacé par `Path.stat().st_atime`"
       end
     -- 🔗🐍 [PTH204]	os-path-getmtime	os.path.getmtime should be replaced by Path.stat().st_mtime	✔️ 🛠️
     elseif code == "PTH204" then
       if lang == "es" then
         return "`os.path.getmtime` debería ser reemplazado por `Path.stat().st_mtime`"
+      elseif lang == "pt-br" then
+        return "`os.path.getmtime` deve ser substituído por `Path.stat().st_mtime`"
+      elseif lang == "fr" then
+        return "`os.path.getmtime` devrait être remplacé par `Path.stat().st_mtime`"
       end
     -- 🔗🐍 [PTH205]	os-path-getctime	os.path.getctime should be replaced by Path.stat().st_ctime	✔️ 🛠️
     elseif code == "PTH205" then
       if lang == "es" then
         return "`os.path.getctime` debería ser reemplazado por `Path.stat().st_ctime`"
+      elseif lang == "pt-br" then
+        return "`os.path.getctime` deve ser substituído por `Path.stat().st_ctime`"
+      elseif lang == "fr" then
+        return "`os.path.getctime` devrait être remplacé par `Path.stat().st_ctime`"
       end
     -- 🔗🐍 [PTH206]	os-sep-split	Replace .split(os.sep) with Path.parts	✔️ 🛠️
     elseif code == "PTH206" then
       if lang == "es" then
         return "Reemplace `.split(os.sep)` con `Path.parts`"
+      elseif lang == "pt-br" then
+        return "Substitua `.split(os.sep)` por `Path.parts`"
+      elseif lang == "fr" then
+        return "Remplacez `.split(os.sep)` par `Path.parts`"
       end
     -- 🔗🐍 [PTH207]	glob	Replace {function} with Path.glob or Path.rglob	✔️ 🛠️
     elseif code == "PTH207" then
       local function_name = message:match "Replace `(.*)` with"
       if lang == "es" then
         return string.format("Reemplace `%s` con `Path.glob` o `Path.rglob`", function_name)
+      elseif lang == "pt-br" then
+        return string.format("Substitua `%s` por `Path.glob` ou `Path.rglob`", function_name)
+      elseif lang == "fr" then
+        return string.format("Remplacez `%s` par `Path.glob` ou `Path.rglob`", function_name)
       end
     -- 🔗🐍 [PLC0105]	type-name-incorrect-variance	{kind} name "{param_name}" does not reflect its {variance}; consider renaming it to "{replacement_name}"	✔️ 🛠️
     -- 🔗🐍 [PLC0131]	type-bivariance	{kind} cannot be both covariant and contravariant	✔️ 🛠️

@@ -430,7 +430,9 @@ autocmd BufNewFile,BufRead * setlocal formatoptions-=cro
 nmap <A-j> <cmd>cn<CR>
 nmap <A-k> <cmd>cp<CR>
 
-map <space>y "+y
+nnoremap <space>y "+y
+xnoremap <space>y "+y
+vnoremap <space>y "+y
 
 " Auto save
 " https://stackoverflow.com/questions/17365324/auto-save-in-vim-as-you-type

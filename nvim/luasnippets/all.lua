@@ -80,6 +80,16 @@ return {
   pair_multiline("[", "]"),
   pair_multiline("<", ">"),
 
+  -- | -> loop between │, └, ├
+  -- Useful for making file structure trees in documents
+  s({ trig = "|" }, { t { "│" } }),
+  s({ trig = "│" }, { t { "└" } }),
+  s({ trig = "└" }, { t { "├" } }),
+  s({ trig = "├" }, { t { "│" } }),
+
+  s({ trig = "-" }, { t { "─" } }),
+  s({ trig = "+" }, { t { "┼" } }),
+
   -- emojis
   s({ trig = ":siren" }, { t { "🚨" } }),
   s({ trig = ":error" }, { t { "❌" } }),

@@ -1600,8 +1600,33 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLE1141]	dict-iter-missing-items	Unpacking a dictionary in iteration without calling .items()	🧪 🛠️
     -- 🔗🐍 [PLE1142]	await-outside-async	await should be used within an async function	✔️ 🛠️
     -- 🔗🐍 [PLE1205]	logging-too-many-args	Too many arguments for logging format string	✔️ 🛠️
+    elseif code == "PLE1205" then
+      if lang == "es" then
+        return "Demasiados argumentos para la cadena de formato de registro"
+      elseif lang == "pt-br" then
+        return "Muitos argumentos para a string de formato de log"
+      elseif lang == "fr" then
+        return "Trop d'arguments pour la chaîne de format de journalisation"
+      end
     -- 🔗🐍 [PLE1206]	logging-too-few-args	Not enough arguments for logging format string	✔️ 🛠️
+    elseif code == "PLE1206" then
+      if lang == "es" then
+        return "No hay suficientes argumentos para la cadena de formato de registro"
+      elseif lang == "pt-br" then
+        return "Argumentos insuficientes para a string de formato de log"
+      elseif lang == "fr" then
+        return "Pas assez d'arguments pour la chaîne de format de journalisation"
+      end
     -- 🔗🐍 [PLE1300]	bad-string-format-character	Unsupported format character '{format_char}'	✔️ 🛠️
+    elseif code == "PLE1300" then
+      local format_char = message:match "Unsupported format character '(.*)'"
+      if lang == "es" then
+        return string.format("Carácter de formato no soportado '%s'", format_char)
+      elseif lang == "pt-br" then
+        return string.format("Caractere de formato não suportado '%s'", format_char)
+      elseif lang == "fr" then
+        return string.format("Caractère de format non pris en charge '%s'", format_char)
+      end
     -- 🔗🐍 [PLE1307]	bad-string-format-type	Format type does not match argument type	✔️ 🛠️
     -- 🔗🐍 [PLE1310]	bad-str-strip-call	String {strip} call contains duplicate characters (did you mean {removal}?)	✔️ 🛠️
     -- 🔗🐍 [PLE1507]	invalid-envvar-value	Invalid type for initial os.getenv argument; expected str	✔️ 🛠️
@@ -1622,15 +1647,96 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLR0206]	property-with-parameters	Cannot have defined parameters for properties	✔️ 🛠️
     -- 🔗🐍 [PLR0402]	manual-from-import	Use from {module} import {name} in lieu of alias	✔️ 🛠️
     -- 🔗🐍 [PLR0904]	too-many-public-methods	Too many public methods ({methods} > {max_methods})	🧪 🛠️
+    elseif code == "PLR0904" then
+      local methods, max_methods = message:match "Too many public methods %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiados métodos públicos (%s > %s)", methods, max_methods)
+      elseif lang == "pt-br" then
+        return string.format("Muitos métodos públicos (%s > %s)", methods, max_methods)
+      elseif lang == "fr" then
+        return string.format("Trop de méthodes publiques (%s > %s)", methods, max_methods)
+      end
     -- 🔗🐍 [PLR0911]	too-many-return-statements	Too many return statements ({returns} > {max_returns})	✔️ 🛠️
+    elseif code == "PLR0911" then
+      local returns, max_returns = message:match "Too many return statements %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiadas declaraciones de retorno (%s > %s)", returns, max_returns)
+      elseif lang == "pt-br" then
+        return string.format("Muitas declarações de retorno (%s > %s)", returns, max_returns)
+      elseif lang == "fr" then
+        return string.format("Trop de déclarations de retour (%s > %s)", returns, max_returns)
+      end
     -- 🔗🐍 [PLR0912]	too-many-branches	Too many branches ({branches} > {max_branches})	✔️ 🛠️
+    elseif code == "PLR0912" then
+      local brances, max_branches = message:match "Too many branches %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiadas ramas (%s > %s)", brances, max_branches)
+      elseif lang == "pt-br" then
+        return string.format("Muitos ramos (%s > %s)", brances, max_branches)
+      elseif lang == "fr" then
+        return string.format("Trop de branches (%s > %s)", brances, max_branches)
+      end
     -- 🔗🐍 [PLR0913]	too-many-arguments	Too many arguments in function definition ({c_args} > {max_args})	✔️ 🛠️
+    elseif code == "PLR0913" then
+      local c_args, max_args = message:match "Too many arguments in function definition %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiados argumentos en la definición de la función (%s > %s)", c_args, max_args)
+      elseif lang == "pt-br" then
+        return string.format("Muitos argumentos na definição da função (%s > %s)", c_args, max_args)
+      elseif lang == "fr" then
+        return string.format("Trop d'arguments dans la définition de la fonction (%s > %s)", c_args, max_args)
+      end
     -- 🔗🐍 [PLR0914]	too-many-locals	Too many local variables ({current_amount}/{max_amount})	🧪 🛠️
+    elseif code == "PLR0914" then
+      local current_amount, max_amount = message:match "Too many local variables %((%d+)/(%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiadas variables locales (%s/%s)", current_amount, max_amount)
+      elseif lang == "pt-br" then
+        return string.format("Muitas variáveis locais (%s/%s)", current_amount, max_amount)
+      elseif lang == "fr" then
+        return string.format("Trop de variables locales (%s/%s)", current_amount, max_amount)
+      end
     -- 🔗🐍 [PLR0915]	too-many-statements	Too many statements ({statements} > {max_statements})	✔️ 🛠️
+    elseif code == "PLR0915" then
+      local statements, max_statements = message:match "Too many statements %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiadas declaraciones (%s > %s)", statements, max_statements)
+      elseif lang == "pt-br" then
+        return string.format("Muitas declarações (%s > %s)", statements, max_statements)
+      elseif lang == "fr" then
+        return string.format("Trop de déclarations (%s > %s)", statements, max_statements)
+      end
     -- 🔗🐍 [PLR0916]	too-many-boolean-expressions	Too many Boolean expressions ({expressions} > {max_expressions})	🧪 🛠️
+    elseif code == "PLR0916" then
+      local expressions, max_expressions = message:match "Too many Boolean expressions %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiadas expresiones booleanas (%s > %s)", expressions, max_expressions)
+      elseif lang == "pt-br" then
+        return string.format("Muitas expressões booleanas (%s > %s)", expressions, max_expressions)
+      elseif lang == "fr" then
+        return string.format("Trop d'expressions booléennes (%s > %s)", expressions, max_expressions)
+      end
     -- 🔗🐍 [PLR0917]	too-many-positional-arguments	Too many positional arguments ({c_pos}/{max_pos})	🧪 🛠️
+    elseif code == "PLR0917" then
+      local c_pos, max_pos = message:match "Too many positional arguments %((%d+)/(%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiados argumentos posicionales (%s/%s)", c_pos, max_pos)
+      elseif lang == "pt-br" then
+        return string.format("Muitos argumentos posicionais (%s/%s)", c_pos, max_pos)
+      elseif lang == "fr" then
+        return string.format("Trop d'arguments positionnels (%s/%s)", c_pos, max_pos)
+      end
     -- 🔗🐍 [PLR1701]	repeated-isinstance-calls	Merge isinstance calls: {expression}	❌ 🛠️
     -- 🔗🐍 [PLR1702]	too-many-nested-blocks	Too many nested blocks ({nested_blocks} > {max_nested_blocks})	🧪 🛠️
+    elseif code == "PLR1702" then
+      local nested_blocks, max_nested_blocks = message:match "Too many nested blocks %((%d+) > (%d+)%)"
+      if lang == "es" then
+        return string.format("Demasiados bloques anidados (%s > %s)", nested_blocks, max_nested_blocks)
+      elseif lang == "pt-br" then
+        return string.format("Muitos blocos aninhados (%s > %s)", nested_blocks, max_nested_blocks)
+      elseif lang == "fr" then
+        return string.format("Trop de blocs imbriqués (%s > %s)", nested_blocks, max_nested_blocks)
+      end
     -- 🔗🐍 [PLR1704]	redefined-argument-from-local	Redefining argument with the local name {name}	✔️ 🛠️
     -- 🔗🐍 [PLR1706]	and-or-ternary	Consider using if-else expression	❌ 🛠️
     -- 🔗🐍 [PLR1711]	useless-return	Useless return statement at end of function	✔️ 🛠️

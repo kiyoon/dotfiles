@@ -69,6 +69,7 @@ if !has('nvim')
 endif
 
 " map common typos: :W, :Q, :Wq, :WQ, q:
+" if you need q:, use :<C-f> to open command history
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>write<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>write<bang> <args> | quit
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>write<bang> <args> | quit

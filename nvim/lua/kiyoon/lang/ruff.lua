@@ -1809,6 +1809,38 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLW1641]	eq-without-hash	Object does not implement __hash__ method	🧪 🛠️
     -- 🔗🐍 [PLW2101]	useless-with-lock	Threading lock directly created in with statement has no effect	✔️ 🛠️
     -- 🔗🐍 [PLW2901]	redefined-loop-name	Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target	✔️ 🛠️
+    elseif code == "PLW2901" then
+      local outer_kind, name, inner_kind =
+        message:match "Outer (.*) loop variable (.*) overwritten by inner (.*) loop target"
+      if outer_kind == nil then
+        outer_kind, name = message:match "(.*) loop variable (.*) overwritten by assignment target"
+        if lang == "es" then
+          return string.format("Variable de bucle %s %s sobrescrita por objetivo de asignación", outer_kind, name)
+        elseif lang == "pt-br" then
+          return string.format("Variável de loop %s %s sobrescrita por alvo de atribuição", outer_kind, name)
+        elseif lang == "fr" then
+          return string.format("Variable de boucle %s %s écrasée par la cible d'assignation", outer_kind, name)
+        end
+      else
+        -- Outer loop variable i overwritten by inner loop target j
+        if lang == "es" then
+          return string.format(
+            "Variable de bucle %s %s sobrescrita por objetivo de bucle %s",
+            outer_kind,
+            name,
+            inner_kind
+          )
+        elseif lang == "pt-br" then
+          return string.format("Variável de loop %s %s sobrescrita por alvo de loop %s", outer_kind, name, inner_kind)
+        elseif lang == "fr" then
+          return string.format(
+            "Variable de boucle %s %s écrasée par la cible de boucle %s",
+            outer_kind,
+            name,
+            inner_kind
+          )
+        end
+      end
     -- 🔗🐍 [PLW3201]	bad-dunder-method-name	Dunder method {name} has no special meaning in Python 3	🧪 🛠️
     -- 🔗🐍 [PLW3301]	nested-min-max	Nested {func} calls can be flattened	✔️ 🛠️
     -- 🔗🐍 [TRY002]	raise-vanilla-class	Create your own exception	✔️ 🛠️

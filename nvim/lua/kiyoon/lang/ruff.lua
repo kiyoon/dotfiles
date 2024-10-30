@@ -1282,6 +1282,35 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [SIM401]	Use {contents} instead of an if block	✔️ 🛠️
     -- 🔗🐍 [SIM910]	Use {expected} instead of {actual}	✔️ 🛠️
     -- 🔗🐍 [SIM911]	Use {expected} instead of {actual}	✔️ 🛠️
+    -- 🔗🐍 [TID251]	banned-api	{name} is banned: {message}	✔️ 🛠️
+    elseif code == "TID251" then
+      local name, msg = message:match "(.*) is banned: (.*)"
+      if lang == "es" then
+        return string.format("%s está prohibido: %s", name, msg)
+      elseif lang == "pt-br" then
+        return string.format("%s está banido: %s", name, msg)
+      elseif lang == "fr" then
+        return string.format("%s est interdit: %s", name, msg)
+      end
+    -- 🔗🐍 [TID252]	relative-imports	Prefer absolute imports over relative imports from parent modules	✔️ 🛠️
+    elseif code == "TID252" then
+      if lang == "es" then
+        return "Prefiere importaciones absolutas sobre importaciones relativas desde módulos padres"
+      elseif lang == "pt-br" then
+        return "Prefira importações absolutas sobre importações relativas de módulos pais"
+      elseif lang == "fr" then
+        return "Préférez les importations absolues aux importations relatives des modules parents"
+      end
+    -- 🔗🐍 [TID253]	banned-module-level-imports	{name} is banned at the module level
+    elseif code == "TID253" then
+      local name = message:match "(.*) is banned at the module level"
+      if lang == "es" then
+        return string.format("%s está prohibido a nivel de módulo", name)
+      elseif lang == "pt-br" then
+        return string.format("%s está banido no nível do módulo", name)
+      elseif lang == "fr" then
+        return string.format("%s est interdit au niveau du module", name)
+      end
     -- 🔗🐍 [PTH100]	os-path-abspath	os.path.abspath() should be replaced by Path.resolve()	✔️ 🛠️
     elseif code == "PTH100" then
       if lang == "es" then
@@ -1853,28 +1882,126 @@ M.translate_ruff_message = function(code, message)
         return "Créez votre propre exception"
       end
     -- 🔗🐍 [TRY003]	raise-vanilla-args	Avoid specifying long messages outside the exception class	✔️ 🛠️
-    -- 🔗🐍 [TRY004]	type-check-without-type-error	Prefer TypeError exception for invalid type	✔️ 🛠️
-    -- 🔗🐍 [TRY200]	reraise-no-cause	Use raise from to specify exception cause	❌ 🛠️
-    -- 🔗🐍 [TRY201]	verbose-raise	Use raise without specifying exception name	✔️ 🛠️
-    -- 🔗🐍 [TRY300]	try-consider-else	Consider moving this statement to an else block	✔️ 🛠️
-    -- 🔗🐍 [TRY301]	raise-within-try	Abstract raise to an inner function	✔️ 🛠️
-    -- 🔗🐍 [TRY302]	useless-try-except	Remove exception handler; error is immediately re-raised	✔️ 🛠️
-    -- 🔗🐍 [TRY400]	error-instead-of-exception	Use logging.exception instead of logging.error	✔️ 🛠️
-    -- 🔗🐍 [TRY401]	verbose-log-message	Redundant exception object included in logging.exception call	✔️ 🛠️
-    -- 🔗🐍 [NPY001]	numpy-deprecated-type-alias	Type alias np.{type_name} is deprecated, replace with builtin type	✔️ 🛠️
-    -- 🔗🐍 [NPY002]	numpy-legacy-random	Replace legacy np.random.{method_name} call with np.random.Generator	✔️ 🛠️
-    -- 🔗🐍 [NPY003]	numpy-deprecated-function	np.{existing} is deprecated; use np.{replacement} instead	✔️ 🛠️
-    -- 🔗🐍 [NPY201]	numpy2-deprecation	np.{existing} will be removed in NumPy 2.0. {migration_guide}	✔️ 🛠️
-    elseif code == "NPY201" then
-      local existing, migration_guide = message:match "np%.(.*) will be removed in NumPy 2%.0%. (.*)"
+    elseif code == "TRY003" then
       if lang == "es" then
-        return string.format("np.%s será eliminado en NumPy 2.0. %s", existing, migration_guide)
+        return "Evite especificar mensajes largos fuera de la clase de excepción"
       elseif lang == "pt-br" then
-        return string.format("np.%s será removido no NumPy 2.0. %s", existing, migration_guide)
+        return "Evite especificar mensagens longas fora da classe de exceção"
       elseif lang == "fr" then
-        return string.format("np.%s sera supprimé dans NumPy 2.0. %s", existing, migration_guide)
+        return "Évitez de spécifier de longs messages en dehors de la classe d'exception"
       end
-    -- change the linter code at front to "🔗🐍 [code]" format including the brackets
+    -- 🔗🐍 [TRY004]	type-check-without-type-error	Prefer TypeError exception for invalid type	✔️ 🛠️
+    elseif code == "TRY004" then
+      if lang == "es" then
+        return "Prefiera la excepción `TypeError` para tipo inválido"
+      elseif lang == "pt-br" then
+        return "Prefira a exceção `TypeError` para tipo inválido"
+      elseif lang == "fr" then
+        return "Préférez l'exception `TypeError` pour un type invalide"
+      end
+    -- 🔗🐍 [TRY200]	reraise-no-cause	Use raise from to specify exception cause	❌ 🛠️
+    elseif code == "TRY200" then
+      if lang == "es" then
+        return "Use `raise from` para especificar la causa de la excepción"
+      elseif lang == "pt-br" then
+        return "Use `raise from` para especificar a causa da exceção"
+      elseif lang == "fr" then
+        return "Utilisez `raise from` pour spécifier la cause de l'exception"
+      end
+    -- 🔗🐍 [TRY201]	verbose-raise	Use `raise` without specifying exception name	✔️ 🛠️
+    elseif code == "TRY201" then
+      if lang == "es" then
+        return "Use `raise` sin especificar el nombre de la excepción"
+      elseif lang == "pt-br" then
+        return "Use `raise` sem especificar o nome da exceção"
+      elseif lang == "fr" then
+        return "Utilisez `raise` sans spécifier le nom de l'exception"
+      end
+    -- 🔗🐍 [TRY300]	try-consider-else	Consider moving this statement to an else block	✔️ 🛠️
+    elseif code == "TRY300" then
+      if lang == "es" then
+        return "Considere mover esta declaración a un bloque `else`"
+      elseif lang == "pt-br" then
+        return "Considere mover esta declaração para um bloco `else`"
+      elseif lang == "fr" then
+        return "Envisagez de déplacer cette déclaration dans un bloc `else`"
+      end
+    -- 🔗🐍 [TRY301]	raise-within-try	Abstract `raise` to an inner function	✔️ 🛠️
+    elseif code == "TRY301" then
+      if lang == "es" then
+        return "Abstraiga `raise` a una función interna"
+      elseif lang == "pt-br" then
+        return "Abstraia `raise` para uma função interna"
+      elseif lang == "fr" then
+        return "Abstraire `raise` dans une fonction interne"
+      end
+    -- 🔗🐍 [TRY302]	useless-try-except	Remove exception handler; error is immediately re-raised	✔️ 🛠️
+    elseif code == "TRY302" then
+      if lang == "es" then
+        return "Elimine el manejador de excepciones; el error se vuelve a lanzar inmediatamente"
+      elseif lang == "pt-br" then
+        return "Remova o manipulador de exceções; o erro é imediatamente re-lançado"
+      elseif lang == "fr" then
+        return "Supprimez le gestionnaire d'exception; l'erreur est immédiatement re-lancée"
+      end
+    -- 🔗🐍 [TRY400]	error-instead-of-exception	Use logging.exception instead of logging.error	✔️ 🛠️
+    elseif code == "TRY400" then
+      if lang == "es" then
+        return "Use `logging.exception` en lugar de `logging.error`"
+      elseif lang == "pt-br" then
+        return "Use `logging.exception` em vez de `logging.error`"
+      elseif lang == "fr" then
+        return "Utilisez `logging.exception` au lieu de `logging.error`"
+      end
+    -- 🔗🐍 [TRY401]	verbose-log-message	Redundant exception object included in logging.exception call	✔️ 🛠️
+    elseif code == "TRY401" then
+      if lang == "es" then
+        return "Objeto de excepción redundante incluido en la llamada a `logging.exception`"
+      elseif lang == "pt-br" then
+        return "Objeto de exceção redundante incluído na chamada `logging.exception`"
+      elseif lang == "fr" then
+        return "Objet d'exception redondant inclus dans l'appel à `logging.exception`"
+      end
+    -- 🔗🐍 [NPY001]	numpy-deprecated-type-alias	Type alias np.{type_name} is deprecated, replace with builtin type	✔️ 🛠️
+    elseif code == "NPY001" then
+      local type_name = message:match "Type alias `np%.(.*)` is deprecated, replace with builtin type"
+      if lang == "es" then
+        return string.format("El alias de tipo `np.%s` está obsoleto, reemplace con el tipo integrado", type_name)
+      elseif lang == "pt-br" then
+        return string.format("O alias de tipo `np.%s` está obsoleto, substitua pelo tipo integrado", type_name)
+      elseif lang == "fr" then
+        return string.format("L'alias de type `np.%s` est obsolète, remplacez par le type intégré", type_name)
+      end
+    -- 🔗🐍 [NPY002]	numpy-legacy-random	Replace legacy np.random.{method_name} call with np.random.Generator	✔️ 🛠️
+    elseif code == "NPY002" then
+      local method_name = message:match "Replace legacy `np%.random%.(.*)` call with `np%.random%.Generator`"
+      if lang == "es" then
+        return string.format("Reemplace la llamada heredada `np.random.%s` con `np.random.Generator`", method_name)
+      elseif lang == "pt-br" then
+        return string.format("Substitua a chamada legada `np.random.%s` por `np.random.Generator`", method_name)
+      elseif lang == "fr" then
+        return string.format("Remplacez l'appel hérité `np.random.%s` par `np.random.Generator`", method_name)
+      end
+    -- 🔗🐍 [NPY003]	numpy-deprecated-function	`np.{existing}` is deprecated; use `np.{replacement}` instead	✔️ 🛠️
+    elseif code == "NPY003" then
+      local existing, replacement = message:match "`np%.(.*)` is deprecated; use `np%.(.*)` instead"
+      if lang == "es" then
+        return string.format("`np.%s` está obsoleto; use `np.%s` en su lugar", existing, replacement)
+      elseif lang == "pt-br" then
+        return string.format("`np.%s` está obsoleto; use `np.%s` em seu lugar", existing, replacement)
+      elseif lang == "fr" then
+        return string.format("`np.%s` est obsolète; utilisez `np.%s` à la place", existing, replacement)
+      end
+    -- 🔗🐍 [NPY201]	numpy2-deprecation	`np.{existing}` will be removed in NumPy 2.0. {migration_guide}	✔️ 🛠️
+    elseif code == "NPY201" then
+      local existing, migration_guide = message:match "`np%.(.*)` will be removed in NumPy 2%.0%. (.*)"
+      if lang == "es" then
+        return string.format("`np.%s` se eliminará en NumPy 2.0. %s", existing, migration_guide)
+      elseif lang == "pt-br" then
+        return string.format("`np.%s` será removido no NumPy 2.0. %s", existing, migration_guide)
+      elseif lang == "fr" then
+        return string.format("`np.%s` sera supprimé dans NumPy 2.0. %s", existing, migration_guide)
+      end
     -- 🔗🐍 [RUF001]	ambiguous-unicode-character-string	String contains ambiguous {}. Did you mean {}?	✔️ 🛠️
     -- 🔗🐍 [RUF002]	ambiguous-unicode-character-docstring	Docstring contains ambiguous {}. Did you mean {}?	✔️ 🛠️
     -- 🔗🐍 [RUF003]	ambiguous-unicode-character-comment	Comment contains ambiguous {}. Did you mean {}?	✔️ 🛠️

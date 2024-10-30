@@ -46,12 +46,14 @@ shift + alt - l : yabai -m window --focus east
 # application specific bindings
 f2 [
     "Google Chrome"       : skhd --key 'ctrl + shift - tab'
+	# "WezTerm"         : skhd --key 'ctrl + shift - tab'
     # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f3; skhd --key 'cmd + shift + alt - b'
     # "WezTerm"       : skhd --key f3
     # *             : echo "hello everyone"
 ]
 f6 [
     "Google Chrome"       : skhd --key 'ctrl - tab'
+    # "WezTerm"       : skhd --key 'ctrl - tab'
     # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
     # "WezTerm"       : skhd --key f5
     # *             : echo "hello everyone"

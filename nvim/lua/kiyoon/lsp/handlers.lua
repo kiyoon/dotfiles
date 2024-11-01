@@ -15,16 +15,22 @@ local source_to_icon = {
   ["Lua Diagnostics."] = "🌜d",
 }
 
+-- NOTE: virtual text is good, but too many can be overwhelming.
+-- we disable virtual text for some common diagnostics.
 local ruff_codes_to_ignore = {
+  -- print, debug statements
   T201 = true,
   T202 = true,
   T203 = true,
+  -- unused expression
+  B018 = true,
 }
 
 local basedpyright_codes_to_ignore = {
   reportUnusedVariable = true,
   reportUnusedImport = true,
   reportUnusedParameter = true,
+  reportUnusedExpression = true,
 }
 
 local M = {}

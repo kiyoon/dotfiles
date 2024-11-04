@@ -58,6 +58,15 @@ local function find_first_party_module()
 end
 
 return {
+  -- dictionary
+  s({ trig = "[[", wordTrig = false }, {
+    t { '["' },
+    i(1),
+    t { '"]' },
+    i(0),
+  }),
+
+  -- logging
   s("li(", {
     t { "logger.info(" },
     i(1, "message"),

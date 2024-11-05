@@ -1922,9 +1922,16 @@ return {
     config = function()
       local todo_comments = require "todo-comments"
       todo_comments.setup {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
+        -- match TODO(scope):
+        -- See https://github.com/folke/todo-comments.nvim/pull/255
+        highlight = {
+          -- vimgrep regex, supporting the pattern TODO(name):
+          pattern = [[.*<((KEYWORDS)%(\(.{-1,}\))?):]],
+        },
+        search = {
+          -- ripgrep regex, supporting the pattern TODO(name):
+          pattern = [[\b(KEYWORDS)(\(\w*\))*:]],
+        },
       }
       local tstext = require "nvim-treesitter.textobjects.repeatable_move"
       local next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)

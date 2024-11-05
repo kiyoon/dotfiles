@@ -81,6 +81,13 @@ config.hyperlink_rules = {
 		format = "$1",
 		highlight = 1,
 	},
+	-- NOTE(kiyoon): hyperlink at the beginning of the line doesn't work
+	-- handle it.
+	{
+		regex = "^\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)",
+		format = "$1",
+		highlight = 1,
+	},
 	-- implicit mailto link
 	{
 		regex = "\\b\\w+@[\\w-]+(\\.[\\w-]+)+\\b",

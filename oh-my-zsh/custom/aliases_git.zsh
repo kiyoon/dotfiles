@@ -45,3 +45,6 @@ gc () {
 	ssh_add_if_notyet
 	git commit --verbose --gpg-sign "$@"
 }
+
+# Print the URL of the current repository
+alias gurl='git config --get remote.origin.url'

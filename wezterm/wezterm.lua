@@ -76,18 +76,22 @@ config.hyperlink_rules = {
 		highlight = 1,
 	},
 	-- Then handle URLs not wrapped in brackets
+	-- {
+	-- 	regex = "[^(]\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)",
+	-- 	format = "$1",
+	-- 	highlight = 1,
+	-- },
 	{
-		regex = "[^(]\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)",
-		format = "$1",
-		highlight = 1,
+		regex = "(?<![\\(\\{\\[<])\\b\\w+://\\S+",
+		format = "$0",
 	},
 	-- NOTE(kiyoon): hyperlink at the beginning of the line doesn't work
 	-- handle it.
-	{
-		regex = "^\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)",
-		format = "$1",
-		highlight = 1,
-	},
+	-- {
+	-- 	regex = "^\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)",
+	-- 	format = "$1",
+	-- 	highlight = 1,
+	-- },
 	-- implicit mailto link
 	{
 		regex = "\\b\\w+@[\\w-]+(\\.[\\w-]+)+\\b",

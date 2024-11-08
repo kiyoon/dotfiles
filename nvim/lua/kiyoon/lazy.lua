@@ -2120,6 +2120,7 @@ return {
   {
     -- see the image.nvim readme for more information about configuring this plugin
     "3rd/image.nvim",
+    build = false, -- do not use hererocks
     dependencies = {
       "kiyoon/magick.nvim",
     },

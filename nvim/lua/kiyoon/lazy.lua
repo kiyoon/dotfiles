@@ -143,7 +143,7 @@ return {
           if word:match "_DIR$" then
             return { "from " .. first_module .. " import " .. word }
           elseif word == "setup_logging" then
-            return { "from " .. first_module .. ".utils.log import setup_logging" }
+            return { "from " .. first_module .. " import setup_logging" }
           end
         end
       end,

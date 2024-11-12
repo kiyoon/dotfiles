@@ -50,6 +50,22 @@ return {
 
   --- NOTE: Python
   {
+    -- There are four types of python highlighting.
+    -- 1. Default vim python (syntax highlighting)
+    -- 2. This plugin (syntax highlighting)
+    -- 3. nvim-treesitter (syntax highlighting)
+    -- 4. basedpyright (semantic highlighting)
+    --
+    -- I want to use 4, so I disabled 3 which is distracting. (It's good but too much color)
+    -- However, then it was sometimes confusing if f-strings were actually f-strings. (the values were not highlighted)
+    -- with this plugin (2), I can see the f-strings are actually f-strings, but it doesn't hurt the 4.
+    "vim-python/python-syntax",
+    ft = "python",
+    init = function()
+      vim.g.python_highlight_all = 1
+    end,
+  },
+  {
     "kiyoon/python-import.nvim",
     build = "uv tool install . --force --reinstall",
     keys = {

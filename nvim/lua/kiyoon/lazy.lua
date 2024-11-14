@@ -1583,12 +1583,26 @@ return {
     "smjonas/inc-rename.nvim",
     keys = {
       {
-        "<space>pr",
+        "<space>pR",
         function()
           return ":IncRename " .. vim.fn.expand "<cword>"
         end,
         expr = true,
-        desc = "LSP (R)ename",
+        desc = "[R]ename with live preview",
+      },
+      {
+        -- Rename in normal mode, like
+        -- https://blog.viktomas.com/graph/neovim-lsp-rename-normal-mode-keymaps/
+        -- but without the messy autocmd
+        -- and you can return to the command line with <C-c> and see the preview
+        "<space>pr",
+        function()
+          vim.api.nvim_feedkeys(":IncRename " .. vim.fn.expand "<cword>", "n", false)
+          local key = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
+          vim.api.nvim_feedkeys(key, "c", false)
+          vim.api.nvim_feedkeys("b", "n", false)
+        end,
+        desc = "[R]ename in normal mode",
       },
     },
     config = true,

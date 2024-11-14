@@ -168,6 +168,7 @@ function M.lsp_keymaps(bufnr)
     -- require("lsp-inlayhints").toggle()
     require("lsp-endhints").toggle()
   end, opts, "Toggle Inlay [H]int")
+
   -- Use actions-preview.nvim
   -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", function()

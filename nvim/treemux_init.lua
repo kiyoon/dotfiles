@@ -1,3 +1,7 @@
+-- Even if your gitconfig redirects https to ssh (url insteadOf), this will make sure that
+-- plugins will be installed via https instead of ssh.
+vim.env.GIT_CONFIG_GLOBAL = ""
+
 -- Remove the white status bar below
 vim.o.laststatus = 0
 
@@ -5,22 +9,22 @@ vim.o.laststatus = 0
 vim.o.termguicolors = true
 
 -- lazy.nvim plugin manager
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
+  vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable", -- latest stable release
     lazypath,
-  }
+  })
 end
 vim.opt.rtp:prepend(lazypath)
 
 local function nvim_tree_on_attach(bufnr)
-  local api = require "nvim-tree.api"
-  local nt_remote = require "nvim_tree_remote"
+  local api = require("nvim-tree.api")
+  local nt_remote = require("nvim_tree_remote")
 
   local function opts(desc)
     return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
@@ -28,17 +32,17 @@ local function nvim_tree_on_attach(bufnr)
 
   api.config.mappings.default_on_attach(bufnr)
 
-  vim.keymap.set("n", "u", api.tree.change_root_to_node, opts "Dir up")
-  vim.keymap.set("n", "<F1>", api.node.show_info_popup, opts "Show info popup")
-  vim.keymap.set("n", "l", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "<CR>", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "<C-t>", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "<2-LeftMouse>", nt_remote.tabnew, opts "Open in treemux")
-  vim.keymap.set("n", "h", api.tree.close, opts "Close node")
-  vim.keymap.set("n", "v", nt_remote.vsplit, opts "Vsplit in treemux")
-  vim.keymap.set("n", "<C-v>", nt_remote.vsplit, opts "Vsplit in treemux")
-  vim.keymap.set("n", "<C-x>", nt_remote.split, opts "Split in treemux")
-  vim.keymap.set("n", "o", nt_remote.tabnew_main_pane, opts "Open in treemux without tmux split")
+  vim.keymap.set("n", "u", api.tree.change_root_to_node, opts("Dir up"))
+  vim.keymap.set("n", "<F1>", api.node.show_info_popup, opts("Show info popup"))
+  vim.keymap.set("n", "l", nt_remote.tabnew, opts("Open in treemux"))
+  vim.keymap.set("n", "<CR>", nt_remote.tabnew, opts("Open in treemux"))
+  vim.keymap.set("n", "<C-t>", nt_remote.tabnew, opts("Open in treemux"))
+  vim.keymap.set("n", "<2-LeftMouse>", nt_remote.tabnew, opts("Open in treemux"))
+  vim.keymap.set("n", "h", api.tree.close, opts("Close node"))
+  vim.keymap.set("n", "v", nt_remote.vsplit, opts("Vsplit in treemux"))
+  vim.keymap.set("n", "<C-v>", nt_remote.vsplit, opts("Vsplit in treemux"))
+  vim.keymap.set("n", "<C-x>", nt_remote.split, opts("Split in treemux"))
+  vim.keymap.set("n", "o", nt_remote.tabnew_main_pane, opts("Open in treemux without tmux split"))
 
   vim.keymap.set("n", "-", "", { buffer = bufnr })
   vim.keymap.del("n", "-", { buffer = bufnr })
@@ -59,14 +63,17 @@ require("lazy").setup({
       { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" } },
     },
   },
-  "kiyoon/nvim-tree-remote.nvim",
+  {
+    "kiyoon/nvim-tree-remote.nvim",
+    branch = "feat/python-path",
+  },
   "folke/tokyonight.nvim",
   "nvim-tree/nvim-web-devicons",
   {
     "nvim-tree/nvim-tree.lua",
     config = function()
-      local nvim_tree = require "nvim-tree"
-      nvim_tree.setup {
+      local nvim_tree = require("nvim-tree")
+      nvim_tree.setup({
         on_attach = nvim_tree_on_attach,
         update_focused_file = {
           enable = true,
@@ -117,7 +124,51 @@ require("lazy").setup({
         filters = {
           custom = { ".git" },
         },
-      }
+      })
+    end,
+  },
+  {
+    "stevearc/oil.nvim",
+    keys = {
+      {
+        "<space>o",
+        function()
+          -- Toggle oil / nvim-tree
+          -- if nvim-tree is open, close it and open oil
+          -- check filetype
+          if vim.bo.filetype == "NvimTree" then
+            vim.cmd("NvimTreeClose")
+            vim.cmd("Oil")
+          elseif vim.bo.filetype == "oil" then
+            require("nvim-tree.lib").open({ current_window = true })
+          end
+        end,
+        mode = { "n" },
+        desc = "Toggle Oil/nvim-tree",
+      },
+    },
+    config = function()
+      require("oil").setup({
+        keymaps = {
+          ["\\"] = { "actions.select", opts = { vertical = true }, desc = "Open the entry in a vertical split" },
+          ["|"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
+          ["<C-r>"] = "actions.refresh",
+          ["g?"] = "actions.show_help",
+          ["<CR>"] = "actions.select",
+          ["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
+          ["<C-p>"] = "actions.preview",
+          ["<C-c>"] = "actions.close",
+          ["-"] = "actions.parent",
+          ["_"] = "actions.open_cwd",
+          ["`"] = "actions.cd",
+          ["~"] = { "actions.cd", opts = { scope = "tab" }, desc = ":tcd to the current oil directory" },
+          ["gs"] = "actions.change_sort",
+          ["gx"] = "actions.open_external",
+          ["g."] = "actions.toggle_hidden",
+          ["g\\"] = "actions.toggle_trash",
+        },
+        use_default_keymaps = false,
+      })
     end,
   },
   {
@@ -153,7 +204,7 @@ require("lazy").setup({
     config = function()
       -- Navigate tmux, and nvim splits.
       -- Sync nvim buffer with tmux buffer.
-      require("tmux").setup {
+      require("tmux").setup({
         copy_sync = {
           enable = true,
           sync_clipboard = false,
@@ -164,7 +215,7 @@ require("lazy").setup({
           resize_step_x = 5,
           resize_step_y = 5,
         },
-      }
+      })
     end,
   },
 }, {
@@ -186,20 +237,20 @@ require("lazy").setup({
   },
 })
 
-vim.cmd [[ colorscheme tokyonight-night ]]
+vim.cmd([[ colorscheme tokyonight-night ]])
 vim.o.cursorline = true
 
 vim.keymap.set({ "n", "v", "o" }, "<F2>", function()
   -- tmux previous window
-  vim.fn.system "tmux select-window -t :-"
+  vim.fn.system("tmux select-window -t :-")
 end, { desc = "tmux previous window" })
 vim.keymap.set({ "n", "v", "o" }, "<F3>", function()
   -- tmux previous window
-  vim.fn.system "tmux select-window -t :-"
+  vim.fn.system("tmux select-window -t :-")
 end, { desc = "tmux previous window" })
 vim.keymap.set({ "n", "v", "o" }, "<F5>", function()
-  vim.fn.system "tmux select-window -t :+"
+  vim.fn.system("tmux select-window -t :+")
 end, { desc = "tmux next window" })
 vim.keymap.set({ "n", "v", "o" }, "<F6>", function()
-  vim.fn.system "tmux select-window -t :+"
+  vim.fn.system("tmux select-window -t :+")
 end, { desc = "tmux next window" })

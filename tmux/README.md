@@ -99,6 +99,7 @@ You can even use mouse right click.
 - (tmux-yank): Ctrl+a + Y: copy PWD
 - ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Tab\>: toggle file browser on the side
 - ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Backspace\>: toggle file browser on the side, and focus on it
+- Inside treemux, `<space>o` to toggle between Oil and Nvim-tree.
 
 ### Other tips 💡
 

@@ -38,6 +38,7 @@ yabai -m rule --add app="^Karabiner-Elements$" manage=off
 yabai -m rule --add app="^Finder$" title="(Copiar|Conectar|Mover)" manage=off
 yabai -m rule --add app="^VLC$" manage=off
 yabai -m rule --add app="^QuickTime Player$" manage=off
+yabai -m rule --add app="^IINA$" manage=off
 
 yabai -m rule --add app="^Archive Utility$" manage=off
 yabai -m rule --add app="^Wally$" manage=off

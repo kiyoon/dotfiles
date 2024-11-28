@@ -129,6 +129,10 @@ require("lazy").setup({
   },
   {
     "stevearc/oil.nvim",
+    -- Bug with lazy-loading? Can't open nvim-tree on home directory and then open oil.
+    -- https://github.com/stevearc/oil.nvim/issues/409
+    -- Fixed by disabling lazy loading
+    lazy = false,
     keys = {
       {
         "<space>o",

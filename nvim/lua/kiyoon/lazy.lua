@@ -5,7 +5,7 @@ local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 local python_import_dev = false
 
-local icons = require "kiyoon.icons"
+local icons = require("kiyoon.icons")
 
 return {
   {
@@ -13,8 +13,8 @@ return {
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
-      require "kiyoon.tokyonight"
-      vim.cmd.colorscheme "tokyonight"
+      require("kiyoon.tokyonight")
+      vim.cmd.colorscheme("tokyonight")
     end,
   },
   {
@@ -152,11 +152,11 @@ return {
       custom_function = function(winnr, word, ts_node)
         local bufnr = vim.api.nvim_win_get_buf(winnr)
 
-        local utils = require "python_import.utils"
+        local utils = require("python_import.utils")
         if utils.get_cached_first_party_modules(bufnr) ~= nil then
           local first_module = utils.get_cached_first_party_modules(bufnr)[1]
           -- if statement ends with _DIR, import from the first module (from project import PROJECT_DIR)
-          if word:match "_DIR$" then
+          if word:match("_DIR$") then
             return { "from " .. first_module .. " import " .. word }
           elseif word == "setup_logging" then
             return { "from " .. first_module .. " import setup_logging" }
@@ -193,7 +193,7 @@ return {
       else
         python_host = { "~/.virtualenvs/jupynium/bin/python" }
       end
-      require("jupynium").setup {
+      require("jupynium").setup({
         default_notebook_URL = "localhost:8888/nbclassic",
         python_host = python_host,
         jupyter_command = { "conda", "run", "--no-capture-output", "-n", "base", "jupyter" },
@@ -204,7 +204,7 @@ return {
         --     "download_ipynb",
         --   },
         -- },
-      }
+      })
     end,
     dev = jupynium_dev,
   },
@@ -272,13 +272,13 @@ return {
       { "<m-e>", mode = "i" },
     },
     config = function()
-      local ap = require "nvim-autopairs"
-      ap.setup {
+      local ap = require("nvim-autopairs")
+      ap.setup({
         -- Disable auto fast wrap
         enable_afterquote = false,
         -- <A-e> to manually trigger fast wrap
         fast_wrap = {},
-      }
+      })
 
       -- Remove all autopair rules, but keep the fast wrap
       local function manual_trigger(opening, closing)
@@ -393,9 +393,9 @@ return {
       "nvim-lua/plenary.nvim",
     },
     config = function()
-      require "kiyoon.tmux-yanky"
+      require("kiyoon.tmux-yanky")
       -- After initialising yanky, this mapping gets lost so we do this here.
-      vim.cmd [[nnoremap Y y$]]
+      vim.cmd([[nnoremap Y y$]])
     end,
   },
   {
@@ -404,18 +404,18 @@ return {
     -- cmd = { "Copilot" },
     init = function()
       vim.g.copilot_no_tab_map = true
-      vim.cmd [[imap <silent><script><expr> <C-s> copilot#Accept("")]]
-      vim.cmd [[imap <silent><script><expr> <F7> copilot#Accept("")]]
+      vim.cmd([[imap <silent><script><expr> <C-s> copilot#Accept("")]])
+      vim.cmd([[imap <silent><script><expr> <F7> copilot#Accept("")]])
 
       -- delete word in INSERT mode
       -- you can use <C-w> but this is for consistency with github copilot
       -- using <A-Right> to accept a word.
-      vim.cmd [[inoremap <A-Left> <C-\><C-o>db]]
-      vim.cmd [[inoremap <A-BS> <C-\><C-o>db]] -- consistency with zsh and bash
-      vim.cmd [[inoremap <F2> <C-\><C-o>db]]
-      vim.cmd [[inoremap <F3> <C-\><C-o>db]]
-      vim.cmd [[inoremap <F5> <Plug>(copilot-accept-word)]]
-      vim.cmd [[inoremap <F6> <Plug>(copilot-accept-word)]]
+      vim.cmd([[inoremap <A-Left> <C-\><C-o>db]])
+      vim.cmd([[inoremap <A-BS> <C-\><C-o>db]]) -- consistency with zsh and bash
+      vim.cmd([[inoremap <F2> <C-\><C-o>db]])
+      vim.cmd([[inoremap <F3> <C-\><C-o>db]])
+      vim.cmd([[inoremap <F5> <Plug>(copilot-accept-word)]])
+      vim.cmd([[inoremap <F6> <Plug>(copilot-accept-word)]])
     end,
   },
   -- Free copilot alternative
@@ -444,7 +444,7 @@ return {
       { "<space>as", mode = { "x" }, desc = "summarize text" },
     },
     config = function()
-      require("neoai").setup {
+      require("neoai").setup({
         models = {
           {
             name = "openai",
@@ -467,8 +467,8 @@ return {
             strip_function = nil,
           },
         },
-      }
-      require "kiyoon.neoai"
+      })
+      require("kiyoon.neoai")
     end,
   },
 
@@ -477,9 +477,9 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.add {
+        wk.add({
           { "<leader>c", group = "ChatGPT" },
-        }
+        })
       end
     end,
     cmd = {
@@ -500,7 +500,7 @@ return {
       },
     },
     config = function()
-      require("gp").setup {
+      require("gp").setup({
         openai_api_key = { "pass", "API-dear/openai" },
         agents = {
           {
@@ -560,7 +560,7 @@ return {
               .. "START AND END YOUR ANSWER WITH:\n\n```",
           },
         },
-      }
+      })
     end,
   },
 
@@ -578,7 +578,7 @@ return {
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    opts = require "kiyoon.gitsigns_opts",
+    opts = require("kiyoon.gitsigns_opts"),
     -- add at least one keys so that which-key can register the leader key
     keys = {
       {
@@ -588,9 +588,9 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.add {
+        wk.add({
           { "<leader>h", group = "Gitsigns" },
-        }
+        })
       end
     end,
   },
@@ -636,7 +636,7 @@ return {
       "NvimTreeOpen",
     },
     config = function()
-      require "kiyoon.nvim_tree"
+      require("kiyoon.nvim_tree")
     end,
   },
   {
@@ -661,7 +661,7 @@ return {
     --   return vim.fn.isdirectory(vim.fn.expand "%:p") == 1
     -- end,
     config = function()
-      require("oil").setup {
+      require("oil").setup({
         keymaps = {
           ["\\"] = { "actions.select", opts = { vertical = true }, desc = "Open the entry in a vertical split" },
           ["|"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
@@ -681,7 +681,7 @@ return {
           ["g\\"] = "actions.toggle_trash",
         },
         use_default_keymaps = false,
-      }
+      })
     end,
   },
 
@@ -697,10 +697,10 @@ return {
       -- Luckily, the only things that those plugins need are the custom queries, which we make available
       -- during startup.
       require("lazy.core.loader").add_to_rtp(plugin)
-      require "nvim-treesitter.query_predicates"
+      require("nvim-treesitter.query_predicates")
     end,
     config = function()
-      require "kiyoon.treesitter"
+      require("kiyoon.treesitter")
     end,
     dependencies = {
       {
@@ -734,7 +734,7 @@ return {
               if errors < 0 then
                 return nil
               end
-              return vim.fn.line "$" > threshold and require("rainbow-delimiters").strategy["global"]
+              return vim.fn.line("$") > threshold and require("rainbow-delimiters").strategy["global"]
                 or require("rainbow-delimiters").strategy["local"]
             end
           end
@@ -778,9 +778,9 @@ return {
     commit = "e5676455c7e68069c6299facd4b5c4eb80cc4e9d",
 
     config = function()
-      require("treesitter-context").setup {
+      require("treesitter-context").setup({
         max_lines = 7,
-      }
+      })
     end,
   },
   {
@@ -818,11 +818,11 @@ return {
       --
       -- require("ibl").setup { scope = { highlight = highlight } }
       -- hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
-      require("indent_blankline").setup {
+      require("indent_blankline").setup({
         space_char_blankline = " ",
         show_current_context = true,
         show_current_context_start = true,
-      }
+      })
     end,
   },
   {
@@ -867,8 +867,8 @@ return {
     "danymat/neogen",
     dependencies = "nvim-treesitter/nvim-treesitter",
     config = function()
-      local custom_templates = require "kiyoon.neogen"
-      require("neogen").setup {
+      local custom_templates = require("kiyoon.neogen")
+      require("neogen").setup({
         snippet_engine = "luasnip",
         languages = {
           python = {
@@ -878,7 +878,7 @@ return {
             },
           },
         },
-      }
+      })
     end,
     -- Uncomment next line if you want to follow only stable versions
     -- version = "*"
@@ -899,7 +899,7 @@ return {
       -- { "<space>g", "<cmd>TSJToggle<CR>", desc = "Treesitter Toggle" },
     },
     config = function()
-      require("treesj").setup { use_default_keymaps = false }
+      require("treesj").setup({ use_default_keymaps = false })
     end,
   },
   {
@@ -922,13 +922,13 @@ return {
       "nvim-lua/plenary.nvim",
       { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
-    keys = require "kiyoon.refactoring_keys",
+    keys = require("kiyoon.refactoring_keys"),
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.add {
+        wk.add({
           { "<space>r", group = "[R]efactor" },
-        }
+        })
       end
     end,
     config = function()
@@ -942,7 +942,7 @@ return {
       "nvim-treesitter/nvim-treesitter",
     },
     config = function()
-      require("tabout").setup {
+      require("tabout").setup({
         tabkey = "<Tab>",
         backwards_tabkey = "<S-Tab>",
         act_as_tab = true,
@@ -959,7 +959,7 @@ return {
         },
         ignore_beginning = true,
         exclude = {},
-      }
+      })
     end,
   },
   {
@@ -973,7 +973,7 @@ return {
       { "<C-A-p>", mode = { "n", "s", "i" } },
     },
     config = function()
-      local select_ease = require "SelectEase"
+      local select_ease = require("SelectEase")
 
       local lua_query = [[
           ;; query
@@ -994,44 +994,44 @@ return {
       }
 
       vim.keymap.set({ "n", "s", "i" }, "<C-A-k>", function()
-        select_ease.select_node {
+        select_ease.select_node({
           queries = queries,
           direction = "previous",
           vertical_drill_jump = true,
           -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
+        })
       end, {})
       vim.keymap.set({ "n", "s", "i" }, "<C-A-j>", function()
-        select_ease.select_node {
+        select_ease.select_node({
           queries = queries,
           direction = "next",
           vertical_drill_jump = true,
           -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
+        })
       end, {})
       vim.keymap.set({ "n", "s", "i" }, "<C-A-h>", function()
-        select_ease.select_node {
+        select_ease.select_node({
           queries = queries,
           direction = "previous",
           current_line_only = true,
           -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
+        })
       end, {})
       vim.keymap.set({ "n", "s", "i" }, "<C-A-l>", function()
-        select_ease.select_node {
+        select_ease.select_node({
           queries = queries,
           direction = "next",
           current_line_only = true,
           -- visual_mode = true, -- if you want Visual Mode instead of Select Mode
-        }
+        })
       end, {})
 
       -- previous / next node that matches query
       vim.keymap.set({ "n", "s", "i" }, "<C-A-p>", function()
-        select_ease.select_node { queries = queries, direction = "previous" }
+        select_ease.select_node({ queries = queries, direction = "previous" })
       end, {})
       vim.keymap.set({ "n", "s", "i" }, "<C-A-n>", function()
-        select_ease.select_node { queries = queries, direction = "next" }
+        select_ease.select_node({ queries = queries, direction = "next" })
       end, {})
     end,
   },
@@ -1137,9 +1137,9 @@ return {
       { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
     config = function()
-      require("sibling-swap").setup {
+      require("sibling-swap").setup({
         use_default_keymaps = false,
-      }
+      })
     end,
     keys = {
       {
@@ -1166,9 +1166,9 @@ return {
       { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
     },
     config = function()
-      require("iswap").setup {
+      require("iswap").setup({
         move_cursor = true,
-      }
+      })
     end,
     keys = {
       { "<leader>s", "<Cmd>ISwap<CR>", mode = "n", desc = "ISwap" },
@@ -1185,17 +1185,17 @@ return {
     "stevearc/aerial.nvim",
     event = "BufReadPre",
     config = function()
-      local aerial = require "aerial"
-      aerial.setup {
+      local aerial = require("aerial")
+      aerial.setup({
         -- optionally use on_attach to set keymaps when aerial has attached to a buffer
         on_attach = function(bufnr)
           -- Jump forwards/backwards with '{' and '}'
-          local tstext_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+          local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
           local anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
           vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
           vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
         end,
-      }
+      })
       -- You probably also want to set a keymap to toggle aerial
       vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>", { desc = "Aerial toggle" })
     end,
@@ -1280,10 +1280,10 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.add {
+        wk.add({
           { "<leader>f", group = "Telescope [F]uzzy [F]inder" },
           { "<leader>fi", group = "[I]nner" },
-        }
+        })
       end
     end,
     dependencies = {
@@ -1291,10 +1291,10 @@ return {
         "nvim-telescope/telescope-fzf-native.nvim",
         build = "make",
         cond = function()
-          return vim.fn.executable "make" == 1
+          return vim.fn.executable("make") == 1
         end,
         config = function()
-          require("telescope").load_extension "fzf"
+          require("telescope").load_extension("fzf")
         end,
       },
       { "kiyoon/telescope-insert-path.nvim" },
@@ -1303,7 +1303,7 @@ return {
       },
     },
     config = function()
-      require "kiyoon.telescope"
+      require("kiyoon.telescope")
     end,
   },
 
@@ -1362,7 +1362,7 @@ return {
       -- { "saghen/blink.cmp" },
     },
     config = function()
-      require "kiyoon.lsp"
+      require("kiyoon.lsp")
     end,
   },
   -- optional for lazydev.nvim: `vim.uv` typings. Plugin will never be loaded
@@ -1380,7 +1380,7 @@ return {
       "onsails/lspkind.nvim", -- display icons
     },
     config = function()
-      require "kiyoon.cmp"
+      require("kiyoon.cmp")
     end,
   },
   -- {
@@ -1448,7 +1448,7 @@ return {
     "chrisgrieser/nvim-lsp-endhints",
     event = "LspAttach",
     config = function()
-      require "kiyoon.lsp.inlayhints"
+      require("kiyoon.lsp.inlayhints")
     end,
   },
   {
@@ -1540,7 +1540,7 @@ return {
       "nvim-lua/plenary.nvim",
     },
     config = function()
-      require "kiyoon.lsp.null-ls"
+      require("kiyoon.lsp.null-ls")
     end,
   },
   {
@@ -1552,7 +1552,7 @@ return {
         -- Customize or remove this keymap to your liking
         "<space>pf",
         function()
-          require("conform").format { async = true, lsp_fallback = true }
+          require("conform").format({ async = true, lsp_fallback = true })
         end,
         mode = "",
         desc = "Format buffer",
@@ -1635,7 +1635,7 @@ return {
       {
         "<space>pR",
         function()
-          return ":IncRename " .. vim.fn.expand "<cword>"
+          return ":IncRename " .. vim.fn.expand("<cword>")
         end,
         expr = true,
         desc = "[R]ename with live preview",
@@ -1647,7 +1647,7 @@ return {
         -- and you can return to the command line with <C-c> and see the preview
         "<space>pr",
         function()
-          vim.api.nvim_feedkeys(":IncRename " .. vim.fn.expand "<cword>", "n", false)
+          vim.api.nvim_feedkeys(":IncRename " .. vim.fn.expand("<cword>"), "n", false)
           local key = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
           vim.api.nvim_feedkeys(key, "c", false)
           vim.api.nvim_feedkeys("b", "n", false)
@@ -1704,9 +1704,9 @@ return {
     init = function()
       local status, wk = pcall(require, "which-key")
       if status then
-        wk.add {
+        wk.add({
           { "<leader>x", group = "Trouble" },
-        }
+        })
       end
     end,
   },
@@ -1714,7 +1714,7 @@ return {
     "kosayoda/nvim-lightbulb",
     event = "BufRead",
     config = function()
-      require("nvim-lightbulb").setup {
+      require("nvim-lightbulb").setup({
         priority = 20, -- higher than LSP diagnostics
         sign = {
           enabled = true,
@@ -1725,7 +1725,7 @@ return {
         autocmd = {
           enabled = true,
         },
-      }
+      })
       -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
     end,
   },
@@ -1762,9 +1762,9 @@ return {
     "rcarriga/nvim-dap-ui",
     dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
     config = function()
-      local dapui = require "dapui"
-      local dap = require "dap"
-      dapui.setup {
+      local dapui = require("dapui")
+      local dap = require("dap")
+      dapui.setup({
         expand_lines = true,
         icons = { expanded = "", collapsed = "", circular = "" },
         mappings = {
@@ -1804,7 +1804,7 @@ return {
             close = { "q", "<Esc>" },
           },
         },
-      }
+      })
 
       dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
@@ -1856,16 +1856,16 @@ return {
       )
     end,
     config = function()
-      require "kiyoon.dap"
+      require("kiyoon.dap")
     end,
   },
   {
     "kiyoon/persistent-breakpoints.nvim",
     event = "BufReadPost",
     config = function()
-      require("persistent-breakpoints").setup {
+      require("persistent-breakpoints").setup({
         load_breakpoints_event = { "BufReadPost" },
-      }
+      })
     end,
   },
   {
@@ -1873,7 +1873,7 @@ return {
     ft = "python",
     config = function()
       -- Path to python with debugpy installed
-      require("dap-python").setup "/usr/bin/python3"
+      require("dap-python").setup("/usr/bin/python3")
     end,
   },
 
@@ -1886,7 +1886,7 @@ return {
       "rafamadriz/friendly-snippets",
     },
     config = function()
-      require "kiyoon.luasnip"
+      require("kiyoon.luasnip")
     end,
   },
 
@@ -1904,7 +1904,7 @@ return {
     },
     event = "CmdlineEnter",
     config = function()
-      require "kiyoon.wilder"
+      require("kiyoon.wilder")
     end,
   },
   -- better vim.notify()
@@ -1915,7 +1915,7 @@ return {
       {
         "<leader>un",
         function()
-          require("notify").dismiss { silent = true, pending = true }
+          require("notify").dismiss({ silent = true, pending = true })
         end,
         desc = "Delete all Notifications",
       },
@@ -1932,7 +1932,7 @@ return {
     },
     config = function(_, opts)
       require("notify").setup(opts)
-      vim.notify = require "notify"
+      vim.notify = require("notify")
     end,
   },
 
@@ -1943,12 +1943,12 @@ return {
     init = function()
       ---@diagnostic disable-next-line: duplicate-set-field
       vim.ui.select = function(...)
-        require("lazy").load { plugins = { "dressing.nvim" } }
+        require("lazy").load({ plugins = { "dressing.nvim" } })
         return vim.ui.select(...)
       end
       ---@diagnostic disable-next-line: duplicate-set-field
       vim.ui.input = function(...)
-        require("lazy").load { plugins = { "dressing.nvim" } }
+        require("lazy").load({ plugins = { "dressing.nvim" } })
         return vim.ui.input(...)
       end
     end,
@@ -1958,7 +1958,7 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     opts = function(plugin)
-      return require "kiyoon.lualine_opts"
+      return require("kiyoon.lualine_opts")
     end,
   },
   {
@@ -1968,7 +1968,7 @@ return {
       { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
       { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
     },
-    opts = require "kiyoon.bufferline_opts",
+    opts = require("kiyoon.bufferline_opts"),
   },
   {
     "kevinhwang91/nvim-ufo",
@@ -1984,14 +1984,14 @@ return {
       vim.o.foldenable = true
     end,
     config = function()
-      require "kiyoon.ufo"
+      require("kiyoon.ufo")
     end,
   },
   {
     "RRethy/vim-illuminate",
     event = { "BufReadPost", "BufNewFile" },
     config = function()
-      require "kiyoon.illuminate"
+      require("kiyoon.illuminate")
     end,
   },
   {
@@ -2000,8 +2000,8 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     dependencies = "nvim-lua/plenary.nvim",
     config = function()
-      local todo_comments = require "todo-comments"
-      todo_comments.setup {
+      local todo_comments = require("todo-comments")
+      todo_comments.setup({
         -- match TODO(scope):
         -- See https://github.com/folke/todo-comments.nvim/pull/255
         highlight = {
@@ -2012,8 +2012,8 @@ return {
           -- ripgrep regex, supporting the pattern TODO(name):
           pattern = [[\b(KEYWORDS)(\(\w*\))*:]],
         },
-      }
-      local tstext = require "nvim-treesitter.textobjects.repeatable_move"
+      })
+      local tstext = require("nvim-treesitter.textobjects.repeatable_move")
       local next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
       vim.keymap.set("n", "]t", next_todo, { desc = "Next todo comment" })
 
@@ -2031,13 +2031,13 @@ return {
     "goolord/alpha-nvim",
     event = "VimEnter",
     config = function()
-      require "kiyoon.alpha"
+      require("kiyoon.alpha")
     end,
   },
   {
     "luukvbaal/statuscol.nvim",
     config = function()
-      require "kiyoon.statuscol"
+      require("kiyoon.statuscol")
     end,
   },
 
@@ -2073,13 +2073,13 @@ return {
     config = function()
       -- vim.o.timeout = true
       -- vim.o.timeoutlen = 600
-      require("which-key").setup {
+      require("which-key").setup({
         delay = 600,
-      }
+      })
 
       -- Sync with tmux registers
       -- https://github.com/folke/which-key.nvim/issues/743#issuecomment-2234460129
-      local reg = require "which-key.plugins.registers"
+      local reg = require("which-key.plugins.registers")
       local expand = reg.expand
 
       function reg.expand()
@@ -2098,12 +2098,12 @@ return {
       vim.fn["mkdp#util#install"]()
     end,
     init = function()
-      vim.cmd [[
+      vim.cmd([[
         function OpenMarkdownPreview (url)
           execute "silent ! firefox " . a:url
         endfunction
         let g:mkdp_browserfunc = 'OpenMarkdownPreview'
-      ]]
+      ]])
     end,
   },
   -- {
@@ -2126,7 +2126,7 @@ return {
   {
     "fei6409/log-highlight.nvim",
     config = function()
-      require("log-highlight").setup {
+      require("log-highlight").setup({
         -- The file extensions.
         extension = "log",
 
@@ -2137,14 +2137,8 @@ return {
           "/var/log/.*",
           "messages%..*",
         },
-      }
+      })
     end,
-  },
-  -- NOTE: for kiyoon/treemux
-  -- You need to have them installed but not using them with `cond = false`
-  {
-    "kiyoon/nvim-tree-remote.nvim",
-    cond = false,
   },
   {
     "andythigpen/nvim-coverage",
@@ -2166,7 +2160,7 @@ return {
   {
     "lifthrasiir/hangeul.vim",
     init = function()
-      vim.cmd [[let hangeul_enabled = 1]]
+      vim.cmd([[let hangeul_enabled = 1]])
     end,
     config = function()
       vim.keymap.set("i", "<C-h>", "<Plug>HanMode", { noremap = false, silent = true })
@@ -2263,7 +2257,7 @@ return {
         local venn_enabled = vim.inspect(vim.b.venn_enabled)
         if venn_enabled == "nil" then
           vim.b.venn_enabled = true
-          vim.cmd [[setlocal ve=all]]
+          vim.cmd([[setlocal ve=all]])
           -- draw a line on HJKL keystokes
           vim.api.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", { noremap = true })
           vim.api.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", { noremap = true })
@@ -2272,8 +2266,8 @@ return {
           -- draw a box by pressing "f" with visual selection
           vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", { noremap = true })
         else
-          vim.cmd [[setlocal ve=]]
-          vim.cmd [[mapclear <buffer>]]
+          vim.cmd([[setlocal ve=]])
+          vim.cmd([[mapclear <buffer>]])
           vim.b.venn_enabled = nil
         end
       end

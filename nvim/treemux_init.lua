@@ -8,6 +8,9 @@ vim.o.laststatus = 0
 -- True colour support
 vim.o.termguicolors = true
 
+-- treats words with `-` as single words
+vim.opt.iskeyword:append("-")
+
 -- lazy.nvim plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

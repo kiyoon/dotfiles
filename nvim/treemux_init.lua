@@ -65,7 +65,7 @@ require("lazy").setup({
   },
   {
     "kiyoon/nvim-tree-remote.nvim",
-    branch = "feat/python-path",
+    -- branch = "feat/python-path",
   },
   "folke/tokyonight.nvim",
   "nvim-tree/nvim-web-devicons",

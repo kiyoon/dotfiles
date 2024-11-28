@@ -128,6 +128,14 @@ require("lazy").setup({
     end,
   },
   {
+    "chaoren/vim-wordmotion",
+    event = "VeryLazy",
+    -- use init instead of config to set variables before loading the plugin
+    init = function()
+      vim.g.wordmotion_prefix = "<space>"
+    end,
+  },
+  {
     "stevearc/oil.nvim",
     -- Bug with lazy-loading? Can't open nvim-tree on home directory and then open oil.
     -- https://github.com/stevearc/oil.nvim/issues/409

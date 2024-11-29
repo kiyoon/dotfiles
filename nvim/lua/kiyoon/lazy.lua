@@ -287,12 +287,21 @@ return {
       end, { silent = false, desc = "Surround backtick" })
 
       -- map <C-2> to surround with parenthesis for function call (keep cursor at front)
+      -- change iskeyword temporarily because we don't want `-` to be included in the word
       vim.keymap.set("n", "<C-2>", function()
-        vim.cmd.normal("viwS)")
+        local original_iskeyword = vim.opt.iskeyword
+        vim.opt.iskeyword = "@,48-57,_,192-255" -- alphabet, _, and European accented characters
+        vim.cmd.normal({ "viw", bang = true })
+        vim.opt.iskeyword = original_iskeyword
+        vim.cmd.normal("S)")
         vim.cmd.startinsert()
       end, { desc = "Surround parens (function call)" })
       vim.keymap.set("i", "<C-2>", function()
-        vim.cmd.normal("hviwS)")
+        local original_iskeyword = vim.opt.iskeyword
+        vim.opt.iskeyword = "@,48-57,_,192-255" -- alphabet, _, and European accented characters
+        vim.cmd.normal({ "hviw", bang = true })
+        vim.opt.iskeyword = original_iskeyword
+        vim.cmd.normal("S)")
       end, { silent = false, desc = "Surround parens (function call)" })
       vim.keymap.set("x", "<C-2>", function()
         vim.cmd.normal("S)")

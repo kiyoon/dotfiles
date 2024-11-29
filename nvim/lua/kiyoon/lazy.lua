@@ -261,6 +261,43 @@ return {
     event = "VeryLazy",
     config = function()
       require("nvim-surround").setup()
+
+      local right = function()
+        local nowCol = vim.api.nvim_eval([[virtcol('.')]])
+        local lastCol = vim.api.nvim_eval([[virtcol('$')]]) - 1
+        if nowCol == lastCol then
+          vim.cmd("startinsert!")
+        else
+          vim.cmd("norm! a")
+        end
+      end
+      -- map backtick to surround backtick (or ctrl 1 in v, i mode)
+      -- backtick originally goes to the mark, but I don't use it. You can use ` to go to the mark.
+      -- 디폴트 `ys`를 선행키로 잡으면 약간의 딜레이가 생긴다.
+      vim.keymap.set("n", "`", function()
+        vim.cmd.normal("viwS`f`l")
+      end, { desc = "Surround backtick" })
+      vim.keymap.set("i", "<C-1>", function()
+        vim.cmd.normal("hviwS`f`l")
+        right()
+      end, { silent = false, desc = "Surround backtick" })
+      vim.keymap.set("x", "`", function()
+        vim.cmd.normal("S`f`")
+        right()
+      end, { silent = false, desc = "Surround backtick" })
+
+      -- map <C-2> to surround with parenthesis for function call (keep cursor at front)
+      vim.keymap.set("n", "<C-2>", function()
+        vim.cmd.normal("viwS)")
+        vim.cmd.startinsert()
+      end, { desc = "Surround parens (function call)" })
+      vim.keymap.set("i", "<C-2>", function()
+        vim.cmd.normal("hviwS)")
+      end, { silent = false, desc = "Surround parens (function call)" })
+      vim.keymap.set("x", "<C-2>", function()
+        vim.cmd.normal("S)")
+        vim.cmd.startinsert()
+      end, { silent = false, desc = "Surround parens (function call)" })
     end,
   },
   {

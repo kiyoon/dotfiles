@@ -22,8 +22,6 @@
 --   end,
 -- })
 
-require("lsp-endhints").setup()
-
 -- Bake inlay type hints into the buffer
 -- Some functions taken from https://github.com/simrat39/inlay-hints.nvim
 local function get_inlay_hint_params(client, bufnr, line)
@@ -128,7 +126,7 @@ local function parse_hints(result)
 end
 
 local function inlay_type_hint_to_text_in_buffer()
-  local clients = vim.lsp.get_clients { bufnr = 0 }
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
   if not next(clients) then
     vim.notify("No active LSP clients", vim.log.levels.ERROR)
     return

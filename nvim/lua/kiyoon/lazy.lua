@@ -1448,6 +1448,11 @@ return {
     "chrisgrieser/nvim-lsp-endhints",
     event = "LspAttach",
     config = function()
+      require("lsp-endhints").setup({
+        label = {
+          truncateAtChars = 40,
+        },
+      })
       require("kiyoon.lsp.inlayhints")
     end,
   },

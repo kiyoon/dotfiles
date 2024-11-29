@@ -1,7 +1,15 @@
 if [[ -f /opt/homebrew/bin/git ]]; then
 	# Use homebrew git if available
-	# The default git only supports English
-	alias git='/opt/homebrew/bin/git'
+	# The default git only supports English on macOS
+
+	if [[ -z "$LANG" || "$LANG" == "en_US.UTF-8" ]]; then
+		# user have not defined language settings or it's English
+		# do nothing
+	else
+		# If it's set to some language other than English, use French
+		# git language support is poor on other languages, so I just put it on French which supports 2.47
+		alias git='LANG=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8 LANGUAGE=fr_FR.UTF-8 /opt/homebrew/bin/git'
+	fi
 fi
 
 if (($+commands[gh])); then

@@ -2244,14 +2244,14 @@ return {
         silent = true,
       },
       {
-        "<space>mx",
+        "<space>mX",
         ":MoltenEvaluateLine<CR>",
         mode = "n",
         desc = "evaluate line",
         silent = true,
       },
       {
-        "<space>mX",
+        "<space>mx",
         function()
           -- local jupynium_textobj = require("jupynium.textobj")
           -- jupynium_textobj.select_cell()

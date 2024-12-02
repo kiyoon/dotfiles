@@ -169,11 +169,11 @@ git_amend_author() {
 tgz() {
 	# Create a tar.gz file with progress bar
 
-	infile="$1"
-	outfile="$2"
+	outfile="$1"
+	infiles=("${@:2}")
 
-	if [ -z "$infile" ] || [ -z "$outfile" ]; then
-		echo "Usage: tgz [infile] [outfile]"
+	if [ -z "$infiles" ] || [ -z "$outfile" ]; then
+		echo "Usage: tgz [outfile] [infiles..]"
 		return 1
 	fi
 
@@ -182,18 +182,19 @@ tgz() {
 		return 1
 	fi
 
-
-
-	if [ -d "$infile" ] || [ -f "$infile" ]; then
-		if [[ $OSTYPE == "darwin"* ]]; then
-			tar cf - "$infile" -P | pv -s $(($(du -sk "$infile" | awk '{print $1}') * 1024)) | gzip > "$outfile"
-		elif [[ $OSTYPE == "linux"* ]]; then
-			tar cf - "$infile" -P | pv -s $(du -sb "$infile" | awk '{print $1}') | gzip > "$outfile"
+	for infile in "${infiles[@]}"; do
+		if [ ! -d "$infile" ] && [ ! -f "$infile" ]; then
+			echo "File not found: $infile"
+			return 1
 		fi
-	else
-		echo "File not found: $infile"
-		return 1
+	done
+
+	if [[ $OSTYPE == "darwin"* ]]; then
+		sum_bytes=$(($(du -sk "${infiles[@]}" | awk '{print $1}' | paste -s -d+ - | bc) * 1024))
+	elif [[ $OSTYPE == "linux"* ]]; then
+		sum_bytes=$(du -sb "${infiles[@]}" | awk '{print $1}' | paste -s -d+ - | bc)
 	fi
+	tar cf - "${infiles[@]}" | pv -s $sum_bytes | gzip > "$outfile"
 }
 
 osc52copy() {

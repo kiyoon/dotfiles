@@ -112,6 +112,7 @@ plugins=(
 	docker
 	encode64
 	extract
+	universalarchive		# ua tar.gz <file>
 	fancy-ctrl-z			# Ctrl+z again to fg
 	dirhistory				# Alt+Left/Right/Up to navigate dir history
 	jsontools				# pp_json

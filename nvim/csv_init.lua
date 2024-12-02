@@ -1,9 +1,17 @@
 -- Configuration for csv, tsv files
 -- Data files are often very big and slow to load, so we disable most plugins.
 
+-- if venv exists, use it
+if vim.fn.isdirectory(vim.fn.expand("~/.virtualenvs/neovim")) == 1 then
+  vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
+  -- vim.g.python3_host_prog = vim.fn.expand("~/bin/miniconda3/envs/nvim/bin/python3")
+else
+  vim.g.python3_host_prog = "/usr/bin/python3"
+end
+
 vim.o.number = true
 vim.o.termguicolors = true
-vim.opt.iskeyword:append "-" -- treats words with `-` as single words
+vim.opt.iskeyword:append("-") -- treats words with `-` as single words
 vim.o.cursorline = true
 vim.o.inccommand = "split"
 vim.o.updatetime = 500
@@ -27,7 +35,7 @@ local function open_messages_in_buffer(args)
   -- vim.cmd "botright 10new"
   vim.bo.modifiable = true
   vim.api.nvim_buf_set_lines(Bufnr_messages, 0, -1, false, {})
-  vim.cmd "put = execute('messages')"
+  vim.cmd("put = execute('messages')")
   vim.bo.modifiable = false
 
   -- No need for below because we created a temporary buffer
@@ -38,17 +46,17 @@ vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})
 
 vim.keymap.set({ "n", "v", "o" }, "<F2>", function()
   -- tmux previous window
-  vim.fn.system "tmux select-window -t :-"
+  vim.fn.system("tmux select-window -t :-")
 end, { desc = "tmux previous window" })
 vim.keymap.set({ "n", "v", "o" }, "<F3>", function()
   -- tmux previous window
-  vim.fn.system "tmux select-window -t :-"
+  vim.fn.system("tmux select-window -t :-")
 end, { desc = "tmux previous window" })
 vim.keymap.set({ "n", "v", "o" }, "<F5>", function()
-  vim.fn.system "tmux select-window -t :+"
+  vim.fn.system("tmux select-window -t :+")
 end, { desc = "tmux next window" })
 vim.keymap.set({ "n", "v", "o" }, "<F6>", function()
-  vim.fn.system "tmux select-window -t :+"
+  vim.fn.system("tmux select-window -t :+")
 end, { desc = "tmux next window" })
 
 -- Align CSV columns. Much faster than rainbow_csv
@@ -71,42 +79,46 @@ end, { desc = "tmux next window" })
 --   vim.api.nvim_create_user_command("CsvAlign", ":set nowrap | %!column -t -s, -o,", {})
 -- end
 
-require "kiyoon.async_run"
+require("kiyoon.async_run")
 
 vim.api.nvim_create_user_command("CsvAlign", function()
-  vim.cmd([[%!/usr/bin/python3 ~/.config/nvim/csv_tools.py align --filetype ]] .. vim.bo.filetype)
+  vim.cmd([[%!]] .. vim.g.python3_host_prog .. [[ ~/.config/nvim/csv_tools.py align --filetype ]] .. vim.bo.filetype)
 end, {})
 
 vim.api.nvim_create_user_command("CsvSelectAndAlign", function(opts)
   vim.cmd(
-    [[%!/usr/bin/python3 ~/.config/nvim/csv_tools.py select ']]
+    [[%!]]
+      .. vim.g.python3_host_prog
+      .. [[ ~/.config/nvim/csv_tools.py select ']]
       .. opts.fargs[1]
       .. [[' --filetype ]]
       .. vim.bo.filetype
-      .. [[ | /usr/bin/python3 ~/.config/nvim/csv_tools.py align --filetype ]]
+      .. [[ | ]]
+      .. vim.g.python3_host_prog
+      .. [[ ~/.config/nvim/csv_tools.py align --filetype ]]
       .. vim.bo.filetype
   )
 end, { nargs = 1 })
 
 -- Lock header row
 -- https://stackoverflow.com/questions/1773311/vim-lock-top-line-of-a-window
-vim.cmd [[1spl]]
-vim.cmd [[set scrollbind]]
+vim.cmd([[1spl]])
+vim.cmd([[set scrollbind]])
 -- go to the first window
-vim.cmd [[wincmd w]]
-vim.cmd [[set scrollbind]] -- synchronize lower window
-vim.cmd [[set sbo=hor]] -- synchronize horizontally
+vim.cmd([[wincmd w]])
+vim.cmd([[set scrollbind]]) -- synchronize lower window
+vim.cmd([[set sbo=hor]]) -- synchronize horizontally
 
 -- Run this after loading all UI
 vim.defer_fn(function()
-  vim.cmd [[wincmd w]]
+  vim.cmd([[wincmd w]])
 end, 0)
 
 -- H, L to move columns based on the length from the first row.
 
 vim.keymap.set({ "n", "v" }, "H", function()
   local first_line = vim.fn.getline(1)
-  local col = vim.fn.col "."
+  local col = vim.fn.col(".")
   local start = col
   for i = col - 1, 1, -1 do
     if string.sub(first_line, i, i) == "," then
@@ -129,7 +141,7 @@ end, { desc = "Goto column left" })
 
 vim.keymap.set({ "n", "v" }, "L", function()
   local first_line = vim.fn.getline(1)
-  local col = vim.fn.col "."
+  local col = vim.fn.col(".")
   local first_line_len = string.len(first_line)
   local start = col
   for i = col + 1, first_line_len do

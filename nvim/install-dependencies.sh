@@ -1,16 +1,40 @@
 PIP3="/usr/bin/python3 -m pip"
 
+# check if uv is installed
+if ! command -v uv &> /dev/null; then
+    echo "Error: uv is not installed"
+    echo "(Linux) Install with: pip3 install --user --break-system-packages uv"
+    echo "(Mac) Install with: brew install uv"
+    exit 1
+fi
+
+path_to_venv="$HOME/.virtualenvs/neovim"
+
+if [[ -f "$path_to_venv" ]]; then
+    echo "Error: $path_to_venv is a file"
+    exit 1
+fi
+
+if [[ ! -d "$path_to_venv" ]]; then
+    uv venv "$path_to_venv" --python 3.12
+fi
+
+source "$path_to_venv/bin/activate"
+
 if command -v brew &> /dev/null; then
 	if command -v pipx &> /dev/null; then
 		$PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
-		$PIP3 install --user --break-system-packages pynvim
+		# $PIP3 install --user --break-system-packages pynvim
+        uv pip install pynvim
 		npm install -g neovim
 
 		# DAP
-		$PIP3 install --user --break-system-packages debugpy
+		# $PIP3 install --user --break-system-packages debugpy
+        uv pip install debugpy
 
 		# Csv align
-		$PIP3 install --user --break-system-packages polars
+		# $PIP3 install --user --break-system-packages polars
+        uv pip install polars typer
 
 		# Lint
         brew install ruff
@@ -31,7 +55,8 @@ if command -v brew &> /dev/null; then
 		# molten.nvim
 		brew install imagemagick
 		brew install pkg-config  # for magick from luarocks
-		$PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+		# $PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+        uv pip install pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 
 		exit 0
 	fi
@@ -132,4 +157,5 @@ if ! command -v magick &> /dev/null; then
 else
 	echo "ImageMagick found at $(which magick). Skipping installation."
 fi
-$PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+# $PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+uv pip install pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip

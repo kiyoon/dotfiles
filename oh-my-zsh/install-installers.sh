@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
-# Install conda, node and rustup.
+# Install conda, uv, node and rustup.
 # Run `source ~/.cargo/env` afterwards to activate rustup (cargo install)
 
 INSTALL_DIR="$HOME/.local"
+PIP3="/usr/bin/python3 -m pip"
 
 if [[ $OSTYPE == "darwin"* ]]; then
 	# brew install --cask miniconda
 	brew install node
 else
-
 	if ! command -v "$INSTALL_DIR"/bin/npm &>/dev/null; then
 		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 	fi
+fi
+
+if [[ $OSTYPE == "darwin"* ]]; then
+    brew install uv
+else
+    $PIP3 install --user --break-system-packages uv 
 fi
 
 ##### conda

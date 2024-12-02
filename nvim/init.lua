@@ -1,18 +1,23 @@
-vim.g.python3_host_prog = "/usr/bin/python3"
--- vim.g.python3_host_prog = "~/bin/miniconda3/envs/nvim/bin/python3"
+-- if venv exists, use it
+if vim.fn.isdirectory(vim.fn.expand("~/.virtualenvs/neovim")) == 1 then
+  vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
+  -- vim.g.python3_host_prog = vim.fn.expand("~/bin/miniconda3/envs/nvim/bin/python3")
+else
+  vim.g.python3_host_prog = "/usr/bin/python3"
+end
 
 vim.env.GIT_CONFIG_GLOBAL = ""
 
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
+  vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable", -- latest stable release
     lazypath,
-  }
+  })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -41,11 +46,11 @@ require("lazy").setup("kiyoon.lazy", {
 })
 
 -- Source .vimrc
-local vimrcpath = vim.fn.stdpath "config" .. "/.vimrc"
+local vimrcpath = vim.fn.stdpath("config") .. "/.vimrc"
 vim.cmd("source " .. vimrcpath)
 
 vim.o.termguicolors = true
-vim.opt.iskeyword:append "-" -- treats words with `-` as single words
+vim.opt.iskeyword:append("-") -- treats words with `-` as single words
 vim.o.cursorline = true
 vim.o.inccommand = "split"
 vim.o.updatetime = 500
@@ -74,17 +79,17 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 --   pattern = "*",
 -- })
 
-vim.cmd [[
+vim.cmd([[
 " With GUI demo
 nmap <leader>G <Cmd>call system("docker run --gpus all --rm --device=/dev/video0:/dev/video0 -e DISPLAY=${DISPLAY} -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/project/nvim-hand-gesture:/workspace -v /run/user:/run/user kiyoon/nvim-hand-gesture --gui --nvim_socket_path " . v:servername . " &")<CR>
 " Without GUI
 nmap <leader>g <Cmd>call system("docker run --gpus all --rm --device=/dev/video0:/dev/video0 -v ~/project/nvim-hand-gesture:/workspace -v /run/user:/run/user kiyoon/nvim-hand-gesture --nvim_socket_path " . v:servername . " &")<CR>
 " Quit running process
 nmap <leader><leader>g <Cmd>let g:quit_nvim_hand_gesture = 1<CR>
-]]
+]])
 
 -- Configure context menu on right click
-require "kiyoon.menu"
+require("kiyoon.menu")
 
 -- folding (use nvim-ufo for better control)
 -- vim.cmd [[hi Folded guibg=black ctermbg=black]]
@@ -97,13 +102,13 @@ require "kiyoon.menu"
 -- -- open folds by default
 -- vim.cmd [[autocmd BufReadPost,FileReadPost * normal zR]]
 
-vim.cmd [[
+vim.cmd([[
 augroup AutoView
   autocmd!
   autocmd BufWritepre,BufWinLeave ?* silent! mkview
   autocmd BufWinEnter ?* silent! loadview
 augroup END
-]]
+]])
 
 -- Better Korean mapping in normal mode. It's not perfect
 vim.o.langmap =
@@ -135,7 +140,7 @@ local function open_messages_in_buffer(args)
   -- vim.cmd "botright 10new"
   vim.bo.modifiable = true
   vim.api.nvim_buf_set_lines(Bufnr_messages, 0, -1, false, {})
-  vim.cmd "put = execute('messages')"
+  vim.cmd("put = execute('messages')")
   vim.bo.modifiable = false
 
   -- No need for below because we created a temporary buffer
@@ -147,7 +152,7 @@ vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})
 -- only filetype specific mappings
 -- autocmd
 
-require "wookayin.python_keymaps"
+require("wookayin.python_keymaps")
 
 -- Convert | to │ (box drawing character)
 -- Convert │ to └
@@ -186,17 +191,17 @@ end)
 
 vim.keymap.set({ "n", "v", "o" }, "<F2>", function()
   -- tmux previous window
-  vim.fn.system "tmux select-window -t :-"
+  vim.fn.system("tmux select-window -t :-")
 end, { desc = "tmux previous window" })
 vim.keymap.set({ "n", "v", "o" }, "<F3>", function()
   -- tmux previous window
-  vim.fn.system "tmux select-window -t :-"
+  vim.fn.system("tmux select-window -t :-")
 end, { desc = "tmux previous window" })
 vim.keymap.set({ "n", "v", "o" }, "<F5>", function()
-  vim.fn.system "tmux select-window -t :+"
+  vim.fn.system("tmux select-window -t :+")
 end, { desc = "tmux next window" })
 vim.keymap.set({ "n", "v", "o" }, "<F6>", function()
-  vim.fn.system "tmux select-window -t :+"
+  vim.fn.system("tmux select-window -t :+")
 end, { desc = "tmux next window" })
 
 -- Align CSV columns. Much faster than rainbow_csv
@@ -204,5 +209,5 @@ end, { desc = "tmux next window" })
 
 -- sql formatter for selection
 vim.keymap.set("x", "<space>pF", function()
-  vim.cmd [['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']]
+  vim.cmd([['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']])
 end, { desc = "Run sql-formatter in selection" })

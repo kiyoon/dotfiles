@@ -2220,16 +2220,77 @@ return {
   {
     "benlubas/molten-nvim",
     version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-    cmd = {
-      "MoltenInit",
-      "MoltenInfo",
-    },
+    lazy = false, -- somehow it doesn't work with lazy loading and the plugin is fast to load
+    -- cmd = {
+    --   "MoltenInit",
+    --   "MoltenInfo",
+    -- },
     keys = {
       {
-        "<space>me",
+        "<space>mx",
         ":<C-u>MoltenEvaluateVisual<CR>gv",
         mode = "x",
         desc = "evaluate visual selection",
+        silent = true,
+      },
+      {
+        "<space>mm",
+        ":MoltenEvaluateOperator<CR>",
+        mode = "n",
+        desc = "evaluate (operator-pending)",
+        silent = true,
+      },
+      {
+        "<space>mx",
+        ":MoltenEvaluateLine<CR>",
+        mode = "n",
+        desc = "evaluate line",
+        silent = true,
+      },
+      {
+        "<space>mX",
+        function()
+          -- local jupynium_textobj = require("jupynium.textobj")
+          -- jupynium_textobj.select_cell()
+          -- local key = vim.api.nvim_replace_termcodes(":<C-u>MoltenEvaluateVisual<CR>gv", true, false, true)
+          -- vim.api.nvim_feedkeys(key, "n", false)
+
+          -- save cursor
+          local save_cursor = vim.api.nvim_win_get_cursor(0)
+          vim.cmd([[MoltenEvaluateOperator]])
+          vim.api.nvim_feedkeys("ij", "m", false) -- select inner cell
+          -- restore cursor
+          vim.schedule(function()
+            vim.api.nvim_win_set_cursor(0, save_cursor)
+          end)
+        end,
+        mode = "n",
+        desc = "evaluate cell (need jupynium textobject)",
+        silent = true,
+      },
+      {
+        "<space>mr",
+        ":MoltenReevaluateCell<CR>",
+        mode = "n",
+        desc = "[R]e-evaluate cell",
+      },
+      {
+        "<space>md",
+        ":MoltenDelete<CR>",
+        mode = "n",
+        desc = "[D]elete cell output",
+      },
+      {
+        "<space>mh",
+        ":MoltenHideOutput<CR>",
+        mode = "n",
+        desc = "[H]ide output",
+      },
+      {
+        "<space>me",
+        ":noautocmd MoltenEnterOutput<CR>",
+        mode = "n",
+        desc = "[E]nter output",
       },
     },
     dependencies = {

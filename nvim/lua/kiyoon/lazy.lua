@@ -2218,6 +2218,9 @@ return {
     end,
   },
   {
+    -- Usage:
+    -- 1. Create kernel with: python -m ipykernel install --user --name {project name}
+    -- 2. :MoltenInit
     "benlubas/molten-nvim",
     version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
     lazy = false, -- somehow it doesn't work with lazy loading and the plugin is fast to load

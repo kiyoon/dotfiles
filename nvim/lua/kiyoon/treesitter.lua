@@ -26,7 +26,7 @@ local function treesitter_incwhitespaces(info)
   return false
 end
 
-require("nvim-treesitter.configs").setup {
+require("nvim-treesitter.configs").setup({
   -- vim-matchup
   matchup = {
     enable = true, -- mandatory, false will disable the whole extension
@@ -177,8 +177,8 @@ require("nvim-treesitter.configs").setup {
         ["in"] = "@number.inner",
         ["ag"] = "@assignment.outer",
         ["ig"] = "@assignment.inner",
-        ["i,"] = "@assignment.lhs",
-        ["i."] = "@assignment.rhs",
+        ["ik"] = "@assignment.lhs",
+        ["iv"] = "@assignment.rhs",
         --["ic"] = "@comment.outer",
         --["afr"] = "@frame.outer",
         --["ifr"] = "@frame.inner",
@@ -327,9 +327,9 @@ require("nvim-treesitter.configs").setup {
   endwise = {
     enable = true,
   },
-}
+})
 
-local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
 
 -- Repeat movement with ; and ,
 -- ensure ; goes forward and , goes backward, regardless of the last direction
@@ -353,17 +353,17 @@ vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = t
 
 -- This repeats the last query with always previous direction and to the start of the range.
 vim.keymap.set({ "n", "x", "o" }, "<home>", function()
-  ts_repeat_move.repeat_last_move { forward = false, start = true }
+  ts_repeat_move.repeat_last_move({ forward = false, start = true })
 end)
 
 -- This repeats the last query with always next direction and to the end of the range.
 vim.keymap.set({ "n", "x", "o" }, "<end>", function()
-  ts_repeat_move.repeat_last_move { forward = true, start = false }
+  ts_repeat_move.repeat_last_move({ forward = true, start = false })
 end)
 
 local status, wk = pcall(require, "which-key")
 if status then
-  wk.add {
+  wk.add({
     { "<space>t", group = "Language-specific [T]ools" },
-  }
+  })
 end

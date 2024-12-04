@@ -152,3 +152,8 @@ vim.keymap.set({ "n", "v" }, "L", function()
   end
   vim.cmd("normal! " .. start .. "|")
 end, { desc = "Goto column right" })
+
+-- unmap J to avoid accidental join
+vim.keymap.set({ "n", "x" }, "J", "<nop>", { silent = true, noremap = true })
+-- use <space>J to join lines
+vim.keymap.set({ "n", "x" }, "<space>J", "J", { silent = true, noremap = true })

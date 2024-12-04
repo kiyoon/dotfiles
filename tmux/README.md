@@ -22,6 +22,7 @@ Tmux's default keybindings are quite unintuitive, so I've changed a few.
 1. Make sure your terminal has nerd font set up
 2. Put `.tmux.conf` in your home directory
 3. Run `./install-plugins.sh`
+4. `/usr/bin/python3 -m pip install pynvim libtmux` for treemux and tmux-window-name plugins.
 
 ## 💻 Useful tmux commands
 

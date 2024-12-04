@@ -1924,7 +1924,7 @@ return {
     ft = "python",
     config = function()
       -- Path to python with debugpy installed
-      require("dap-python").setup("/usr/bin/python3")
+      require("dap-python").setup(vim.g.python3_host_prog)
     end,
   },
 

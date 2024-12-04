@@ -30,7 +30,8 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 - `gp`: Select last pasted text
 
 #### For Python
-- Insert import statement at the beginning of the file. (Only for Python). Use it with normal or visual mode.
+
+- [python-import.nvim](https://github.com/kiyoon/python-import.nvim): Insert import statement at the beginning of the file. Use it with normal or visual mode.
     - `\i`: Insert import and move cursor to that position.
     - `Alt+Enter`: Insert import and stay at the current position.
 - When you see a lightbulb in python file, it means ruff fixes are available. `<space>pa` to preview and apply ruff fixes.
@@ -86,12 +87,11 @@ Some plugins have dependencies and you can locally install everything by running
 ./install-dependencies.sh
 ```
 
+For example, it includes creating a python virtual environment at `~/.virtualenvs/neovim` and installing `pynvim` and `molten.nvim` dependencies.
+
 Optionally,
 
 ```bash
-sudo apt install xclip		# neovim, tmux clipboard support
-sudo apt install lua-check	# linter for lua
-
 # Github Copilot
 nvim +"lua require('lazy').install({wait=true})" +qa
 nvim '+Copilot setup' +q

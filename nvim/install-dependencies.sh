@@ -21,72 +21,50 @@ fi
 
 source "$path_to_venv/bin/activate"
 
+$PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
+npm install -g neovim
+
+# Install to the virtual environment
+# DAP
+uv pip install debugpy
+# molten.nvim
+uv pip install pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+# Csv align
+uv pip install polars typer
+
 if command -v brew &> /dev/null; then
-	if command -v pipx &> /dev/null; then
-		$PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
-		# $PIP3 install --user --break-system-packages pynvim
-        uv pip install pynvim
-		npm install -g neovim
+    # Lint
+    brew install ruff
 
-		# DAP
-		# $PIP3 install --user --break-system-packages debugpy
-        uv pip install debugpy
+    # Formatter
+    brew install stylua
+    brew install prettier
 
-		# Csv align
-		# $PIP3 install --user --break-system-packages polars
-        uv pip install polars typer
+    brew install tree-sitter
 
-		# Lint
-        brew install ruff
+    # wilder.nvim, telescope.nvim
+    brew install fd
 
-		# Formatter
-		brew install stylua
-		brew install prettier
+    # ripgrep for telescope.nvim
+    brew install ripgrep
+    brew install viu
 
-		brew install tree-sitter
+    # molten.nvim
+    brew install imagemagick
+    brew install pkg-config  # for magick from luarocks
 
-		# wilder.nvim, telescope.nvim
-		brew install fd
-
-		# ripgrep for telescope.nvim
-		brew install ripgrep
-		brew install viu
-
-		# molten.nvim
-		brew install imagemagick
-		brew install pkg-config  # for magick from luarocks
-		# $PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
-        uv pip install pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
-
-		exit 0
-	fi
+    exit 0
 fi
 
 if [[ $OSTYPE == "darwin"* ]]; then
-	echo "MacOS detected but either brew or pipx is not installed. Exiting."
+	echo "MacOS detected but brew is not installed. Exiting."
 	exit 1
 fi
 
 LOCALBIN="$HOME/.local/bin"
 
-$PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
-$PIP3 install --user --break-system-packages pynvim
-npm install -g neovim
-
-# DAP
-$PIP3 install --user --break-system-packages debugpy
-
-# Csv align
-$PIP3 install --user --break-system-packages polars
-$PIP3 install --user --break-system-packages typer
-
-# Find python imports in a project
-$PIP3 install --user --break-system-packages tree-sitter
-$PIP3 install --user --break-system-packages tree-sitter-python
-
 # Lint
-# $PIP3 install --user flake8
-$PIP3 install --user --break-system-packages ruff
+uv tool install -U ruff
 
 # Formatter
 # $PIP3 install --user --break-system-packages isort 
@@ -114,7 +92,6 @@ if ! command -v fd &> /dev/null; then
 fi
 
 # ripgrep for telescope.nvim
-
 if ! command -v rg &> /dev/null; then
 	echo "ripgrep (rg) could not be found. Installing in $LOCALBIN"
 	TEMPDIR=$(mktemp -d)
@@ -130,6 +107,7 @@ else
 	echo "ripgrep found at $(which rg). Skipping installation."
 fi
 
+# view images in terminal, used in telescope preview etc.
 if ! command -v viu &> /dev/null; then
 	cargo install viu
 fi
@@ -157,5 +135,3 @@ if ! command -v magick &> /dev/null; then
 else
 	echo "ImageMagick found at $(which magick). Skipping installation."
 fi
-# $PIP3 install --user --break-system-packages pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
-uv pip install pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip

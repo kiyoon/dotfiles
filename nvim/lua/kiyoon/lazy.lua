@@ -2446,4 +2446,27 @@ return {
   --     }
   --   end,
   -- },
+  {
+    "m4xshen/hardtime.nvim",
+    dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+    opts = {
+      disable_mouse = false,
+      restriction_mode = "hint",
+      restricted_keys = {
+        ["h"] = {},
+        ["j"] = {},
+        ["k"] = {},
+        ["l"] = {},
+        ["-"] = {},
+        ["+"] = {},
+        ["gj"] = {},
+        ["gk"] = {},
+        ["<CR>"] = {},
+        ["<C-M>"] = {},
+        ["<C-N>"] = {},
+        ["<C-P>"] = {},
+      },
+      disabled_keys = { ["<Up>"] = {}, ["<Down>"] = {}, ["<Left>"] = {}, ["<Right>"] = {} },
+    },
+  },
 }

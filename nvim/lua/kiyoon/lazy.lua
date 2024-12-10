@@ -271,13 +271,13 @@ return {
           vim.cmd("norm! a")
         end
       end
-      -- map backtick to surround backtick (or ctrl 1 in v, i mode)
+      -- map backtick to surround backtick (or alt ` in i mode)
       -- backtick originally goes to the mark, but I don't use it. You can use ` to go to the mark.
       -- 디폴트 `ys`를 선행키로 잡으면 약간의 딜레이가 생긴다.
       vim.keymap.set("n", "`", function()
         vim.cmd.normal("viwS`f`l")
       end, { desc = "Surround backtick" })
-      vim.keymap.set("i", "<C-1>", function()
+      vim.keymap.set("i", "<A-`>", function()
         vim.cmd.normal("hviwS`f`l")
         right()
       end, { silent = false, desc = "Surround backtick" })
@@ -286,9 +286,9 @@ return {
         right()
       end, { silent = false, desc = "Surround backtick" })
 
-      -- map <C-2> to surround with parenthesis for function call (keep cursor at front)
+      -- map <F4> to surround with parenthesis for function call (keep cursor at front)
       -- change iskeyword temporarily because we don't want `-` to be included in the word
-      vim.keymap.set("n", "<C-2>", function()
+      vim.keymap.set("n", "<F4>", function()
         local original_iskeyword = vim.opt.iskeyword
         vim.opt.iskeyword = "@,48-57,_,192-255" -- alphabet, _, and European accented characters
         vim.cmd.normal({ "viw", bang = true })
@@ -296,14 +296,14 @@ return {
         vim.cmd.normal("S)")
         vim.cmd.startinsert()
       end, { desc = "Surround parens (function call)" })
-      vim.keymap.set("i", "<C-2>", function()
+      vim.keymap.set("i", "<F4>", function()
         local original_iskeyword = vim.opt.iskeyword
         vim.opt.iskeyword = "@,48-57,_,192-255" -- alphabet, _, and European accented characters
         vim.cmd.normal({ "hviw", bang = true })
         vim.opt.iskeyword = original_iskeyword
         vim.cmd.normal("S)")
       end, { silent = false, desc = "Surround parens (function call)" })
-      vim.keymap.set("x", "<C-2>", function()
+      vim.keymap.set("x", "<F4>", function()
         vim.cmd.normal("S)")
         vim.cmd.startinsert()
       end, { silent = false, desc = "Surround parens (function call)" })
@@ -2466,7 +2466,20 @@ return {
         ["<C-N>"] = {},
         ["<C-P>"] = {},
       },
-      disabled_keys = { ["<Up>"] = {}, ["<Down>"] = {}, ["<Left>"] = {}, ["<Right>"] = {} },
+      disabled_keys = {
+        ["<Up>"] = {},
+        ["<Down>"] = {},
+        ["<Left>"] = {},
+        ["<Right>"] = {},
+      },
+      hints = {
+        ["[^fFtT]li"] = {
+          -- message = function()
+          --    return "Use a instead of li"
+          -- end,
+          -- length = 3,
+        },
+      },
     },
   },
 }

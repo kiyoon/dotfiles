@@ -16,6 +16,7 @@ vim.o.cursorline = true
 vim.o.inccommand = "split"
 vim.o.updatetime = 500
 vim.o.wrap = false
+vim.o.laststatus = 3 -- global status line because we have a header window
 
 -- Better Korean mapping in normal mode. It's not perfect
 vim.o.langmap =

@@ -25,7 +25,11 @@
 "
 
 syntax on
-" colorscheme ron
+
+if !has('nvim')
+  " colorscheme zaibatsu
+  colorscheme sorbet
+endif
 
 " Open new split panes to right and bottom, which feels more natural than Vim’s default:
 set splitbelow

@@ -211,3 +211,16 @@ end, { desc = "tmux next window" })
 vim.keymap.set("x", "<space>pF", function()
   vim.cmd([['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']])
 end, { desc = "Run sql-formatter in selection" })
+
+-- tmux-window-name
+-- NOTE: use /usr/bin/python3 because libtmux is intalled in system python
+vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
+  callback = function()
+    if vim.env.TMUX_PLUGIN_MANAGER_PATH then
+      vim.uv.spawn(
+        "/usr/bin/python3",
+        { args = { vim.env.TMUX_PLUGIN_MANAGER_PATH .. "/tmux-window-name/scripts/rename_session_windows.py" } }
+      )
+    end
+  end,
+})

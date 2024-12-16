@@ -111,6 +111,11 @@ require("nvim-treesitter.configs").setup({
           return false
         end
 
+        -- if the file extension is .ju.py, enable treesitter
+        if vim.api.nvim_buf_get_name(buf):match("%.ju%.py$") then
+          return false
+        end
+
         return true
       end
 
@@ -127,25 +132,6 @@ require("nvim-treesitter.configs").setup({
     -- Instead of true it can also be a list of languages
     -- Kiyoon note: it enables additional highlighting such as `git commit`
     additional_vim_regex_highlighting = { "gitcommit" },
-  },
-
-  playground = {
-    enable = true,
-    disable = {},
-    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false, -- Whether the query persists across vim sessions
-    keybindings = {
-      toggle_query_editor = "o",
-      toggle_hl_groups = "i",
-      toggle_injected_languages = "t",
-      toggle_anonymous_nodes = "a",
-      toggle_language_display = "I",
-      focus_language = "f",
-      unfocus_language = "F",
-      update = "R",
-      goto_node = "<cr>",
-      show_help = "?",
-    },
   },
 
   textobjects = {

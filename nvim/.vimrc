@@ -81,18 +81,19 @@ command! -bang Q quit<bang>
 nmap q: :q
 
 " map F1 to Esc because of typos
+" noremap <F1> :call MapF1()<CR>
+" function! MapF1()
+"   if &buftype == "help"
+"     exec 'quit'
+"   else
+"     exec 'help'
+"   endif
+" endfunction
+noremap <F1> <Esc>
 inoremap <F1> <Esc>
-noremap <F1> :call MapF1()<CR>
 
-function! MapF1()
-  if &buftype == "help"
-    exec 'quit'
-  else
-    exec 'help'
-  endif
-endfunction
 " :w\ normally saves to the file named \ but this remap prevents it.
-" cnoremap w\ w<CR>
+"cnoremap w\ w<CR>
 
 """""""""""""""""
 " <leader>l to toggle location list

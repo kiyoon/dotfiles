@@ -14,6 +14,7 @@ local config = {
 	underline_position = -4,
 	keys = {
 		{
+			-- Used in neovim (python-import.nvim)
 			key = "Enter",
 			mods = "ALT",
 			action = wezterm.action.DisableDefaultAssignment,
@@ -25,18 +26,32 @@ local config = {
 		},
 		{
 			key = "F3",
-			mods = "CTRL|SHIFT",
+			mods = "CMD|SHIFT",
 			action = wezterm.action.ActivateTabRelative(-1),
 		},
 		{
 			key = "F2",
-			mods = "CTRL|SHIFT",
+			mods = "CMD|SHIFT",
 			action = wezterm.action.ActivateTabRelative(-1),
 		},
 		{
 			key = "F6",
-			mods = "CTRL|SHIFT",
+			mods = "CMD|SHIFT",
 			action = wezterm.action.ActivateTabRelative(1),
+		},
+		{
+			key = "D",
+			mods = "CMD|SHIFT",
+			action = wezterm.action_callback(function(win, pane)
+				local tab, window = pane:move_to_new_window()
+			end),
+		},
+		{
+			key = "C",
+			mods = "CMD|SHIFT",
+			action = wezterm.action_callback(function(win, pane)
+				local tab, window = pane:move_to_new_tab()
+			end),
 		},
 	},
 

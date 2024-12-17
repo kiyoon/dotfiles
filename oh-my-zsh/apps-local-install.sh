@@ -187,7 +187,7 @@ else
 	$CARGO install csvlens
 
 	if ! command -v hx &>/dev/null; then
-		wget https://github.com/helix-editor/helix/releases/download/23.10/helix-23.10-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"
+		wget https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"
 		chmod +x "$INSTALL_DIR/bin/hx"
 	else
 		echo "hx already installed at $(which hx). Skipping.."

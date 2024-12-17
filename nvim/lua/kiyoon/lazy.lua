@@ -913,58 +913,26 @@ return {
   --   -- Alternative to indent-blankline and treesitter-indent-object
   --   "folke/snacks.nvim",
   --   opts = {
-  --      indent = {
-  --        -- your indent configuration comes here
-  --        -- or leave it empty to use the default settings
-  --        -- refer to the configuration section below
-  --        indent = {
-  --          only_scope = true, -- only show indent guides of the scope
-  --        },
-  --        scope = {
-  --          enabled = true,
-  --          underline = true,
-  --        },
-  --        animate = {
-  --          enabled = false,
-  --        },
-  --      },
+  --     indent = {
+  --       -- your indent configuration comes here
+  --       -- or leave it empty to use the default settings
+  --       -- refer to the configuration section below
+  --       indent = {
+  --         -- only_scope = true, -- only show indent guides of the scope
+  --       },
+  --       scope = {
+  --         enabled = true,
+  --         underline = true,
+  --       },
+  --       animate = {
+  --         enabled = false,
+  --       },
+  --     },
   --     scope = {
   --       enabled = true,
   --       -- These keymaps will only be set if the `scope` plugin is enabled.
   --       -- Alternatively, you can set them manually in your config,
   --       -- using the `Snacks.scope.textobject` and `Snacks.scope.jump` functions.
-  --       keys = {
-  --         textobject = {
-  --           ii = {
-  --             min_size = 1, -- allow single line scopes
-  --             edge = false, -- don't include the edge
-  --             treesitter = { enabled = false },
-  --             desc = "inner scope",
-  --           },
-  --           ai = {
-  --             min_size = 1, -- allow single line scopes
-  --             edge = true, -- include the edge
-  --             treesitter = { enabled = false },
-  --             desc = "scope with edge",
-  --           },
-  --         },
-  --         jump = {
-  --           ["[i"] = {
-  --             min_size = 1, -- allow single line scopes
-  --             bottom = false,
-  --             edge = true,
-  --             treesitter = { enabled = false },
-  --             desc = "jump to top edge of scope",
-  --           },
-  --           ["]i"] = {
-  --             min_size = 1, -- allow single line scopes
-  --             bottom = true,
-  --             edge = true,
-  --             treesitter = { enabled = false },
-  --             desc = "jump to bottom edge of scope",
-  --           },
-  --         },
-  --       },
   --     },
   --   },
   -- },

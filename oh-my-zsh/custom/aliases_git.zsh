@@ -76,3 +76,8 @@ ggpf () {
         git push origin "${b:=$1}" --force-with-lease
     fi
 }
+
+# Use difftastic
+if (($+commands[difft])); then
+	export GIT_EXTERNAL_DIFF=difft
+fi

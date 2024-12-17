@@ -45,6 +45,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install dust
 	brew install procs
 	brew install csvlens
+    brew install difftastic
 	brew install helix
 	brew install pv
 else
@@ -185,6 +186,7 @@ else
 	$CARGO install du-dust
 	$CARGO install procs
 	$CARGO install csvlens
+    $CARGO install difftastic
 
 	if ! command -v hx &>/dev/null; then
 		wget https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"

@@ -172,7 +172,6 @@ local function ruff_on_output_filtered(pattern, params)
   --
   -- Unlike the original code, the column here is 1-indexed,
   -- so we need to subtract 1 to get the correct byte index (and add 1 back).
-  vim.print(nullls_output)
   local content_line = params.content and params.content[tonumber(nullls_output["row"])] or nil
   if nullls_output["col"] ~= nil and content_line ~= nil then
     local col = nullls_output["col"] or math.huge
@@ -187,7 +186,6 @@ local function ruff_on_output_filtered(pattern, params)
     local byte_index_col = vim.str_byteindex(content_line, col)
     nullls_output["end_col"] = byte_index_col + 1
   end
-  vim.print(nullls_output)
   -- example return:
   -- {
   --   code = "E741",

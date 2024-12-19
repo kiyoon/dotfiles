@@ -21,8 +21,8 @@ local translate_ruff_message = require("kiyoon.lang.ruff").translate_ruff_messag
 local diagnostics = null_ls.builtins.diagnostics
 
 -- make custom isort source, because it will remove everything when there is an error
-local h = require "null-ls.helpers"
-local methods = require "null-ls.methods"
+local h = require("null-ls.helpers")
+local methods = require("null-ls.methods")
 -- local u = require "null-ls.utils"
 
 -- local FORMATTING = methods.internal.FORMATTING
@@ -87,7 +87,29 @@ local DIAGNOSTICS = methods.internal.DIAGNOSTICS
 -- If you simply add --extend-ignore=CODE to the ruff args, it will remove those diagnostics.
 -- HOWEVER, it will create warning when you use # noqa: CODE, which is not ideal.
 -- This is a workaround for that.
-local function ruff_on_output_filtered(pattern, groups)
+---@param pattern string The line output from ruff
+---@param params table With the following keys:
+---bufname
+---bufnr
+---client_id
+---command
+---content
+---cwd
+---ft
+---lsp_method
+---lsp_params
+---  client_id
+---  method
+---  textDocument
+---    languageId
+---    text
+---    uri
+---    version
+---method
+---output
+---root
+---source_id
+local function ruff_on_output_filtered(pattern, params)
   -- pattern is just one line
   local ruff_output = vim.json.decode(pattern)
 
@@ -144,6 +166,28 @@ local function ruff_on_output_filtered(pattern, groups)
     nullls_output["severity"] = h.diagnostics.severities["information"]
   end
 
+  -- Taken from null-ls/helpers/diagnostics.lua (make_diagnostic)
+  -- In order to match the correct range in lines with multi-byte characters,
+  -- we need to convert the column number to a byte index.
+  --
+  -- Unlike the original code, the column here is 1-indexed,
+  -- so we need to subtract 1 to get the correct byte index (and add 1 back).
+  vim.print(nullls_output)
+  local content_line = params.content and params.content[tonumber(nullls_output["row"])] or nil
+  if nullls_output["col"] ~= nil and content_line ~= nil then
+    local col = nullls_output["col"] or math.huge
+    col = math.min(col, string.len(content_line)) - 1
+    local byte_index_col = vim.str_byteindex(content_line, col)
+    nullls_output["col"] = byte_index_col + 1
+  end
+  content_line = params.content and params.content[tonumber(nullls_output["end_row"])] or nil
+  if nullls_output["end_col"] ~= nil and content_line ~= nil then
+    local col = nullls_output["end_col"] or math.huge
+    col = math.min(col, string.len(content_line)) - 1
+    local byte_index_col = vim.str_byteindex(content_line, col)
+    nullls_output["end_col"] = byte_index_col + 1
+  end
+  vim.print(nullls_output)
   -- example return:
   -- {
   --   code = "E741",
@@ -201,7 +245,7 @@ local ruff_diagnostics_filtered = {
   },
   method = DIAGNOSTICS,
   filetypes = { "python" },
-  generator = null_ls.generator {
+  generator = null_ls.generator({
     command = "ruff",
     args = {
       "check",
@@ -232,7 +276,7 @@ local ruff_diagnostics_filtered = {
     to_stdin = true,
     ignore_stderr = true,
     on_output = ruff_on_output_filtered,
-  },
+  }),
   -- factory = h.generator_factory,
 }
 
@@ -281,19 +325,19 @@ local sources = {
   diagnostics.actionlint,
 }
 
-if vim.fn.executable "luacheck" == 1 then
+if vim.fn.executable("luacheck") == 1 then
   table.insert(
     sources,
-    diagnostics.luacheck.with {
+    diagnostics.luacheck.with({
       extra_args = {
         "--globals=vim,describe,it,before_each,after_each",
       },
-    }
+    })
   )
 end
 
 -- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-null_ls.setup {
+null_ls.setup({
   debug = false,
   ignore_stderr = false,
   sources = sources,
@@ -316,7 +360,7 @@ null_ls.setup {
   --     })
   --   end
   -- end,
-}
+})
 
 -- vim.keymap.set(
 --   "n",

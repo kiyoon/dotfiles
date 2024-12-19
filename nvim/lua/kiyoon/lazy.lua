@@ -816,12 +816,13 @@ return {
     dev = nvim_treesitter_dev,
   },
   {
-    "nvim-treesitter/nvim-treesitter-context",
+    -- "nvim-treesitter/nvim-treesitter-context",
+    "kiyoon/nvim-treesitter-context",
     event = { "BufReadPost", "BufNewFile" },
     -- This commit is the parent of https://github.com/nvim-treesitter/nvim-treesitter-context/pull/316
     -- which introduced showing context in multiple lines.
     -- However, it becomes too long and I prefer the old behaviour.
-    commit = "e5676455c7e68069c6299facd4b5c4eb80cc4e9d",
+    -- commit = "e5676455c7e68069c6299facd4b5c4eb80cc4e9d",
 
     config = function()
       require("treesitter-context").setup({
@@ -873,6 +874,9 @@ return {
   },
   {
     "kiyoon/treesitter-indent-object.nvim",
+    dependencies = {
+      "lukas-reineke/indent-blankline.nvim",
+    },
     keys = {
       {
         "ai",
@@ -1612,7 +1616,8 @@ return {
 
   -- Formatting and linting
   {
-    "jose-elias-alvarez/null-ls.nvim",
+    -- "jose-elias-alvarez/null-ls.nvim",
+    "nvimtools/none-ls.nvim",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "nvim-lua/plenary.nvim",

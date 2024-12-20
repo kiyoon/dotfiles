@@ -175,14 +175,14 @@ local function ruff_on_output_filtered(pattern, params)
   local content_line = params.content and params.content[tonumber(nullls_output["row"])] or nil
   if nullls_output["col"] ~= nil and content_line ~= nil then
     local col = nullls_output["col"] or math.huge
-    col = math.min(col, string.len(content_line)) - 1
+    col = math.min(col - 1, string.len(content_line))
     local byte_index_col = vim.str_byteindex(content_line, col)
     nullls_output["col"] = byte_index_col + 1
   end
   content_line = params.content and params.content[tonumber(nullls_output["end_row"])] or nil
   if nullls_output["end_col"] ~= nil and content_line ~= nil then
     local col = nullls_output["end_col"] or math.huge
-    col = math.min(col, string.len(content_line)) - 1
+    col = math.min(col - 1, string.len(content_line))
     local byte_index_col = vim.str_byteindex(content_line, col)
     nullls_output["end_col"] = byte_index_col + 1
   end

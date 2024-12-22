@@ -2520,6 +2520,12 @@ return {
           -- end,
           -- length = 3,
         },
+        ["%$a"] = {
+          -- message = function()
+          --    return "Use A instead of $a"
+          -- end,
+          -- length = 2,
+        },
       },
     },
   },

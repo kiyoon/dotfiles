@@ -26,20 +26,20 @@ M.no_paren_ts_node_types = {
 
 M.toggle_breakpoint = function()
   local pattern = "breakpoint()" -- Use python >= 3.7.
-  local line = vim.fn.getline "." --[[@as string]]
+  local line = vim.fn.getline(".") --[[@as string]]
   line = vim.trim(line)
-  local lnum = vim.fn.line "." ---@cast lnum integer
+  local lnum = vim.fn.line(".") ---@cast lnum integer
 
   if vim.startswith(line, pattern) then
-    vim.cmd.normal [["_dd]] -- delete the line without altering registers
+    vim.cmd.normal([["_dd]]) -- delete the line without altering registers
   else
     local indents = string.rep(" ", vim.fn.indent(vim.fn.prevnonblank(lnum)) or 0)
     vim.fn.append(lnum - 1, indents .. pattern)
-    vim.cmd.normal "k"
+    vim.cmd.normal("k")
   end
   -- save file without any events
   if vim.bo.modifiable and vim.bo.modified then
-    vim.cmd [[ silent! noautocmd write ]]
+    vim.cmd([[ silent! noautocmd write ]])
   end
 end
 
@@ -59,20 +59,20 @@ M.toggle_fstring = function()
   end
 
   ---@diagnostic disable-next-line: unused-local
-  local srow, scol, erow, ecol = require("wookayin.utils.ts_utils").get_vim_range { node:range() }
+  local srow, scol, erow, ecol = require("wookayin.utils.ts_utils").get_vim_range({ node:range() })
   vim.fn.setcursorcharpos(srow, scol)
 
   local char = vim.api.nvim_get_current_line():sub(scol, scol)
   local is_fstring = (char == "f")
 
   if is_fstring then
-    vim.cmd [[normal "_x]]
+    vim.cmd([[normal "_x]])
     -- if cursor is in the same line as text change
     if srow == cursor[1] then
       cursor[2] = cursor[2] - 1 -- negative offset to cursor
     end
   else
-    vim.cmd [[noautocmd normal if]]
+    vim.cmd([[noautocmd normal if]])
     -- if cursor is in the same line as text change
     if srow == cursor[1] then
       cursor[2] = cursor[2] + 1 -- positive offset to cursor
@@ -83,7 +83,7 @@ end
 
 M.toggle_line_comment = function(text)
   local comment = "# " .. text
-  local line = vim.fn.getline "." --[[ @as string ]]
+  local line = vim.fn.getline(".") --[[ @as string ]]
   local newline ---@type string
 
   if vim.endswith(line, comment) then
@@ -97,8 +97,8 @@ M.toggle_line_comment = function(text)
 end
 
 M.toggle_typing = function(name)
-  if vim.fn.has "nvim-0.9" == 0 then
-    return vim.api.nvim_err_writeln "toggle_typing: this feature requires neovim 0.9.0."
+  if vim.fn.has("nvim-0.9") == 0 then
+    return vim.api.nvim_err_writeln("toggle_typing: this feature requires neovim 0.9.0.")
   end
 
   local winnr = 0
@@ -219,7 +219,7 @@ M.toggle_typing_none = function()
     return n:type() == "type"
   end, node:named_children())[1] or nil
   if not type_node then
-    vim.cmd.echon [["toggle_typing_none: not in a type hint node."]]
+    vim.cmd.echon([["toggle_typing_none: not in a type hint node."]])
     return
   end
   -- Check range
@@ -589,7 +589,7 @@ M.os_path_to_pathlib = function(wrap_with_path)
   elseif function_name == "osp_join" then
     new_text = osp_join_to_pathlib()
   elseif function_name == "os.mkdir" then
-    new_text = one_arg_function_to_pathlib "mkdir()"
+    new_text = one_arg_function_to_pathlib("mkdir()")
   elseif function_name == "os.makedirs" then
     if arglist_node:named_child_count() == 0 then
       -- no arguments
@@ -598,63 +598,65 @@ M.os_path_to_pathlib = function(wrap_with_path)
       })
       return
     end
-    new_text = one_arg_function_to_pathlib "mkdir(parents=True"
+    new_text = one_arg_function_to_pathlib("mkdir(parents=True")
     for i = 1, arglist_node:named_child_count() - 1 do
       local arg_node = arglist_node:named_child(i)
       new_text = new_text .. ", " .. get_text(arg_node)
     end
     new_text = new_text .. ")"
   elseif function_name == "os.path.exists" then
-    new_text = one_arg_function_to_pathlib "exists()"
+    new_text = one_arg_function_to_pathlib("exists()")
   elseif function_name == "os.path.abspath" then
-    new_text = one_arg_function_to_pathlib "resolve()"
+    new_text = one_arg_function_to_pathlib("resolve()")
   elseif function_name == "os.remove" then
-    new_text = one_arg_function_to_pathlib "unlink()"
+    new_text = one_arg_function_to_pathlib("unlink()")
   elseif function_name == "os.unlink" then
-    new_text = one_arg_function_to_pathlib "unlink()"
+    new_text = one_arg_function_to_pathlib("unlink()")
+  elseif function_name == "os.rmdir" then
+    new_text = one_arg_function_to_pathlib("rmdir()")
   elseif function_name == "os.path.expanduser" then
-    new_text = one_arg_function_to_pathlib "expanduser()"
+    new_text = one_arg_function_to_pathlib("expanduser()")
   elseif function_name == "os.path.isdir" then
-    new_text = one_arg_function_to_pathlib "is_dir()"
+    new_text = one_arg_function_to_pathlib("is_dir()")
   elseif function_name == "os.path.isfile" then
-    new_text = one_arg_function_to_pathlib "is_file()"
+    new_text = one_arg_function_to_pathlib("is_file()")
   elseif function_name == "os.path.islink" then
-    new_text = one_arg_function_to_pathlib "is_symlink()"
+    new_text = one_arg_function_to_pathlib("is_symlink()")
   elseif function_name == "os.path.isabs" then
-    new_text = one_arg_function_to_pathlib "is_absolute()"
+    new_text = one_arg_function_to_pathlib("is_absolute()")
   elseif function_name == "os.path.basename" then
-    new_text = one_arg_function_to_pathlib "name"
+    new_text = one_arg_function_to_pathlib("name")
   elseif function_name == "os.path.dirname" then
-    new_text = one_arg_function_to_pathlib "parent"
+    new_text = one_arg_function_to_pathlib("parent")
   elseif function_name == "os.stat" then
-    new_text = one_arg_function_to_pathlib "stat()"
+    new_text = one_arg_function_to_pathlib("stat()")
   elseif function_name == "os.path.getsize" then
-    new_text = one_arg_function_to_pathlib "stat().st_size"
+    new_text = one_arg_function_to_pathlib("stat().st_size")
   elseif function_name == "os.path.getmtime" then
-    new_text = one_arg_function_to_pathlib "stat().st_mtime"
+    new_text = one_arg_function_to_pathlib("stat().st_mtime")
   elseif function_name == "os.path.getctime" then
-    new_text = one_arg_function_to_pathlib "stat().st_ctime"
+    new_text = one_arg_function_to_pathlib("stat().st_ctime")
   elseif function_name == "os.path.getatime" then
-    new_text = one_arg_function_to_pathlib "stat().st_atime"
+    new_text = one_arg_function_to_pathlib("stat().st_atime")
   elseif function_name == "os.listdir" then
-    new_text = one_arg_function_to_pathlib "iterdir()"
+    new_text = one_arg_function_to_pathlib("iterdir()")
   elseif function_name == "os.rename" then
-    new_text = multi_arg_function_to_pathlib "rename"
+    new_text = multi_arg_function_to_pathlib("rename")
   elseif function_name == "os.replace" then
-    new_text = multi_arg_function_to_pathlib "replace"
+    new_text = multi_arg_function_to_pathlib("replace")
   elseif function_name == "os.path.samefile" then
-    new_text = multi_arg_function_to_pathlib "samefile"
+    new_text = multi_arg_function_to_pathlib("samefile")
   elseif function_name == "open" then
-    new_text = multi_arg_function_to_pathlib "open"
+    new_text = multi_arg_function_to_pathlib("open")
   elseif function_name == "glob.glob" then
-    new_text = multi_arg_function_to_pathlib "glob" -- this is not completely correct
+    new_text = multi_arg_function_to_pathlib("glob") -- this is not completely correct
   elseif function_name == "print" then
     if arglist_node:named_child_count() > 1 then
       notify("print() with more than one argument can't be safely converted to logger.info", "warning", {
         title = "os.path to pathlib.Path",
       })
     end
-    new_text = change_call_name "logger.info"
+    new_text = change_call_name("logger.info")
   else
     notify("Function `" .. function_name .. "` not recognised.", "error", {
       title = "os.path to pathlib.Path",
@@ -680,8 +682,8 @@ M.os_path_to_pathlib = function(wrap_with_path)
   vim.api.nvim_win_set_cursor(winnr, cursor)
 end
 
-local buffer = require "nvim-surround.buffer"
-local config = require "nvim-surround.config"
+local buffer = require("nvim-surround.buffer")
+local config = require("nvim-surround.config")
 
 -- Add delimiters around a visual selection.
 -- Taken from nvim-surround https://github.com/kylechui/nvim-surround/commit/23f4966aba1d90d9ea4e06dfe3dd7d07b8420611
@@ -700,7 +702,7 @@ local visual_surround = function(delimiters, args)
   -- exit visual mode
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
 
-  local first_pos, last_pos = buffer.get_mark "<", buffer.get_mark ">"
+  local first_pos, last_pos = buffer.get_mark("<"), buffer.get_mark(">")
   vim.print(first_pos)
   vim.print(last_pos)
   if not delimiters or not first_pos or not last_pos then
@@ -757,10 +759,10 @@ local visual_surround = function(delimiters, args)
   end
 
   config.get_opts().indent_lines(first_pos[1], last_pos[1] + #delimiters[1] + #delimiters[2] - 2)
-  buffer.restore_curpos {
+  buffer.restore_curpos({
     first_pos = first_pos,
     old_pos = args.curpos,
-  }
+  })
 end
 M.wrap_selection_with_path = function()
   visual_surround({ { "Path(" }, { ")" } }, {})

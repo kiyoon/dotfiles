@@ -10,6 +10,8 @@ local config = {
 	}),
 	font_size = 14.3,
 
+	max_fps = 120,
+
 	-- undercurl becomes ugly if underline_position < -4
 	underline_position = -4,
 	keys = {

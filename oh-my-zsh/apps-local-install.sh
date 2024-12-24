@@ -48,6 +48,8 @@ if [[ $OSTYPE == "darwin"* ]]; then
     brew install difftastic
 	brew install helix
 	brew install pv
+    brew install yazi
+    brew install poppler  # yazi pdf preview
 else
 	##### oh-my-zsh
 	if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -187,6 +189,8 @@ else
 	$CARGO install procs
 	$CARGO install csvlens
     $CARGO install difftastic
+    $CARGO install --locked yazi-fm yazi-cli
+    # sudo apt install -y poppler  # yazi pdf preview
 
 	if ! command -v hx &>/dev/null; then
 		wget https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"

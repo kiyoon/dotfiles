@@ -67,6 +67,9 @@ return {
       vim.g.python_highlight_string_formatting = 1
       vim.g.python_highlight_string_format = 1
       vim.g.python_highlight_string_templates = 1
+      vim.g.python_highlight_builtin_funcs = 1
+      vim.g.python_highlight_builtin_objs = 1
+      vim.g.python_highlight_builtin_types = 1
     end,
   },
   {

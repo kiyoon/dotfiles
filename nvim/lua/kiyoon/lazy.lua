@@ -62,7 +62,11 @@ return {
     "vim-python/python-syntax",
     ft = "python",
     init = function()
-      vim.g.python_highlight_all = 1
+      -- I only care about string highlighting here.
+      -- vim.g.python_highlight_all = 1
+      vim.g.python_highlight_string_formatting = 1
+      vim.g.python_highlight_string_format = 1
+      vim.g.python_highlight_string_templates = 1
     end,
   },
   {

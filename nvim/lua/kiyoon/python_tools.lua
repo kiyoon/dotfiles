@@ -16,8 +16,10 @@ local function tbl_reverse(tab)
 end
 
 ---It also caches the results so repeated calls are fast
+---@param bufnr integer vim buffer number
 M.run_ruff = function(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
+
   local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
   if bufnr_to_ruff_changedtick[bufnr] == changedtick then
     return bufnr_to_ruff_per_line[bufnr]
@@ -68,7 +70,7 @@ end
 
 M.toggle_ruff_noqa = function(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local current_line = vim.fn.line "."
+  local current_line = vim.fn.line(".")
   M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
@@ -153,7 +155,7 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
     end
   end
 
-  local current_line = vim.fn.line "."
+  local current_line = vim.fn.line(".")
   M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
@@ -263,7 +265,7 @@ function M.available_actions(bufnr)
 
   local actions = {}
 
-  local current_line = vim.fn.line "."
+  local current_line = vim.fn.line(".")
   M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line[bufnr] ~= nil and bufnr_to_ruff_per_line[bufnr][current_line] ~= nil then
@@ -284,6 +286,25 @@ function M.available_actions(bufnr)
           title = "Ruff: Fix " .. fix_code .. ": " .. ruff_message,
           action = function()
             M.ruff_fix_all(bufnr, fix_code)
+          end,
+        })
+      elseif ruff_output["code"] == "INP001" then
+        -- Missing __init__.py
+        -- The fix isn't available by ruff, but I can provide a fix
+        table.insert(actions, {
+          title = "Ruff: Fix INP001: Add __init__.py",
+          action = function()
+            local file_name = vim.api.nvim_buf_get_name(bufnr)
+            local dir_name = vim.fn.fnamemodify(file_name, ":h")
+            local init_file = dir_name .. "/__init__.py"
+            -- write an empty __init__.py
+            local file = io.open(init_file, "a") -- append so it doesn't overwrite existing content by mistake
+            if file == nil then
+              vim.notify("Failed to create __init__.py", vim.log.levels.ERROR)
+              return
+            end
+            file:write("")
+            file:close()
           end,
         })
       end

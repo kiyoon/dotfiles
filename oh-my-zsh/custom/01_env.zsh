@@ -152,3 +152,7 @@ elif command -v gdircolors &> /dev/null; then
 	eval "$(gdircolors -b ~/.dircolors)"
 fi
 
+# Alt h, l for moving word by word
+# NOTE: it even accepts the next word from zsh-autosuggestions
+bindkey '^[l' forward-word
+bindkey '^[h' backward-word

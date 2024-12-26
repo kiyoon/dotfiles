@@ -24,7 +24,7 @@
 
 local format_table = {
   snake_case = {
-    pattern = "^%l+[%l_]*$",
+    pattern = "^%l+[%l%d_]*$",
     apply = function(tbl)
       return string.lower(table.concat(tbl, "_"))
     end,
@@ -33,7 +33,7 @@ local format_table = {
     end,
   },
   kebab_case = {
-    pattern = "^%l+[%l-]*$",
+    pattern = "^%l+[%l%d-]*$",
     apply = function(tbl)
       return string.lower(table.concat(tbl, "-"))
     end,
@@ -42,7 +42,7 @@ local format_table = {
     end,
   },
   camel_case = {
-    pattern = "^%l+[%u%l]*$",
+    pattern = "^%l+[%u%l%d]*$",
     apply = function(tbl)
       local tmp = vim.tbl_map(function(word)
         return word:gsub("^.", string.upper)
@@ -52,14 +52,14 @@ local format_table = {
     end,
     standardize = function(text)
       return vim.split(
-        text:gsub(".%f[%l]", " %1"):gsub("%l%f[%u]", "%1 "):gsub("^.", string.upper),
+        text:gsub(".%f[%l%d]", " %1"):gsub("%l%f[%u]", "%1 "):gsub("^.", string.upper),
         " ",
         { trimempty = true }
       )
     end,
   },
   pascal_case = {
-    pattern = "^%u%l+[%u%l]*$",
+    pattern = "^%u[%l%d]+[%u%l%d]*$",
     apply = function(tbl)
       local value, _ = table.concat(
         vim.tbl_map(function(word)
@@ -71,14 +71,14 @@ local format_table = {
     end,
     standardize = function(text)
       return vim.split(
-        text:gsub(".%f[%l]", " %1"):gsub("%l%f[%u]", "%1 "):gsub("^.", string.upper),
+        text:gsub(".%f[%l%d]", " %1"):gsub("[%l%d]%f[%u]", "%1 "):gsub("^.", string.upper),
         " ",
         { trimempty = true }
       )
     end,
   },
   screaming_snake_case = {
-    pattern = "^%u+[%u_]*$",
+    pattern = "^%u+[%u%d_]*$",
     apply = function(tbl)
       local value, _ = table.concat(
         vim.tbl_map(function(word)
@@ -139,7 +139,7 @@ end
 -- NOTE: The order of formats can be important, as some identifiers are the same for multiple formats.
 --   Take the string 'action' for example. This is a match for both snake_case _and_ camel_case. It's
 --   therefore important to place a format between those two so we can correcly change the string.
-local default_formats = { "snake_case", "kebab_case", "pascal_case", "screaming_snake_case", "camel_case" }
+local default_formats = { "snake_case", "pascal_case", "kebab_case", "screaming_snake_case", "camel_case" }
 
 local get_cycle_function = function(user_formats)
   user_formats = user_formats or default_formats
@@ -153,7 +153,7 @@ local get_cycle_function = function(user_formats)
     if format then
       table.insert(formats, format)
     else
-      vim.notify("TS:NodeAction:CycleCase - Format '" .. format .. "' is invalid")
+      vim.notify("CycleCase - Format '" .. format .. "' is invalid")
     end
   end
 

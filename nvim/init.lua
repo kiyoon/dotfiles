@@ -226,5 +226,5 @@ vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
 })
 
 local make_repeatable_keymap = require("wookayin.utils").make_repeatable_keymap
-local cycle_case = require("kiyoon.cycle_case")
-vim.keymap.set("n", "<space>tc", make_repeatable_keymap("n", "<Plug>(cycle-case)", cycle_case), { remap = true })
+local cycle_case = require("kiyoon.tools.cycle_case")
+vim.keymap.set("n", "<space>ta", make_repeatable_keymap("n", "<Plug>(cycle-case)", cycle_case), { remap = true })

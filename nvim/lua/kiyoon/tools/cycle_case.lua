@@ -1,6 +1,8 @@
 -- Copied from https://github.com/CKolkey/ts-node-action
--- Modified to work without supported node on treesitter (just current word)
--- and add a kebab case
+-- Modified to:
+--   1. Treesitter node -> just current word
+--   2. kebab-case added
+--   3. true/false cycling added
 
 -- API Notes:
 -- Every format is a table that implements the following three keys:
@@ -93,6 +95,60 @@ local format_table = {
       return vim.split(string.lower(text), "_", { trimempty = true })
     end,
   },
+  true_lower = {
+    pattern = "^true$",
+    apply = function(tbl)
+      return "true"
+    end,
+    standardize = function(text)
+      return { "true" }
+    end,
+  },
+  false_lower = {
+    pattern = "^false$",
+    apply = function(tbl)
+      return "false"
+    end,
+    standardize = function(text)
+      return { "false" }
+    end,
+  },
+  true_upper = {
+    pattern = "^TRUE$",
+    apply = function(tbl)
+      return "TRUE"
+    end,
+    standardize = function(text)
+      return { "true" }
+    end,
+  },
+  false_upper = {
+    pattern = "^FALSE$",
+    apply = function(tbl)
+      return "FALSE"
+    end,
+    standardize = function(text)
+      return { "false" }
+    end,
+  },
+  true_title = {
+    pattern = "^True$",
+    apply = function(tbl)
+      return "True"
+    end,
+    standardize = function(text)
+      return { "true" }
+    end,
+  },
+  false_title = {
+    pattern = "^False$",
+    apply = function(tbl)
+      return "False"
+    end,
+    standardize = function(text)
+      return { "false" }
+    end,
+  },
 }
 
 local function check_pattern(text, pattern)
@@ -139,7 +195,31 @@ end
 -- NOTE: The order of formats can be important, as some identifiers are the same for multiple formats.
 --   Take the string 'action' for example. This is a match for both snake_case _and_ camel_case. It's
 --   therefore important to place a format between those two so we can correcly change the string.
-local default_formats = { "snake_case", "pascal_case", "kebab_case", "screaming_snake_case", "camel_case" }
+
+-- local default_formats = { "snake_case", "pascal_case", "kebab_case", "screaming_snake_case", "camel_case" }
+local default_formats = {
+  -- make sure true -> false -> true works with the right case
+  "true_lower",
+  "false_lower",
+  "true_lower",
+
+  "true_upper",
+  "false_upper",
+  "true_upper",
+
+  "true_title",
+  "false_title",
+  "true_title",
+
+  -- cycle case in general words.
+  -- make sure it cycles back to snake_case, not to true_lower
+  "snake_case",
+  "pascal_case",
+  "kebab_case",
+  "screaming_snake_case",
+  "camel_case",
+  "snake_case", -- <- this is the one that makes the cycle back to snake_case
+}
 
 local get_cycle_function = function(user_formats)
   user_formats = user_formats or default_formats

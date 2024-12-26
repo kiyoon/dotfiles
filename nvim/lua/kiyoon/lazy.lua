@@ -987,20 +987,6 @@ return {
     end,
   },
   {
-    "ckolkey/ts-node-action",
-    dependencies = {
-      -- "nvim-treesitter",
-      "tpope/vim-repeat",
-    },
-    keys = {
-      {
-        "<space>ta",
-        [[<cmd>lua require("ts-node-action").node_action()<CR>]],
-        desc = "Node [A]ction",
-      },
-    },
-  },
-  {
     "ThePrimeagen/refactoring.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",

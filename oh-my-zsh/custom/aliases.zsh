@@ -14,13 +14,12 @@ fi
 if (($+commands[nvim])); then
 	# vi is defined in mistakes.zsh
 	alias v='nvim'
-	alias vim='nvim'
+	alias vim='vim'
 	alias vimdiff='nvim -d'
 	alias vic='NVIM_APPNAME=nvim-coc nvim'
 	alias lazyvim='NVIM_APPNAME=nvim-lazyvim nvim'
 	alias csvi='nvim -u ~/.config/nvim/csv_init.lua'
 	alias svi='sudoedit'
-	alias diffview='nvim +DiffviewOpen'
 	alias dv='nvim +DiffviewOpen'
 fi
 

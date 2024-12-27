@@ -518,6 +518,7 @@ config.colors.tab_bar = {
 	},
 }
 
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.85
+config.macos_window_background_blur = 20
 
 return config

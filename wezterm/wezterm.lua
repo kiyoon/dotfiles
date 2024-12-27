@@ -442,6 +442,7 @@ config.colors = {
 }
 
 -- to turn off above settings
+-- config.color_scheme = "Dracula (Official)"
 -- config.colors = {}
 
 return config

@@ -1,5 +1,10 @@
-require("tokyonight").setup {
+require("tokyonight").setup({
   style = "moon",
+  transparent = true,
+  styles = {
+    sidebars = "transparent",
+    floats = "transparent",
+  },
   -- nvim-navic bg colour match with lualine.
   on_highlights = function(hl, c)
     hl.NavicIconsFile = { bg = c.bg_dark, fg = c.fg }
@@ -31,4 +36,4 @@ require("tokyonight").setup {
     hl.NavicText = { bg = c.bg_dark, fg = c.fg }
     hl.NavicSeparator = { bg = c.bg_dark, fg = c.fg }
   end,
-}
+})

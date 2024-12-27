@@ -1,4 +1,4 @@
-local icons = require "kiyoon.icons"
+local icons = require("kiyoon.icons")
 
 local function fg(name)
   return function()
@@ -10,7 +10,7 @@ end
 
 return {
   options = {
-    theme = "auto",
+    theme = "tokyonight",
     globalstatus = true,
     disabled_filetypes = { statusline = { "dashboard", "alpha" } },
   },
@@ -48,7 +48,7 @@ return {
         cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
         color = fg("Constant") ,
       },
-      { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg "Special" },
+      { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg("Special") },
       {
         "diff",
         symbols = {

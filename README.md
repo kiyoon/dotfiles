@@ -3,6 +3,10 @@
 This is a modern Neovim, Tmux, Zsh configuration that supports installing everything locally (i.e. non-system-wide user install, not using sudo).  
 You can enjoy working on a remote SSH server without root permission, just like you do locally.
 
+> [!NOTE]
+> Currently I'm experimenting with a tranparent terminal background.
+> If you want to turn it off, change transparent settings in `wezterm/wezterm.lua` and `nvim/lua/kiyoon/tokyonight.lua`.
+
 ![image](https://user-images.githubusercontent.com/12980409/218476082-8c400daf-7d9d-4d15-bf7a-f6b41d9191d9.png)
 
 ![image](https://user-images.githubusercontent.com/12980409/218475937-c9a51b2d-b4d6-499f-8787-012770410209.png)

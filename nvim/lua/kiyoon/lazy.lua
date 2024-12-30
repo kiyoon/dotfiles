@@ -1035,7 +1035,7 @@ return {
       })
     end,
   },
-  S - Tab({
+  {
     "ziontee113/SelectEase",
     keys = {
       { "<C-A-k>", mode = { "n", "s", "i" } },
@@ -1107,7 +1107,7 @@ return {
         select_ease.select_node({ queries = queries, direction = "next" })
       end, {})
     end,
-  }),
+  },
   -- NOTE: Motions
   -- {
   --   "mfussenegger/nvim-treehopper",

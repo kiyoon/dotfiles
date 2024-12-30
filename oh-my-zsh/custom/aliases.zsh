@@ -19,7 +19,8 @@ if (($+commands[nvim])); then
 	alias vic='NVIM_APPNAME=nvim-coc nvim'
 	alias lazyvim='NVIM_APPNAME=nvim-lazyvim nvim'
 	alias csvi='nvim -u ~/.config/nvim/csv_init.lua'
-	alias svi='sudoedit'
+	# alias svi='sudoedit'
+	alias svi='sudo -e'
 	alias dv='nvim +DiffviewOpen'
 fi
 

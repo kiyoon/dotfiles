@@ -1013,9 +1013,12 @@ return {
     },
     config = function()
       require("tabout").setup({
-        tabkey = "<Tab>",
-        backwards_tabkey = "<S-Tab>",
-        act_as_tab = true,
+        -- tabkey = "<Tab>",
+        -- backwards_tabkey = "<S-Tab>",
+        -- act_as_tab = true,
+        tabkey = "<A-w>", -- like 'w'
+        backwards_tabkey = "<A-b>", -- like 'b'
+        act_as_tab = false,
         act_as_shift_tab = false,
         enable_backwards = true,
         completion = false,
@@ -1032,7 +1035,7 @@ return {
       })
     end,
   },
-  {
+  S - Tab({
     "ziontee113/SelectEase",
     keys = {
       { "<C-A-k>", mode = { "n", "s", "i" } },
@@ -1104,7 +1107,7 @@ return {
         select_ease.select_node({ queries = queries, direction = "next" })
       end, {})
     end,
-  },
+  }),
   -- NOTE: Motions
   -- {
   --   "mfussenegger/nvim-treehopper",

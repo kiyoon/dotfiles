@@ -59,13 +59,6 @@ Also, it has many versions of vim configurations.
 - Tmux v3.4
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
-On Ubuntu, maybe you need to install some dependencies:
-
-```bash
-sudo apt update
-sudo apt install -y python3.11-venv  # for neovim's mason.nvim
-# NOTE: change the version number depending on your system's python version.
-```
 
 ## Steps
 

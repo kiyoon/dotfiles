@@ -56,6 +56,24 @@ local config = {
 				local tab, window = pane:move_to_new_tab()
 			end),
 		},
+		{
+			key = "|",
+			mods = "CTRL|SHIFT|ALT",
+			action = wezterm.action.SplitPane({
+				direction = "Right",
+				-- command = { args = { "top" } },
+				size = { Percent = 50 },
+			}),
+		},
+		{
+			key = "_",
+			mods = "CTRL|SHIFT|ALT",
+			action = wezterm.action.SplitPane({
+				direction = "Down",
+				-- command = { args = { "top" } },
+				size = { Percent = 50 },
+			}),
+		},
 	},
 
 	enable_scroll_bar = true,

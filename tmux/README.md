@@ -24,6 +24,10 @@ Tmux's default keybindings are quite unintuitive, so I've changed a few.
 3. Run `./install-plugins.sh`
 4. `/usr/bin/python3 -m pip install pynvim libtmux` for treemux and tmux-window-name plugins.
 
+> [!NOTE]
+> On Mac, for the GPU status to work, add this to the sudoers file (`/etc/sudoers`), replacing the username and omitting the quotes. Be mindful of the two tabs after the username:  
+> "username		ALL = (root) NOPASSWD: /usr/bin/powermetrics"
+
 ## 💻 Useful tmux commands
 
 First of all, launch tmux: `tmux`  

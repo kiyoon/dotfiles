@@ -1702,6 +1702,11 @@ return {
           "null-ls",
         },
       },
+      notification = {
+        window = {
+          winblend = 0, -- transparent window
+        },
+      },
     },
   },
 

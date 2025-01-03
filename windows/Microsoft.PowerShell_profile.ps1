@@ -172,10 +172,10 @@ function coreutils_shred { & coreutils shred $args }
 Set-Alias shred coreutils_shred -Option AllScope
 function coreutils_shuf { & coreutils shuf $args }
 Set-Alias shuf coreutils_shuf -Option AllScope
-function coreutils_sleep { & coreutils sleep $args }
-Set-Alias sleep coreutils_sleep -Option AllScope
-function coreutils_sort { & coreutils sort $args }
-Set-Alias sort coreutils_sort -Option AllScope
+#function coreutils_sleep { & coreutils sleep $args }
+#Set-Alias sleep coreutils_sleep -Option AllScope
+#function coreutils_sort { & coreutils sort $args }
+#Set-Alias sort coreutils_sort -Option AllScope
 function coreutils_split { & coreutils split $args }
 Set-Alias split coreutils_split -Option AllScope
 function coreutils_sum { & coreutils sum $args }
@@ -186,8 +186,8 @@ function coreutils_tac { & coreutils tac $args }
 Set-Alias tac coreutils_tac -Option AllScope
 function coreutils_tail { & coreutils tail $args }
 Set-Alias tail coreutils_tail -Option AllScope
-function coreutils_tee { & coreutils tee $args }
-Set-Alias tee coreutils_tee -Option AllScope
+#function coreutils_tee { & coreutils tee $args }
+#Set-Alias tee coreutils_tee -Option AllScope
 function coreutils_test { & coreutils test $args }
 Set-Alias test coreutils_test -Option AllScope
 function coreutils_touch { & coreutils touch $args }

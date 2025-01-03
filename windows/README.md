@@ -24,13 +24,20 @@ winget install -e --id Starship.Starship
 
 winget install -e --id LGUG2Z.komorebi
 winget install -e --id LGUG2Z.whkd
+
+winget install -e --id=astral-sh.uv
+winget install -e --id=astral-sh.ruff
 ```
 
 > [!NOTE]
 > Use newer `pwsh.exe` instead of `powershell.exe`.
 
-`nvim $profile`
+The profile file location is at `nvim $profile`.
 
+### Caps Lock -> Ctrl
 ```powershell
-Set-Alias vi nvim -Option AllScope
+# administrator
+$hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
+$kbLayout = 'HKLM:\System\CurrentControlSet\Control\Keyboard Layout';    
+New-ItemProperty -Path $kbLayout -Name "Scancode Map" -PropertyType Binary -Value ([byte[]]$hexified);
 ```

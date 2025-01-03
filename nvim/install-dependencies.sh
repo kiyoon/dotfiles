@@ -119,7 +119,7 @@ if ! command -v magick &> /dev/null; then
 	echo "ImageMagick could not be found. Installing in $LOCALBIN"
 	mkdir -p ~/.local
 	curl -s https://api.github.com/repos/ImageMagick/ImageMagick/releases/latest \
-		| grep "browser_download_url.*ImageMagick--gcc-x86_64.AppImage" \
+		| grep "browser_download_url.*ImageMagick-.*-gcc-x86_64.AppImage" \
 		| cut -d : -f 2,3 \
 		| tr -d \" \
 		| wget -qi - -O magick.appimage

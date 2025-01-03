@@ -20,15 +20,14 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install pipx
 	brew install thefuck
 	brew install starship
-	brew install virtualenvwrapper
 
 	$PIP3 install --user --break-system-packages pygments # colorize (ccat)
 	$PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
 
 	# install ranger from github
-	TEMPDIR=$(mktemp -d)
-	git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
-	$PIP3 install --user --break-system-packages "$TEMPDIR"
+	# TEMPDIR=$(mktemp -d)
+	# git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
+	# $PIP3 install --user --break-system-packages "$TEMPDIR"
 
 	brew install fd
 	brew install tig
@@ -77,9 +76,9 @@ else
 	$PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
 
 	# install ranger from github
-	TEMPDIR=$(mktemp -d)
-	git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
-	$PIP3 install --user --break-system-packages "$TEMPDIR"
+	# TEMPDIR=$(mktemp -d)
+	# git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
+	# $PIP3 install --user --break-system-packages "$TEMPDIR"
 
 	if ! command -v fd &>/dev/null; then
 		npm install -g fd-find

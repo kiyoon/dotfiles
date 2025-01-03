@@ -8,11 +8,13 @@ winget install -e --id sharkdp.bat
 winget install -e --id=BurntSushi.ripgrep.MSVC
 winget install -e --id=sharkdp.fd
 winget install -e --id=ajeetdsouza.zoxide
-winget install -e --id=junegunn.fzf
 winget install -e --id Clement.bottom
 winget install -e --id=bootandy.dust
 winget install -e --id=sxyazi.yazi
 winget install -e --id=YS-L.csvlens
+
+winget install -e --id=junegunn.fzf
+Install-Module -Name PSFzf
 
 winget install Neovim.Neovim
 winget install -e --id Git.Git

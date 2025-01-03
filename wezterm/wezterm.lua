@@ -539,4 +539,8 @@ config.colors.tab_bar = {
 config.window_background_opacity = 0.85
 config.macos_window_background_blur = 20
 
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+	config.default_prog = { "pwsh.exe", "-NoLogo" }
+end
+
 return config

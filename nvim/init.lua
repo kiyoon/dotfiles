@@ -157,37 +157,37 @@ require("wookayin.python_keymaps")
 -- Convert | to │ (box drawing character)
 -- Convert │ to └
 -- Convert └ to │
-vim.keymap.set("n", "<space>tl", function()
-  local current_pos = vim.api.nvim_win_get_cursor(0)
-  local current_row = current_pos[1] - 1
-  local current_col = current_pos[2]
-  -- NOTE: since the lines are 3 bytes long, we need to get 3 bytes
-  local current_char = vim.api.nvim_buf_get_text(0, current_row, current_col, current_row, current_col + 3, {})[1]
-
-  local old_char = nil
-  local new_char = nil
-  if current_char:sub(1, 1) == "|" then
-    old_char = "|"
-    new_char = "│"
-  elseif current_char == "│" then
-    old_char = "│"
-    new_char = "└"
-  elseif current_char == "└" then
-    old_char = "└"
-    new_char = "│"
-  else
-    old_char = current_char:sub(1, 1)
-  end
-
-  local byte_size_old_char = vim.fn.len(old_char)
-
-  if new_char == nil then
-    vim.notify("Can't convert. No mapping for " .. old_char)
-    return
-  end
-
-  vim.api.nvim_buf_set_text(0, current_row, current_col, current_row, current_col + byte_size_old_char, { new_char })
-end)
+-- vim.keymap.set("n", "<space>tl", function()
+--   local current_pos = vim.api.nvim_win_get_cursor(0)
+--   local current_row = current_pos[1] - 1
+--   local current_col = current_pos[2]
+--   -- NOTE: since the lines are 3 bytes long, we need to get 3 bytes
+--   local current_char = vim.api.nvim_buf_get_text(0, current_row, current_col, current_row, current_col + 3, {})[1]
+--
+--   local old_char = nil
+--   local new_char = nil
+--   if current_char:sub(1, 1) == "|" then
+--     old_char = "|"
+--     new_char = "│"
+--   elseif current_char == "│" then
+--     old_char = "│"
+--     new_char = "└"
+--   elseif current_char == "└" then
+--     old_char = "└"
+--     new_char = "│"
+--   else
+--     old_char = current_char:sub(1, 1)
+--   end
+--
+--   local byte_size_old_char = vim.fn.len(old_char)
+--
+--   if new_char == nil then
+--     vim.notify("Can't convert. No mapping for " .. old_char)
+--     return
+--   end
+--
+--   vim.api.nvim_buf_set_text(0, current_row, current_col, current_row, current_col + byte_size_old_char, { new_char })
+-- end)
 
 vim.keymap.set({ "n", "v", "o" }, "<F2>", function()
   -- tmux previous window

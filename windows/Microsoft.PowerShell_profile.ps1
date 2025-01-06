@@ -3,6 +3,7 @@
 # grep, awk, sed, ...
 $Env:PATH += ";$env:HOMEDRIVE\cygwin64\bin"
 Set-Alias awk gawk
+Set-Alias find $env:HOMEDRIVE\cygwin64\bin\find -Option AllScope
 
 Set-PSReadLineOption -EditMode Vi
 

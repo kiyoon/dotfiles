@@ -1,4 +1,5 @@
 #$Env:PATH += ";$env:USERPROFILE\bin"
+Set-PSReadLineOption -EditMode Vi
 
 Invoke-Expression (&starship init powershell)
 Invoke-Expression (& { (zoxide init powershell | Out-String) })

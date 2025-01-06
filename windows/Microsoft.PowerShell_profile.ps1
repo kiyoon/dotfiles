@@ -1,4 +1,9 @@
 #$Env:PATH += ";$env:USERPROFILE\bin"
+
+# grep, awk, sed, ...
+$Env:PATH += ";$env:HOMEDRIVE\cygwin64\bin"
+Set-Alias awk gawk
+
 Set-PSReadLineOption -EditMode Vi
 
 Invoke-Expression (&starship init powershell)
@@ -13,6 +18,11 @@ Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 Set-PsFzfOption -TabExpansion
 
 Set-PSReadLineKeyHandler -Key Ctrl+u -Function BackwardDeleteLine
+
+Set-PSReadLineKeyHandler -Key Ctrl+s -Function AcceptSuggestion
+#Set-PSReadLineKeyHandler -Key Alt+l -Function ForwardWord
+
+function which([string]$cmd) {gcm -ErrorAction "SilentlyContinue" $cmd | ft Definition}
 
 Set-Alias vi nvim -Option AllScope
 function eza_ls { & eza --icons auto --hyperlink $args }
@@ -217,4 +227,3 @@ function coreutils_whoami { & coreutils whoami $args }
 Set-Alias whoami coreutils_whoami -Option AllScope
 function coreutils_yes { & coreutils yes $args }
 Set-Alias yes coreutils_yes -Option AllScope
-

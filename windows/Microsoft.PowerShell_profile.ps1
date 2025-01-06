@@ -228,3 +228,83 @@ function coreutils_whoami { & coreutils whoami $args }
 Set-Alias whoami coreutils_whoami -Option AllScope
 function coreutils_yes { & coreutils yes $args }
 Set-Alias yes coreutils_yes -Option AllScope
+
+# Git aliases
+function git_commit { & git commit --verbose $args }
+Set-Alias gc git_commit -Force -Option AllScope
+function gst { & git status $args }
+function ga { & git add $args }
+function gp { & git push $args }
+function ggp {
+    param (
+        [string[]]$Branches
+    )
+
+    if ($Branches.Count -ne 0 -and $Branches.Count -ne 1) {
+        git push origin $Branches
+    } else {
+        if ($Branches.Count -eq 0) {
+            # Get the current branch
+            $currentBranch = git rev-parse --abbrev-ref HEAD
+            git push origin $currentBranch
+        } else {
+            git push origin $Branches[0]
+        }
+    }
+}
+function ggpf {
+    param (
+        [string[]]$Branches
+    )
+
+    if ($Branches.Count -ne 0 -and $Branches.Count -ne 1) {
+        git push origin $Branches --force-with-lease
+    } else {
+        if ($Branches.Count -eq 0) {
+            # Get the current branch
+            $currentBranch = git rev-parse --abbrev-ref HEAD
+            git push origin $currentBranch --force-with-lease
+        } else {
+            git push origin $Branches[0] --force-with-lease
+        }
+    }
+}
+function ggl {
+    param (
+        [string[]]$Branches
+    )
+
+    if ($Branches.Count -ne 0 -and $Branches.Count -ne 1) {
+        git pull origin $Branches
+    } else {
+        if ($Branches.Count -eq 0) {
+            # Get the current branch
+            $currentBranch = git rev-parse --abbrev-ref HEAD
+            git pull origin $currentBranch
+        } else {
+            git pull origin $Branches[0]
+        }
+    }
+}
+function gglr {
+    param (
+        [string[]]$Branches
+    )
+
+    if ($Branches.Count -ne 0 -and $Branches.Count -ne 1) {
+        git pull --rebase origin $Branches
+    } else {
+        if ($Branches.Count -eq 0) {
+            # Get the current branch
+            $currentBranch = git rev-parse --abbrev-ref HEAD
+            git pull --rebase origin $currentBranch
+        } else {
+            git pull --rebase origin $Branches[0]
+        }
+    }
+}
+function groot { & git rev-parse --show-toplevel }
+function glr { & git pull --rebase $args }
+function cdg { & cd $(git rev-parse --show-toplevel) }
+# Print the URL of the current repository
+function gurl { & git config --get remote.origin.url }

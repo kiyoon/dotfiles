@@ -305,7 +305,8 @@ function gglr {
 }
 function groot { & git rev-parse --show-toplevel }
 function glr { & git pull --rebase $args }
-function gcb { & git checkout -b $args }
+function git_checkout_b { & git checkout -b $args }
+Set-Alias gcb git_checkout_b -Option AllScope
 function cdg { & cd $(git rev-parse --show-toplevel) }
 # Print the URL of the current repository
 function gurl { & git config --get remote.origin.url }

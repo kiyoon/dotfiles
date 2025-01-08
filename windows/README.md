@@ -1,3 +1,7 @@
+## PowerShell
+
+Basic linux feels within powershell.
+
 ```powershell
 winget install -e --id Microsoft.PowerShell --source winget
 winget install -e --id uutils.coreutils
@@ -32,11 +36,13 @@ winget install -e --id=astral-sh.ruff
 > [!NOTE]
 > Use newer `pwsh.exe` instead of `powershell.exe`.
 
-The profile file location is at `nvim $profile`.
+The profile file location is at `nvim $profile`. Put the profile file content there.
+
+Missing commands like `grep`, `awk`, `sed` etc. comes with Cygwin.
 
 ### Cygwin
 
-For `grep`, `awk`, `sed` etc., install cygwin.
+Fully-featured bash / zsh experience with Cygwin.
 
 #### Install apt-cyg
 Required additional packages:

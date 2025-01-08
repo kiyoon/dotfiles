@@ -83,6 +83,11 @@ PATH="$HOME/.local/bin:$PATH" bash -c "$(curl -fsSL https://raw.github.com/ohmyz
 
 # pgrep, pkill
 apt-cyg install procps-ng
+
+# starship path should not have space in its path..
+# and the install script doesn't work within cygwin.
+# Thus copy C:\Program Files\starship/bin/starship to /usr/local/bin
+cp "$(which starship)" /usr/local/bin
 ```
 
 ### Caps Lock -> Ctrl

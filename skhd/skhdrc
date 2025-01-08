@@ -6,8 +6,8 @@ cmd + shift + alt - b ; default
 
 alt - 1 : open -a "Finder"
 alt + shift - 1 : open -n -a "Finder" ~
-alt - 2 : open -a "Google Chrome"
-alt + shift - 2 : open -n -a "Google Chrome"
+alt - 2 : open -a "Firefox"
+alt + shift - 2 : open -n -a "Firefox"
 alt - 3 : open -a "WezTerm"
 alt + shift - 3 : open -n -a "WezTerm"
 alt - 4 : open -a "Telegram"
@@ -46,6 +46,7 @@ shift + alt - l : yabai -m window --focus east
 # application specific bindings
 f2 [
     "Google Chrome"       : skhd --key 'ctrl + shift - tab'
+    "Firefox"       : skhd --key 'ctrl + shift - tab'
 	# "WezTerm"         : skhd --key 'ctrl + shift - tab'
     # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f3; skhd --key 'cmd + shift + alt - b'
     # "WezTerm"       : skhd --key f3
@@ -53,6 +54,7 @@ f2 [
 ]
 f6 [
     "Google Chrome"       : skhd --key 'ctrl - tab'
+    "Firefox"       : skhd --key 'ctrl - tab'
     # "WezTerm"       : skhd --key 'ctrl - tab'
     # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
     # "WezTerm"       : skhd --key f5

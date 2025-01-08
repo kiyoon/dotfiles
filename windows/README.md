@@ -65,6 +65,15 @@ Cygwin only has zsh up to 5.8.
 apt-cyg install make
 apt-cyg install gcc-core
 apt-cyg install libncurses-devel
+# TODO: add zsh-local-install.sh
+bash zsh-local-install.sh
+```
+
+**oh-my-zsh**
+
+```bash
+apt-cyg install git
+PATH="$HOME/.local/bin:$PATH" bash -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 ```
 
 ### Caps Lock -> Ctrl

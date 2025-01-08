@@ -48,15 +48,8 @@ git submodule update --init --remote
 Install apps:
 
 ```zsh
-##### tig, exa, gh, starship, ..
+##### tig, eza, gh, starship, ..
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/apps-local-install.sh)"
-```
-
-(Optional) Apps when you have root permission:
-
-```zsh
-sudo apt update -y
-sudo apt install -y xclip
 ```
 
 Copy/symlink `.zshrc` to `$HOME`.

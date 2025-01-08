@@ -32,9 +32,30 @@ winget install -e --id=astral-sh.ruff
 > [!NOTE]
 > Use newer `pwsh.exe` instead of `powershell.exe`.
 
-For `grep`, `awk`, `sed` etc., install cygwin (minimal installation).
-
 The profile file location is at `nvim $profile`.
+
+### Cygwin
+
+For `grep`, `awk`, `sed` etc., install cygwin.
+
+Required additional packages:
+
+- wget
+- gnupg2
+- libiconv
+- ca-certificates
+
+```bash
+# Enter cygwin bash
+# C:\cygwin64\bin\bash -i -l
+# or, `cygbash` alias
+
+cd
+mkdir bin
+cd bin
+git clone https://github.com/kou1okada/apt-cyg.git
+ln -s "$(realpath apt-cyg/apt-cyg)" /usr/local/bin/
+```
 
 ### Caps Lock -> Ctrl
 ```powershell

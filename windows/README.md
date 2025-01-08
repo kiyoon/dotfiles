@@ -38,6 +38,7 @@ The profile file location is at `nvim $profile`.
 
 For `grep`, `awk`, `sed` etc., install cygwin.
 
+#### Install apt-cyg
 Required additional packages:
 
 - wget
@@ -55,6 +56,15 @@ mkdir bin
 cd bin
 git clone https://github.com/kou1okada/apt-cyg.git
 ln -s "$(realpath apt-cyg/apt-cyg)" /usr/local/bin/
+```
+
+#### Install zsh 5.9
+Cygwin only has zsh up to 5.8.
+
+```bash
+apt-cyg install make
+apt-cyg install gcc-core
+apt-cyg install libncurses-devel
 ```
 
 ### Caps Lock -> Ctrl

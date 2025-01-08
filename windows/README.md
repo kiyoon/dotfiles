@@ -80,6 +80,9 @@ bash zsh-local-install.sh
 ```bash
 apt-cyg install git
 PATH="$HOME/.local/bin:$PATH" bash -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+
+# pgrep, pkill
+apt-cyg install procps-ng
 ```
 
 ### Caps Lock -> Ctrl

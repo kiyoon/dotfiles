@@ -78,7 +78,6 @@ local config = {
 
 	enable_scroll_bar = true,
 	scrollback_lines = 30000,
-	term = "wezterm",
 
 	enable_kitty_graphics = true,
 }
@@ -541,6 +540,8 @@ config.macos_window_background_blur = 20
 
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 	config.default_prog = { "pwsh.exe", "-NoLogo" }
+else
+	config.term = "wezterm"
 end
 
 return config

@@ -4,6 +4,10 @@
 $Env:PATH += ";$env:HOMEDRIVE\cygwin64\bin"
 Set-Alias awk gawk
 Set-Alias find $env:HOMEDRIVE\cygwin64\bin\find -Option AllScope
+function cygbash { & $env:HOMEDRIVE\cygwin64\bin\bash.exe -i -l $args }
+
+# Reload powershell profile
+function src { . $profile }
 
 Set-PSReadLineOption -EditMode Vi
 
@@ -304,6 +308,7 @@ function gglr {
     }
 }
 function groot { & git rev-parse --show-toplevel }
+function gl { & git pull $args }
 function glr { & git pull --rebase $args }
 function git_checkout_b { & git checkout -b $args }
 Set-Alias gcb git_checkout_b -Option AllScope
@@ -312,3 +317,4 @@ Set-Alias gco git_checkout -Option AllScope
 function cdg { & cd $(git rev-parse --show-toplevel) }
 # Print the URL of the current repository
 function gurl { & git config --get remote.origin.url }
+

@@ -1,3 +1,4 @@
+
 #$Env:PATH += ";$env:USERPROFILE\bin"
 
 # grep, awk, sed, ...
@@ -226,7 +227,7 @@ function coreutils_unlink { & coreutils unlink $args }
 Set-Alias unlink coreutils_unlink -Option AllScope
 function coreutils_vdir { & coreutils vdir $args }
 Set-Alias vdir coreutils_vdir -Option AllScope
-function coreutils_wc { & coreutils wc $args }
+function coreutils_wc { & coreutils wc @args }
 Set-Alias wc coreutils_wc -Option AllScope
 function coreutils_whoami { & coreutils whoami $args }
 Set-Alias whoami coreutils_whoami -Option AllScope
@@ -308,12 +309,48 @@ function gglr {
     }
 }
 function groot { & git rev-parse --show-toplevel }
-function gl { & git pull $args }
+function git_pull { & git pull $args }
+Set-Alias gl git_pull -Option AllScope -Force
+function git_restore_staged { & git restore --staged $args }
+Set-Alias grst git_restore_staged -Option AllScope
+function gd { & git diff $args }
 function glr { & git pull --rebase $args }
 function git_checkout_b { & git checkout -b $args }
 Set-Alias gcb git_checkout_b -Option AllScope
 function git_checkout { & git checkout $args }
 Set-Alias gco git_checkout -Option AllScope
+function gcl { & git clone $args }
+function ghc { & git clone $args }
+function ghcd {
+    param (
+        [string]$RepositoryName,
+        [string[]]$Options
+    )
+
+    if (-not $RepositoryName) {
+        Write-Error "You must provide a repository name."
+        return
+    }
+
+    # Construct the command with the repository name and additional options
+    $repoPath = "https://github.com/deargen/$RepositoryName"
+    git clone $repoPath @Options
+}
+function ghck {
+    param (
+        [string]$RepositoryName,
+        [string[]]$Options
+    )
+
+    if (-not $RepositoryName) {
+        Write-Error "You must provide a repository name."
+        return
+    }
+
+    # Construct the command with the repository name and additional options
+    $repoPath = "https://github.com/kiyoon/$RepositoryName"
+    git clone $repoPath @Options
+}
 function cdg { & cd $(git rev-parse --show-toplevel) }
 # Print the URL of the current repository
 function gurl { & git config --get remote.origin.url }

@@ -164,6 +164,7 @@ require("lazy").setup({
     },
     config = function()
       require("oil").setup({
+        default_file_explorer = false,
         keymaps = {
           ["\\"] = { "actions.select", opts = { vertical = true }, desc = "Open the entry in a vertical split" },
           ["|"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },

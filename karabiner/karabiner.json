@@ -267,6 +267,10 @@
                 {
                     "from": { "key_code": "caps_lock" },
                     "to": [{ "key_code": "left_control" }]
+                },
+                {
+                    "from": { "key_code": "right_option" },
+                    "to": [{ "key_code": "left_command" }]
                 }
             ],
             "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }

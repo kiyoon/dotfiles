@@ -6,7 +6,7 @@ M = {}
 M.translate_ruff_message = function(code, message)
   if lang ~= "en" then
     if code == "F401" then
-      local name = message:match "([^ ]+) imported but unused"
+      local name = message:match("([^ ]+) imported but unused")
       if lang == "es" then
         return string.format(
           "%s importado pero nunca usado; considera usar `importlib.util.find_spec` para probar la disponibilidad",
@@ -25,7 +25,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F402" then
       -- message: Import {name} from {row} shadowed by loop variable
-      local name, row = message:match "Import ([^ ]+) from line ([0-9]+) shadowed by loop variable"
+      local name, row = message:match("Import ([^ ]+) from line ([0-9]+) shadowed by loop variable")
       if lang == "es" then
         return string.format("Importación de %s desde la línea %s sombreada por variable de bucle", name, row)
       elseif lang == "pt-br" then
@@ -35,7 +35,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F403" then
       -- message = `from {name} import *` used; unable to detect undefined names
-      local name = message:match "from ([^ ]+) import"
+      local name = message:match("from ([^ ]+) import")
       if lang == "es" then
         return string.format("`from %s import *` usado; incapaz de detectar nombres indefinido", name)
       elseif lang == "pt-br" then
@@ -54,7 +54,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F405" then
       -- {name} may be undefined, or defined from star imports
-      local name = message:match "([^ ]+) may be undefined"
+      local name = message:match("([^ ]+) may be undefined")
       if lang == "es" then
         return string.format("%s puede ser indefinido, o definido desde importaciones de estrella", name)
       elseif lang == "pt-br" then
@@ -64,7 +64,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F406" then
       -- from {name} import * only allowed at module level
-      local name = message:match "from ([^ ]+) import"
+      local name = message:match("from ([^ ]+) import")
       if lang == "es" then
         return string.format("`from %s import *` solo permitido a nivel de módulo", name)
       elseif lang == "pt-br" then
@@ -74,7 +74,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F407" then
       -- Future feature {name} is not defined
-      local name = message:match "Future feature ([^ ]+) is not defined"
+      local name = message:match("Future feature ([^ ]+) is not defined")
       if lang == "es" then
         return string.format("La característica futura %s no está definida", name)
       elseif lang == "pt-br" then
@@ -84,7 +84,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F501" then
       -- %-format string has invalid format string: {message}
-      local mes = message:match "string has invalid format string: (.*)"
+      local mes = message:match("string has invalid format string: (.*)")
       if lang == "es" then
         return string.format("Cadena de formato %% tiene una cadena de formato inválida: %s", mes)
       elseif lang == "pt-br" then
@@ -110,7 +110,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F504" then
       -- %-format string has unused named argument(s): {message}
-      local mes = message:match "string has unused named argument[(]s[)]: (.*)"
+      local mes = message:match("string has unused named argument[(]s[)]: (.*)")
       if lang == "es" then
         return string.format("Cadena de formato %% tiene argumento(s) con nombre no usado: %s", mes)
       elseif lang == "pt-br" then
@@ -120,7 +120,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F505" then
       -- %-format string is missing argument(s) for placeholder(s): {message}
-      local mes = message:match "string is missing argument[(]s[)] for placeholder[(]s[)]: (.*)"
+      local mes = message:match("string is missing argument[(]s[)] for placeholder[(]s[)]: (.*)")
       if lang == "es" then
         return string.format("Cadena de formato %% falta argumento(s) para marcador(es): %s", mes)
       elseif lang == "pt-br" then
@@ -138,7 +138,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F507" then
       -- %-format string has {wanted} placeholder(s) but {got} substitution(s)
-      local wanted, got = message:match "string has ([0-9]+) placeholder[(]s[)] but ([0-9]+) substitution[(]s[)]"
+      local wanted, got = message:match("string has ([0-9]+) placeholder[(]s[)] but ([0-9]+) substitution[(]s[)]")
       if lang == "es" then
         return string.format("Cadena de formato %% tiene %s marcador(es) pero %s sustitución(es)", wanted, got)
       elseif lang == "pt-br" then
@@ -156,7 +156,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F509" then
       -- %-format string has unsupported format character {char}
-      local char = message:match "string has unsupported format character (.*)"
+      local char = message:match("string has unsupported format character (.*)")
       if lang == "es" then
         return string.format("Cadena de formato %% tiene carácter de formato %s no soportado", char)
       elseif lang == "pt-br" then
@@ -166,7 +166,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F521" then
       -- 🔗🐍 [F521]	string-dot-format-invalid-format	.format call has invalid format string: {message}	✔️ 🛠️
-      local mes = message:match "call has invalid format string: (.*)"
+      local mes = message:match("call has invalid format string: (.*)")
       if lang == "es" then
         return string.format("`.format` tiene una cadena de formato inválida: %s", mes)
       elseif lang == "pt-br" then
@@ -176,7 +176,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F522" then
       -- 🔗🐍 [F522]	string-dot-format-extra-named-arguments	.format call has unused named argument(s): {message}	✔️ 🛠️
-      local mes = message:match "call has unused named argument[(]s[)]: (.*)"
+      local mes = message:match("call has unused named argument[(]s[)]: (.*)")
       if lang == "es" then
         return string.format("`.format` tiene argumento(s) con nombre no usado: %s", mes)
       elseif lang == "pt-br" then
@@ -186,7 +186,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F523" then
       -- 🔗🐍 [F523]	string-dot-format-extra-positional-arguments	.format call has unused arguments at position(s): {message}	✔️ 🛠️
-      local mes = message:match "call has unused arguments at position[(]s[)]: (.*)"
+      local mes = message:match("call has unused arguments at position[(]s[)]: (.*)")
       if lang == "es" then
         return string.format("`.format` tiene argumento(s) no usado en posición(es): %s", mes)
       elseif lang == "pt-br" then
@@ -196,7 +196,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F524" then
       -- 🔗🐍 [F524]	string-dot-format-missing-arguments	.format call is missing argument(s) for placeholder(s): {message}	✔️ 🛠️
-      local mes = message:match "call is missing argument[(]s[)] for placeholder[(]s[)]: (.*)"
+      local mes = message:match("call is missing argument[(]s[)] for placeholder[(]s[)]: (.*)")
       if lang == "es" then
         return string.format("`.format` falta argumento(s) para marcador(es): %s", mes)
       elseif lang == "pt-br" then
@@ -223,6 +223,16 @@ M.translate_ruff_message = function(code, message)
         return "f-chaîne sans aucun marqueur"
       end
     -- 🔗🐍 [F601]	multi-value-repeated-key-literal	Dictionary key literal {name} repeated	✔️ 🛠️
+    elseif code == "F601" then
+      -- 🔗🐍 [F601]	multi-value-repeated-key-literal	Dictionary key literal {name} repeated	✔️ 🛠️
+      local name = message:match("Dictionary key literal ([^ ]+) repeated")
+      if lang == "es" then
+        return string.format("Clave literal de diccionario %s repetida", name)
+      elseif lang == "pt-br" then
+        return string.format("Chave literal de dicionário %s repetida", name)
+      elseif lang == "fr" then
+        return string.format("Clé littérale de dictionnaire %s répétée", name)
+      end
     -- 🔗🐍 [F602]	multi-value-repeated-key-variable	Dictionary key {name} repeated	✔️ 🛠️
     -- 🔗🐍 [F621]	expressions-in-star-assignment	Too many expressions in star-unpacking assignment	✔️ 🛠️
     -- 🔗🐍 [F622]	multiple-starred-expressions	Two starred expressions in assignment	✔️ 🛠️
@@ -238,7 +248,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [F722]	forward-annotation-syntax-error	Syntax error in forward annotation: {body}	✔️ 🛠️
     elseif code == "F811" then
       -- 🔗🐍 [F811]	redefined-while-unused	Redefinition of unused {name} from {row}	✔️ 🛠️
-      local name, row = message:match "Redefinition of unused ([^ ]+) from line ([0-9]+)"
+      local name, row = message:match("Redefinition of unused ([^ ]+) from line ([0-9]+)")
       if lang == "es" then
         return string.format("Redefinición de %s no usado desde la línea %s", name, row)
       elseif lang == "pt-br" then
@@ -248,7 +258,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F821" then
       -- 🔗🐍 [F821]	undefined-name	Undefined name {name}	✔️ 🛠️
-      local name = message:match "Undefined name ([^ ]+)"
+      local name = message:match("Undefined name ([^ ]+)")
       if lang == "es" then
         return string.format("Nombre %s indefinido", name)
       elseif lang == "pt-br" then
@@ -258,7 +268,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F822" then
       -- 🔗🐍 [F822]	undefined-export	Undefined name {name} in __all__	✔️ 🛠️
-      local name = message:match "Undefined name ([^ ]+) in"
+      local name = message:match("Undefined name ([^ ]+) in")
       if lang == "es" then
         return string.format("Nombre %s indefinido en `__all__`", name)
       elseif lang == "pt-br" then
@@ -268,7 +278,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F823" then
       -- 🔗🐍 [F823]	undefined-local	Local variable {name} referenced before assignment	✔️ 🛠️
-      local name = message:match "Local variable ([^ ]+) referenced before assignment"
+      local name = message:match("Local variable ([^ ]+) referenced before assignment")
       if lang == "es" then
         return string.format("Variable local %s referenciada antes de asignación", name)
       elseif lang == "pt-br" then
@@ -278,7 +288,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F841" then
       -- 🔗🐍 [F841]	unused-variable	Local variable {name} is assigned to but never used	✔️ 🛠️
-      local name = message:match "Local variable ([^ ]+) is assigned to but never used"
+      local name = message:match("Local variable ([^ ]+) is assigned to but never used")
       if lang == "es" then
         return string.format("Variable local %s asignada pero nunca usada", name)
       elseif lang == "pt-br" then
@@ -288,7 +298,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "F842" then
       -- 🔗🐍 [F842]	unused-annotation	Local variable {name} is annotated but never used	✔️ 🛠️
-      local name = message:match "Local variable ([^ ]+) is annotated but never used"
+      local name = message:match("Local variable ([^ ]+) is annotated but never used")
       if lang == "es" then
         return string.format("Variable local %s anotada pero nunca usada", name)
       elseif lang == "pt-br" then
@@ -364,7 +374,7 @@ M.translate_ruff_message = function(code, message)
         return "Importation de niveau de module pas au début du fichier"
       end
     elseif code == "E501" then
-      local width, limit = message:match "Line too long %((%d+) > (%d+)%)"
+      local width, limit = message:match("Line too long %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Línea demasiado larga (%s > %s)", width, limit)
       elseif lang == "pt-br" then
@@ -413,7 +423,7 @@ M.translate_ruff_message = function(code, message)
         return "La comparaison à `None` devrait être `cond is None`"
       end
     elseif code == "E712" then
-      local cond = message:match "use `if (.*):` for truth checks"
+      local cond = message:match("use `if (.*):` for truth checks")
       if lang == "es" then
         return string.format(
           "Evita comparaciones de igualdad a `True`; usa `if %s:` para comprobaciones de verdad",
@@ -477,7 +487,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [E741]	ambiguous-variable-name	Ambiguous variable name: {name}	✔️ 🛠️
     elseif code == "E741" then
-      local name = message:match "Ambiguous variable name: (.*)"
+      local name = message:match("Ambiguous variable name: (.*)")
       if lang == "es" then
         return string.format("Nombre de variable ambiguo: %s", name)
       elseif lang == "pt-br" then
@@ -487,7 +497,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [E742]	ambiguous-class-name	Ambiguous class name: {name}	✔️ 🛠️
     elseif code == "E742" then
-      local name = message:match "Ambiguous class name: (.*)"
+      local name = message:match("Ambiguous class name: (.*)")
       if lang == "es" then
         return string.format("Nombre de clase ambiguo: %s", name)
       elseif lang == "pt-br" then
@@ -497,7 +507,7 @@ M.translate_ruff_message = function(code, message)
       end
     elseif code == "E743" then
       -- 🔗🐍 [E743]	ambiguous-function-name	Ambiguous function name: {name}	✔️ 🛠️
-      local name = message:match "Ambiguous function name: (.*)"
+      local name = message:match("Ambiguous function name: (.*)")
       if lang == "es" then
         return string.format("Nombre de función ambiguo: %s", name)
       elseif lang == "pt-br" then
@@ -569,7 +579,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D201]	no-blank-line-before-function	No blank lines allowed before function docstring (found {num_lines})	✔️ 🛠️
     elseif code == "D201" then
-      local num_lines = message:match "No blank lines allowed before function docstring %(found ([0-9]+)%)"
+      local num_lines = message:match("No blank lines allowed before function docstring %(found ([0-9]+)%)")
       if lang == "es" then
         return string.format(
           "No se permiten líneas en blanco antes de la docstring de la función (encontrado %s)",
@@ -588,7 +598,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D202]	no-blank-line-after-function	No blank lines allowed after function docstring (found {num_lines})	✔️ 🛠️
     elseif code == "D202" then
-      local num_lines = message:match "No blank lines allowed after function docstring %(found ([0-9]+)%)"
+      local num_lines = message:match("No blank lines allowed after function docstring %(found ([0-9]+)%)")
       if lang == "es" then
         return string.format(
           "No se permiten líneas en blanco después de la docstring de la función (encontrado %s)",
@@ -682,13 +692,13 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D214]	section-not-over-indented	Section is over-indented ("{name}")	✔️ 🛠️
     elseif code == "D214" then
-      local name = message:match 'Section is over-indented %("(.*)"%)'
+      local name = message:match('Section is over-indented %("(.*)"%)')
       if lang == "es" then
         return string.format("La sección está sobre-indentada (%s)", name)
       end
     -- 🔗🐍 [D215]	section-underline-not-over-indented	Section underline is over-indented ("{name}")	✔️ 🛠️
     elseif code == "D215" then
-      local name = message:match 'Section underline is over-indented %("(.*)"%)'
+      local name = message:match('Section underline is over-indented %("(.*)"%)')
       if lang == "es" then
         return string.format("La subrayado de la sección está sobre-indentado (%s)", name)
       end
@@ -709,7 +719,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D401]	non-imperative-mood	First line of docstring should be in imperative mood: "{first_line}"	✔️ 🛠️
     elseif code == "D401" then
-      local first_line = message:match 'First line of docstring should be in imperative mood: "(.*)"'
+      local first_line = message:match('First line of docstring should be in imperative mood: "(.*)"')
       if lang == "es" then
         return string.format('La primera línea de la docstring debería estar en modo imperativo: "%s"', first_line)
       end
@@ -720,7 +730,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D403]	first-line-capitalized	First word of the first line should be capitalized: {} -> {}	✔️ 🛠️
     elseif code == "D403" then
-      local first_word, capitalized = message:match "First word of the first line should be capitalized: (.*) -> (.*)"
+      local first_word, capitalized = message:match("First word of the first line should be capitalized: (.*) -> (.*)")
       if lang == "es" then
         return string.format(
           "La primera palabra de la primera línea debería estar capitalizada: %s -> %s",
@@ -735,25 +745,25 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D405]	capitalize-section-name	Section name should be properly capitalized ("{name}")	✔️ 🛠️
     elseif code == "D405" then
-      local name = message:match 'Section name should be properly capitalized %("(.*)"%)'
+      local name = message:match('Section name should be properly capitalized %("(.*)"%)')
       if lang == "es" then
         return string.format("El nombre de la sección debería estar capitalizado correctamente (%s)", name)
       end
     -- 🔗🐍 [D406]	new-line-after-section-name	Section name should end with a newline ("{name}")	✔️ 🛠️
     elseif code == "D406" then
-      local name = message:match 'Section name should end with a newline %("(.*)"%)'
+      local name = message:match('Section name should end with a newline %("(.*)"%)')
       if lang == "es" then
         return string.format("El nombre de la sección debería terminar con una nueva línea (%s)", name)
       end
     -- 🔗🐍 [D407]	dashed-underline-after-section	Missing dashed underline after section ("{name}")	✔️ 🛠️
     elseif code == "D407" then
-      local name = message:match 'Missing dashed underline after section %("(.*)"%)'
+      local name = message:match('Missing dashed underline after section %("(.*)"%)')
       if lang == "es" then
         return string.format("Falta subrayado punteado después de la sección (%s)", name)
       end
     -- 🔗🐍 [D408]	section-underline-after-name	Section underline should be in the line following the section's name ("{name}")	✔️ 🛠️
     elseif code == "D408" then
-      local name = message:match 'Section underline should be in the line following the section\'s name %("(.*)"%)'
+      local name = message:match('Section underline should be in the line following the section\'s name %("(.*)"%)')
       if lang == "es" then
         return string.format(
           "El subrayado de la sección debería estar en la línea siguiente al nombre de la sección (%s)",
@@ -762,25 +772,25 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D409]	section-underline-matches-section-length	Section underline should match the length of its name ("{name}")	✔️ 🛠️
     elseif code == "D409" then
-      local name = message:match 'Section underline should match the length of its name %("(.*)"%)'
+      local name = message:match('Section underline should match the length of its name %("(.*)"%)')
       if lang == "es" then
         return string.format("El subrayado de la sección debería coincidir con la longitud de su nombre (%s)", name)
       end
     -- 🔗🐍 [D410]	no-blank-line-after-section	Missing blank line after section ("{name}")	✔️ 🛠️
     elseif code == "D410" then
-      local name = message:match 'Missing blank line after section %("(.*)"%)'
+      local name = message:match('Missing blank line after section %("(.*)"%)')
       if lang == "es" then
         return string.format("Falta línea en blanco después de la sección (%s)", name)
       end
     -- 🔗🐍 [D411]	no-blank-line-before-section	Missing blank line before section ("{name}")	✔️ 🛠️
     elseif code == "D411" then
-      local name = message:match 'Missing blank line before section %("(.*)"%)'
+      local name = message:match('Missing blank line before section %("(.*)"%)')
       if lang == "es" then
         return string.format("Falta línea en blanco antes de la sección (%s)", name)
       end
     -- 🔗🐍 [D412]	blank-lines-between-header-and-content	No blank lines allowed between a section header and its content ("{name}")	✔️ 🛠️
     elseif code == "D412" then
-      local name = message:match 'No blank lines allowed between a section header and its content %("(.*)"%)'
+      local name = message:match('No blank lines allowed between a section header and its content %("(.*)"%)')
       if lang == "es" then
         return string.format(
           "No se permiten líneas en blanco entre un encabezado de sección y su contenido (%s)",
@@ -789,13 +799,13 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D413]	blank-line-after-last-section	Missing blank line after last section ("{name}")	✔️ 🛠️
     elseif code == "D413" then
-      local name = message:match 'Missing blank line after last section %("(.*)"%)'
+      local name = message:match('Missing blank line after last section %("(.*)"%)')
       if lang == "es" then
         return string.format("Falta línea en blanco después de la última sección (%s)", name)
       end
     -- 🔗🐍 [D414]	empty-docstring-section	Section has no content ("{name}")	✔️ 🛠️
     elseif code == "D414" then
-      local name = message:match 'Section has no content %("(.*)"%)'
+      local name = message:match('Section has no content %("(.*)"%)')
       if lang == "es" then
         return string.format("La sección no tiene contenido (%s)", name)
       end
@@ -810,13 +820,13 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D416]	section-name-ends-in-colon	Section name should end with a colon ("{name}")	✔️ 🛠️
     elseif code == "D416" then
-      local name = message:match 'Section name should end with a colon %("(.*)"%)'
+      local name = message:match('Section name should end with a colon %("(.*)"%)')
       if lang == "es" then
         return string.format("El nombre de la sección debería terminar con dos puntos (%s)", name)
       end
     -- 🔗🐍 [D417]	undocumented-param	Missing argument description in the docstring for {definition}: {name}	✔️ 🛠️
     elseif code == "D417" then
-      local definition, name = message:match "Missing argument description in the docstring for ([^:]+): (.*)"
+      local definition, name = message:match("Missing argument description in the docstring for ([^:]+): (.*)")
       if lang == "es" then
         return string.format("Descripción de argumento faltante en la docstring para %s: %s", definition, name)
       end
@@ -872,9 +882,9 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [UP034]	extraneous-parentheses	Avoid extraneous parentheses	✔️ 🛠️
     -- 🔗🐍 [UP035]	deprecated-import	Import from {target} instead: {names}	✔️ 🛠️
     elseif code == "UP035" then
-      local target, names = message:match "Import from (.*) instead: (.*)"
+      local target, names = message:match("Import from (.*) instead: (.*)")
       if target == nil then
-        names, target = message:match "(.*) is deprecated, use (.*) instead"
+        names, target = message:match("(.*) is deprecated, use (.*) instead")
         if lang == "es" then
           return string.format("%s está obsoleto, usa %s en su lugar", names, target)
         end
@@ -1035,7 +1045,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [B007]	unused-loop-control-variable	Loop control variable {name} not used within loop body	✔️ 🛠️
     elseif code == "B007" then
-      local name = message:match "Loop control variable ([^']+) not used within loop body"
+      local name = message:match("Loop control variable ([^']+) not used within loop body")
       if lang == "es" then
         return string.format("El variable de control del bucle %s no se usa dentro del cuerpo del bucle", name)
       elseif lang == "pt-br" then
@@ -1203,7 +1213,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [G202]	logging-redundant-exc-info	Logging statement has redundant exc_info	✔️ 🛠️
     -- 🔗🐍 [INP001]	implicit-namespace-package	File {filename} is part of an implicit namespace package. Add an __init__.py.	✔️ 🛠️
     elseif code == "INP001" then
-      local filename = message:match "File ([^ ]+) is part of an implicit namespace package"
+      local filename = message:match("File ([^ ]+) is part of an implicit namespace package")
       if lang == "es" then
         return string.format(
           "El archivo %s es parte de un paquete de espacio de nombres implícito. Agrega un `__init__.py`.",
@@ -1260,7 +1270,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [SIM118]	in-dict-keys	Use key {operator} dict instead of key {operator} dict.keys()	✔️ 🛠️
     elseif code == "SIM118" then
       print(message)
-      local operator = message:match "key (.*) dict` instead of"
+      local operator = message:match("key (.*) dict` instead of")
       if lang == "es" then
         return string.format("Usa `clave %s dict` en lugar de `clave %s dict.keys()`", operator, operator)
       elseif lang == "pt-br" then
@@ -1284,7 +1294,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [SIM911]	Use {expected} instead of {actual}	✔️ 🛠️
     -- 🔗🐍 [TID251]	banned-api	{name} is banned: {message}	✔️ 🛠️
     elseif code == "TID251" then
-      local name, msg = message:match "(.*) is banned: (.*)"
+      local name, msg = message:match("(.*) is banned: (.*)")
       if lang == "es" then
         return string.format("%s está prohibido: %s", name, msg)
       elseif lang == "pt-br" then
@@ -1303,7 +1313,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [TID253]	banned-module-level-imports	{name} is banned at the module level
     elseif code == "TID253" then
-      local name = message:match "(.*) is banned at the module level"
+      local name = message:match("(.*) is banned at the module level")
       if lang == "es" then
         return string.format("%s está prohibido a nivel de módulo", name)
       elseif lang == "pt-br" then
@@ -1584,7 +1594,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PTH207]	glob	Replace {function} with Path.glob or Path.rglob	✔️ 🛠️
     elseif code == "PTH207" then
-      local function_name = message:match "Replace `(.*)` with"
+      local function_name = message:match("Replace `(.*)` with")
       if lang == "es" then
         return string.format("Reemplace `%s` con `Path.glob` o `Path.rglob`", function_name)
       elseif lang == "pt-br" then
@@ -1648,7 +1658,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLE1300]	bad-string-format-character	Unsupported format character '{format_char}'	✔️ 🛠️
     elseif code == "PLE1300" then
-      local format_char = message:match "Unsupported format character '(.*)'"
+      local format_char = message:match("Unsupported format character '(.*)'")
       if lang == "es" then
         return string.format("Carácter de formato no soportado '%s'", format_char)
       elseif lang == "pt-br" then
@@ -1677,7 +1687,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLR0402]	manual-from-import	Use from {module} import {name} in lieu of alias	✔️ 🛠️
     -- 🔗🐍 [PLR0904]	too-many-public-methods	Too many public methods ({methods} > {max_methods})	🧪 🛠️
     elseif code == "PLR0904" then
-      local methods, max_methods = message:match "Too many public methods %((%d+) > (%d+)%)"
+      local methods, max_methods = message:match("Too many public methods %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiados métodos públicos (%s > %s)", methods, max_methods)
       elseif lang == "pt-br" then
@@ -1687,7 +1697,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0911]	too-many-return-statements	Too many return statements ({returns} > {max_returns})	✔️ 🛠️
     elseif code == "PLR0911" then
-      local returns, max_returns = message:match "Too many return statements %((%d+) > (%d+)%)"
+      local returns, max_returns = message:match("Too many return statements %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiadas declaraciones de retorno (%s > %s)", returns, max_returns)
       elseif lang == "pt-br" then
@@ -1697,7 +1707,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0912]	too-many-branches	Too many branches ({branches} > {max_branches})	✔️ 🛠️
     elseif code == "PLR0912" then
-      local brances, max_branches = message:match "Too many branches %((%d+) > (%d+)%)"
+      local brances, max_branches = message:match("Too many branches %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiadas ramas (%s > %s)", brances, max_branches)
       elseif lang == "pt-br" then
@@ -1707,7 +1717,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0913]	too-many-arguments	Too many arguments in function definition ({c_args} > {max_args})	✔️ 🛠️
     elseif code == "PLR0913" then
-      local c_args, max_args = message:match "Too many arguments in function definition %((%d+) > (%d+)%)"
+      local c_args, max_args = message:match("Too many arguments in function definition %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiados argumentos en la definición de la función (%s > %s)", c_args, max_args)
       elseif lang == "pt-br" then
@@ -1717,7 +1727,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0914]	too-many-locals	Too many local variables ({current_amount}/{max_amount})	🧪 🛠️
     elseif code == "PLR0914" then
-      local current_amount, max_amount = message:match "Too many local variables %((%d+)/(%d+)%)"
+      local current_amount, max_amount = message:match("Too many local variables %((%d+)/(%d+)%)")
       if lang == "es" then
         return string.format("Demasiadas variables locales (%s/%s)", current_amount, max_amount)
       elseif lang == "pt-br" then
@@ -1727,7 +1737,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0915]	too-many-statements	Too many statements ({statements} > {max_statements})	✔️ 🛠️
     elseif code == "PLR0915" then
-      local statements, max_statements = message:match "Too many statements %((%d+) > (%d+)%)"
+      local statements, max_statements = message:match("Too many statements %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiadas declaraciones (%s > %s)", statements, max_statements)
       elseif lang == "pt-br" then
@@ -1737,7 +1747,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0916]	too-many-boolean-expressions	Too many Boolean expressions ({expressions} > {max_expressions})	🧪 🛠️
     elseif code == "PLR0916" then
-      local expressions, max_expressions = message:match "Too many Boolean expressions %((%d+) > (%d+)%)"
+      local expressions, max_expressions = message:match("Too many Boolean expressions %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiadas expresiones booleanas (%s > %s)", expressions, max_expressions)
       elseif lang == "pt-br" then
@@ -1747,7 +1757,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [PLR0917]	too-many-positional-arguments	Too many positional arguments ({c_pos}/{max_pos})	🧪 🛠️
     elseif code == "PLR0917" then
-      local c_pos, max_pos = message:match "Too many positional arguments %((%d+)/(%d+)%)"
+      local c_pos, max_pos = message:match("Too many positional arguments %((%d+)/(%d+)%)")
       if lang == "es" then
         return string.format("Demasiados argumentos posicionales (%s/%s)", c_pos, max_pos)
       elseif lang == "pt-br" then
@@ -1758,7 +1768,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLR1701]	repeated-isinstance-calls	Merge isinstance calls: {expression}	❌ 🛠️
     -- 🔗🐍 [PLR1702]	too-many-nested-blocks	Too many nested blocks ({nested_blocks} > {max_nested_blocks})	🧪 🛠️
     elseif code == "PLR1702" then
-      local nested_blocks, max_nested_blocks = message:match "Too many nested blocks %((%d+) > (%d+)%)"
+      local nested_blocks, max_nested_blocks = message:match("Too many nested blocks %((%d+) > (%d+)%)")
       if lang == "es" then
         return string.format("Demasiados bloques anidados (%s > %s)", nested_blocks, max_nested_blocks)
       elseif lang == "pt-br" then
@@ -1784,7 +1794,7 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLR1736]	unnecessary-list-index-lookup	List index lookup in enumerate() loop	✔️ 🛠️
     -- 🔗🐍 [PLR2004]	magic-value-comparison	Magic value used in comparison, consider replacing {value} with a constant variable	✔️ 🛠️
     elseif code == "PLR2004" then
-      local value = message:match "consider replacing (.*) with"
+      local value = message:match("consider replacing (.*) with")
       if lang == "es" then
         return string.format(
           "Valor mágico usado en la comparación, considere reemplazar %s con una variable constante",
@@ -1840,9 +1850,9 @@ M.translate_ruff_message = function(code, message)
     -- 🔗🐍 [PLW2901]	redefined-loop-name	Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target	✔️ 🛠️
     elseif code == "PLW2901" then
       local outer_kind, name, inner_kind =
-        message:match "Outer (.*) loop variable (.*) overwritten by inner (.*) loop target"
+        message:match("Outer (.*) loop variable (.*) overwritten by inner (.*) loop target")
       if outer_kind == nil then
-        outer_kind, name = message:match "(.*) loop variable (.*) overwritten by assignment target"
+        outer_kind, name = message:match("(.*) loop variable (.*) overwritten by assignment target")
         if lang == "es" then
           return string.format("Variable de bucle %s %s sobrescrita por objetivo de asignación", outer_kind, name)
         elseif lang == "pt-br" then
@@ -1964,7 +1974,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [NPY001]	numpy-deprecated-type-alias	Type alias np.{type_name} is deprecated, replace with builtin type	✔️ 🛠️
     elseif code == "NPY001" then
-      local type_name = message:match "Type alias `np%.(.*)` is deprecated, replace with builtin type"
+      local type_name = message:match("Type alias `np%.(.*)` is deprecated, replace with builtin type")
       if lang == "es" then
         return string.format("El alias de tipo `np.%s` está obsoleto, reemplace con el tipo integrado", type_name)
       elseif lang == "pt-br" then
@@ -1974,7 +1984,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [NPY002]	numpy-legacy-random	Replace legacy np.random.{method_name} call with np.random.Generator	✔️ 🛠️
     elseif code == "NPY002" then
-      local method_name = message:match "Replace legacy `np%.random%.(.*)` call with `np%.random%.Generator`"
+      local method_name = message:match("Replace legacy `np%.random%.(.*)` call with `np%.random%.Generator`")
       if lang == "es" then
         return string.format("Reemplace la llamada heredada `np.random.%s` con `np.random.Generator`", method_name)
       elseif lang == "pt-br" then
@@ -1984,7 +1994,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [NPY003]	numpy-deprecated-function	`np.{existing}` is deprecated; use `np.{replacement}` instead	✔️ 🛠️
     elseif code == "NPY003" then
-      local existing, replacement = message:match "`np%.(.*)` is deprecated; use `np%.(.*)` instead"
+      local existing, replacement = message:match("`np%.(.*)` is deprecated; use `np%.(.*)` instead")
       if lang == "es" then
         return string.format("`np.%s` está obsoleto; use `np.%s` en su lugar", existing, replacement)
       elseif lang == "pt-br" then
@@ -1994,7 +2004,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [NPY201]	numpy2-deprecation	`np.{existing}` will be removed in NumPy 2.0. {migration_guide}	✔️ 🛠️
     elseif code == "NPY201" then
-      local existing, migration_guide = message:match "`np%.(.*)` will be removed in NumPy 2%.0%. (.*)"
+      local existing, migration_guide = message:match("`np%.(.*)` will be removed in NumPy 2%.0%. (.*)")
       if lang == "es" then
         return string.format("`np.%s` se eliminará en NumPy 2.0. %s", existing, migration_guide)
       elseif lang == "pt-br" then

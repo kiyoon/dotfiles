@@ -5,6 +5,9 @@ local M = {}
 ---  key: line number
 ---  value: list of ruff check info
 local bufnr_to_ruff_per_line = {}
+---Same as above but if the error spans multiple lines, it will be repeated
+---Used for code action and toggle noqa etc.
+local bufnr_to_ruff_per_line_multiline = {}
 ---Save the changedtick of the buffer when ruff is run
 local bufnr_to_ruff_changedtick = {}
 
@@ -49,6 +52,7 @@ M.run_ruff = function(bufnr)
   local ruff_outputs_list = vim.split(ruff_outputs, "\n")
 
   bufnr_to_ruff_per_line[bufnr] = {}
+  bufnr_to_ruff_per_line_multiline[bufnr] = {}
   for _, line in ipairs(ruff_outputs_list) do
     local status, ruff_output = pcall(vim.json.decode, line)
 
@@ -62,6 +66,15 @@ M.run_ruff = function(bufnr)
       table.insert(bufnr_to_ruff_per_line[bufnr][ruff_row], ruff_output)
     end
 
+    local ruff_end_row = ruff_output["end_location"]["row"]
+    for i = ruff_row, ruff_end_row do
+      if bufnr_to_ruff_per_line_multiline[bufnr][i] == nil then
+        bufnr_to_ruff_per_line_multiline[bufnr][i] = { ruff_output }
+      else
+        table.insert(bufnr_to_ruff_per_line_multiline[bufnr][i], ruff_output)
+      end
+    end
+
     ::continue::
   end
 
@@ -73,7 +86,7 @@ M.toggle_ruff_noqa = function(bufnr)
   local current_line = vim.fn.line(".")
   M.run_ruff(bufnr)
 
-  if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
+  if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
     vim.notify("No ruff error on current line", vim.log.levels.ERROR)
     return
   end
@@ -81,7 +94,7 @@ M.toggle_ruff_noqa = function(bufnr)
   local codes = {}
   local code_exists = {}
 
-  for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
+  for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
     if current_line == ruff_output["noqa_row"] then
       if not code_exists[ruff_output["code"]] then
         table.insert(codes, ruff_output["code"])
@@ -158,13 +171,13 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
   local current_line = vim.fn.line(".")
   M.run_ruff(bufnr)
 
-  if bufnr_to_ruff_per_line[bufnr][current_line] == nil then
+  if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
     vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
     return
   end
 
   local all_fixes = {}
-  for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
+  for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
     if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
       local fix = ruff_output["fix"]
       if fix == vim.NIL then
@@ -268,10 +281,12 @@ function M.available_actions(bufnr)
   local current_line = vim.fn.line(".")
   M.run_ruff(bufnr)
 
-  if bufnr_to_ruff_per_line[bufnr] ~= nil and bufnr_to_ruff_per_line[bufnr][current_line] ~= nil then
+  if
+    bufnr_to_ruff_per_line_multiline[bufnr] ~= nil and bufnr_to_ruff_per_line_multiline[bufnr][current_line] ~= nil
+  then
     -- table.insert(actions, { title = "Ruff: Toggle noqa", action = M.toggle_ruff_noqa })
 
-    for _, ruff_output in ipairs(bufnr_to_ruff_per_line[bufnr][current_line]) do
+    for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
       local fix = ruff_output["fix"]
       if fix ~= vim.NIL then
         local fix_code = ruff_output["code"]

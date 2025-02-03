@@ -115,10 +115,12 @@ local function ruff_on_output_filtered(pattern, params)
 
   -- F401: ignore unused imports because pyright handles them
   -- F841: ignore unused variables because pyright handles them
+  -- ARG: ignore unused argument because pyright handles them
   local filter_out_codes = {
     F821 = true, -- you can turn this off in pyright so we use it with ruff
     F401 = true,
     F841 = true,
+    ARG = true,
   }
 
   if

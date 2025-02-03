@@ -120,7 +120,11 @@ local function ruff_on_output_filtered(pattern, params)
     F821 = true, -- you can turn this off in pyright so we use it with ruff
     F401 = true,
     F841 = true,
-    ARG = true,
+    ARG001 = true,
+    ARG002 = true,
+    ARG003 = true,
+    ARG004 = true,
+    ARG005 = true,
   }
 
   if

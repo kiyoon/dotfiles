@@ -13,3 +13,7 @@ export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 # export LANGUAGE=pt_BR.UTF-8
 # export LANG=pt_BR.UTF-8
 # export LC_ALL=pt_BR.UTF-8
+
+# export LANGUAGE=it_IT.UTF-8
+# export LANG=it_IT.UTF-8
+# export LC_ALL=it_IT.UTF-8

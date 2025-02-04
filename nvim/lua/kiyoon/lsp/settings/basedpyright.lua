@@ -1,7 +1,7 @@
 -- NOTE: in nvim 0.9.5, if you import this module at the bottom,
 -- it will sometimes not work, returning `lang` instaed of `M`.
 -- Super strange, likely a bug in nvim.
-local lang = require("kiyoon.lang").lang
+-- local lang = require("kiyoon.lang").lang
 
 M = {
   -- handlers = {
@@ -34,14 +34,16 @@ M = {
 }
 
 -- NOTE: pyright works with es-ES but not with es_ES. Weird.
-if lang == "es" then
-  M.cmd_env = { LC_ALL = "es-ES.UTF-8" }
-elseif lang == "fr" then
-  M.cmd_env = { LC_ALL = "fr-FR.UTF-8" }
-elseif lang == "pt-br" then
-  M.cmd_env = { LC_ALL = "pt-br.UTF-8" }
-elseif lang == "pt-pt" then
-  M.cmd_env = { LC_ALL = "pt-pt.UTF-8" }
-end
+-- but this is fixed in basedpyright.
+
+-- if lang == "es" then
+--   M.cmd_env = { LC_ALL = "es-ES.UTF-8" }
+-- elseif lang == "fr" then
+--   M.cmd_env = { LC_ALL = "fr-FR.UTF-8" }
+-- elseif lang == "pt-br" then
+--   M.cmd_env = { LC_ALL = "pt-br.UTF-8" }
+-- elseif lang == "pt-pt" then
+--   M.cmd_env = { LC_ALL = "pt-pt.UTF-8" }
+-- end
 
 return M

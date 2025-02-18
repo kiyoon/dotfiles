@@ -10,3 +10,6 @@ tmux new-session -d
 ~/.tmux/plugins/tpm/scripts/install_plugins.sh
 # killing the server is not required, I guess
 # tmux kill-server
+
+# treemux and tmux-window-name dependencies
+/usr/bin/python3 -m pip install pynvim libtmux

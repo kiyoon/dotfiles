@@ -20,9 +20,8 @@ Tmux's default keybindings are quite unintuitive, so I've changed a few.
 ## 🛠️ Installation
 
 1. Make sure your terminal has nerd font set up
-2. Put `.tmux.conf` in your home directory
-3. Run `./install-plugins.sh`
-4. `/usr/bin/python3 -m pip install pynvim libtmux` for treemux and tmux-window-name plugins.
+2. Put [`.tmux.conf`](.tmux.conf) in your home directory
+3. Run [`./install-plugins.sh`](install-plugins.sh) will clone the plugins to `~/.tmux/plugins/` and install python dependencies.
 
 > [!NOTE]
 > On Mac, for the GPU status to work, add this to the sudoers file (`/etc/sudoers`), replacing the username and omitting the quotes. Be mindful of the two tabs after the username:  

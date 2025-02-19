@@ -192,6 +192,7 @@ return {
   {
     "kiyoon/jupynium.nvim",
     build = "bash scripts/build_with_uv.sh ~/.virtualenvs/jupynium",
+    -- build = "uv pip install . --python=$HOME/.virtualenvs/jupynium/bin/python",
     ft = { "python", "markdown" },
     config = function()
       local python_host

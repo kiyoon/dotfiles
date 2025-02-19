@@ -22,6 +22,32 @@ Tmux's default keybindings are quite unintuitive, so I've changed a few.
 1. Make sure your terminal has nerd font set up
 2. Put [`.tmux.conf`](.tmux.conf) in your home directory
 3. Run [`./install-plugins.sh`](install-plugins.sh) will clone the plugins to `~/.tmux/plugins/` and install python dependencies.
+4. (If not using dotfiles entirely) Configure nvim and zsh to set hook for the tmux-window-name plugin.
+This is already configured if you are using my dotfiles.
+
+```zsh
+# ~/.zshrc
+tmux-window-name() {
+    ($TMUX_PLUGIN_MANAGER_PATH/tmux-window-name/scripts/rename_session_windows.py &)
+}
+
+add-zsh-hook chpwd tmux-window-name
+```
+
+```lua
+-- ~/.config/nvim/init.lua
+-- NOTE: use /usr/bin/python3 because libtmux is intalled in system python
+vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
+  callback = function()
+    if vim.env.TMUX_PLUGIN_MANAGER_PATH then
+      vim.uv.spawn(
+        "/usr/bin/python3",
+        { args = { vim.env.TMUX_PLUGIN_MANAGER_PATH .. "/tmux-window-name/scripts/rename_session_windows.py" } }
+      )
+    end
+  end,
+})
+```
 
 > [!NOTE]
 > On Mac, for the GPU status to work, add this to the sudoers file (`/etc/sudoers`), replacing the username and omitting the quotes. Be mindful of the two tabs after the username:  

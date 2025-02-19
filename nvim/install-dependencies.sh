@@ -32,18 +32,6 @@ uv pip install -U pynvim jupyter_client cairosvg plotly kaleido pnglatex pypercl
 # Csv align
 uv pip install -U polars typer
 
-# Create venv for jupynium
-path_to_venv="$HOME/.virtualenvs/jupynium"
-
-if [[ -f "$path_to_venv" ]]; then
-    echo "Error: $path_to_venv is a file"
-    exit 1
-fi
-
-if [[ ! -d "$path_to_venv" ]]; then
-    uv venv "$path_to_venv" --python 3.13
-fi
-
 if command -v brew &> /dev/null; then
     # Lint
     brew install ruff

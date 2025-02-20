@@ -31,7 +31,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       end)
     end
     -- ignore pyright / pylance
-    bufmap("n", "<space>ti", make_repeatable_toggle_comment_keymap("type: ignore"), { remap = true })
+    -- bufmap("n", "<space>ti", make_repeatable_toggle_comment_keymap("type: ignore"), { remap = true })
     -- ignore ruff
     bufmap("n", "<space>tQ", make_repeatable_toggle_comment_keymap("noqa"), { remap = true })
     -- black formatting
@@ -41,6 +41,9 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     -- ignore ruff
     bufmap("n", "<space>tq", function()
       require("kiyoon.python_tools").toggle_ruff_noqa()
+    end, { remap = true, desc = "Toggle ruff noqa" })
+    bufmap("n", "<space>ti", function()
+      require("kiyoon.python_tools").toggle_pyright_ignore()
     end, { remap = true, desc = "Toggle ruff noqa" })
     bufmap("n", "<space>tF", function()
       require("kiyoon.python_tools").ruff_fix_current_line()

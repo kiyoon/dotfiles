@@ -112,6 +112,38 @@ M.toggle_ruff_noqa = function(bufnr)
   require("wookayin.lib.python").toggle_line_comment("noqa: " .. code)
 end
 
+---@param winnr integer?
+---@return vim.Diagnostic[]
+local get_pyright_diagnostics_current_line = function(winnr)
+  winnr = winnr or vim.api.nvim_get_current_win()
+  local bufnr = vim.api.nvim_win_get_buf(winnr)
+  local line, _ = unpack(vim.api.nvim_win_get_cursor(winnr))
+  local diagnostics = vim.diagnostic.get(bufnr, { lnum = line - 1 })
+  if vim.tbl_isempty(diagnostics) then
+    return {}
+  end
+  ---@param diagnostic vim.Diagnostic
+  return vim.tbl_filter(function(diagnostic)
+    if diagnostic.source == "Pyright" or diagnostic.source == "basedpyright" then
+      return true
+    end
+    return false
+  end, diagnostics)
+end
+
+---@param winnr integer?
+M.toggle_pyright_ignore = function(winnr)
+  local diagnostics = get_pyright_diagnostics_current_line(winnr)
+
+  local codes = {}
+  for _, diagnostic in ipairs(diagnostics) do
+    table.insert(codes, diagnostic.code)
+  end
+  local code = table.concat(codes, ", ")
+
+  require("wookayin.lib.python").toggle_line_comment("pyright: ignore[" .. code .. "]")
+end
+
 local function notify_diff_pre(bufnr)
   if bufnr == nil then
     bufnr = vim.api.nvim_get_current_buf()
@@ -224,7 +256,7 @@ end
 --   end
 -- end
 
----@param bufnr integer vim buffer number
+---@param bufnr integer? vim buffer number
 ---@param ruff_codes table|string|nil ruff code to fix, if nil, fix all
 M.ruff_fix_current_line = function(bufnr, ruff_codes)
   if bufnr == 0 or bufnr == nil then

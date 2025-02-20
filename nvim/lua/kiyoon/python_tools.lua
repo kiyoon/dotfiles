@@ -160,8 +160,76 @@ local function apply_ruff_fix(fix)
   vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, content)
 end
 
+-- NOTE: Sometimes it can produce equal fixes, so it's better to run ruff again after each fix.
+-- For example, if you want to remove unused imports, and there are two unused imports in the same line,
+-- it will produce two fixes. If you apply the first fix, the second fix will be invalid.
+--
+-- M.ruff_fix_current_line = function(bufnr, ruff_codes)
+--   bufnr = bufnr or vim.api.nvim_get_current_buf()
+--
+--   -- if ruff_code is a string, convert it to a table
+--   if type(ruff_codes) == "string" then
+--     ruff_codes = { ruff_codes }
+--   end
+--
+--   local do_fix_code = {}
+--   if ruff_codes ~= nil then
+--     for _, code in pairs(ruff_codes) do
+--       do_fix_code[code] = true
+--     end
+--   end
+--
+--   local current_line = vim.fn.line(".")
+--   M.run_ruff(bufnr)
+--
+--   if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
+--     vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
+--     return
+--   end
+--
+--   local all_fixes = {}
+--   for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
+--     if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
+--       local fix = ruff_output["fix"]
+--       if fix == vim.NIL then
+--         goto continue
+--       end
+--
+--       local fixes_in_current_edit = {}
+--       for _, edit in ipairs(fix["edits"]) do
+--         edit["message"] = fix["message"]
+--         table.insert(fixes_in_current_edit, edit)
+--       end
+--       -- NOTE: each fix may have multiple edits
+--       -- In this case, we have to reverse the order of the edits
+--       -- Otherwise, the prior edits will ruin the later edits
+--       fixes_in_current_edit = tbl_reverse(fixes_in_current_edit)
+--       vim.list_extend(all_fixes, fixes_in_current_edit)
+--       -- table.insert(all_fixes, fix)
+--     end
+--     ::continue::
+--   end
+--
+--   if #all_fixes == 0 then
+--     vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
+--     return
+--   end
+--
+--   local prev_buf_str = notify_diff_pre(bufnr)
+--   for _, fix in pairs(all_fixes) do
+--     apply_ruff_fix(fix)
+--     notify_diff(bufnr, prev_buf_str, fix["message"])
+--     -- TODO: check if applying all fixes is correct
+--     -- break
+--   end
+-- end
+
+---@param bufnr integer vim buffer number
+---@param ruff_codes table|string|nil ruff code to fix, if nil, fix all
 M.ruff_fix_current_line = function(bufnr, ruff_codes)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  if bufnr == 0 or bufnr == nil then
+    bufnr = vim.api.nvim_get_current_buf()
+  end
 
   -- if ruff_code is a string, convert it to a table
   if type(ruff_codes) == "string" then
@@ -175,48 +243,44 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
     end
   end
 
-  local current_line = vim.fn.line(".")
-  M.run_ruff(bufnr)
-
-  if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
-    vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
-    return
-  end
-
-  local all_fixes = {}
-  for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
-    if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
-      local fix = ruff_output["fix"]
-      if fix == vim.NIL then
-        goto continue
-      end
-
-      local fixes_in_current_edit = {}
-      for _, edit in ipairs(fix["edits"]) do
-        edit["message"] = fix["message"]
-        table.insert(fixes_in_current_edit, edit)
-      end
-      -- NOTE: each fix may have multiple edits
-      -- In this case, we have to reverse the order of the edits
-      -- Otherwise, the prior edits will ruin the later edits
-      fixes_in_current_edit = tbl_reverse(fixes_in_current_edit)
-      vim.list_extend(all_fixes, fixes_in_current_edit)
-      -- table.insert(all_fixes, fix)
-    end
-    ::continue::
-  end
-
-  if #all_fixes == 0 then
-    vim.notify("No ruff fix available for current line", vim.log.levels.ERROR)
-    return
-  end
-
   local prev_buf_str = notify_diff_pre(bufnr)
-  for _, fix in pairs(all_fixes) do
-    apply_ruff_fix(fix)
-    notify_diff(bufnr, prev_buf_str, fix["message"])
-    -- TODO: check if applying all fixes is correct
-    -- break
+  local num_fixed = 0
+  local current_line = vim.fn.line(".")
+
+  -- PERF: this runs ruff multiple times until it doesn't find any fix
+  -- This can be slow but it's the easiest way to implement it
+  -- NOTE: this will run up to 1000 times to avoid infinite loop
+  --- Apply all ruff fixes, optionally only for a specific code
+  repeat
+    M.run_ruff(bufnr)
+    local fixed = false
+    local ruff_outputs = bufnr_to_ruff_per_line[bufnr][current_line]
+    for _, ruff_output in ipairs(ruff_outputs) do
+      if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
+        local fix = ruff_output["fix"]
+        if fix ~= vim.NIL then
+          -- NOTE: each fix may have multiple edits
+          -- In this case, we have to reverse the order of the edits
+          -- Otherwise, the prior edits will ruin the later edits
+          local fixes_in_current_edit = tbl_reverse(fix["edits"])
+          for _, edit in ipairs(fixes_in_current_edit) do
+            apply_ruff_fix(edit)
+          end
+          fixed = true
+          num_fixed = num_fixed + 1
+          break
+        end
+      end
+    end
+    if fixed then
+      break
+    end
+  until not fixed or num_fixed > 1000
+
+  if num_fixed == 0 then
+    vim.notify("No fix available.", vim.log.levels.ERROR)
+  else
+    notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
   end
 end
 

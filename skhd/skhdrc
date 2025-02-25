@@ -6,8 +6,10 @@ cmd + shift + alt - b ; default
 
 alt - 1 : open -a "Finder"
 alt + shift - 1 : open -n -a "Finder" ~
-alt - 2 : open -a "Firefox"
-alt + shift - 2 : open -n -a "Firefox"
+# alt - 2 : open -a "Firefox"
+# alt + shift - 2 : open -n -a "Firefox"
+alt - 2 : open -a "Google Chrome"
+alt + shift - 2 : open -n -a "Google Chrome"
 alt - 3 : open -a "WezTerm"
 alt + shift - 3 : open -n -a "WezTerm"
 alt - 4 : open -a "Telegram"

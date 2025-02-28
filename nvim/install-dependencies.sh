@@ -35,10 +35,12 @@ uv pip install -U polars typer
 if command -v brew &> /dev/null; then
     # Lint
     brew install ruff
+    brew install biome
 
     # Formatter
     brew install stylua
     brew install prettier
+    brew install taplo
 
     brew install tree-sitter
 
@@ -65,10 +67,10 @@ LOCALBIN="$HOME/.local/bin"
 
 # Lint
 uv tool install -U ruff
+npm install -g biome
 
 # Formatter
-# $PIP3 install --user --break-system-packages isort 
-# $PIP3 install --user --break-system-packages black
+npm install -g @taplo/cli
 
 if ! command -v stylua &> /dev/null; then
 	npm install -g @johnnymorganz/stylua-bin

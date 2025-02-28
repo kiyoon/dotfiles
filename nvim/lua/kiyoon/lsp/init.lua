@@ -1,13 +1,14 @@
 local servers = {
   "lua_ls",
-  "cssls",
   "html",
-  "ts_ls",
-  "eslint",
+  -- "cssls",
+  -- "ts_ls",
+  -- "eslint",
+  -- "jsonls",
+  "biome",
   "basedpyright",
   -- "ruff_lsp",
   "bashls",
-  "jsonls",
   "yamlls",
   "vimls",
   "dockerls",
@@ -39,10 +40,10 @@ table.insert(ensure_installed, "rust_analyzer")
 -- Mason makes it easier to install language servers
 -- Always load mason, mason-lspconfig and nvim-lspconfig in order.
 require("mason").setup(settings)
-require("mason-lspconfig").setup {
+require("mason-lspconfig").setup({
   ensure_installed = ensure_installed,
   automatic_installation = true,
-}
+})
 
 local function install_pkg_background(pkg_name)
   local installed_pkgs = require("mason-registry").get_installed_package_names()
@@ -71,8 +72,8 @@ local function install_pkg_background(pkg_name)
 end
 
 -- bashls needs shellcheck, but it's not a server. Thus it's available on mason but not mason-lspconfig's ensure_installed
-install_pkg_background "shellcheck"
-install_pkg_background "actionlint"
+install_pkg_background("shellcheck")
+install_pkg_background("actionlint")
 
 -- require("neodev").setup {
 --   override = function(root_dir, library)
@@ -81,8 +82,8 @@ install_pkg_background "actionlint"
 --   end,
 -- } -- make sure to call this before lspconfig
 
-local lspconfig = require "lspconfig"
-local handlers = require "kiyoon.lsp.handlers"
+local lspconfig = require("lspconfig")
+local handlers = require("kiyoon.lsp.handlers")
 handlers.setup()
 
 for _, server in pairs(servers) do
@@ -104,7 +105,7 @@ end
 
 local status, wk = pcall(require, "which-key")
 if status then
-  wk.add {
+  wk.add({
     { "<space>p", group = "LS[P] (language server)" },
-  }
+  })
 end

@@ -1,15 +1,11 @@
-local function starts_with(str, start)
-  return str:sub(1, #start) == start
-end
-
 local function treesitter_selection_mode(info)
   -- * query_string: eg '@function.inner'
   -- * method: eg 'v' or 'o'
   --print(info['method'])		-- visual, operator-pending
-  -- if starts_with(info["query_string"], "@function.") then
+  -- if vim.startswith(info["query_string"], "@function.") then
   --   return "V"
   -- end
-  if starts_with(info["query_string"], "@class.") then
+  if vim.startswith(info["query_string"], "@class.") then
     return "V"
   end
   return "v"
@@ -18,9 +14,9 @@ end
 local function treesitter_incwhitespaces(info)
   -- * query_string: eg '@function.inner'
   -- * selection_mode: eg 'charwise', 'linewise', 'blockwise'
-  -- if starts_with(info['query_string'], '@function.') then
+  -- if vim.startswith(info['query_string'], '@function.') then
   --  return false
-  -- elseif starts_with(info['query_string'], '@comment.') then
+  -- elseif vim.startswith(info['query_string'], '@comment.') then
   --  return false
   -- end
   return false

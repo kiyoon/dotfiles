@@ -20,10 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		curl \
 		git \
 		git-lfs \
-		vim-gtk \
+		vim-gtk3 \
 		virtualenv \
 		tzdata \
-		libgl1-mesa-glx \
+		libgl1 \
 		sudo \
 		locales \
 		cargo \

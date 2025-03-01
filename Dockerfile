@@ -89,14 +89,17 @@ RUN chmod 777 $HOME/bin -R
 
 # NOTE: error: too many open files if we install all of them at once
 RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix
-RUN sudo -i -u linuxbrew brew install neovim tmux tree-sitter stylua prettier ruff isort black imagemagick
+RUN sudo -i -u linuxbrew brew install neovim tmux tree-sitter stylua prettier ruff uv imagemagick
 
 # Neovim dependencies
-RUN pip3 install --user virtualenv # for Mason.nvim
-RUN pip3 install --user virtualenvwrapper
-RUN pip3 install --user debugpy
-RUN pip3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
-RUN npm install -g neovim
+# RUN pip3 install --user virtualenv # for Mason.nvim
+# RUN pip3 install --user virtualenvwrapper
+# RUN pip3 install --user debugpy
+# RUN pip3 install --user pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
+# RUN npm install -g neovim
+COPY --chown=docker1000:docker1000 ./nvim/install-dependencies.sh $HOME
+RUN $HOME/install-dependencies.sh
+RUN rm $HOME/install-dependencies.sh
 
 # NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with `symlink.sh`.
 COPY --chown=docker1000:docker1000 ./tmux/.tmux.conf $HOME
@@ -120,7 +123,7 @@ RUN tempfile=$(mktemp) \
 COPY --chown=docker1000:docker1000 ./nvim $HOME/.config/nvim
 RUN nvim +"lua require('lazy').restore({wait=true})" +qa
 RUN nvim -u $DOTFILES_PATH/nvim/treemux_init.lua +"lua require('lazy').restore({wait=true})" +qa
-RUN nvim a.py +"CocInstall -sync coc-pyright" +qa
+# RUN nvim a.py +"CocInstall -sync coc-pyright" +qa
 RUN nvim a.py +TSUpdateSync +qa
 
 COPY --chown=docker1000:docker1000 ./ranger $DOTFILES_PATH/ranger

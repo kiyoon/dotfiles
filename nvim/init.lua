@@ -228,3 +228,11 @@ vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
 local make_repeatable_keymap = require("wookayin.utils").make_repeatable_keymap
 local cycle_case = require("kiyoon.tools.cycle_case")
 vim.keymap.set("n", "<space>ta", make_repeatable_keymap("n", "<Plug>(cycle-case)", cycle_case), { remap = true })
+
+-- NOTE: yanky.nvim has the same feature but it doesn't work with built-in yank.
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank({ timeout = 300 })
+  end,
+})

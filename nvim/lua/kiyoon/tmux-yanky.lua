@@ -1,5 +1,5 @@
 -- Integrates tmux.nvim with yanky.nvim and which-key.nvim so we get the benefits of all yank-related plugins.
-require("tmux").setup {
+require("tmux").setup({
   copy_sync = {
     enable = true,
     sync_clipboard = false,
@@ -11,22 +11,22 @@ require("tmux").setup {
     resize_step_x = 4,
     resize_step_y = 2,
   },
-}
+})
 
 -- since we want to use sync_registers with yanky.nvim, we need to
 -- configure keybindings manually.
-local yanky = require "yanky"
-local yanky_wrappers = require "yanky.wrappers"
-yanky.setup {
+local yanky = require("yanky")
+local yanky_wrappers = require("yanky.wrappers")
+yanky.setup({
   ring = {
     ignore_registers = { "_", "+", "*" },
   },
   highlight = {
     on_put = true,
-    on_yank = true,
+    on_yank = false, -- we use vim.highlight.on_yank() instead
     timer = 300,
   },
-}
+})
 vim.keymap.set("n", "p", function()
   if vim.env.TMUX then
     require("tmux.copy").sync_registers()
@@ -85,4 +85,4 @@ vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleBackward)")
 vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
 vim.keymap.set("n", "=p", "<Plug>(YankyPutAfterFilter)")
 vim.keymap.set("n", "=P", "<Plug>(YankyPutBeforeFilter)")
-require("telescope").load_extension "yank_history"
+require("telescope").load_extension("yank_history")

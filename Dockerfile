@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 nvidia/cuda:12.1.1-base-ubuntu22.04
+FROM ubuntu:24.04
 LABEL org.opencontainers.image.source="https://github.com/kiyoon/dotfiles"
 
 SHELL ["/bin/bash", "-c"]

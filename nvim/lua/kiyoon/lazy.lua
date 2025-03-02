@@ -327,43 +327,82 @@ return {
       end, { desc = "Make markdown hyperlink" })
     end,
   },
+  -- {
+  --   -- I don't use autopairs. I only need this for fast-wrap.
+  --   -- <A-e> in insert mode to add closing pair without moving cursor
+  --   -- Similar to nvim-surround, but works in insert mode
+  --   "windwp/nvim-autopairs",
+  --   keys = {
+  --     { "<m-e>", mode = "i" },
+  --   },
+  --   config = function()
+  --     local ap = require("nvim-autopairs")
+  --     ap.setup({
+  --       -- Disable auto fast wrap
+  --       enable_afterquote = false,
+  --       -- <A-e> to manually trigger fast wrap
+  --       fast_wrap = {},
+  --     })
+  --
+  --     -- Remove all autopair rules, but keep the fast wrap
+  --     local function manual_trigger(opening, closing)
+  --       local rule
+  --       if ap.get_rule(opening)[1] == nil then
+  --         rule = ap.get_rule(opening)
+  --       else
+  --         rule = ap.get_rule(opening)[1]
+  --       end
+  --       rule:use_key("<m-p>"):replace_endpair(function()
+  --         -- repeat the number of characters in the closing pair
+  --         return closing .. string.rep("<left>", #closing)
+  --       end)
+  --     end
+  --     manual_trigger("'", "'")
+  --     manual_trigger('"', '"')
+  --     manual_trigger("`", "`")
+  --     manual_trigger("{", "}")
+  --     manual_trigger("(", ")")
+  --     manual_trigger("[", "]")
+  --   end,
+  -- },
   {
-    -- I don't use autopairs. I only need this for fast-wrap.
-    -- <A-e> in insert mode to add closing pair without moving cursor
-    -- Similar to nvim-surround, but works in insert mode
-    "windwp/nvim-autopairs",
+    "xzbdmw/clasp.nvim",
     keys = {
-      { "<m-e>", mode = "i" },
+      {
+        "<c-;>",
+        function()
+          require("clasp").wrap("next")
+        end,
+        mode = { "n", "i" },
+        desc = "Wrap next",
+      },
+      {
+        "<c-,>",
+        function()
+          require("clasp").wrap("prev")
+        end,
+        mode = { "n", "i" },
+        desc = "Wrap prev",
+      },
+      -- If you want to exclude nodes whose end row is not current row
+      {
+        "<c-'>",
+        function()
+          require("clasp").wrap("next", function(nodes)
+            local n = {}
+            for _, node in ipairs(nodes) do
+              if node.end_row == vim.api.nvim_win_get_cursor(0)[1] - 1 then
+                table.insert(n, node)
+              end
+            end
+            return n
+          end)
+        end,
+        mode = { "n", "i" },
+        desc = "Wrap next (same line)",
+      },
     },
-    config = function()
-      local ap = require("nvim-autopairs")
-      ap.setup({
-        -- Disable auto fast wrap
-        enable_afterquote = false,
-        -- <A-e> to manually trigger fast wrap
-        fast_wrap = {},
-      })
-
-      -- Remove all autopair rules, but keep the fast wrap
-      local function manual_trigger(opening, closing)
-        local rule
-        if ap.get_rule(opening)[1] == nil then
-          rule = ap.get_rule(opening)
-        else
-          rule = ap.get_rule(opening)[1]
-        end
-        rule:use_key("<m-p>"):replace_endpair(function()
-          -- repeat the number of characters in the closing pair
-          return closing .. string.rep("<left>", #closing)
-        end)
-      end
-      manual_trigger("'", "'")
-      manual_trigger('"', '"')
-      manual_trigger("`", "`")
-      manual_trigger("{", "}")
-      manual_trigger("(", ")")
-      manual_trigger("[", "]")
-    end,
+    opts = {},
   },
   {
     "numToStr/Comment.nvim",

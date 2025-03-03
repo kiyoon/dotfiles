@@ -37,7 +37,7 @@ yabai -m rule --add app="^Impostazioni di Sistema$" manage=off
 yabai -m rule --add app="^Compression Utility$" manage=off
 yabai -m rule --add app="^Utilidad de Compresión$" manage=off
 yabai -m rule --add app="^Utilitário de Compressão$" manage=off
-yabai -m rule --add app="^Utilità di Compressione$" manage=off
+yabai -m rule --add app="^Utility Compressione$" manage=off
 
 yabai -m rule --add app="^Karabiner-Elements$" manage=off
 yabai -m rule --add app="^Finder$" title="(Copiar|Conectar|Mover)" manage=off
@@ -52,7 +52,18 @@ yabai -m rule --add app="^balenaEtcher$" manage=off
 yabai -m rule --add app="^Creative Cloud$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Alfred Preferences$" manage=off
+
+# I don't know if these rules matter..
 # yabai -m rule --add label="Finder" app="^Finder$" title="(Co(py|nnect)|Move|Info|Pref)" manage=off
+yabai -m rule --add \
+         app="^Finder$" \
+         title="(Copy|Connect|Move|Info|Finder Settings)" \
+         manage=off
+yabai -m rule --add \
+         app="^Finder$" \
+         title="(Copia|Connectar|Mover)" \
+         manage=off
+
 yabai -m rule --add label="Safari" app="^Safari$" title="^(General|(Tab|Password|Website|Extension)s|AutoFill|Se(arch|curity)|Privacy|Advance)$" manage=off
 yabai -m rule --add label="macfeh" app="^macfeh$" manage=off
 yabai -m rule --add label="App Store" app="^App Store$" manage=off

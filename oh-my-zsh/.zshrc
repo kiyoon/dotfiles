@@ -90,6 +90,9 @@ ZVM_INIT_MODE=sourcing
 # 	fi
 # }
 
+ZVM_ESCAPE_KEYTIMEOUT=0.0
+ZVM_KEYTIMEOUT=0.0
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/

@@ -14,7 +14,13 @@ return {
     Lua = {
       diagnostics = {
         -- neovim development, with plenary tests
-        globals = { "vim", "describe", "it", "before_each", "after_each" },
+        globals = {
+          "vim",
+          "describe",
+          "it",
+          "before_each",
+          "after_each",
+        },
       },
       -- workspace = {
       --   library = {

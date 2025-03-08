@@ -4,7 +4,27 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Rcmd to ctrl cmd shift spacebar",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "spacebar",
+                                        "modifiers": ["left_control", "left_command", "left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "R cmd/alt to hangul (ctrl option cmd spacebar) in Gureum, or with Spanish or French change to Guerum and hangul",
+                        "enabled": false,
                         "manipulators": [
                             {
                                 "conditions": [
@@ -271,6 +291,10 @@
                 {
                     "from": { "key_code": "right_option" },
                     "to": [{ "key_code": "left_command" }]
+                },
+                {
+                    "from": { "key_code": "right_command" },
+                    "to": [{ "key_code": "f18" }]
                 }
             ],
             "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }

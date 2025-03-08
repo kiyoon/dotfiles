@@ -54,6 +54,7 @@ vim.opt.iskeyword:append("-") -- treats words with `-` as single words
 vim.o.cursorline = true
 vim.o.inccommand = "split"
 vim.o.updatetime = 500
+vim.o.exrc = true -- read config from .exrc.lua / .nvimrc.lua
 
 -- This may cause lualine to flicker
 -- vim.o.cmdheight = 0

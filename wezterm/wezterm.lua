@@ -13,6 +13,8 @@ local config = {
 
 	max_fps = 120,
 
+	window_decorations = "RESIZE",
+
 	-- undercurl becomes ugly if underline_position < -4
 	underline_position = -4,
 	keys = {

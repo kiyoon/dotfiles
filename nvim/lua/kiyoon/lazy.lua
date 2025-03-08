@@ -2358,7 +2358,7 @@ return {
       vim.cmd([[let hangeul_enabled = 1]])
     end,
     config = function()
-      vim.keymap.set("i", "<C-h>", "<Plug>HanMode", { noremap = false, silent = true })
+      vim.keymap.set({ "i", "n" }, "<C-h>", "<Plug>HanMode", { noremap = false, silent = true })
     end,
   },
   {

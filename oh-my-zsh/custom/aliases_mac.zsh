@@ -6,5 +6,6 @@ if [[ $OSTYPE == "darwin"* ]]; then
 		alias cp='coreutils cp'
 		alias rm='coreutils rm'
 		alias mv='coreutils mv'
+		alias mkdir='coreutils mkdir'
 	fi
 fi

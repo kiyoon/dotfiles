@@ -4,13 +4,25 @@ hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
 -- Korean-English input source switch
 -- when in Wezterm and inside nvim, press ctrl+h (activate hanguel.vim plugin)
 
+local function is_nvim_command_mode(ansi_text)
+  if
+    string.match(ansi_text, [[ .%[38:2::27:29:43m.%[48:2::255:199:119m ]])
+    or string.match(
+      ansi_text,
+      [[.%[38:2::27:29:43m.%[48:2::255:199:119m COMMAND .%[38:2::255:199:119m.%[48:2::59:66:97m ]]
+    )
+  then
+    return true
+  end
+  return false
+end
 -- 동작 원리
 -- 1. wezterm인지 확인
--- 2. window title이 vi 인지 확인 -> ctrl+h
+-- 2. window title이 vi 인지 확인 -> ctrl+i
 -- 3. window title이 tmux 인지 확인
 --    -> wezterm cli get-text 실행해 active pane border format (title) 이 nvim인지 확인
 --    -> command mode 아닌지 확인 (lualine 왼쪽 "COMMAND" 혹은 오른쪽 "  " 색깔로 구분. tokyonight theme 가정. command mode nvim이 여러개 있지 않다는 가정..)
---    -> ctrl+h
+--    -> ctrl+i
 -- 4. 구름입력기이면 cmd shift ctrl space
 -- 5. 구름입력기가 아니면 강제로 구름입력기 한글로 전환
 hs.hotkey.bind({}, "f18", function()
@@ -23,21 +35,26 @@ hs.hotkey.bind({}, "f18", function()
     local window_title = current_app:focusedWindow():title()
     -- ends with vi/vim/nvim
     -- e.g. [1/2] vi
-    -- print(window_title)
+    print(window_title)
     if
       string.match(window_title, " vi$")
       or string.match(window_title, " vim$")
       or string.match(window_title, " nvim$")
+      or string.match(window_title, "^vi$")
+      or string.match(window_title, "^vim$")
+      or string.match(window_title, "^nvim$")
     then
       print("vim")
-      if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
-        hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+      if not is_nvim_command_mode(output) then
+        if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
+          hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+        end
+        hs.eventtap.keyStroke({ "ctrl" }, "i")
+        return
       end
-      hs.eventtap.keyStroke({ "ctrl" }, "h")
-      return
     end
 
-    if string.match(window_title, " tmux$") then
+    if string.match(window_title, " tmux$") or string.match(window_title, "^tmux$") then
       -- print("tmux")
       -- In tmux, use wezterm cli to get text of the pane
       -- and detect if the pane border title has nvim
@@ -59,18 +76,12 @@ hs.hotkey.bind({}, "f18", function()
         and string.match(output, [[nvim .%[38:2::98:114:164m.%[49m─]])
       then
         -- print("nvim in tmux")
-        if
-          not string.match(output, [[ .%[38:2::27:29:43m.%[48:2::255:199:119m ]])
-          and not string.match(
-            output,
-            [[.%[38:2::27:29:43m.%[48:2::255:199:119m COMMAND .%[38:2::255:199:119m.%[48:2::59:66:97m ]]
-          )
-        then
+        if not is_nvim_command_mode(output) then
           -- print("not in command mode")
           if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
             hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
           end
-          hs.eventtap.keyStroke({ "ctrl" }, "h")
+          hs.eventtap.keyStroke({ "ctrl" }, "i")
           return
         end
       end

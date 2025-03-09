@@ -21,6 +21,9 @@ return {
           "before_each",
           "after_each",
         },
+        disable = {
+          "unused-function",
+        },
       },
       -- workspace = {
       --   library = {

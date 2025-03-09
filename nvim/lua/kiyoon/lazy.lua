@@ -4,6 +4,7 @@ local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 local python_import_dev = false
+local korean_ime_dev = false
 
 local icons = require("kiyoon.icons")
 
@@ -369,7 +370,7 @@ return {
     "xzbdmw/clasp.nvim",
     keys = {
       {
-        "<c-;>",
+        "<A-;>",
         function()
           require("clasp").wrap("next")
         end,
@@ -377,7 +378,7 @@ return {
         desc = "Wrap next",
       },
       {
-        "<c-,>",
+        "<A-,>",
         function()
           require("clasp").wrap("prev")
         end,
@@ -386,7 +387,7 @@ return {
       },
       -- If you want to exclude nodes whose end row is not current row
       {
-        "<c-'>",
+        "<A-'>",
         function()
           require("clasp").wrap("next", function(nodes)
             local n = {}
@@ -2352,13 +2353,35 @@ return {
     },
     opts = {},
   },
+  -- {
+  --   "lifthrasiir/hangeul.vim",
+  --   init = function()
+  --     vim.g.hangeul_enabled = 1
+  --   end,
+  --   config = function()
+  --     vim.keymap.set({ "i", "n" }, "<C-i>", "<Plug>HanMode", { noremap = false, silent = true })
+  --   end,
+  -- },
   {
-    "lifthrasiir/hangeul.vim",
-    init = function()
-      vim.cmd([[let hangeul_enabled = 1]])
-    end,
+    "kiyoon/Korean-IME.nvim",
+    dev = korean_ime_dev,
+    keys = {
+      -- lazy load on 한영전환
+      {
+        "<C-i>",
+        function()
+          require("korean_ime").change_mode()
+        end,
+        mode = { "i", "n", "x", "s" },
+        desc = "한/영",
+      },
+    },
     config = function()
-      vim.keymap.set({ "i", "n" }, "<C-h>", "<Plug>HanMode", { noremap = false, silent = true })
+      require("korean_ime").setup()
+
+      vim.keymap.set("i", "<C-h>", function()
+        require("korean_ime").convert_hanja()
+      end, { noremap = true, silent = true, desc = "한자" })
     end,
   },
   {
@@ -2637,6 +2660,32 @@ return {
           --    return "Use A instead of $a"
           -- end,
           -- length = 2,
+        },
+
+        -- hints for f/F/t/T
+        ["[^dcy=]f.h"] = {
+          -- message = function(keys)
+          --   return "Use t" .. keys:sub(3, 3) .. " instead of " .. keys:sub(2)
+          -- end,
+          -- length = 4,
+        },
+        ["[^dcy=]F.l"] = {
+          -- message = function(keys)
+          --   return "Use T" .. keys:sub(3, 3) .. " instead of " .. keys:sub(2)
+          -- end,
+          -- length = 4,
+        },
+        ["[^dcy=]T.h"] = {
+          -- message = function(keys)
+          --   return "Use F" .. keys:sub(3, 3) .. " instead of " .. keys:sub(2)
+          -- end,
+          -- length = 4,
+        },
+        ["[^dcy=]t.l"] = {
+          -- message = function(keys)
+          --   return "Use f" .. keys:sub(3, 3) .. " instead of " .. keys:sub(2)
+          -- end,
+          -- length = 4,
         },
       },
     },

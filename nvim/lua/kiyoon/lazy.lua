@@ -4,7 +4,8 @@ local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 local python_import_dev = false
-local korean_ime_dev = false
+local korean_ime_dev = true
+local tmuxsend_dev = true
 
 local icons = require("kiyoon.icons")
 
@@ -20,6 +21,7 @@ return {
   },
   {
     "kiyoon/tmuxsend.vim",
+    dev = tmuxsend_dev,
     keys = {
       {
         "-",

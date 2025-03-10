@@ -1,6 +1,6 @@
 local lang = require("kiyoon.lang").lang
 
-M = {}
+local M = {}
 
 ---Ensure translations are always in the order: es, pt-br, and fr
 M.translate_ruff_message = function(code, message)

@@ -13,9 +13,9 @@ Usages:
 :vnoremap <leader>! :'<,'>X command<cr>
 --]]
 
-M = {}
+local M = {}
 
-MARK_NS = vim.api.nvim_create_namespace "AsyncShell"
+MARK_NS = vim.api.nvim_create_namespace("AsyncShell")
 MAX_LENGTH = 100000
 
 local last_job_id = 0
@@ -39,8 +39,8 @@ function M.AsyncShell(command, ex, line1, line2)
     end_row = line1
     end_col = 1
   else
-    _, start_row, start_col = unpack(vim.fn.getpos "'<")
-    _, end_row, end_col = unpack(vim.fn.getpos "'>")
+    _, start_row, start_col = unpack(vim.fn.getpos("'<"))
+    _, end_row, end_col = unpack(vim.fn.getpos("'>"))
 
     -- print(
     --   command .. ', ' .. bufnum .. ', (' .. start_row .. '/' .. line1 .. ',' .. start_col .. '), (' .. end_row .. '/' .. line2 .. ', ' .. end_col .. ')')
@@ -133,9 +133,9 @@ function M.AsyncShell(command, ex, line1, line2)
   print(string.format("To kill [%s]> :call jobstop(%d)", command, job_id))
 end
 
-vim.cmd [[command! -nargs=1 -range X  lua require('kiyoon.async_run').AsyncShell(<q-args>, '!', <line1>, <line2>) ]]
-vim.cmd [[command! -nargs=1 -range Xr lua require('kiyoon.async_run').AsyncShell(<q-args>, 'r', <line1>, <line2>) ]]
-vim.cmd [[command! -nargs=1 -range Xw lua require('kiyoon.async_run').AsyncShell(<q-args>, 'w', <line1>, <line2>) ]]
-vim.cmd [[command! Xstop lua require('kiyoon.async_run').KillAsyncShell() ]]
+vim.cmd([[command! -nargs=1 -range X  lua require('kiyoon.async_run').AsyncShell(<q-args>, '!', <line1>, <line2>) ]])
+vim.cmd([[command! -nargs=1 -range Xr lua require('kiyoon.async_run').AsyncShell(<q-args>, 'r', <line1>, <line2>) ]])
+vim.cmd([[command! -nargs=1 -range Xw lua require('kiyoon.async_run').AsyncShell(<q-args>, 'w', <line1>, <line2>) ]])
+vim.cmd([[command! Xstop lua require('kiyoon.async_run').KillAsyncShell() ]])
 
 return M

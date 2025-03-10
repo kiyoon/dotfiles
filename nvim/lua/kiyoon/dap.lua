@@ -1,14 +1,14 @@
-M = {}
+local M = {}
 
 local status, wk = pcall(require, "which-key")
 if status then
-  wk.add {
+  wk.add({
     { "<space>d", group = "DAP (Debugger)" },
-  }
+  })
 end
 
 M.load_files_with_breakpoints = function()
-  local pb_utils = require "persistent-breakpoints.utils"
+  local pb_utils = require("persistent-breakpoints.utils")
 
   local pb_path = pb_utils.get_bps_path()
   local breakpoints = pb_utils.load_bps(pb_path)
@@ -27,7 +27,7 @@ M.load_files_with_breakpoints = function()
       vim.cmd.buffer(cur_bufnr)
     end)
   else
-    vim.notify "No persistent-breakpoints file found for this project."
+    vim.notify("No persistent-breakpoints file found for this project.")
   end
 end
 

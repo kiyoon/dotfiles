@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 ---Register a global internal keymap that wraps `rhs` to be repeatable.
 ---@param mode string|table keymap mode, see vim.keymap.set()

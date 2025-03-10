@@ -1,4 +1,4 @@
-M = {
+return {
   -- https://github.com/neovim/nvim-lspconfig/pull/2984
   -- by default, biome is active only when biome.json is configured.
   -- this changes the behavior to be active with single files.
@@ -14,5 +14,3 @@ M = {
   single_file_support = true,
   -- settings = {},
 }
-
-return M

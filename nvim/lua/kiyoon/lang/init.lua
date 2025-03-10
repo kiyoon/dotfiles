@@ -1,6 +1,6 @@
 -- check environment variable
 
-M = {}
+local M = {}
 
 local lang_env = os.getenv("LANG")
 

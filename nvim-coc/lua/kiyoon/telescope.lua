@@ -85,7 +85,7 @@ end
 
 local builtin = require("telescope.builtin")
 
-M = {}
+local M = {}
 M.live_grep_gitdir = function()
 	local git_dir = get_git_dir()
 	if git_dir == "" then

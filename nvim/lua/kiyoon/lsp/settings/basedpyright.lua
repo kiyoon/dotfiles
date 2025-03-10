@@ -1,9 +1,4 @@
--- NOTE: in nvim 0.9.5, if you import this module at the bottom,
--- it will sometimes not work, returning `lang` instaed of `M`.
--- Super strange, likely a bug in nvim.
--- local lang = require("kiyoon.lang").lang
-
-M = {
+local M = {
   -- handlers = {
   --   ["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
   --     virtual_text = { spacing = 0, prefix = "" },

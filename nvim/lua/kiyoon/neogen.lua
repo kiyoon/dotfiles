@@ -1,6 +1,6 @@
 local i = require("neogen.types.template").item
 
-M = {}
+local M = {}
 
 M.google_docstrings_notypes = {
   { nil, '"""$1"""', { no_results = true, type = { "class", "func" } } },

@@ -3,12 +3,12 @@ if not tele_status_ok then
   return
 end
 
-local actions = require "telescope.actions"
-local path_actions = require "telescope_insert_path"
-local trouble = require "trouble.sources.telescope"
-local lga_actions = require "telescope-live-grep-args.actions"
+local actions = require("telescope.actions")
+local path_actions = require("telescope_insert_path")
+local trouble = require("trouble.sources.telescope")
+local lga_actions = require("telescope-live-grep-args.actions")
 
-telescope.setup {
+telescope.setup({
   defaults = {
 
     prompt_prefix = " ",
@@ -72,7 +72,7 @@ telescope.setup {
       mappings = { -- extend mappings
         i = {
           ["<C-y>"] = lga_actions.quote_prompt(),
-          ["<C-i>"] = lga_actions.quote_prompt { postfix = " --iglob " },
+          ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
         },
       },
       -- ... also accepts theme settings, for example:
@@ -81,22 +81,22 @@ telescope.setup {
       -- layout_config = { mirror=true }, -- mirror preview pane
     },
   },
-}
+})
 
 -- This has to be loaded after telescope.setup, otherwise the keymaps don't get set
-telescope.load_extension "live_grep_args"
+telescope.load_extension("live_grep_args")
 
-local builtin = require "telescope.builtin"
+local builtin = require("telescope.builtin")
 
-M = {}
+local M = {}
 M.live_grep_gitdir = function()
   local git_dir = vim.fs.root(0, ".git")
   if git_dir == nil then
     builtin.live_grep()
   else
-    builtin.live_grep {
+    builtin.live_grep({
       cwd = git_dir,
-    }
+    })
   end
 end
 
@@ -105,9 +105,9 @@ M.grep_string_gitdir = function()
   if git_dir == nil then
     builtin.grep_string()
   else
-    builtin.grep_string {
+    builtin.grep_string({
       cwd = git_dir,
-    }
+    })
   end
 end
 

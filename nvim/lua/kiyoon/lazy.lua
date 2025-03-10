@@ -5,7 +5,7 @@ local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 local python_import_dev = false
 local korean_ime_dev = false
-local tmux_send_dev = true
+local tmux_send_dev = false
 
 local icons = require("kiyoon.icons")
 
@@ -22,43 +22,53 @@ return {
   {
     "kiyoon/tmux-send.nvim",
     dev = tmux_send_dev,
-    -- keys = {
-    --   {
-    --     "-",
-    --     "<Plug>(tmuxsend-smart)",
-    --     mode = { "n", "x" },
-    --     desc = "Send to tmux (smart)",
-    --   },
-    --   {
-    --     "_",
-    --     "<Plug>(tmuxsend-plain)",
-    --     mode = { "n", "x" },
-    --     desc = "Send to tmux (plain)",
-    --   },
-    --   {
-    --     "<space>-",
-    --     "<Plug>(tmuxsend-uid-smart)",
-    --     mode = { "n", "x" },
-    --     desc = "Send to tmux w/ pane uid (smart)",
-    --   },
-    --   {
-    --     "<space>_",
-    --     "<Plug>(tmuxsend-uid-plain)",
-    --     mode = { "n", "x" },
-    --     desc = "Send to tmux w/ pane uid (plain)",
-    --   },
-    --   { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" }, desc = "Yank to tmux buffer" },
     keys = {
       {
         "-",
         function()
           require("tmux_send").send_to_pane()
           -- (Optional) exit visual mode after sending
-          -- vim.cmd("normal! <Esc>")
           vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
         end,
-        mode = { "n", "x", "s" },
-        desc = "Send to tmux pane (smart)",
+        mode = { "n", "x" },
+        desc = "Send to tmux pane",
+      },
+      {
+        "_",
+        function()
+          require("tmux_send").send_to_pane({ add_newline = false })
+          -- (Optional) exit visual mode after sending
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+        end,
+        mode = { "n", "x" },
+        desc = "Send to tmux pane (plain)",
+      },
+      {
+        "<space>-",
+        function()
+          require("tmux_send").send_to_pane({ count_is_uid = true })
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+        end,
+        mode = { "n", "x" },
+        desc = "Send to tmux pane w/ pane uid",
+      },
+      {
+        "<space>_",
+        function()
+          require("tmux_send").send_to_pane({ count_is_uid = true, add_newline = false })
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+        end,
+        mode = { "n", "x" },
+        desc = "Send to tmux pane w/ pane uid (plain)",
+      },
+      {
+        "<C-_>",
+        function()
+          require("tmux_send").save_to_tmux_buffer()
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+        end,
+        mode = { "n", "x" },
+        desc = "Save to tmux buffer",
       },
     },
   },

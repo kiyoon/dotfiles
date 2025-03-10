@@ -84,6 +84,21 @@ local config = {
 	enable_kitty_graphics = true,
 }
 
+-- disable ctrl+shift +/- zooming
+-- in favour of using cmd + = and cmd + -
+if wezterm.target_triple == "aarch64-apple-darwin" then
+	table.insert(config.keys, {
+		key = "+",
+		mods = "CTRL|SHIFT",
+		action = wezterm.action.DisableDefaultAssignment,
+	})
+	table.insert(config.keys, {
+		key = "_",
+		mods = "CTRL|SHIFT",
+		action = wezterm.action.DisableDefaultAssignment,
+	})
+end
+
 -- config.hyperlink_rules = wezterm.default_hyperlink_rules()
 -- NOTE: the default rule doesn't work well with parens, brackets, or braces.
 -- Updated rules following https://github.com/wez/wezterm/issues/3803

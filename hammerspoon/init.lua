@@ -28,14 +28,14 @@ end
 hs.hotkey.bind({}, "f18", function()
   local input_source = hs.keycodes.currentSourceID()
   local current_app = hs.application.frontmostApplication()
-  print(current_app:name())
+  print("current_app: " .. current_app:name())
 
   if current_app:name() == "WezTerm" then
     -- get current window title
     local window_title = current_app:focusedWindow():title()
     -- ends with vi/vim/nvim
     -- e.g. [1/2] vi
-    print(window_title)
+    print("window_title: " .. window_title)
     if
       string.match(window_title, " vi$")
       or string.match(window_title, " vim$")
@@ -44,7 +44,7 @@ hs.hotkey.bind({}, "f18", function()
       or string.match(window_title, "^vim$")
       or string.match(window_title, "^nvim$")
     then
-      print("vim")
+      print("program in wezterm is vi")
       if not is_nvim_command_mode(output) then
         if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
           hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
@@ -55,7 +55,7 @@ hs.hotkey.bind({}, "f18", function()
     end
 
     if string.match(window_title, " tmux$") or string.match(window_title, "^tmux$") then
-      -- print("tmux")
+      print("program in wezterm is tmux")
       -- In tmux, use wezterm cli to get text of the pane
       -- and detect if the pane border title has nvim
       -- and the focus is in the pane
@@ -73,16 +73,20 @@ hs.hotkey.bind({}, "f18", function()
         and type == "exit"
         and rc == 0
         and output ~= nil
-        and string.match(output, [[nvim .%[38:2::98:114:164m.%[49m─]])
+        -- and not string.match(output, [[nvim .%[38:2::98:114:164m.%[49m%[38:2::68:71:90m]])
       then
-        -- print("nvim in tmux")
-        if not is_nvim_command_mode(output) then
-          -- print("not in command mode")
-          if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
-            hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+        -- drop the first line of the output because in tmux usually it prints another window wrongly and the actual content starts from let's say the 3rd line.
+        output = string.match(output, "\n(.*)")
+        if string.match(output, [[nvim% .%[38:2::98:114:164m.%[49m───]]) then
+          print("nvim in tmux")
+          if not is_nvim_command_mode(output) then
+            print("not in command mode")
+            if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
+              hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+            end
+            hs.eventtap.keyStroke({ "ctrl" }, "i")
+            return
           end
-          hs.eventtap.keyStroke({ "ctrl" }, "i")
-          return
         end
       end
     end

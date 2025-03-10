@@ -105,6 +105,14 @@ You can even use mouse right click.
 - Ctrl+a + `:move-pane -h -t '.{up-of}'`: horizontal split to vertical
 - Ctrl+a + `:move-pane -t '.{left-of}'`: vertical split to horizontal
 
+### Move pane to next/previous window
+
+> [!NOTE]
+> This only works if you installed the `./scripts/` dir in `~/.config/dotfiles/tmux/scripts/...`
+
+- Ctrl+a + N: move pane to the next window (repeatable. Keep pressing N)
+- Ctrl+a + P: move pane to the previous window (repeatable. Keep pressing P)
+
 ### Copy / scroll
 
 - Ctrl+a + \[: Copy mode (use vim commands to scroll)

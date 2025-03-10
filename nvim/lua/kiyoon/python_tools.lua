@@ -1,3 +1,5 @@
+local notify = require("kiyoon.notify").notify
+
 local M = {}
 
 ---key: bufnr
@@ -46,7 +48,7 @@ M.run_ruff = function(bufnr)
 
   if response.code ~= 0 and response.code ~= 1 then
     -- NOTE: ruff returns 1 when there are violations
-    vim.notify(string.format("Failed to run ruff with code %d", response.code), vim.log.levels.ERROR)
+    notify(string.format("Failed to run ruff with code %d", response.code), vim.log.levels.ERROR)
   end
   local ruff_outputs = response.stdout:gsub("\n$", "")
   local ruff_outputs_list = vim.split(ruff_outputs, "\n")
@@ -87,7 +89,7 @@ M.toggle_ruff_noqa = function(bufnr)
   M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
-    vim.notify("No ruff error on current line", vim.log.levels.ERROR)
+    notify("No ruff error on current line", vim.log.levels.ERROR)
     return
   end
 
@@ -104,7 +106,7 @@ M.toggle_ruff_noqa = function(bufnr)
   end
 
   if #codes == 0 then
-    vim.notify("No ruff error on current line", vim.log.levels.ERROR)
+    notify("No ruff error on current line", vim.log.levels.ERROR)
     return
   end
 
@@ -166,7 +168,7 @@ local function notify_diff(bufnr, prev_buf_str, ruff_fix_message)
   -- diff = table.concat(diff, "\n")
   diff = diff:gsub("\n$", "")
 
-  vim.notify(ruff_fix_message .. "\n" .. diff, "info", {
+  notify(ruff_fix_message .. "\n" .. diff, "info", {
     title = "Ruff fix applied",
     on_open = function(win)
       local buf = vim.api.nvim_win_get_buf(win)
@@ -310,7 +312,7 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
   until not fixed or num_fixed > 1000
 
   if num_fixed == 0 then
-    vim.notify("No fix available.", vim.log.levels.ERROR)
+    notify("No fix available.", vim.log.levels.ERROR)
   else
     notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
   end
@@ -370,7 +372,7 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
   until not fixed or num_fixed > 1000
 
   if num_fixed == 0 then
-    vim.notify("No fix available.", vim.log.levels.ERROR)
+    notify("No fix available.", vim.log.levels.ERROR)
   else
     notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
   end
@@ -418,7 +420,7 @@ function M.available_actions(bufnr)
             -- write an empty __init__.py
             local file = io.open(init_file, "a") -- append so it doesn't overwrite existing content by mistake
             if file == nil then
-              vim.notify("Failed to create __init__.py", vim.log.levels.ERROR)
+              notify("Failed to create __init__.py", vim.log.levels.ERROR)
               return
             end
             file:write("")

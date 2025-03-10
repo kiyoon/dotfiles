@@ -1,3 +1,4 @@
+local notify = require("kiyoon.notify").notify
 -- require("lsp-inlayhints").setup()
 --
 -- vim.api.nvim_create_augroup("LspAttach_inlayhints", {})
@@ -128,7 +129,7 @@ end
 local function inlay_type_hint_to_text_in_buffer()
   local clients = vim.lsp.get_clients({ bufnr = 0 })
   if not next(clients) then
-    vim.notify("No active LSP clients", vim.log.levels.ERROR)
+    notify("No active LSP clients", vim.log.levels.ERROR)
     return
   end
   local current_line_num = vim.api.nvim_win_get_cursor(0)[1] - 1

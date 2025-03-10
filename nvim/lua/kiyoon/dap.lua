@@ -1,3 +1,5 @@
+local notify = require("kiyoon.notify").notify
+
 local M = {}
 
 local status, wk = pcall(require, "which-key")
@@ -27,7 +29,7 @@ M.load_files_with_breakpoints = function()
       vim.cmd.buffer(cur_bufnr)
     end)
   else
-    vim.notify("No persistent-breakpoints file found for this project.")
+    notify("No persistent-breakpoints file found for this project.", vim.log.levels.WARN)
   end
 end
 

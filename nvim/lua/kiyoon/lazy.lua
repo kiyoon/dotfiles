@@ -4,8 +4,8 @@ local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local jupynium_dev = false
 local python_import_dev = false
-local korean_ime_dev = true
-local tmuxsend_dev = true
+local korean_ime_dev = false
+local tmux_send_dev = true
 
 local icons = require("kiyoon.icons")
 
@@ -20,34 +20,46 @@ return {
     end,
   },
   {
-    "kiyoon/tmuxsend.vim",
-    dev = tmuxsend_dev,
+    "kiyoon/tmux-send.nvim",
+    dev = tmux_send_dev,
+    -- keys = {
+    --   {
+    --     "-",
+    --     "<Plug>(tmuxsend-smart)",
+    --     mode = { "n", "x" },
+    --     desc = "Send to tmux (smart)",
+    --   },
+    --   {
+    --     "_",
+    --     "<Plug>(tmuxsend-plain)",
+    --     mode = { "n", "x" },
+    --     desc = "Send to tmux (plain)",
+    --   },
+    --   {
+    --     "<space>-",
+    --     "<Plug>(tmuxsend-uid-smart)",
+    --     mode = { "n", "x" },
+    --     desc = "Send to tmux w/ pane uid (smart)",
+    --   },
+    --   {
+    --     "<space>_",
+    --     "<Plug>(tmuxsend-uid-plain)",
+    --     mode = { "n", "x" },
+    --     desc = "Send to tmux w/ pane uid (plain)",
+    --   },
+    --   { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" }, desc = "Yank to tmux buffer" },
     keys = {
       {
         "-",
-        "<Plug>(tmuxsend-smart)",
-        mode = { "n", "x" },
-        desc = "Send to tmux (smart)",
+        function()
+          require("tmux_send").send_to_pane()
+          -- (Optional) exit visual mode after sending
+          -- vim.cmd("normal! <Esc>")
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+        end,
+        mode = { "n", "x", "s" },
+        desc = "Send to tmux pane (smart)",
       },
-      {
-        "_",
-        "<Plug>(tmuxsend-plain)",
-        mode = { "n", "x" },
-        desc = "Send to tmux (plain)",
-      },
-      {
-        "<space>-",
-        "<Plug>(tmuxsend-uid-smart)",
-        mode = { "n", "x" },
-        desc = "Send to tmux w/ pane uid (smart)",
-      },
-      {
-        "<space>_",
-        "<Plug>(tmuxsend-uid-plain)",
-        mode = { "n", "x" },
-        desc = "Send to tmux w/ pane uid (plain)",
-      },
-      { "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", mode = { "n", "x" }, desc = "Yank to tmux buffer" },
     },
   },
 
@@ -2130,7 +2142,7 @@ return {
     },
     config = function(_, opts)
       require("notify").setup(opts)
-      vim.notify = require("notify")
+      -- vim.notify = require("notify")
     end,
   },
 

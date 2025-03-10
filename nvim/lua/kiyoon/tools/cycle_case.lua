@@ -24,6 +24,8 @@
 --     standardize("TS_NODE_ACTION") -> { "ts", "node", "action" }
 --
 
+local notify = require("kiyoon.notify").notify
+
 local format_table = {
   snake_case = {
     pattern = "^%l+[%l%d_]*$",
@@ -233,7 +235,7 @@ local get_cycle_function = function(user_formats)
     if format then
       table.insert(formats, format)
     else
-      vim.notify("CycleCase - Format '" .. format .. "' is invalid")
+      notify("Format '" .. format .. "' is invalid", vim.log.levels.ERROR, { title = "Cycle Case" })
     end
   end
 

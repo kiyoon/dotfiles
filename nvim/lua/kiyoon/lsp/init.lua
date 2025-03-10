@@ -1,3 +1,5 @@
+local notify = require("kiyoon.notify").notify
+
 local servers = {
   "lua_ls",
   "html",
@@ -57,13 +59,16 @@ local function install_pkg_background(pkg_name)
       "closed",
       vim.schedule_wrap(function()
         if pkg:is_installed() then
-          vim.notify(("[kiyoon/dotfiles] %s was successfully installed using Mason."):format(pkg_name))
+          notify(
+            ("%s was successfully installed using Mason."):format(pkg_name),
+            vim.log.levels.INFO,
+            { title = "kiyoon/dotfiles" }
+          )
         else
-          vim.notify(
-            ("[kiyoon/dotfiles] Failed to install %s. Installation logs are available in :Mason and :MasonLog"):format(
-              pkg_name
-            ),
-            vim.log.levels.ERROR
+          notify(
+            ("Failed to install %s. Installation logs are available in :Mason and :MasonLog"):format(pkg_name),
+            vim.log.levels.ERROR,
+            { title = "kiyoon/dotfiles" }
           )
         end
       end)

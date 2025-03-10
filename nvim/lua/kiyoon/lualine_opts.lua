@@ -66,7 +66,7 @@ return {
       {
         function()
           if not package.loaded["korean_ime"] then
-            return [[]]
+            return " "
           end
           local mode = require("korean_ime").get_mode()
           if mode == "en" then

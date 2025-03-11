@@ -2392,7 +2392,7 @@ return {
     keys = {
       -- lazy load on 한영전환
       {
-        "<C-i>",
+        "<C-1>",
         function()
           require("korean_ime").change_mode()
         end,

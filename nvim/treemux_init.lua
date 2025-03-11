@@ -13,6 +13,7 @@ vim.opt.iskeyword:append("-")
 
 -- lazy.nvim plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
@@ -216,8 +217,9 @@ require("lazy").setup({
           ["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
           ["<C-p>"] = "actions.preview",
           ["<C-c>"] = "actions.close",
-          ["-"] = "actions.parent",
-          ["_"] = "actions.open_cwd",
+          -- ["-"] = "actions.parent",
+          -- ["_"] = "actions.open_cwd",
+          ["U"] = "actions.parent",
           ["`"] = "actions.cd",
           ["~"] = { "actions.cd", opts = { scope = "tab" }, desc = ":tcd to the current oil directory" },
           ["gs"] = "actions.change_sort",

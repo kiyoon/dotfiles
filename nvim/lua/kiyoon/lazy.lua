@@ -830,9 +830,6 @@ return {
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
     },
-    init = function()
-      vim.g.neo_tree_remove_legacy_commands = 1
-    end,
     cmd = "Neotree",
     keys = {
       { "<space>nn", "<cmd>Neotree toggle<CR>", mode = { "n", "x" }, desc = "[N]eotree toggle" },
@@ -854,8 +851,9 @@ return {
           ["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
           ["<C-p>"] = "actions.preview",
           ["<C-c>"] = "actions.close",
-          ["-"] = "actions.parent",
-          ["_"] = "actions.open_cwd",
+          -- ["-"] = "actions.parent",
+          -- ["_"] = "actions.open_cwd",
+          ["U"] = "actions.parent",
           ["`"] = "actions.cd",
           ["~"] = { "actions.cd", opts = { scope = "tab" }, desc = ":tcd to the current oil directory" },
           ["gs"] = "actions.change_sort",
@@ -2402,8 +2400,7 @@ return {
     },
     config = function()
       require("korean_ime").setup()
-
-      vim.keymap.set("i", "<C-h>", function()
+      vim.keymap.set("i", "<f9>", function()
         require("korean_ime").convert_hanja()
       end, { noremap = true, silent = true, desc = "한자" })
     end,

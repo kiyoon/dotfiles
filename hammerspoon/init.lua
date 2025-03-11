@@ -1,18 +1,23 @@
 hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
 
----If there are mutliple active panes, return the last one.
----Beecause there is an output bug in tmux where it prints another window wrongly and the actual content starts from let's say the 3rd line.
----The wrong output is not visible in the terminal, but it is visible in the output of `wezterm cli get-text`.
 ---@param term_text_ansi string
 ---@return string?
 local function get_tmux_current_command(term_text_ansi)
   -- " <command> ─" with the right color (active pane)
   local tmux_active_pane_ansi_pattern = [[ (%a+) .%[38:2::98:114:164m.%[49m─]]
-  local current_command_final
-  for current_command in string.gmatch(term_text_ansi, tmux_active_pane_ansi_pattern) do
-    current_command_final = current_command
+  -- If there are mutliple active panes, return the second one.
+  -- Beecause there is an output bug in tmux where it prints another window wrongly and the actual content starts from let's say the 3rd line.
+  -- The wrong output is not visible in the terminal, but it is visible in the output of `wezterm cli get-text`.
+  local current_command
+  local i = 1
+  for current_command_candidate in string.gmatch(term_text_ansi, tmux_active_pane_ansi_pattern) do
+    current_command = current_command_candidate
+    if i == 2 then
+      break
+    end
+    i = i + 1
   end
-  return current_command_final
+  return current_command
 end
 
 ---nvim이 command mode인지 확인

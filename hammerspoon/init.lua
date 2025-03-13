@@ -88,7 +88,7 @@ hs.hotkey.bind({}, "f18", function()
       -- Run `wezterm cli get-text` to get the text of the pane
       local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
       -- print(output)
-      print(get_tmux_current_command(output))
+      -- print(get_tmux_current_command(output))
 
       -- match the output to detect if the pane border title has nvim
       -- more specifically, nvim ─ with the right color (active pane)
@@ -122,7 +122,12 @@ hs.hotkey.bind({}, "f18", function()
     -- hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
     -- 구름입력기 한/영 전환 단축키
     hs.eventtap.keyStroke({ "cmd", "shift", "ctrl" }, "space")
+  elseif input_source == "com.apple.keylayout.ABC" then
+    hs.keycodes.currentSourceID("com.apple.inputmethod.Korean.2SetKorean")
+  elseif input_source == "com.apple.inputmethod.Korean.2SetKorean" then
+    hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
   else
-    hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.han2")
+    -- hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.han2")
+    hs.keycodes.currentSourceID("com.apple.inputmethod.Korean.2SetKorean")
   end
 end)

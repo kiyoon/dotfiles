@@ -71,8 +71,11 @@ hs.hotkey.bind({}, "f18", function()
       print("program in wezterm is vi")
       local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
       if status == true and type == "exit" and rc == 0 and output ~= nil and not is_nvim_command_mode(output) then
-        if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
-          hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+        -- if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
+        --   hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+        -- end
+        if input_source ~= "com.apple.keylayout.ABC" then
+          hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
         end
         hs.eventtap.keyStroke({}, "f12")
         return
@@ -104,8 +107,11 @@ hs.hotkey.bind({}, "f18", function()
         print("nvim in tmux")
         if not is_nvim_command_mode(output) then
           print("not in command mode")
-          if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
-            hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+          -- if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
+          --   hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+          -- end
+          if input_source ~= "com.apple.keylayout.ABC" then
+            hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
           end
           hs.eventtap.keyStroke({}, "f12")
           return

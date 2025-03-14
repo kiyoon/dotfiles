@@ -2150,7 +2150,7 @@ return {
     },
     config = function(_, opts)
       require("notify").setup(opts)
-      -- vim.notify = require("notify")
+      vim.notify = require("notify")
     end,
   },
 

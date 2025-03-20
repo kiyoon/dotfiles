@@ -84,7 +84,8 @@ return {
     -- I want to use 4, so I disabled 3 which is distracting. (It's good but too much color)
     -- However, then it was sometimes confusing if f-strings were actually f-strings. (the values were not highlighted)
     -- with this plugin (2), I can see the f-strings are actually f-strings, but it doesn't hurt the 4.
-    "vim-python/python-syntax",
+    -- "vim-python/python-syntax",
+    "wmvanvliet/python-syntax",
     ft = "python",
     init = function()
       -- I only care about string highlighting here.
@@ -748,7 +749,42 @@ return {
   },
 
   --- NOTE: Git
-
+  {
+    "NeogitOrg/neogit",
+    init = function()
+      local status, wk = pcall(require, "which-key")
+      if status then
+        wk.add({
+          { "<space>g", group = "Git" },
+        })
+      end
+    end,
+    cmd = { "Neogit" },
+    keys = {
+      {
+        "<space>gs",
+        function()
+          require("neogit").open()
+        end,
+        mode = { "n", "x" },
+        desc = "Neogit",
+      },
+      {
+        "<space>gc",
+        "<cmd>Neogit commit<CR>",
+        mode = { "n", "x" },
+        desc = "Neogit commit",
+      },
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim", -- required
+      "sindrets/diffview.nvim", -- optional - Diff integration
+      "nvim-telescope/telescope.nvim", -- optional
+    },
+    config = function()
+      require("neogit").setup()
+    end,
+  },
   {
     "sindrets/diffview.nvim",
     keys = {

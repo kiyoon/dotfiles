@@ -168,7 +168,7 @@ table.insert(config.hyperlink_rules, {
 })
 table.insert(config.hyperlink_rules, {
 	regex = [[🔗🐍b]],
-	format = "https://github.com/DetachHead/basedpyright/blob/main/docs/configuration.md#type-check-diagnostics-settings",
+	format = "https://docs.basedpyright.com/latest/configuration/config-files/",
 })
 
 table.insert(config.hyperlink_rules, {

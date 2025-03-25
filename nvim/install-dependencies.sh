@@ -72,6 +72,12 @@ npm install -g biome
 # Formatter
 npm install -g @taplo/cli
 
+if command -v dotnet &> /dev/null; then
+    dotnet tool install csharpier -g
+else
+    echo "dotnet could not be found. Skipping CSharpier installation."
+fi
+
 if ! command -v stylua &> /dev/null; then
 	npm install -g @johnnymorganz/stylua-bin
 fi

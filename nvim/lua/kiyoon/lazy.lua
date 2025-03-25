@@ -1814,7 +1814,7 @@ return {
         typescript = { "biome" },
         javascriptreact = { "biome" },
         typescriptreact = { "biome" },
-        html = { { "prettierd", "prettier" } },
+        html = { "prettierd", "prettier", stop_after_first = true },
         yaml = { "prettier" },
         -- json = { "prettier" },
         json = { "biome" },
@@ -1822,6 +1822,7 @@ return {
         css = { "biome" },
         c = { "clang-format" },
         cpp = { "clang-format" },
+        cs = { "csharpier" },
         toml = { "taplo" },
       },
       -- Set up format-on-save

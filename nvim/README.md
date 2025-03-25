@@ -52,9 +52,10 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 - [LuaSnip](https://github.com/L3MON4D3/LuaSnip)
     - Define snippets (i.e. keywords) and expand them with `Alt+j`.
     - See [luasnippets/](luasnippets/).
-- [kiyoon/tmuxsend.vim](https://github.com/kiyoon/tmuxsend.vim): Send text to tmux pane from nvim.
+- [kiyoon/tmux-send.nvim](https://github.com/kiyoon/tmux-send.nvim): Send text to tmux pane from nvim.
 - Alt + \[ or \] to see next suggestions for Github Copilot.
-- `\nt`: open Nvim Tree. `g?` to open help.
+- `<space>nt`: open Nvim Tree. `g?` to open help.
+- `<space>nn`: open Neo-Tree. `?` to open help.
 
 
 ## Useful VIM commands

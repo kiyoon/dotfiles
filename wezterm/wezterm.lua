@@ -167,8 +167,8 @@ table.insert(config.hyperlink_rules, {
 	format = "https://docs.astral.sh/ruff/rules/$1",
 })
 table.insert(config.hyperlink_rules, {
-	regex = [[🔗🐍b]],
-	format = "https://docs.basedpyright.com/latest/configuration/config-files/",
+	regex = [[🔗🐍b \[(\w+)\]] .. "]",
+	format = "https://docs.basedpyright.com/latest/configuration/config-files/#$1",
 })
 
 table.insert(config.hyperlink_rules, {

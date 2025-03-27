@@ -36,7 +36,7 @@ local basedpyright_codes_to_ignore = {
 local M = {}
 
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-local icons = require "kiyoon.icons"
+local icons = require("kiyoon.icons")
 
 if status_cmp_ok then
   M.capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -91,22 +91,30 @@ end
 M.setup = function()
   local signs = {
 
-    { name = "DiagnosticSignError", text = icons.diagnostics.Error },
-    { name = "DiagnosticSignWarn", text = icons.diagnostics.Warn },
-    { name = "DiagnosticSignHint", text = icons.diagnostics.Hint },
-    { name = "DiagnosticSignInfo", text = icons.diagnostics.Info },
+    { name = "DiagnosticSignError", text = icons.diagnostics.Error, severity = vim.diagnostic.severity.ERROR },
+    { name = "DiagnosticSignWarn", text = icons.diagnostics.Warn, severity = vim.diagnostic.severity.WARN },
+    { name = "DiagnosticSignHint", text = icons.diagnostics.Hint, severity = vim.diagnostic.severity.HINT },
+    { name = "DiagnosticSignInfo", text = icons.diagnostics.Info, severity = vim.diagnostic.severity.INFO },
   }
 
+  local text = {}
+  local texthl = {}
   for _, sign in ipairs(signs) do
-    vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
+    -- vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
+    text[sign.severity] = sign.text
+    texthl[sign.severity] = sign.name
   end
 
-  local config = {
+  vim.diagnostic.config({
     -- virtual_text = true,
+    -- virtual_text = false,
     -- virtual_text = { spacing = 3, prefix = "" },
     virtual_text = { spacing = 3, prefix = "", format = format_virtual_text },
+    virtual_lines = false,
     signs = {
       active = signs, -- show signs
+      text = text,
+      texthl = texthl,
     },
     update_in_insert = true,
     underline = true,
@@ -116,19 +124,17 @@ M.setup = function()
       focusable = true,
       style = "minimal",
       border = "rounded",
-      source = "always",
+      -- source = "if_many",
+      source = true,
       header = "",
       prefix = "",
       format = format_float,
     },
-  }
-
-  vim.diagnostic.config(config)
+  })
 
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
     border = "rounded",
   })
-
   vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
     border = "rounded",
   })
@@ -176,23 +182,23 @@ function M.lsp_keymaps(bufnr)
   -- Use actions-preview.nvim
   -- keymap("n", "<space>pa", vim.lsp.buf.code_action, opts, "Code [A]ction")
   keymap({ "n", "x", "o", "i" }, "<A-l>", function()
-    vim.diagnostic.goto_next { buffer = 0 }
+    vim.diagnostic.jump({ count = 1 })
   end, opts)
   keymap({ "n", "x", "o", "i" }, "<A-h>", function()
-    vim.diagnostic.goto_prev { buffer = 0 }
+    vim.diagnostic.jump({ count = -1 })
   end, opts)
 
   local next_warn = function()
-    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARNING }
+    vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.WARN })
   end
   local prev_warn = function()
-    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.WARNING }
+    vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.WARN })
   end
   local next_err = function()
-    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+    vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
   end
   local prev_err = function()
-    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+    vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
   end
   local status, tsrepeat = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
   if status then
@@ -213,6 +219,19 @@ function M.lsp_keymaps(bufnr)
   if vim.bo.filetype == "python" then
     keymap("n", "<space>po", "<cmd>PyrightOrganizeImports<cr>", opts, "[O]rganise Imports (python)")
   end
+
+  keymap("n", "<space>pl", function()
+    local virtual_text = vim.diagnostic.config().virtual_text
+    if virtual_text == true or (type(virtual_text) == "table" and not vim.tbl_isempty(virtual_text)) then
+      virtual_text = false
+    else
+      virtual_text = { spacing = 3, prefix = "", format = format_virtual_text }
+    end
+    vim.diagnostic.config({
+      virtual_lines = not vim.diagnostic.config().virtual_lines,
+      virtual_text = virtual_text,
+    })
+  end, opts, "Toggle Virtual [L]ine Diagnostics")
 end
 
 M.on_attach = function(client, bufnr)

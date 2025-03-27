@@ -55,8 +55,8 @@ Also, it has many versions of vim configurations.
 ## Requirements
 
 - Linux x86-64, macOS, Windows WSL2
-- Neovim v0.10.3 (make sure you use this exact version)
-- Tmux v3.4
+- Neovim v0.11.0 (make sure you use this exact version)
+- Tmux v3.5a
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
 
@@ -95,7 +95,7 @@ See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
 
 3. Install neovim and tmux
 
-You need Neovim v0.10.0. The fold column will look ugly in v0.8.x.
+You need Neovim v0.11.0. The fold column will look ugly in v0.8.x.
 
 On Linux, you can install locally using:
 

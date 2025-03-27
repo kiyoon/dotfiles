@@ -2,6 +2,7 @@
 
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
+local nvim_treesitter_context_dev = false
 local jupynium_dev = false
 local python_import_dev = false
 local korean_ime_dev = false
@@ -989,6 +990,7 @@ return {
   {
     -- "nvim-treesitter/nvim-treesitter-context",
     "kiyoon/nvim-treesitter-context",
+    dev = nvim_treesitter_context_dev,
     event = { "BufReadPost", "BufNewFile" },
     -- This commit is the parent of https://github.com/nvim-treesitter/nvim-treesitter-context/pull/316
     -- which introduced showing context in multiple lines.

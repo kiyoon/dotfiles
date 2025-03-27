@@ -97,60 +97,6 @@ local format_table = {
       return vim.split(string.lower(text), "_", { trimempty = true })
     end,
   },
-  true_lower = {
-    pattern = "^true$",
-    apply = function(tbl)
-      return "true"
-    end,
-    standardize = function(text)
-      return { "true" }
-    end,
-  },
-  false_lower = {
-    pattern = "^false$",
-    apply = function(tbl)
-      return "false"
-    end,
-    standardize = function(text)
-      return { "false" }
-    end,
-  },
-  true_upper = {
-    pattern = "^TRUE$",
-    apply = function(tbl)
-      return "TRUE"
-    end,
-    standardize = function(text)
-      return { "true" }
-    end,
-  },
-  false_upper = {
-    pattern = "^FALSE$",
-    apply = function(tbl)
-      return "FALSE"
-    end,
-    standardize = function(text)
-      return { "false" }
-    end,
-  },
-  true_title = {
-    pattern = "^True$",
-    apply = function(tbl)
-      return "True"
-    end,
-    standardize = function(text)
-      return { "true" }
-    end,
-  },
-  false_title = {
-    pattern = "^False$",
-    apply = function(tbl)
-      return "False"
-    end,
-    standardize = function(text)
-      return { "false" }
-    end,
-  },
 }
 
 local function check_pattern(text, pattern)
@@ -200,19 +146,6 @@ end
 
 -- local default_formats = { "snake_case", "pascal_case", "kebab_case", "screaming_snake_case", "camel_case" }
 local default_formats = {
-  -- make sure true -> false -> true works with the right case
-  "true_lower",
-  "false_lower",
-  "true_lower",
-
-  "true_upper",
-  "false_upper",
-  "true_upper",
-
-  "true_title",
-  "false_title",
-  "true_title",
-
   -- cycle case in general words.
   -- make sure it cycles back to snake_case, not to true_lower
   "snake_case",
@@ -220,8 +153,95 @@ local default_formats = {
   "kebab_case",
   "screaming_snake_case",
   "camel_case",
-  "snake_case", -- <- this is the one that makes the cycle back to snake_case
+  "snake_case", -- <- this is the one that makes the cycle back to snake_case, even if more formats are added.
 }
+
+---Add true -> false -> true functionality with different formats (True, TRUE, true) by
+---1. Creating true_lower, false_lower, true_upper, false_upper, true_title, false_title formats in `format_table`
+---2. Adding "true_lower", "false_lower", "true_lower", "true_upper", "false_upper", "true_upper", ... to `default_formats`
+---@param text1 string e.g. "true"
+---@param text2 string e.g. "false"
+local function build_simple_conversion_tables(text1, text2)
+  format_table[text1 .. "_lower"] = {
+    pattern = "^" .. text1 .. "$",
+    apply = function(tbl)
+      return text1
+    end,
+    standardize = function(text)
+      return { text1:lower() }
+    end,
+  }
+  format_table[text2 .. "_lower"] = {
+    pattern = "^" .. text2 .. "$",
+    apply = function(tbl)
+      return text2
+    end,
+    standardize = function(text)
+      return { text2:lower() }
+    end,
+  }
+  format_table[text1 .. "_upper"] = {
+    pattern = "^" .. text1:upper() .. "$",
+    apply = function(tbl)
+      return text1:upper()
+    end,
+    standardize = function(text)
+      return { text1:lower() }
+    end,
+  }
+  format_table[text2 .. "_upper"] = {
+    pattern = "^" .. text2:upper() .. "$",
+    apply = function(tbl)
+      return text2:upper()
+    end,
+    standardize = function(text)
+      return { text2:lower() }
+    end,
+  }
+  format_table[text1 .. "_title"] = {
+    pattern = "^" .. text1:gsub("^%l", string.upper) .. "$",
+    apply = function(tbl)
+      return text1:gsub("^%l", string.upper)
+    end,
+    standardize = function(text)
+      return { text1:lower() }
+    end,
+  }
+  format_table[text2 .. "_title"] = {
+    pattern = "^" .. text2:gsub("^%l", string.upper) .. "$",
+    apply = function(tbl)
+      return text2:gsub("^%l", string.upper)
+    end,
+    standardize = function(text)
+      return { text2:lower() }
+    end,
+  }
+
+  local new_default_formats = {
+    text1 .. "_lower",
+    text2 .. "_lower",
+    text1 .. "_lower",
+    text1 .. "_upper",
+    text2 .. "_upper",
+    text1 .. "_upper",
+    text1 .. "_title",
+    text2 .. "_title",
+    text1 .. "_title",
+  }
+
+  -- insert to the beginning of the default_formats because it takes precedence over the other formats
+  -- we want true -> false -> true to work, not true -> True -> TRUE etc.
+  vim.list_extend(new_default_formats, default_formats)
+  default_formats = new_default_formats
+end
+
+build_simple_conversion_tables("true", "false")
+build_simple_conversion_tables("on", "off")
+build_simple_conversion_tables("enable", "disable")
+build_simple_conversion_tables("enabled", "disabled")
+build_simple_conversion_tables("yes", "no")
+build_simple_conversion_tables("up", "down")
+build_simple_conversion_tables("left", "right")
 
 local get_cycle_function = function(user_formats)
   user_formats = user_formats or default_formats

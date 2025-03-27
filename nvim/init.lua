@@ -154,6 +154,7 @@ vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})
 -- autocmd
 
 require("wookayin.python_keymaps")
+require("wookayin.rust_keymaps")
 
 -- Convert | to │ (box drawing character)
 -- Convert │ to └

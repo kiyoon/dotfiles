@@ -1443,9 +1443,8 @@ return {
   -- Telescope
   {
     "nvim-telescope/telescope.nvim",
-    lazy = true,
     cmd = { "Telescope" },
-    branch = "0.1.x",
+    -- branch = "0.1.x",
     keys = {
       {
         "<leader>fF",

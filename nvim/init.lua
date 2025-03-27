@@ -237,3 +237,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     vim.highlight.on_yank({ timeout = 300 })
   end,
 })
+
+-- remove default keymaps to use "gr"
+vim.keymap.del({ "n" }, "grr")
+vim.keymap.del({ "n" }, "gra")
+vim.keymap.del({ "n" }, "gri")
+vim.keymap.del({ "n" }, "grn")

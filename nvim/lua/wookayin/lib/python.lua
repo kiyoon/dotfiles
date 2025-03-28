@@ -96,7 +96,12 @@ M.toggle_line_comment = function(text)
   vim.fn.setline(".", newline)
 end
 
-M.toggle_typing = function(name)
+---@class python_tools.toggle_typing_opts.Opts
+---@field more_args boolean Add comma and move cursor to the next argument like T -> Annotated[T, <cursor_pos>]
+
+---@param name string e.g. Annotated
+---@param opts python_tools.toggle_typing_opts.Opts
+M.toggle_typing = function(name, opts)
   local winnr = 0
   local cursor = vim.api.nvim_win_get_cursor(winnr) -- (row,col): (1,0)-indexed
   local bufnr = vim.api.nvim_get_current_buf()
@@ -165,8 +170,13 @@ M.toggle_typing = function(name)
     -- replace: e.g., Optional[T] => T
     new_text = get_text(T_node)
   else
-    -- replace: e.g., T => Optional[T]
-    new_text = name .. "[" .. get_text(type_node) .. "]"
+    if not opts.more_args then
+      -- replace: e.g., T => Optional[T]
+      new_text = name .. "[" .. get_text(type_node) .. "]"
+    else
+      -- replace: e.g., T => Annotated[T, ]
+      new_text = name .. "[" .. get_text(type_node) .. ", ]"
+    end
   end
 
   -- treesitter range is 0-indexed and end-exclusive
@@ -175,7 +185,11 @@ M.toggle_typing = function(name)
   vim.api.nvim_buf_set_text(0, srow, scol, erow, ecol, { new_text })
 
   -- Restore cursor
-  vim.api.nvim_win_set_cursor(winnr, cursor)
+  if not opts.more_args then
+    vim.api.nvim_win_set_cursor(winnr, cursor)
+  else
+    vim.api.nvim_win_set_cursor(winnr, { srow + 1, scol + #new_text - 1 })
+  end
 end
 
 --- Added by kiyoon

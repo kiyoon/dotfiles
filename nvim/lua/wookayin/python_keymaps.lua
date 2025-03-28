@@ -97,7 +97,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       "n",
       "<space>tA",
       make_repeatable_keymap("n", "<Plug>(toggle-Annotated)", function()
-        require("wookayin.lib.python").toggle_typing("Annotated")
+        require("wookayin.lib.python").toggle_typing("Annotated", { more_args = true })
       end),
       { remap = true }
     )

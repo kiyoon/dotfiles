@@ -83,9 +83,77 @@ M.run_ruff = function(bufnr)
   bufnr_to_ruff_changedtick[bufnr] = changedtick
 end
 
-M.toggle_ruff_noqa = function(bufnr)
+---Get comment node in the current line.
+---@param winnr? number
+---@return TSNode?
+local function get_line_comment_node(winnr)
+  winnr = winnr or 0
+  local cursor = vim.api.nvim_win_get_cursor(winnr) -- (row,col): (1,0)-indexed
+  local bufnr = vim.api.nvim_win_get_buf(winnr)
+
+  -- find # in the current line
+  local line = vim.api.nvim_buf_get_lines(bufnr, cursor[1] - 1, cursor[1], false)[1]
+  local col = string.find(line, "#", 1, true)
+  if col == nil then
+    return nil
+  end
+
+  -- iterate through all # matches until vim.treesitter.get_node():type() == "comment"
+  local node = nil
+  while col ~= nil do
+    node = vim.treesitter.get_node({ pos = { cursor[1] - 1, col - 1 }, bufnr = bufnr })
+    if node and node:type() == "comment" then
+      return node
+    end
+    col = string.find(line, "#", col + 1, true)
+  end
+end
+
+---Remove comment starting with `comment_starts` from the current line.
+---comment_starts should not include the # symbol.
+---If there are multiple comments in the line, make sure to only remove the proper one.
+---@param bufnr integer?
+---@param comment_node TSNode comment node (even if there are multiple comments in the line, this is just one node that covers the entire comment)
+---@param comment_starts string e.g. "noqa: "
+---@return boolean status true if the comment is removed, false otherwise
+local function remove_comment_startswith(bufnr, comment_node, comment_starts)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local current_line = vim.fn.line(".")
+
+  local comment_text = vim.treesitter.get_node_text(comment_node, bufnr)
+  local noqa_idx = string.find(comment_text, "# " .. comment_starts, 1, true)
+  if noqa_idx then
+    -- Remove # noqa: ... # or if there is no comment after noqa, remove till the end
+    local start_idx = noqa_idx + 8
+    local end_idx = string.find(comment_text, "#", start_idx, true)
+    if end_idx then
+      end_idx = end_idx - 1
+    else
+      end_idx = #comment_text
+    end
+
+    local new_comment_text = string.sub(comment_text, 1, noqa_idx - 1) .. string.sub(comment_text, end_idx + 1)
+    local srow, scol, erow, ecol = comment_node:range()
+    vim.api.nvim_buf_set_text(bufnr, srow, scol, erow, ecol, { new_comment_text })
+    return true
+  end
+  return false
+end
+
+---@param winnr integer?
+M.toggle_ruff_noqa = function(winnr)
+  winnr = winnr or vim.api.nvim_get_current_win()
+  local bufnr = vim.api.nvim_win_get_buf(winnr)
+  local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
+
+  -- 1. If there is an "# noqa: " comment, remove it.
+  local comment_node = get_line_comment_node(winnr)
+  if comment_node then
+    if remove_comment_startswith(bufnr, comment_node, "noqa: ") then
+      return
+    end
+  end
+
+  -- 2. If not, add "# noqa " comment with existing ruff error codes.
   M.run_ruff(bufnr)
 
   if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
@@ -110,8 +178,15 @@ M.toggle_ruff_noqa = function(bufnr)
     return
   end
 
-  local code = table.concat(codes, " ")
-  require("wookayin.lib.python").toggle_line_comment("noqa: " .. code)
+  local codes_concat = table.concat(codes, " ")
+  local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
+  vim.api.nvim_buf_set_lines(
+    bufnr,
+    current_line - 1,
+    current_line,
+    false,
+    { line_content .. "  # noqa: " .. codes_concat }
+  )
 end
 
 ---@param winnr integer?
@@ -135,15 +210,36 @@ end
 
 ---@param winnr integer?
 M.toggle_pyright_ignore = function(winnr)
+  winnr = winnr or vim.api.nvim_get_current_win()
+  local bufnr = vim.api.nvim_win_get_buf(winnr)
+
+  -- 1. If there is an "# pyright: ignore" or "# type: ignore" comment, remove it.
+  local comment_node = get_line_comment_node(winnr)
+  if comment_node then
+    if remove_comment_startswith(bufnr, comment_node, "pyright: ignore") then
+      return
+    end
+    if remove_comment_startswith(bufnr, comment_node, "type: ignore") then
+      return
+    end
+  end
+
+  -- 2. If not, add "# noqa " comment with existing ruff error codes.
   local diagnostics = get_pyright_diagnostics_current_line(winnr)
 
   local codes = {}
   for _, diagnostic in ipairs(diagnostics) do
     table.insert(codes, diagnostic.code)
   end
-  local code = table.concat(codes, ", ")
+  local codes_concat = table.concat(codes, ", ")
+  local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
+  local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
+  local comment = "# pyright: ignore"
+  if #codes ~= 0 then
+    comment = comment .. "[" .. codes_concat .. "]"
+  end
 
-  require("wookayin.lib.python").toggle_line_comment("pyright: ignore[" .. code .. "]")
+  vim.api.nvim_buf_set_lines(bufnr, current_line - 1, current_line, false, { line_content .. "  " .. comment })
 end
 
 local function notify_diff_pre(bufnr)

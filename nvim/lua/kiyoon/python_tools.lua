@@ -120,20 +120,28 @@ local function remove_comment_startswith(bufnr, comment_node, comment_starts)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
 
   local comment_text = vim.treesitter.get_node_text(comment_node, bufnr)
-  local noqa_idx = string.find(comment_text, "# " .. comment_starts, 1, true)
-  if noqa_idx then
-    -- Remove # noqa: ... # or if there is no comment after noqa, remove till the end
-    local start_idx = noqa_idx + 8
+  local match_idx = string.find(comment_text, "# " .. comment_starts, 1, true)
+  if match_idx then
+    -- Remove # `comment_starts`... # or if there is no comment (#) after the match, remove till the end
+    local start_idx = match_idx + 2 + #comment_starts
     local end_idx = string.find(comment_text, "#", start_idx, true)
+    local remove_trailing_space
     if end_idx then
       end_idx = end_idx - 1
+      remove_trailing_space = false
     else
       end_idx = #comment_text
+      remove_trailing_space = true
     end
 
-    local new_comment_text = string.sub(comment_text, 1, noqa_idx - 1) .. string.sub(comment_text, end_idx + 1)
+    local new_comment_text = string.sub(comment_text, 1, match_idx - 1) .. string.sub(comment_text, end_idx + 1)
     local srow, scol, erow, ecol = comment_node:range()
     vim.api.nvim_buf_set_text(bufnr, srow, scol, erow, ecol, { new_comment_text })
+    if remove_trailing_space then
+      local line_content = vim.api.nvim_buf_get_lines(bufnr, srow, srow + 1, false)[1]
+      local new_line_content = string.gsub(line_content, "%s+$", "")
+      vim.api.nvim_buf_set_lines(bufnr, srow, srow + 1, false, { new_line_content })
+    end
     return true
   end
   return false

@@ -97,10 +97,6 @@ M.toggle_line_comment = function(text)
 end
 
 M.toggle_typing = function(name)
-  if vim.fn.has("nvim-0.9") == 0 then
-    return vim.api.nvim_err_writeln("toggle_typing: this feature requires neovim 0.9.0.")
-  end
-
   local winnr = 0
   local cursor = vim.api.nvim_win_get_cursor(winnr) -- (row,col): (1,0)-indexed
   local bufnr = vim.api.nvim_get_current_buf()

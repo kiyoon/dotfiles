@@ -40,16 +40,16 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     -- Added by kiyoon
     -- ignore ruff
     bufmap("n", "<space>tq", function()
-      require("kiyoon.python_tools").toggle_ruff_noqa()
+      require("kiyoon.tools.python").toggle_ruff_noqa()
     end, { remap = true, desc = "Toggle ruff noqa" })
     bufmap("n", "<space>ti", function()
-      require("kiyoon.python_tools").toggle_pyright_ignore()
+      require("kiyoon.tools.python").toggle_pyright_ignore()
     end, { remap = true, desc = "Toggle ruff noqa" })
     bufmap("n", "<space>tF", function()
-      require("kiyoon.python_tools").ruff_fix_current_line()
+      require("kiyoon.tools.python").ruff_fix_current_line()
     end, { remap = true, desc = "Fix ruff error in current line" })
     bufmap("n", "<space>tI", function()
-      require("kiyoon.python_tools").ruff_fix_all(0, "F401")
+      require("kiyoon.tools.python").ruff_fix_all(0, "F401")
     end, { remap = true, desc = "Fix unused imports" })
 
     -- Toggle Optional[...], Annotated[...] for typing

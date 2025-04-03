@@ -293,7 +293,7 @@ local python_tools_code_action = {
   method = methods.internal.CODE_ACTION,
   filetypes = { "python" },
   can_run = function()
-    local status, _ = pcall(require, "kiyoon.python_tools")
+    local status, _ = pcall(require, "kiyoon.tools.python")
     return status
   end,
   generator = {
@@ -302,7 +302,7 @@ local python_tools_code_action = {
       if vim.api.nvim_get_mode().mode == "i" then
         return nil
       end
-      return require("kiyoon.python_tools").available_actions()
+      return require("kiyoon.tools.python").available_actions()
     end,
   },
 }

@@ -1,4 +1,5 @@
 local notify = require("kiyoon.notify").notify
+local utils = require("kiyoon.utils")
 
 local M = {}
 
@@ -12,13 +13,6 @@ local bufnr_to_ruff_per_line = {}
 local bufnr_to_ruff_per_line_multiline = {}
 ---Save the changedtick of the buffer when ruff is run
 local bufnr_to_ruff_changedtick = {}
-
-local function tbl_reverse(tab)
-  for i = 1, math.floor(#tab / 2), 1 do
-    tab[i], tab[#tab - i + 1] = tab[#tab - i + 1], tab[i]
-  end
-  return tab
-end
 
 ---It also caches the results so repeated calls are fast
 ---@param bufnr integer vim buffer number
@@ -232,7 +226,7 @@ M.toggle_pyright_ignore = function(winnr)
     end
   end
 
-  -- 2. If not, add "# noqa " comment with existing ruff error codes.
+  -- 2. If not, add "# pyright: ignore[...]" comment with existing pyright error codes.
   local diagnostics = get_pyright_diagnostics_current_line(winnr)
 
   local codes = {}
@@ -278,6 +272,7 @@ local function notify_diff(bufnr, prev_buf_str, ruff_fix_message)
       local buf = vim.api.nvim_win_get_buf(win)
       vim.bo[buf].filetype = "diff"
     end,
+    animate = false,
   })
 end
 
@@ -341,7 +336,7 @@ end
 --       -- NOTE: each fix may have multiple edits
 --       -- In this case, we have to reverse the order of the edits
 --       -- Otherwise, the prior edits will ruin the later edits
---       fixes_in_current_edit = tbl_reverse(fixes_in_current_edit)
+--       fixes_in_current_edit = utils.list_reverse(fixes_in_current_edit)
 --       vim.list_extend(all_fixes, fixes_in_current_edit)
 --       -- table.insert(all_fixes, fix)
 --     end
@@ -400,7 +395,7 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
           -- NOTE: each fix may have multiple edits
           -- In this case, we have to reverse the order of the edits
           -- Otherwise, the prior edits will ruin the later edits
-          local fixes_in_current_edit = tbl_reverse(fix["edits"])
+          local fixes_in_current_edit = utils.list_reverse(fix["edits"])
           for _, edit in ipairs(fixes_in_current_edit) do
             apply_ruff_fix(edit)
           end
@@ -459,7 +454,7 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
             -- NOTE: each fix may have multiple edits
             -- In this case, we have to reverse the order of the edits
             -- Otherwise, the prior edits will ruin the later edits
-            local fixes_in_current_edit = tbl_reverse(fix["edits"])
+            local fixes_in_current_edit = utils.list_reverse(fix["edits"])
             for _, edit in ipairs(fixes_in_current_edit) do
               apply_ruff_fix(edit)
             end

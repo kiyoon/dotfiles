@@ -1,4 +1,4 @@
-local ls = require "luasnip"
+local ls = require("luasnip")
 local i = ls.insert_node
 local func_node = ls.function_node
 
@@ -34,7 +34,7 @@ local function find_python_first_party_modules()
       local stat = vim.loop.fs_stat(path)
       if stat.type == "directory" then
         -- no egg-info
-        if file:match "%.egg%-info$" == nil then
+        if file:match("%.egg%-info$") == nil then
           modules[#modules + 1] = file
         end
       end
@@ -60,96 +60,96 @@ end
 return {
   -- dictionary
   s({ trig = "[[", wordTrig = false }, {
-    t { '["' },
+    t({ '["' }),
     i(1),
-    t { '"]' },
+    t({ '"]' }),
     i(0),
   }),
 
   -- logging
   s("li(", {
-    t { "logger.info(" },
+    t({ "logger.info(" }),
     i(1, "message"),
-    t { [[)]] },
+    t({ [[)]] }),
     i(0),
   }),
   s("ld(", {
-    t { "logger.debug(" },
+    t({ "logger.debug(" }),
     i(1, "message"),
-    t { [[)]] },
+    t({ [[)]] }),
     i(0),
   }),
   s("lw(", {
-    t { "logger.warning(" },
+    t({ "logger.warning(" }),
     i(1, "message"),
-    t { [[)]] },
+    t({ [[)]] }),
     i(0),
   }),
   s("le(", {
-    t { "logger.error(" },
+    t({ "logger.error(" }),
     i(1, "message"),
-    t { [[)]] },
+    t({ [[)]] }),
     i(0),
   }),
   s("lc(", {
-    t { "logger.critical(" },
+    t({ "logger.critical(" }),
     i(1, "message"),
-    t { [[)]] },
+    t({ [[)]] }),
     i(0),
   }),
   s("lee(", {
-    t { "logger.exception(" },
+    t({ "logger.exception(" }),
     i(1, "message"),
-    t { [[)]] },
+    t({ [[)]] }),
     i(0),
   }),
 
   s("li", {
-    t { "logger.info" },
+    t({ "logger.info" }),
   }),
   s("ld", {
-    t { "logger.debug" },
+    t({ "logger.debug" }),
   }),
   s("lw", {
-    t { "logger.warning" },
+    t({ "logger.warning" }),
   }),
   s("le", {
-    t { "logger.error" },
+    t({ "logger.error" }),
   }),
   s("lc", {
-    t { "logger.critical" },
+    t({ "logger.critical" }),
   }),
   s("lee", {
-    t { "logger.exception" },
+    t({ "logger.exception" }),
   }),
 
   -- Jupynium markdown cell
   s("md", {
-    t { "# %% [md]", [["""]], "" },
+    t({ "# %% [md]", [["""]], "" }),
     i(1),
-    t { "", [["""]], "" },
+    t({ "", [["""]], "" }),
     i(0),
   }),
 
   s("main", {
-    t {
+    t({
       "def main():",
       "\t",
-    },
+    }),
     i(1, "pass"),
-    t {
+    t({
       "",
       "",
       "",
       [[if __name__ == "__main__":]],
       "\tmain()",
       "",
-    },
+    }),
     i(0),
   }),
 
   s("logmain", {
-    t {
+    t({
       "import rich.traceback",
       "",
       "rich.traceback.install(show_locals=True)",
@@ -157,9 +157,9 @@ return {
       "import logging",
       "",
       "from ",
-    },
+    }),
     func_node(find_first_party_module, {}),
-    t {
+    t({
       ".utils import setup_logging",
       "",
       "logger = logging.getLogger(__name__)",
@@ -167,9 +167,9 @@ return {
       "",
       [[def main():]],
       "\t",
-    },
+    }),
     i(1, "pass"),
-    t {
+    t({
       "",
       "",
       "",
@@ -180,7 +180,7 @@ return {
       "\texcept Exception:",
       "\t\t" .. [[logger.exception("Exception occurred")]],
       "",
-    },
+    }),
     i(0),
   }),
   -- s("argparse", {
@@ -193,20 +193,30 @@ return {
   s("config", {
     func_node(function()
       local content =
-        read_from_url "https://gist.githubusercontent.com/kiyoon/19eea0ea71228ac0f519319ac380ab13/raw/config.py"
+        read_from_url("https://gist.githubusercontent.com/kiyoon/19eea0ea71228ac0f519319ac380ab13/raw/config.py")
       return content
     end, {}),
   }),
-  s("sp", {
-    t { "str | PathLike" },
-  }),
-  s("spn", {
-    t { "str | PathLike | None" },
-  }),
   s("mkdir", {
-    t { "mkdir(parents=True, exist_ok=True)" },
+    t({ "mkdir(parents=True, exist_ok=True)" }),
   }),
   s("sdir", {
-    t { "SCRIPT_DIR = Path(__file__).resolve().parent" },
+    t({ "SCRIPT_DIR = Path(__file__).resolve().parent" }),
+  }),
+
+  -- Typing
+  s("sp", {
+    t({ "str | PathLike" }),
+  }),
+  s("spn", {
+    t({ "str | PathLike | None" }),
+  }),
+
+  -- Comments
+  s("fo", {
+    t({ "# fmt: on" }),
+  }),
+  s("ff", {
+    t({ "# fmt: off" }),
   }),
 }

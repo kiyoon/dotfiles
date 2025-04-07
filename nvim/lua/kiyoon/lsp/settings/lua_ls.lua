@@ -1,4 +1,6 @@
-return {
+local lang = require("kiyoon.lang").lang
+
+local M = {
   settings = {
     root_dir = vim.fs.root(0, {
       "init.lua",
@@ -45,3 +47,9 @@ return {
     },
   },
 }
+
+if lang ~= "en" then
+  M.cmd = { "lua-language-server", "--locale=pt-br" }
+end
+
+return M

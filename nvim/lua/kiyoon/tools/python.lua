@@ -283,11 +283,17 @@ local function apply_ruff_fix(fix)
   local end_row = fix["end_location"]["row"] - 1
   local end_col = fix["end_location"]["column"] - 1
 
+  -- handle unicode
+  local start_line_content = vim.api.nvim_buf_get_lines(0, start_row, start_row + 1, false)[1]
+  local end_line_content = vim.api.nvim_buf_get_lines(0, end_row, end_row + 1, false)[1]
+  start_col = vim.str_byteindex(start_line_content, "utf-16", start_col)
+  end_col = vim.str_byteindex(end_line_content, "utf-16", end_col)
+
   -- end row can be out of bounds
   local num_lines = vim.api.nvim_buf_line_count(0)
   if end_row >= num_lines then
     end_row = num_lines - 1
-    end_col = #vim.api.nvim_buf_get_lines(0, end_row, end_row + 1, false)[1]
+    end_col = #end_line_content
   end
 
   vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, content)

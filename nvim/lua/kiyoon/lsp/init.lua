@@ -3,10 +3,10 @@ local notify = require("kiyoon.notify").notify
 local servers = {
   "lua_ls",
   "html",
-  -- "cssls",
-  -- "ts_ls",
+  "cssls",
+  "ts_ls",
   -- "eslint",
-  -- "jsonls",
+  "jsonls",
   "biome",
   "basedpyright",
   -- "ruff_lsp",

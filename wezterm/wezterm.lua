@@ -202,6 +202,12 @@ table.insert(config.hyperlink_rules, {
 	format = "https://luals.github.io/wiki/syntax-errors/#$1",
 })
 
+-- biome
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗 \[([a-z0-9-]+)]] .. "]",
+	format = "https://biomejs.dev/linter/rules/$1",
+})
+
 config.colors = {
 	-- Setting copied from Ghostty 1.0
 	background = "#282c34",

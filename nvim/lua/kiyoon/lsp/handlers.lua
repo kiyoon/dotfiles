@@ -63,6 +63,17 @@ local function format_float(diagnostic)
     -- match line break at the end
     message =
       diagnostic.message:gsub("for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n", "")
+  elseif diagnostic.source == "biome" then
+    -- code is like lint/nursery/useGoogleFontDisplay
+    -- return kebab case like use-google-font-display
+    -- lua match lint/\w/(\w)
+    local kebab_case_code = string.match(diagnostic.code, [[lint/%w+/(%w+)]])
+    -- make camel case to kebab case
+    if kebab_case_code ~= nil then
+      kebab_case_code = kebab_case_code:gsub("(%u)", "-%1"):lower()
+    end
+
+    return diagnostic.message .. " 🔗 [" .. kebab_case_code .. "]"
   else
     message = diagnostic.message
   end

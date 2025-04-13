@@ -207,6 +207,10 @@ table.insert(config.hyperlink_rules, {
 	regex = [[🔗 \[([a-z0-9-]+)]] .. "]",
 	format = "https://biomejs.dev/linter/rules/$1",
 })
+table.insert(config.hyperlink_rules, {
+	regex = [[\[lint/.*/(.*)\]] .. "]",
+	format = "https://next.biomejs.dev/linter/rules/$1",
+})
 
 config.colors = {
 	-- Setting copied from Ghostty 1.0

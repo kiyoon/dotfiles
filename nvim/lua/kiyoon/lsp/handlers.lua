@@ -33,10 +33,12 @@ local basedpyright_codes_to_ignore = {
   reportUnusedExpression = true,
 }
 
+local icons = require("kiyoon.icons")
+
 local M = {}
 
+-- nvim-cmp
 local status_cmp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-local icons = require("kiyoon.icons")
 
 if status_cmp_ok then
   M.capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -45,8 +47,11 @@ if status_cmp_ok then
 end
 
 -- blink.cmp
--- M.capabilities = vim.lsp.protocol.make_client_capabilities()
--- M.capabilities = require("blink.cmp").get_lsp_capabilities(M.capabilities)
+local blink_cmp_ok, _ = pcall(require, "blink")
+if blink_cmp_ok then
+  M.capabilities = vim.lsp.protocol.make_client_capabilities()
+  M.capabilities = vim.tbl_deep_extend("force", M.capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+end
 
 ---@param diagnostic vim.Diagnostic
 ---@return string

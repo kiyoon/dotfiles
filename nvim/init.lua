@@ -55,7 +55,8 @@ vim.o.cursorline = true
 vim.o.inccommand = "split"
 vim.o.updatetime = 500
 vim.o.exrc = true -- read config from .exrc.lua / .nvimrc.lua
-vim.o.winborder = "rounded"
+-- vim.o.winborder = "rounded"
+vim.o.pumblend = 30 -- popup menu transparency
 
 -- This may cause lualine to flicker
 -- vim.o.cmdheight = 0

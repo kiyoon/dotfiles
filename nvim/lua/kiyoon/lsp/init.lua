@@ -80,14 +80,7 @@ end
 install_pkg_background("shellcheck")
 install_pkg_background("actionlint")
 
--- require("neodev").setup {
---   override = function(root_dir, library)
---     library.enabled = true
---     library.plugins = true
---   end,
--- } -- make sure to call this before lspconfig
-
-local lspconfig = require("lspconfig")
+-- local lspconfig = require("lspconfig")
 local handlers = require("kiyoon.lsp.handlers")
 handlers.setup()
 
@@ -105,7 +98,9 @@ for _, server in pairs(servers) do
     -- opts = conf_opts
   end
 
-  lspconfig[server].setup(opts)
+  -- lspconfig[server].setup(opts)
+  vim.lsp.enable(server)
+  vim.lsp.config(server, opts)
 end
 
 local status, wk = pcall(require, "which-key")

@@ -155,25 +155,21 @@ return {
     },
     opts = {
       extend_lookup_table = {
-        ---@type string[]
         import = {
           -- "tqdm",
         },
 
-        ---@type table<string, string>
         import_as = {
           -- These are the default values. Here for demonstration.
           -- np = "numpy",
           -- pd = "pandas",
         },
 
-        ---@type table<string, string>
         import_from = {
           -- tqdm = nil,
           -- tqdm = "tqdm",
         },
 
-        ---@type table<string, string[]>
         statement_after_imports = {
           -- logger = { "import my_custom_logger", "", "logger = my_custom_logger.get_logger()" },
         },
@@ -986,6 +982,15 @@ return {
       },
     },
     dev = nvim_treesitter_dev,
+  },
+  {
+    "mawkler/jsx-element.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
+    ft = { "typescriptreact", "javascriptreact", "javascript" },
+    opts = {},
   },
   {
     -- "nvim-treesitter/nvim-treesitter-context",

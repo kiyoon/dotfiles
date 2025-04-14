@@ -164,8 +164,8 @@ require("nvim-treesitter.configs").setup({
         --["ic"] = "@comment.outer",
         --["afr"] = "@frame.outer",
         --["ifr"] = "@frame.inner",
-        --["aat"] = "@attribute.outer",
-        --["iat"] = "@attribute.inner",
+        ["aA"] = "@attribute.outer",
+        ["iA"] = "@attribute.inner",
         --["asc"] = "@scopename.inner",
         --["isc"] = "@scopename.inner",
         ["as"] = { query = "@scope", query_group = "locals" },
@@ -201,6 +201,7 @@ require("nvim-treesitter.configs").setup({
         [")b"] = "@block.outer",
         [")l"] = "@class.outer",
         [")s"] = "@statement.outer",
+        [")A"] = "@attribute.outer",
       },
       swap_previous = {
         ["(m"] = "@function.outer",
@@ -209,6 +210,7 @@ require("nvim-treesitter.configs").setup({
         ["(b"] = "@block.outer",
         ["(l"] = "@class.outer",
         ["(s"] = "@statement.outer",
+        ["(A"] = "@attribute.outer",
       },
     },
     move = {

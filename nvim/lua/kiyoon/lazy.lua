@@ -1629,7 +1629,12 @@ return {
   {
     "saghen/blink.cmp",
     -- optional: provides snippets for the snippet source
-    dependencies = { "rafamadriz/friendly-snippets" },
+    dependencies = {
+      "rafamadriz/friendly-snippets",
+      "MahanRahmati/blink-nerdfont.nvim",
+      "moyiz/blink-emoji.nvim",
+      "L3MON4D3/LuaSnip",
+    },
 
     -- use a release tag to download pre-built binaries
     version = "1.*",
@@ -1683,16 +1688,52 @@ return {
         },
       },
 
+      snippets = { preset = "luasnip" },
+
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+        default = {
+          "lazydev",
+          "lsp",
+          "path",
+          "snippets",
+          "buffer",
+          "nerdfont",
+          "emoji",
+        },
         providers = {
           lazydev = {
             name = "LazyDev",
             module = "lazydev.integrations.blink",
             -- make lazydev completions top priority (see `:h blink.cmp`)
             score_offset = 100,
+          },
+          lsp = {
+            score_offset = 90,
+          },
+          snippets = {
+            score_offset = 50,
+          },
+          nerdfont = {
+            module = "blink-nerdfont",
+            name = "Nerd Fonts",
+            score_offset = 15, -- Tune by preference
+            opts = { insert = true }, -- Insert nerdfont icon (default) or complete its name
+          },
+          emoji = {
+            module = "blink-emoji",
+            name = "Emoji",
+            score_offset = 16, -- Tune by preference
+            opts = { insert = true }, -- Insert emoji (default) or complete its name
+            -- should_show_items = function()
+            --   return vim.tbl_contains(
+            --     -- Enable emoji completion only for git commits and markdown.
+            --     -- By default, enabled for all file-types.
+            --     { "gitcommit", "markdown" },
+            --     vim.o.filetype
+            --   )
+            -- end,
           },
         },
       },

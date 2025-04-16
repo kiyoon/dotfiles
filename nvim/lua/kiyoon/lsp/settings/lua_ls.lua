@@ -2,6 +2,7 @@ local lang = require("kiyoon.lang").lang
 
 local M = {
   settings = {
+
     root_dir = vim.fs.root(0, {
       "init.lua",
       ".luarc.json",

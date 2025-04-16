@@ -1991,7 +1991,7 @@ syntax match typescriptDecorator /@\([_$a-zA-Z][_$a-zA-Z0-9]*\.\)*[_$a-zA-Z][_$a
 hi def link typescriptReserved             Error
 "
 " hi def link typescriptEndColons            Exception
-" hi def link typescriptSymbols              Normal
+hi def link typescriptSymbols              Normal
 " hi def link typescriptBraces               Function
 " hi def link typescriptParens               Normal
 hi def link typescriptComment              Comment
@@ -2013,13 +2013,13 @@ hi def link typescriptString               String
 " hi def link typescriptSpecial              Special
 hi def link typescriptStringLiteralType    String
 hi def link typescriptTemplateLiteralType  String
-" hi def link typescriptStringMember         String
-" hi def link typescriptTemplate             String
-" hi def link typescriptEventString          String
-" hi def link typescriptDestructureString    String
+hi def link typescriptStringMember         String
+hi def link typescriptTemplate             String
+hi def link typescriptEventString          String
+hi def link typescriptDestructureString    String
 " hi def link typescriptASCII                Special
 " hi def link typescriptTemplateSB           Label
-" hi def link typescriptRegexpString         String
+hi def link typescriptRegexpString         String
 " hi def link typescriptGlobal               Constant
 " hi def link typescriptTestGlobal           Function
 " hi def link typescriptPrototype            Type
@@ -2033,13 +2033,13 @@ hi def link typescriptVariable             Identifier
 hi def link typescriptUsing                Identifier
 " hi def link typescriptDestructureVariable  PreProc
 hi def link typescriptEnumKeyword          Identifier
-" hi def link typescriptRepeat               Repeat
-" hi def link typescriptForOperator          Repeat
+hi def link typescriptRepeat               Repeat
+hi def link typescriptForOperator          Repeat
 hi def link typescriptStatementKeyword     Statement
 " hi def link typescriptMessage              Keyword
 hi def link typescriptOperator             Identifier
 hi def link typescriptKeywordOp            Identifier
-" hi def link typescriptCastKeyword          Special
+hi def link typescriptCastKeyword          Special
 hi def link typescriptType                 Type
 hi def link typescriptNull                 Boolean
 hi def link typescriptNumber               Number
@@ -2048,7 +2048,7 @@ hi def link typescriptBoolean              Boolean
 " hi def link typescriptDestructureLabel     Function
 " hi def link typescriptLabel                Label
 " hi def link typescriptTupleLable           Label
-" hi def link typescriptStringProperty       String
+hi def link typescriptStringProperty       String
 hi def link typescriptImport               Special
 hi def link typescriptImportType           Special
 hi def link typescriptAmbientDeclaration   Special
@@ -2075,7 +2075,7 @@ hi def link typescriptArrowFunc            Type
 hi def link typescriptClassKeyword         Keyword
 hi def link typescriptClassExtends         Keyword
 " hi def link typescriptAbstract             Special
-" hi def link typescriptClassStatic          StorageClass
+hi def link typescriptClassStatic          StorageClass
 hi def link typescriptReadonlyModifier     Keyword
 hi def link typescriptInterfaceKeyword     Keyword
 hi def link typescriptInterfaceExtends     Keyword

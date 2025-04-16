@@ -32,10 +32,10 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
   return newVirtText
 end
 
-local ufo = require "ufo"
+local ufo = require("ufo")
 local function get_cell_folds(bufnr)
   local function handleFallbackException(err, providerName)
-    if type(err) == "string" and err:match "UfoFallbackException" then
+    if type(err) == "string" and err:match("UfoFallbackException") then
       return ufo.getFolds(bufnr, providerName)
     else
       return require("promise").reject(err)
@@ -64,12 +64,12 @@ end
 -- Option 3: treesitter as a main provider instead
 -- Only depend on `nvim-treesitter/queries/filetype/folds.scm`,
 -- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
-ufo.setup {
+ufo.setup({
   fold_virt_text_handler = handler,
   provider_selector = function(bufnr, filetype, buftype)
-    if filetype == "python" then
+    if vim.api.nvim_buf_get_name(bufnr):match(".*%.ju%..*$") then
       return get_cell_folds
     end
     return { "treesitter", "indent" }
   end,
-}
+})

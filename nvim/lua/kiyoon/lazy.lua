@@ -216,7 +216,11 @@ return {
     "kiyoon/jupynium.nvim",
     build = "bash scripts/build_with_uv.sh ~/.virtualenvs/jupynium",
     -- build = "uv pip install . --python=$HOME/.virtualenvs/jupynium/bin/python",
-    ft = { "python", "markdown" },
+    -- ft = { "python", "markdown" },
+    cmd = {
+      "JupyniumStartAndAttachToServer",
+      "JupyniumStartAndAttachToServerInTerminal",
+    },
     config = function()
       local python_host
       if jupynium_dev then
@@ -1602,7 +1606,6 @@ return {
           },
         },
       },
-      -- { "saghen/blink.cmp" },
     },
     config = function()
       require("kiyoon.lsp")
@@ -1694,6 +1697,7 @@ return {
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
         default = {
+          "jupynium",
           "lazydev",
           "lsp",
           "path",
@@ -1703,11 +1707,20 @@ return {
           "emoji",
         },
         providers = {
+          jupynium = {
+            name = "Jupynium",
+            module = "jupynium.blink_cmp",
+            -- Consider higher priority than LSP
+            score_offset = 100,
+          },
           lazydev = {
             name = "LazyDev",
             module = "lazydev.integrations.blink",
             -- make lazydev completions top priority (see `:h blink.cmp`)
             score_offset = 100,
+            enabled = function()
+              return vim.bo.filetype == "lua"
+            end,
           },
           lsp = {
             score_offset = 90,
@@ -2526,7 +2539,6 @@ return {
     -- 2. :MoltenInit
     "benlubas/molten-nvim",
     version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-    lazy = false, -- somehow it doesn't work with lazy loading and the plugin is fast to load
     -- cmd = {
     --   "MoltenInit",
     --   "MoltenInfo",

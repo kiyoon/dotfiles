@@ -20,6 +20,9 @@ end
 local function translate_and_simplify_code(diagnostics)
   local translate_biome_message = require("kiyoon.lang.biome").translate_biome_message
   for _, diagnostic in ipairs(diagnostics) do
+    ---@diagnostic disable-next-line: param-type-mismatch
+    diagnostic.message = translate_biome_message(diagnostic.code, diagnostic.message)
+
     -- code is like lint/nursery/useGoogleFontDisplay
     -- return kebab case like use-google-font-display
     -- lua match lint/\w/(\w)
@@ -29,10 +32,6 @@ local function translate_and_simplify_code(diagnostics)
       kebab_case_code = kebab_case_code:gsub("(%u)", "-%1"):lower()
       diagnostic.code = kebab_case_code
     end
-
-    -- code is something else like "parse"
-    ---@diagnostic disable-next-line: param-type-mismatch
-    diagnostic.message = translate_biome_message(diagnostic.code, diagnostic.message)
   end
 end
 

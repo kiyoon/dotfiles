@@ -42,13 +42,13 @@ M.translate_biome_message = function(code, message)
         return "Non usare console.log."
       end
     elseif code == "lint/style/useNamingConvention" then
-      -- 🔗 [lint/style/useNamingConvention] This {const/let} name should be in {camelCase} or {PascalCase}.
+      -- 🔗 [lint/style/useNamingConvention] This {const/let/object property} name should be in {camelCase} or {PascalCase}.
       -- 2nd form: This {} name should be in {}.
-      local variable_type = message:match("This (%w+) name should be in")
+      local variable_type = message:match("This (.*) name should be in")
       if variable_type ~= nil then
         local naming_convention1, naming_convention2 = message:match("should be in (%w+) or (%w+)%.")
         if naming_convention1 == nil then
-          local naming_convention = message:match("should be in (.-).")
+          local naming_convention = message:match("should be in ([A-Za-z0-9_-]+)%.")
           if lang == "es" then
             return "Este " .. variable_type .. " nombre debería estar en " .. naming_convention .. "."
           elseif lang == "pt-br" then

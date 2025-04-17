@@ -1,5 +1,41 @@
 local util = require("lspconfig.util")
 
+local codes_to_ignore = {
+  ["lint/correctness/noUnusedImports"] = true,
+  ["lint/correctness/noUnusedVariables"] = true,
+}
+---@param diagnostics vim.Diagnostic[]
+---@return vim.Diagnostic[]
+local function filter_diagnostics(diagnostics)
+  local filtered_diagnostics = {}
+  for _, diagnostic in ipairs(diagnostics) do
+    if not codes_to_ignore[diagnostic.code] then
+      table.insert(filtered_diagnostics, diagnostic)
+    end
+  end
+  return filtered_diagnostics
+end
+
+---@param diagnostics vim.Diagnostic[]
+local function translate_and_simplify_code(diagnostics)
+  local translate_biome_message = require("kiyoon.lang.biome").translate_biome_message
+  for _, diagnostic in ipairs(diagnostics) do
+    -- code is like lint/nursery/useGoogleFontDisplay
+    -- return kebab case like use-google-font-display
+    -- lua match lint/\w/(\w)
+    local kebab_case_code = string.match(diagnostic.code, [[lint/%w+/(%w+)]])
+    -- make camel case to kebab case
+    if kebab_case_code ~= nil then
+      kebab_case_code = kebab_case_code:gsub("(%u)", "-%1"):lower()
+      diagnostic.code = kebab_case_code
+    end
+
+    -- code is something else like "parse"
+    ---@diagnostic disable-next-line: param-type-mismatch
+    diagnostic.message = translate_biome_message(diagnostic.code, diagnostic.message)
+  end
+end
+
 return {
   -- https://github.com/neovim/nvim-lspconfig/pull/2984
   -- by default, biome is active only when biome.json is configured.
@@ -20,4 +56,14 @@ return {
   single_file_support = true,
   -- workspace_required = false,
   -- settings = {},
+  handlers = {
+    ["textDocument/publishDiagnostics"] = function(err, result, ctx)
+      if result and result.diagnostics then
+        result.diagnostics = filter_diagnostics(result.diagnostics)
+        translate_and_simplify_code(result.diagnostics)
+        vim.print(result.diagnostics)
+      end
+      return vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
+    end,
+  },
 }

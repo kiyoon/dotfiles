@@ -13,24 +13,31 @@ local source_to_icon = {
   tsserver = "🌐",
   ["Lua Syntax Check."] = "🌜s",
   ["Lua Diagnostics."] = "🌜d",
+  biome = "",
 }
 
 -- NOTE: virtual text is good, but too many can be overwhelming.
 -- we disable virtual text for some common diagnostics.
-local ruff_codes_to_ignore = {
-  -- print, debug statements
-  T201 = true,
-  T202 = true,
-  T203 = true,
-  -- unused expression
-  B018 = true,
-}
+-- note that for biome, we disable the entire diagnostic instead of just the virtual text.
+local codes_to_ignore_virtual_text = {
+  ruff = {
+    -- print, debug statements
+    T201 = true,
+    T202 = true,
+    T203 = true,
+    -- unused expression
+    B018 = true,
+  },
+  basedpyright = {
+    reportUnusedVariable = true,
+    reportUnusedImport = true,
+    reportUnusedParameter = true,
+    reportUnusedExpression = true,
+  },
 
-local basedpyright_codes_to_ignore = {
-  reportUnusedVariable = true,
-  reportUnusedImport = true,
-  reportUnusedParameter = true,
-  reportUnusedExpression = true,
+  typescript = {
+    [6133] = true, -- 'Variable is declared but never used'
+  },
 }
 
 local icons = require("kiyoon.icons")
@@ -53,9 +60,6 @@ if blink_cmp_ok then
   M.capabilities = vim.tbl_deep_extend("force", M.capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
 end
 
--- local translate_ruff_message = require("kiyoon.lang.ruff").translate_ruff_message
-local translate_biome_message = require("kiyoon.lang.biome").translate_biome_message
-
 ---@param diagnostic vim.Diagnostic
 ---@return string
 local function format_float(diagnostic)
@@ -72,18 +76,12 @@ local function format_float(diagnostic)
     message =
       diagnostic.message:gsub("for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n", "")
   elseif diagnostic.source == "biome" then
-    -- code is like lint/nursery/useGoogleFontDisplay
-    -- return kebab case like use-google-font-display
-    -- lua match lint/\w/(\w)
-    local kebab_case_code = string.match(diagnostic.code, [[lint/%w+/(%w+)]])
-    -- make camel case to kebab case
-    if kebab_case_code ~= nil then
-      kebab_case_code = kebab_case_code:gsub("(%u)", "-%1"):lower()
-      return translate_biome_message(diagnostic.code, diagnostic.message) .. " 🔗 [" .. kebab_case_code .. "]"
+    -- for biome, translation and code transformation is all done in `settings/biome.lua`
+    -- but we only have the link in specific cases
+    if diagnostic.code ~= "parse" then
+      return diagnostic.message .. " 🔗"
     end
-
-    -- code is something else like "parse"
-    return translate_biome_message(diagnostic.code, diagnostic.message)
+    return diagnostic.message
   else
     message = diagnostic.message
   end
@@ -97,16 +95,11 @@ end
 
 ---@param diagnostic vim.Diagnostic
 local function format_virtual_text(diagnostic)
-  if diagnostic.source == "ruff" then
-    if ruff_codes_to_ignore[diagnostic.code] then
-      return nil
-    end
-  elseif diagnostic.source == "basedpyright" then
-    if basedpyright_codes_to_ignore[diagnostic.code] then
-      return nil
-    end
-  elseif diagnostic.source == "biome" then
-    return translate_biome_message(diagnostic.code, diagnostic.message)
+  if
+    codes_to_ignore_virtual_text[diagnostic.source] ~= nil
+    and codes_to_ignore_virtual_text[diagnostic.source][diagnostic.code]
+  then
+    return nil
   end
   return diagnostic.message
 end

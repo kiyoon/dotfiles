@@ -3,6 +3,9 @@ local lang = require("kiyoon.lang").lang
 local M = {}
 
 ---Ensure translations are always in the order: es, pt-br, and fr
+---@param code string
+---@param message string
+---@return string
 M.translate_biome_message = function(code, message)
   if lang ~= "en" then
     if code == "lint/style/noInferrableTypes" then
@@ -15,6 +18,81 @@ M.translate_biome_message = function(code, message)
         return "Cette annotation de type est trivialement inférée de son initialisation."
       elseif lang == "it" then
         return "Questa annotazione di tipo è trivialmente inferita dalla sua inizializzazione."
+      end
+    elseif code == "lint/suspicious/noConsole" then
+      -- 🔗 [lint/suspicious/noConsole] Don't use console.
+      if lang == "es" then
+        return "No uses console."
+      elseif lang == "pt-br" then
+        return "Não use console."
+      elseif lang == "fr" then
+        return "Ne pas utiliser console."
+      elseif lang == "it" then
+        return "Non usare console."
+      end
+    elseif code == "lint/suspicious/noConsoleLog" then
+      -- 🔗 [lint/suspicious/noConsoleLog] Don't use console.log.
+      if lang == "es" then
+        return "No uses console.log."
+      elseif lang == "pt-br" then
+        return "Não use console.log."
+      elseif lang == "fr" then
+        return "Ne pas utiliser console.log."
+      elseif lang == "it" then
+        return "Non usare console.log."
+      end
+    elseif code == "lint/style/useNamingConvention" then
+      -- 🔗 [lint/style/useNamingConvention] This {const/let} name should be in {camelCase} or {PascalCase}.
+      -- 2nd form: This {} name should be in {}.
+      local variable_type = message:match("This (%w+) name should be in")
+      if variable_type ~= nil then
+        local naming_convention1, naming_convention2 = message:match("should be in (%w+) or (%w+)%.")
+        if naming_convention1 == nil then
+          local naming_convention = message:match("should be in (.-).")
+          if lang == "es" then
+            return "Este " .. variable_type .. " nombre debería estar en " .. naming_convention .. "."
+          elseif lang == "pt-br" then
+            return "Este " .. variable_type .. " nome deve estar em " .. naming_convention .. "."
+          elseif lang == "fr" then
+            return "Ce " .. variable_type .. " nom doit être en " .. naming_convention .. "."
+          elseif lang == "it" then
+            return "Questo " .. variable_type .. " nome deve essere in " .. naming_convention .. "."
+          end
+        else
+          if lang == "es" then
+            return "Este "
+              .. variable_type
+              .. " nombre debería estar en "
+              .. naming_convention1
+              .. " o "
+              .. naming_convention2
+              .. "."
+          elseif lang == "pt-br" then
+            return "Este "
+              .. variable_type
+              .. " nome deve estar em "
+              .. naming_convention1
+              .. " ou "
+              .. naming_convention2
+              .. "."
+          elseif lang == "fr" then
+            return "Ce "
+              .. variable_type
+              .. " nom doit être en "
+              .. naming_convention1
+              .. " ou "
+              .. naming_convention2
+              .. "."
+          elseif lang == "it" then
+            return "Questo "
+              .. variable_type
+              .. " nome deve essere in "
+              .. naming_convention1
+              .. " o "
+              .. naming_convention2
+              .. "."
+          end
+        end
       end
     end
   end

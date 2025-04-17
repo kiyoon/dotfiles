@@ -53,6 +53,9 @@ if blink_cmp_ok then
   M.capabilities = vim.tbl_deep_extend("force", M.capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
 end
 
+-- local translate_ruff_message = require("kiyoon.lang.ruff").translate_ruff_message
+local translate_biome_message = require("kiyoon.lang.biome").translate_biome_message
+
 ---@param diagnostic vim.Diagnostic
 ---@return string
 local function format_float(diagnostic)
@@ -78,7 +81,7 @@ local function format_float(diagnostic)
       kebab_case_code = kebab_case_code:gsub("(%u)", "-%1"):lower()
     end
 
-    return diagnostic.message .. " 🔗 [" .. kebab_case_code .. "]"
+    return translate_biome_message(diagnostic.code, diagnostic.message) .. " 🔗 [" .. kebab_case_code .. "]"
   else
     message = diagnostic.message
   end
@@ -100,6 +103,8 @@ local function format_virtual_text(diagnostic)
     if basedpyright_codes_to_ignore[diagnostic.code] then
       return nil
     end
+  elseif diagnostic.source == "biome" then
+    return translate_biome_message(diagnostic.code, diagnostic.message)
   end
   return diagnostic.message
 end

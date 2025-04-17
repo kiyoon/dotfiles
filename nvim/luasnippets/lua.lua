@@ -1,6 +1,6 @@
-local ls = require "luasnip"
+local ls = require("luasnip")
 local fmt = require("luasnip.extras.fmt").fmt
-local extras = require "luasnip.extras"
+local extras = require("luasnip.extras")
 local l = extras.lambda
 local i = ls.insert_node
 local c = ls.choice_node
@@ -15,7 +15,7 @@ return {
     "rq",
     fmt(
       [[
-      local {module} = require "{1}"
+      local {module} = require("{1}")
     ]],
       {
         i(1, "module"),
@@ -80,40 +80,40 @@ return {
     )
   ),
   s("fo", {
-    t "for ",
+    t("for "),
     c(1, {
-      sn(nil, { i(1, "k"), t ", ", i(2, "v"), t " in ", t "pairs", t "(", i(3), t ")" }),
-      sn(nil, { i(1, "k"), t ", ", i(2, "v"), t " in ", t "ipairs", t "(", i(3), t ")" }),
-      sn(nil, { i(1, "i"), t " = ", i(2), t ", ", i(3) }),
+      sn(nil, { i(1, "k"), t(", "), i(2, "v"), t(" in "), t("pairs"), t("("), i(3), t(")") }),
+      sn(nil, { i(1, "k"), t(", "), i(2, "v"), t(" in "), t("ipairs"), t("("), i(3), t(")") }),
+      sn(nil, { i(1, "i"), t(" = "), i(2), t(", "), i(3) }),
     }),
-    t { " do", "\t" },
+    t({ " do", "\t" }),
     i(0),
-    t { "", "end" },
+    t({ "", "end" }),
   }),
   -- lazy.nvim
   s("cfun", {
-    t { "config = function()", "\t" },
+    t({ "config = function()", "\t" }),
     i(1),
-    t { "", "end," },
+    t({ "", "end," }),
     i(0),
   }),
   s("ifun", {
-    t { "init = function()", "\t" },
+    t({ "init = function()", "\t" }),
     i(1),
-    t { "", "end," },
+    t({ "", "end," }),
     i(0),
   }),
   s("depe", {
-    t { "dependencies = {", "\t" },
+    t({ "dependencies = {", "\t" }),
     i(1),
-    t { "", "}," },
+    t({ "", "}," }),
     i(0),
   }),
   s('{""}', {
-    t { "{", '\t"' },
+    t({ "{", '\t"' }),
     c(1, {
-      sn(nil, { i(1, " "), t { '"', "}" } }),
-      sn(nil, { i(1, " "), t { '"', "}," } }),
+      sn(nil, { i(1, " "), t({ '"', "}" }) }),
+      sn(nil, { i(1, " "), t({ '"', "}," }) }),
     }),
     i(0),
   }),

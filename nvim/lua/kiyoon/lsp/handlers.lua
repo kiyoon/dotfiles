@@ -79,9 +79,11 @@ local function format_float(diagnostic)
     -- make camel case to kebab case
     if kebab_case_code ~= nil then
       kebab_case_code = kebab_case_code:gsub("(%u)", "-%1"):lower()
+      return translate_biome_message(diagnostic.code, diagnostic.message) .. " 🔗 [" .. kebab_case_code .. "]"
     end
 
-    return translate_biome_message(diagnostic.code, diagnostic.message) .. " 🔗 [" .. kebab_case_code .. "]"
+    -- code is something else like "parse"
+    return translate_biome_message(diagnostic.code, diagnostic.message)
   else
     message = diagnostic.message
   end

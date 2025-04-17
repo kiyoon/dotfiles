@@ -78,7 +78,7 @@ local function format_float(diagnostic)
   elseif diagnostic.source == "biome" then
     -- for biome, translation and code transformation is all done in `settings/biome.lua`
     -- but we only have the link in specific cases
-    if diagnostic.code ~= "parse" then
+    if diagnostic.code ~= "parse" and not diagnostic.code:match("^suppressions/") then
       return diagnostic.message .. " 🔗"
     end
     return diagnostic.message

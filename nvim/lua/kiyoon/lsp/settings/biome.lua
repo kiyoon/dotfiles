@@ -61,7 +61,6 @@ return {
       if result and result.diagnostics then
         result.diagnostics = filter_diagnostics(result.diagnostics)
         translate_and_simplify_code(result.diagnostics)
-        vim.print(result.diagnostics)
       end
       return vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
     end,

@@ -1622,6 +1622,7 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-calc",
       "hrsh7th/cmp-emoji",
+      "chrisgrieser/cmp-nerdfont",
       "saadparwaiz1/cmp_luasnip",
       "onsails/lspkind.nvim", -- display icons
     },

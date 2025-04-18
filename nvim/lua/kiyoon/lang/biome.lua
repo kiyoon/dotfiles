@@ -30,6 +30,29 @@ M.translate_biome_message = function(code, message)
       elseif lang == "it" then
         return "Non usare console."
       end
+    elseif code == "lint/correctness/useImportExtensions" then
+      -- 🔗 [lint/correctness/useImportExtensions] Add a file extension for relative imports.
+      if lang == "es" then
+        return "Agrega una extensión de archivo para las importaciones relativas."
+      elseif lang == "pt-br" then
+        return "Adicione uma extensão de arquivo para importações relativas."
+      elseif lang == "fr" then
+        return "Ajouter une extension de fichier pour les importations relatives."
+      elseif lang == "it" then
+        return "Aggiungi un'estensione di file per le importazioni relative."
+      end
+    elseif code == "lint/correctness/noUndeclaredVariables" then
+      -- 🔗 [lint/correctness/noUndeclaredVariables] The {} variable is undeclared.
+      local variable = message:match("The (.*) variable is undeclared")
+      if lang == "es" then
+        return "La variable " .. variable .. " no está declarada."
+      elseif lang == "pt-br" then
+        return "A variável " .. variable .. " não está declarada."
+      elseif lang == "fr" then
+        return "La variable " .. variable .. " n'est pas déclarée."
+      elseif lang == "it" then
+        return "La variabile " .. variable .. " non è dichiarata."
+      end
     elseif code == "lint/suspicious/noConsoleLog" then
       -- 🔗 [lint/suspicious/noConsoleLog] Don't use console.log.
       if lang == "es" then

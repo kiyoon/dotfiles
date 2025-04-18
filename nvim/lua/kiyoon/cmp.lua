@@ -1,12 +1,12 @@
 -- nvim-cmp setup
-local cmp = require "cmp"
-local types = require "cmp.types"
-local cmp_buffer = require "cmp_buffer"
-local luasnip = require "luasnip"
-local lspkind = require "lspkind"
+local cmp = require("cmp")
+local types = require("cmp.types")
+local cmp_buffer = require("cmp_buffer")
+local luasnip = require("luasnip")
+local lspkind = require("lspkind")
 local compare = cmp.config.compare
 
-cmp.setup {
+cmp.setup({
   snippet = {
     expand = function(args)
       luasnip.lsp_expand(args.body)
@@ -14,13 +14,13 @@ cmp.setup {
   },
   mapping = {
     ["<C-n>"] = {
-      i = cmp.mapping.select_next_item { behavior = types.cmp.SelectBehavior.Insert },
+      i = cmp.mapping.select_next_item({ behavior = types.cmp.SelectBehavior.Insert }),
     },
     ["<C-p>"] = {
-      i = cmp.mapping.select_prev_item { behavior = types.cmp.SelectBehavior.Insert },
+      i = cmp.mapping.select_prev_item({ behavior = types.cmp.SelectBehavior.Insert }),
     },
     ["<C-y>"] = {
-      i = cmp.mapping.confirm { select = false },
+      i = cmp.mapping.confirm({ select = false }),
     },
     ["<C-e>"] = {
       i = cmp.mapping.abort(),
@@ -33,7 +33,7 @@ cmp.setup {
     -- ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-Space>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
-        cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true }
+        cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true })
       else
         cmp.complete()
       end
@@ -69,6 +69,7 @@ cmp.setup {
     { name = "luasnip", priority = 10 },
     { name = "path", priority = 9 },
     { name = "emoji", priority = 8 },
+    { name = "nerdfont", priority = 7 },
     { name = "buffer", priority = 5 },
     { name = "calc", priority = 3 },
   },
@@ -89,7 +90,7 @@ cmp.setup {
     },
   },
   formatting = {
-    format = lspkind.cmp_format {
+    format = lspkind.cmp_format({
       mode = "symbol_text", -- show only symbol annotations
       maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
       ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
@@ -118,7 +119,7 @@ cmp.setup {
       --   ["Instance"] = "󱃻",
       --   ["Statement"] = "󱇯",
       -- },
-    },
+    }),
   },
   window = {
     completion = cmp.config.window.bordered(),
@@ -131,7 +132,7 @@ cmp.setup {
   --     hl_group = "LspCodeLens",
   --   },
   -- },
-}
+})
 
 -- transparent popup
 vim.o.pumblend = 30

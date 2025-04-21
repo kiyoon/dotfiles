@@ -141,6 +141,18 @@ shift + alt - home : yabai -m window --space 1 && \
 # https://github.com/koekeishiya/yabai/issues/225
 shift + alt - d : WIN_ID=$(yabai -m query --windows --window | jq '.id') && yabai -m window --display recent && yabai -m window --focus $WIN_ID
 
+# display 2 -> 3, 3 -> 2
+# 3: main external display
+# 2: left external display
+# 1: laptop display
+shift + alt - t : WIN_QUERY=$(yabai -m query --windows --window) && WIN_ID=$(echo "$WIN_QUERY" | jq '.id') && DISPLAY_ID=$(echo "$WIN_QUERY" | jq '.display') \
+                      && yabai -m window --display $(echo "$DISPLAY_ID" | jq 'if . == 3 then 2 else 3 end') \
+                      && yabai -m window --focus $WIN_ID
+# display 1 -> 3, 3 -> 1
+shift + alt - a : WIN_QUERY=$(yabai -m query --windows --window) && WIN_ID=$(echo "$WIN_QUERY" | jq '.id') && DISPLAY_ID=$(echo "$WIN_QUERY" | jq '.display') \
+                      && yabai -m window --display $(echo "$DISPLAY_ID" | jq 'if . == 3 then 1 else 3 end') \
+                      && yabai -m window --focus $WIN_ID
+
 # https://github.com/koekeishiya/skhd/issues/164
 
 :: resize

@@ -64,6 +64,17 @@ M.translate_biome_message = function(code, message)
       elseif lang == "it" then
         return "Non usare console.log."
       end
+    elseif code == "lint/style/noDefaultExport" then
+      -- 🔗 [lint/style/noDefaultExport] Avoid default exports.
+      if lang == "es" then
+        return "Evita las exportaciones predeterminadas."
+      elseif lang == "pt-br" then
+        return "Evite exportações padrão."
+      elseif lang == "fr" then
+        return "Évitez les exportations par défaut."
+      elseif lang == "it" then
+        return "Evita le esportazioni predefinite."
+      end
     elseif code == "lint/style/useNamingConvention" then
       -- 🔗 [lint/style/useNamingConvention] This {const/let/object property} name should be in {camelCase} or {PascalCase}.
       -- 2nd form: This {} name should be in {}.

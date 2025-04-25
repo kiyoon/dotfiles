@@ -212,6 +212,12 @@ table.insert(config.hyperlink_rules, {
 	format = "https://next.biomejs.dev/linter/rules/$1",
 })
 
+-- selene
+table.insert(config.hyperlink_rules, {
+	regex = [[🔗selene \[([a-z0-9_]+)\]] .. "]",
+	format = "https://kampfkarren.github.io/selene/lints/$1.html",
+})
+
 config.colors = {
 	-- Setting copied from Ghostty 1.0
 	background = "#282c34",

@@ -75,6 +75,74 @@ M.translate_biome_message = function(code, message)
       elseif lang == "it" then
         return "Evita le esportazioni predefinite."
       end
+    elseif code == "lint/style/useTemplate" then
+      -- 🔗 [lint/style/useTemplate] Template literals are preferred over string concatenation.
+      if lang == "es" then
+        return "Se prefieren las literales de plantilla sobre la concatenación de cadenas."
+      elseif lang == "pt-br" then
+        return "As literais de modelo são preferidas em relação à concatenação de strings."
+      elseif lang == "fr" then
+        return "Les littéraux de modèle sont préférés à la concaténation de chaînes."
+      elseif lang == "it" then
+        return "Le letterali del modello sono preferiti rispetto alla concatenazione di stringhe."
+      end
+    elseif code == "lint/style/useNumberNamespace" then
+      -- 🔗 [lint/style/useNumberNamespace] Use {Number.parseInt} instead of the equivalent global.
+      local method_name = message:match("Use (.*) instead of the equivalent global")
+      if lang == "es" then
+        return "Usa " .. method_name .. " en lugar del equivalente global."
+      elseif lang == "pt-br" then
+        return "Use " .. method_name .. " em vez do equivalente global."
+      elseif lang == "fr" then
+        return "Utilisez " .. method_name .. " au lieu de l'équivalent global."
+      elseif lang == "it" then
+        return "Usa " .. method_name .. " invece dell'equivalente globale."
+      end
+    elseif code == "lint/style/useExplicitLengthCheck" then
+      -- 🔗 [lint/style/useExplicitLengthCheck] Use .length === 0 when checking .length is zero.
+      if lang == "es" then
+        return "Usa .length === 0 al verificar que .length es cero."
+      elseif lang == "pt-br" then
+        return "Use .length === 0 ao verificar que .length é zero."
+      elseif lang == "fr" then
+        return "Utilisez .length === 0 lors de la vérification que .length est zéro."
+      elseif lang == "it" then
+        return "Usa .length === 0 quando controlli che .length sia zero."
+      end
+    elseif code == "lint/suspicious/noEvolvingTypes" then
+      -- 🔗 [lint/suspicious/noEvolvingTypes] The type of this variable may evolve implicitly to any type, including the any type.
+      if lang == "es" then
+        return "El tipo de esta variable puede evolucionar implícitamente a cualquier tipo, incluido el tipo any."
+      elseif lang == "pt-br" then
+        return "O tipo desta variável pode evoluir implicitamente para qualquer tipo, incluindo o tipo any."
+      elseif lang == "fr" then
+        return "Le type de cette variable peut évoluer implicitement vers n'importe quel type, y compris le type any."
+      elseif lang == "it" then
+        return "Il tipo di questa variabile può evolversi implicitamente in qualsiasi tipo, incluso il tipo any."
+      end
+    elseif code == "lint/style/useConst" then
+      -- 🔗 [lint/style/useConst] This let declares a variable that is only assigned once.
+      if lang == "es" then
+        return "Este let declara una variable que solo se asigna una vez."
+      elseif lang == "pt-br" then
+        return "Este let declara uma variável que é atribuída apenas uma vez."
+      elseif lang == "fr" then
+        return "Ce let déclare une variable qui n'est assignée qu'une seule fois."
+      elseif lang == "it" then
+        return "Questo let dichiara una variabile che viene assegnata solo una volta."
+      end
+    elseif code == "lint/complexity/noExcessiveCognitiveComplexity" then
+      -- 🔗 [lint/complexity/noExcessiveCognitiveComplexity] Excessive complexity of 95 detected (max: 30).
+      local complexity, max = message:match("Excessive complexity of (%d+) detected %(max: (%d+)%)")
+      if lang == "es" then
+        return string.format("Complejidad excesiva de %s detectada (máx: %s).", complexity, max)
+      elseif lang == "pt-br" then
+        return string.format("Complexidade excessiva de %s detectada (máx: %s).", complexity, max)
+      elseif lang == "fr" then
+        return string.format("Complexité excessive de %s détectée (max: %s).", complexity, max)
+      elseif lang == "it" then
+        return string.format("Complessità eccessiva di %s rilevata (max: %s).", complexity, max)
+      end
     elseif code == "lint/style/useNamingConvention" then
       -- 🔗 [lint/style/useNamingConvention] This {const/let/object property} name should be in {camelCase} or {PascalCase}.
       -- 2nd form: This {} name should be in {}.

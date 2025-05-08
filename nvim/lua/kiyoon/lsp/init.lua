@@ -9,6 +9,7 @@ local servers = {
   "jsonls",
   "biome",
   "basedpyright",
+  -- "ty",
   -- "ruff_lsp",
   "bashls",
   "yamlls",
@@ -16,6 +17,10 @@ local servers = {
   "dockerls",
   -- "grammarly",
   -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
+}
+
+local servers_attach_only = {
+  -- "ty",
 }
 
 local settings = {
@@ -85,6 +90,12 @@ install_pkg_background("selene")
 local handlers = require("kiyoon.lsp.handlers")
 handlers.setup()
 
+-- expand servers to include servers_attach_only
+for _, server in pairs(servers_attach_only) do
+  if not vim.tbl_contains(servers, server) then
+    table.insert(servers, server)
+  end
+end
 for _, server in pairs(servers) do
   local opts = {
     on_attach = handlers.on_attach,

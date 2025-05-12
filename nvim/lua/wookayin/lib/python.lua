@@ -59,14 +59,16 @@ M.toggle_fstring = function()
   end
 
   ---@diagnostic disable-next-line: unused-local
-  local srow, scol, erow, ecol = require("wookayin.utils.ts_utils").get_vim_range({ node:range() })
-  vim.fn.setcursorcharpos(srow, scol)
+  local srow, scol, _erow, _ecol = require("wookayin.utils.ts_utils").get_vim_range({ node:range() })
+  local line = vim.api.nvim_buf_get_lines(0, srow - 1, srow, false)[1]
+  local scol_utf = vim.str_utfindex(line, "utf-16", scol)
+  vim.fn.setcursorcharpos(srow, scol_utf)
 
-  local char = vim.api.nvim_get_current_line():sub(scol, scol)
+  local char = line:sub(scol, scol)
   local is_fstring = (char == "f")
 
   if is_fstring then
-    vim.cmd([[normal "_x]])
+    vim.cmd([[normal! "_x]])
     -- if cursor is in the same line as text change
     if srow == cursor[1] then
       cursor[2] = cursor[2] - 1 -- negative offset to cursor

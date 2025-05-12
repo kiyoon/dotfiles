@@ -891,6 +891,7 @@ return {
           -- ["-"] = "actions.parent",
           -- ["_"] = "actions.open_cwd",
           ["U"] = "actions.parent",
+          ["<BS>"] = "actions.parent",
           ["`"] = "actions.cd",
           ["~"] = { "actions.cd", opts = { scope = "tab" }, desc = ":tcd to the current oil directory" },
           ["gs"] = "actions.change_sort",

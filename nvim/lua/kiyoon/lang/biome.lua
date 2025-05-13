@@ -143,6 +143,17 @@ M.translate_biome_message = function(code, message)
       elseif lang == "it" then
         return string.format("Complessità eccessiva di %s rilevata (max: %s).", complexity, max)
       end
+    elseif code == "lint/style/useBlockStatements" then
+      -- 🔗 [use-block-statements] Block statements are preferred in this position.
+      if lang == "es" then
+        return "Se prefieren las declaraciones de bloque en esta posición."
+      elseif lang == "pt-br" then
+        return "As declarações de bloco são preferidas nesta posição."
+      elseif lang == "fr" then
+        return "Les déclarations de bloc sont préférées à cette position."
+      elseif lang == "it" then
+        return "Le dichiarazioni di blocco sono preferite in questa posizione."
+      end
     elseif code == "lint/style/useNamingConvention" then
       -- 🔗 [lint/style/useNamingConvention] This {const/let/object property} name should be in {camelCase} or {PascalCase}.
       -- 2nd form: This {} name should be in {}.

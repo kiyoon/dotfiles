@@ -4,6 +4,7 @@ local servers = {
   "lua_ls",
   "html",
   "cssls",
+  "tailwindcss",
   "ts_ls",
   -- "eslint",
   "jsonls",

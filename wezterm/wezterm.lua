@@ -76,6 +76,11 @@ local config = {
 				size = { Percent = 50 },
 			}),
 		},
+		-- OSC 133
+		-- need to enable shell integration
+		-- https://wezterm.org/shell-integration.html
+		{ key = "UpArrow", mods = "SHIFT", action = wezterm.action.ScrollToPrompt(-1) },
+		{ key = "DownArrow", mods = "SHIFT", action = wezterm.action.ScrollToPrompt(1) },
 	},
 
 	enable_scroll_bar = true,

@@ -22,6 +22,7 @@ local servers = {
 
 local servers_attach_only = {
   -- "ty",
+  -- "pyrefly",
 }
 
 local settings = {

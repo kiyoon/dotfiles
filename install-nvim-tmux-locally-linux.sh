@@ -21,7 +21,7 @@ else
 	cd ~/.local/bin || exit
 	curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim-linux-x86_64.appimage
 	chmod u+x ./nvim-linux-x86_64.appimage
-	./nvim.appimage --appimage-extract
+	./nvim-linux-x86_64.appimage --appimage-extract
 	rsync -a squashfs-root/usr/ ~/.local/
 	rm nvim-linux-x86_64.appimage
 	rm -rf squashfs-root

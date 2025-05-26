@@ -19,11 +19,11 @@ else
 	nvim_tag=v0.11.1
 	mkdir ~/.local/bin -p
 	cd ~/.local/bin || exit
-	curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim.appimage
-	chmod u+x ./nvim.appimage
+	curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim-linux-x86_64.appimage
+	chmod u+x ./nvim-linux-x86_64.appimage
 	./nvim.appimage --appimage-extract
 	rsync -a squashfs-root/usr/ ~/.local/
-	rm nvim.appimage
+	rm nvim-linux-x86_64.appimage
 	rm -rf squashfs-root
 
 	# tmux latest version

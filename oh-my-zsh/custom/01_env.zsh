@@ -93,15 +93,15 @@ if (($+commands[eza])); then
 		# Preview on cd with eza
 		# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath'
 		zstyle ':fzf-tab:complete:*' fzf-preview '\
-			if [[ -d $realpath ]]; then \
+			if [[ -d "$realpath" ]]; then \
 				preview_width=$(( $(tput cols)/2 - 4 )); \
 				if [[ $preview_width -gt 20 ]]; then \
-					eza -w $preview_width --icons=always --color=always --git-ignore $realpath; \
+					eza -w $preview_width --icons=always --color=always --git-ignore "$realpath"; \
 				else \
-					eza -w $preview_width --color=always --git-ignore $realpath; \
+					eza -w $preview_width --color=always --git-ignore "$realpath"; \
 				fi; \
 			else \
-				bat --color=always --style=numbers --line-range=:1000 $realpath; \
+				bat --color=always --style=numbers --line-range=:1000 "$realpath"; \
 			fi'
 	fi
 fi

@@ -219,4 +219,15 @@ return {
   s("ff", {
     t({ "# fmt: off" }),
   }),
+
+  -- PEP 723 inline script metadata
+  -- https://peps.python.org/pep-0723/
+  s("script", {
+    t({ "# /// script", [[# requires-python = ">=3.]] }),
+    i(1, "12"),
+    t({ [["]], "# dependencies = [", [[#    "]] }),
+    i(2, "requests"),
+    t({ [[",]], "# ///", "" }),
+    i(0),
+  }),
 }

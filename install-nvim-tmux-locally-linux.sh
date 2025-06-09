@@ -16,7 +16,7 @@ else
 	# neovim latest stable/nightly version
 	# nvim_tag=stable
 	# nvim_tag=nightly
-	nvim_tag=v0.11.1
+	nvim_tag=v0.11.2
 	mkdir ~/.local/bin -p
 	cd ~/.local/bin || exit
 	curl -LO https://github.com/neovim/neovim/releases/download/$nvim_tag/nvim-linux-x86_64.appimage

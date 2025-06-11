@@ -166,14 +166,37 @@ git_amend_author() {
 	git commit --amend --author="Kiyoon Kim <kiyoon@users.noreply.github.com>"
 }
 
+get_sum_bytes() {
+	# Calculate the total size of files/directories
+	infiles=("${@:1}")
+	if [[ $OSTYPE == "darwin"* ]]; then
+		sum_bytes=$(($(du -sk "${infiles[@]}" | awk '{print $1}' | paste -s -d+ - | bc) * 1024))
+	elif [[ $OSTYPE == "linux"* ]]; then
+		sum_bytes=$(du -sb "${infiles[@]}" | awk '{print $1}' | paste -s -d+ - | bc)
+	fi
+	echo "$sum_bytes"
+}
+
 tgz() {
 	# Create a tar.gz file with progress bar
 
-	outfile="$1"
-	infiles=("${@:2}")
+	if ! command -v pv &> /dev/null; then
+		echo "pv command not found. Please install pv."
+		return 1
+	fi
+
+	if [ $# -eq 1 ]; then
+		# If only one argument is given, use the same name for outfile
+		outfile="${1%.*}.tar.zst"
+		infiles=("$1")
+	else
+		outfile="$1"
+		infiles=("${@:2}")
+	fi
 
 	if [ -z "$infiles" ] || [ -z "$outfile" ]; then
 		echo "Usage: tgz [outfile] [infiles..]"
+		echo "   or: tgz [infile]  # to create a tar.gz file with the same name"
 		return 1
 	fi
 
@@ -189,12 +212,53 @@ tgz() {
 		fi
 	done
 
-	if [[ $OSTYPE == "darwin"* ]]; then
-		sum_bytes=$(($(du -sk "${infiles[@]}" | awk '{print $1}' | paste -s -d+ - | bc) * 1024))
-	elif [[ $OSTYPE == "linux"* ]]; then
-		sum_bytes=$(du -sb "${infiles[@]}" | awk '{print $1}' | paste -s -d+ - | bc)
-	fi
+	sum_bytes=$(get_sum_bytes "${infiles[@]}")
 	tar cf - "${infiles[@]}" | pv -s $sum_bytes | gzip > "$outfile"
+}
+
+tzst() {
+	# Create a tar.zst file with progress bar
+	# uses -1 compression (fastest) for now.
+
+	if ! command -v zstd &> /dev/null; then
+		echo "zstd command not found. Please install zstd."
+		return 1
+	fi
+
+	if ! command -v pv &> /dev/null; then
+		echo "pv command not found. Please install pv."
+		return 1
+	fi
+
+	if [ $# -eq 1 ]; then
+		# If only one argument is given, use the same name for outfile
+		outfile="${1%.*}.tar.zst"
+		infiles=("$1")
+	else
+		outfile="$1"
+		infiles=("${@:2}")
+	fi
+
+	if [ -z "$infiles" ] || [ -z "$outfile" ]; then
+		echo "Usage: tzst [outfile] [infiles..]"
+		echo "   or: tzst [infile]  # to create a tar.zst file with the same name"
+		return 1
+	fi
+
+	if [ -f "$outfile" ]; then
+		echo "File already exists: $outfile"
+		return 1
+	fi
+
+	for infile in "${infiles[@]}"; do
+		if [ ! -d "$infile" ] && [ ! -f "$infile" ]; then
+			echo "File not found: $infile"
+			return 1
+		fi
+	done
+
+	sum_bytes=$(get_sum_bytes "${infiles[@]}")
+	tar cf - "${infiles[@]}" | pv -s $sum_bytes | zstd -T0 -1 > "$outfile"
 }
 
 osc52copy() {

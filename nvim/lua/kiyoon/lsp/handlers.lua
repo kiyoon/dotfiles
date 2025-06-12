@@ -147,21 +147,6 @@ M.setup = function()
       format = format_float,
     },
   })
-
-  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "rounded",
-  })
-  vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-    border = "rounded",
-  })
-
-  -- vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-  --   -- virtual_text = true,
-  --   virtual_text = { spacing = 0, prefix = "" },
-  --   signs = true,
-  --   underline = true,
-  --   update_in_insert = true,
-  -- })
 end
 
 function M.lsp_keymaps(bufnr)
@@ -186,6 +171,9 @@ function M.lsp_keymaps(bufnr)
   keymap("n", "gr", function()
     require("telescope.builtin").lsp_references()
   end, opts, "[G]o to [R]eferences")
+  keymap("n", "K", function()
+    vim.lsp.buf.hover({ border = "rounded" })
+  end, opts, "Hover Documentation")
   keymap("n", "gl", vim.diagnostic.open_float, opts, "Show Diagnostics")
   keymap("n", "<space>pi", "<cmd>LspInfo<cr>", opts)
   keymap("n", "<space>pI", "<cmd>LspInstallInfo<cr>", opts)

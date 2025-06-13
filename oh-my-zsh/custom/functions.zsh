@@ -187,7 +187,11 @@ tgz() {
 
 	if [ $# -eq 1 ]; then
 		# If only one argument is given, use the same name for outfile
-		outfile="${1%.*}.tar.zst"
+		# strip the trailing slash if it exists
+		if [[ "$1" == */ ]]; then
+			1="${1%/}"
+		fi
+		outfile="$1.tar.zst"
 		infiles=("$1")
 	else
 		outfile="$1"
@@ -232,7 +236,11 @@ tzst() {
 
 	if [ $# -eq 1 ]; then
 		# If only one argument is given, use the same name for outfile
-		outfile="${1%.*}.tar.zst"
+		# strip the trailing slash if it exists
+		if [[ "$1" == */ ]]; then
+			1="${1%/}"
+		fi
+		outfile="$1.tar.zst"
 		infiles=("$1")
 	else
 		outfile="$1"
@@ -259,6 +267,55 @@ tzst() {
 
 	sum_bytes=$(get_sum_bytes "${infiles[@]}")
 	tar cf - "${infiles[@]}" | pv -s $sum_bytes | zstd -T0 -1 > "$outfile"
+}
+
+tzsti() {
+	# Make a tar.zst with a tree index file call .tree.txt
+	if ! command -v zstd &> /dev/null; then
+		echo "zstd command not found. Please install zstd."
+		return 1
+	fi
+
+	if ! command -v pv &> /dev/null; then
+		echo "pv command not found. Please install pv."
+		return 1
+	fi
+
+	if [ $# -eq 1 ]; then
+		# If only one argument is given, use the same name for outfile
+		# strip the trailing slash if it exists
+		if [[ "$1" == */ ]]; then
+			1="${1%/}"
+		fi
+		outfile="$1.tar.zst"
+		outtree="$1.tree.txt"
+		infiles=("$1")
+	else
+		outfile="$1"
+		outtree="${outfile%.tar.zst}.tree.txt"
+		infiles=("${@:2}")
+	fi
+
+	if [ -z "$infiles" ] || [ -z "$outfile" ]; then
+		echo "Usage: tzsti [outfile] [infiles..]"
+		echo "   or: tzsti [infile]  # to create a tar.zst file with the same name"
+		return 1
+	fi
+
+	if [ -f "$outfile" ]; then
+		echo "File already exists: $outfile"
+		return 1
+	fi
+
+	for infile in "${infiles[@]}"; do
+		if [ ! -d "$infile" ] && [ ! -f "$infile" ]; then
+			echo "File not found: $infile"
+			return 1
+		fi
+	done
+
+	eza -Tl --icons=always "${infiles[@]}" > "$outtree"
+	tzst "$outfile" "${infiles[@]}"
 }
 
 osc52copy() {

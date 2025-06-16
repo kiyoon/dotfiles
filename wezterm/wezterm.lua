@@ -224,6 +224,9 @@ table.insert(config.hyperlink_rules, {
 })
 
 config.colors = {
+	-- The color of the scrollbar "thumb"; the portion that represents the current viewport
+	scrollbar_thumb = "#392a48",
+
 	-- Setting copied from Ghostty 1.0
 	background = "#282c34",
 	foreground = "#ffffff",

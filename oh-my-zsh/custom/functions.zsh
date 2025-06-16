@@ -314,7 +314,7 @@ tzsti() {
 		fi
 	done
 
-	eza -Tl --icons=always "${infiles[@]}" > "$outtree"
+	eza -Tla --icons=always "${infiles[@]}" > "$outtree"
 	tzst "$outfile" "${infiles[@]}"
 }
 

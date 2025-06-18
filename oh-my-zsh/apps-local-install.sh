@@ -10,6 +10,9 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install wget
 	brew install coreutils
     brew install uutils-coreutils
+    brew install gnu-sed
+    brew install gnu-tar
+    brew install grep
 
 	##### oh-my-zsh
 	if [ ! -d "$HOME/.oh-my-zsh" ]; then

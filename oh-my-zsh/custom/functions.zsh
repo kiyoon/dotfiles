@@ -353,3 +353,36 @@ cpbuffer() {
 }
 zle -N cpbuffer
 bindkey "^O" cpbuffer
+
+## backup utils
+dust_exclude_tarzst_dirs() {
+	# find all *.tar.zst and exclude the directories with the same name (without the .tar.zst extension)
+	# because they are already archived.
+	if [ -z "$1" ]; then
+		dust_dir="."
+	else
+		dust_dir="$1"
+	fi
+
+	# 1. Build a -X /path/to/file list in an array
+	excargs=( )
+	while read file; do
+	    excargs+=( -X "$file" )
+	done < <(find "$dust_dir" -type f -name '*.tar.zst' | sed 's|.tar.zst$||')
+
+	# 2. Run dust with the -X options
+	dust "$dust_dir" "${excargs[@]}" "${@:2}"
+}
+
+azcopy_exclude_tarzst_dirs() {
+	# find all *.tar.zst and exclude the directories with the same name (without the .tar.zst extension)
+	# because they are already archived.
+	if [ -z "$1" ]; then
+		echo 'Usage: azcopy copy [source] [destination] --exclude-path $(azcopy_exclude_tarzst_dirs [source])'
+		echo "Unlike dust_exclude_tarzst_dirs, this function does not call azcopy, but prepares the arguments for it."
+		echo ''
+		return 1
+	fi
+
+	find . -type f -name '*.tar.zst' | sed 's|.tar.zst$||' | paste -sd ';' -
+}

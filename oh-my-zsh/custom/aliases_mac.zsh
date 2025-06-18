@@ -8,4 +8,20 @@ if [[ $OSTYPE == "darwin"* ]]; then
 		alias mv='coreutils mv'
 		alias mkdir='coreutils mkdir'
 	fi
+
+	if (($+commands[gsed])); then
+		alias sed='gsed'
+	fi
+
+	if (($+commands[gtar])); then
+		alias tar='gtar'
+	fi
+
+	if (($+commands[ggrep])); then
+		alias grep='ggrep'
+	fi
+
+	if (($+commands[gdate])); then
+		alias date='gdate'
+	fi
 fi

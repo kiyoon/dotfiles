@@ -386,3 +386,9 @@ azcopy_exclude_tarzst_dirs() {
 
 	find . -type f -name '*.tar.zst' | sed 's|.tar.zst$||' | paste -sd ';' -
 }
+
+# rename python module with basedpyright
+pymv() {
+	DOTFILES_DIR=$(dotfiles_dir)
+	bun ${DOTFILES_DIR}/oh-my-zsh/scripts/basedpyright-tools/rename_module.ts "$@"
+}

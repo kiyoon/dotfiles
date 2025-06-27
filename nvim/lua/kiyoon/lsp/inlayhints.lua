@@ -67,6 +67,41 @@ local function request_current_line_inlay_hints(client, callback)
   local bufnr = vim.api.nvim_get_current_buf()
   local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1
   client.request("textDocument/inlayHint", get_inlay_hint_params(client, bufnr, current_line), callback, bufnr)
+  -- output example:
+  -- { {
+  --   kind = 1,
+  --   label = "-> list[Any]",
+  --   paddingLeft = true,
+  --   position = {
+  --     character = 24,
+  --     line = 29
+  --   },
+  --   textEdits = { {
+  --       newText = " -> list[Any]",
+  --       range = {
+  --         ["end"] = {
+  --           character = 24,
+  --           line = 29
+  --         },
+  --         start = {
+  --           character = 24,
+  --           line = 29
+  --         }
+  --       }
+  --     }, {
+  --       newText = "\nfrom typing import Any",
+  --       range = {
+  --         ["end"] = {
+  --           character = 9,
+  --           line = 19
+  --         },
+  --         start = {
+  --           character = 9,
+  --           line = 19
+  --         }
+  --       }
+  --     } }
+  -- } }
 end
 
 -- Parses the result into a easily usable format
@@ -144,21 +179,64 @@ local function inlay_type_hint_to_text_in_buffer()
         return
       end
 
-      local hints = parse_hints(result)
-      if hints[current_line_num] == nil then
+      -- vim.print(result)
+      -- Old: just insert the hint at the virtual text position as is.
+      -- local hints = parse_hints(result)
+      -- if hints[current_line_num] == nil then
+      --   return
+      -- end
+      --
+      -- for _, hint in ipairs(hints[current_line_num]) do
+      --   if hint.kind == 1 then
+      --     -- TypeHint
+      --     local current_line = vim.api.nvim_buf_get_lines(ctx.bufnr, current_line_num, current_line_num + 1, true)[1]
+      --     local line_with_hint = current_line:sub(1, hint.range.character)
+      --       .. hint.label
+      --       .. current_line:sub(hint.range.character + 1)
+      --     vim.api.nvim_buf_set_lines(ctx.bufnr, current_line_num, current_line_num + 1, true, { line_with_hint })
+      --   end
+      --   break
+      -- end
+
+      -- New: follow textEdits from the LSP to actually insert properly with imports if needed.
+      if not result or #result == 0 then
+        notify("No inlay hints found", vim.log.levels.INFO)
         return
       end
 
-      for _, hint in ipairs(hints[current_line_num]) do
-        if hint.kind == 1 then
-          -- TypeHint
-          local current_line = vim.api.nvim_buf_get_lines(ctx.bufnr, current_line_num, current_line_num + 1, true)[1]
-          local line_with_hint = current_line:sub(1, hint.range.character)
-            .. hint.label
-            .. current_line:sub(hint.range.character + 1)
-          vim.api.nvim_buf_set_lines(ctx.bufnr, current_line_num, current_line_num + 1, true, { line_with_hint })
+      for _, value in ipairs(result) do
+        if not value.textEdits or #value.textEdits == 0 then
+          goto continue
         end
-        break
+
+        for _, text_edit in ipairs(value.textEdits) do
+          local start_pos = {
+            text_edit.range.start.line,
+            vim.str_byteindex(
+              vim.api.nvim_buf_get_lines(ctx.bufnr, text_edit.range.start.line, text_edit.range.start.line + 1, true)[1],
+              client.offset_encoding,
+              text_edit.range.start.character
+            ),
+          }
+          local end_pos = {
+            text_edit.range["end"].line,
+            vim.str_byteindex(
+              vim.api.nvim_buf_get_lines(ctx.bufnr, text_edit.range.start.line, text_edit.range.start.line + 1, true)[1],
+              client.offset_encoding,
+              text_edit.range.start.character
+            ),
+          }
+          vim.api.nvim_buf_set_text(
+            ctx.bufnr,
+            start_pos[1],
+            start_pos[2],
+            end_pos[1],
+            end_pos[2],
+            { text_edit.newText }
+          )
+        end
+
+        ::continue::
       end
 
       -- vim.print(hints)

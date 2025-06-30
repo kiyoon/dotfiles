@@ -1,7 +1,7 @@
 --- NOTE: I keep all plugins in one file, because I often want to disable half of them when I debug what plugin broke my config.
 
 local nvim_treesitter_dev = false
-local nvim_treesitter_textobjects_dev = true
+local nvim_treesitter_textobjects_dev = false
 local nvim_treesitter_context_dev = false
 local jupynium_dev = false
 local python_import_dev = false
@@ -1902,10 +1902,10 @@ return {
         python = { "ruff_fix", "ruff_format" },
         -- javascript = { { "prettierd", "prettier" } },
         -- typescript = { { "prettierd", "prettier" } },
-        javascript = { "biome_assist", "biome" },
-        typescript = { "biome_assist", "biome" },
-        javascriptreact = { "biome_assist", "biome" },
-        typescriptreact = { "biome_assist", "biome" },
+        javascript = { "biome-organize-imports", "biome" },
+        typescript = { "biome-organize-imports", "biome" },
+        javascriptreact = { "biome-organize-imports", "biome" },
+        typescriptreact = { "biome-organize-imports", "biome" },
         html = { "prettierd", "prettier", stop_after_first = true },
         yaml = { "prettier" },
         -- json = { "prettier" },
@@ -1953,20 +1953,19 @@ return {
           },
         },
 
-        biome_assist = {
-          -- biome-organize-imports is a subcommand of biome
-          command = "biome",
-          args = {
-            "check",
-            "--write",
-            "--linter-enabled=false",
-            "--formatter-enabled=false",
-            "--assist-enabled=true",
-            "--stdin-file-path",
-            "$FILENAME",
-          },
-          stdin = true,
-        },
+        -- biome_assist = {
+        --   command = "biome",
+        --   args = {
+        --     "check",
+        --     "--write",
+        --     "--linter-enabled=false",
+        --     "--formatter-enabled=false",
+        --     "--assist-enabled=true",
+        --     "--stdin-file-path",
+        --     "$FILENAME",
+        --   },
+        --   stdin = true,
+        -- },
       },
     },
     init = function()

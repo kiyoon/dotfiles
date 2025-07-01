@@ -22,7 +22,7 @@ fi
 source "$path_to_venv/bin/activate"
 
 $PIP3 install --user --break-system-packages virtualenv # for Mason.nvim
-npm install -g neovim
+bun install -g neovim
 
 # Install to the virtual environment
 # DAP
@@ -67,10 +67,10 @@ LOCALBIN="$HOME/.local/bin"
 
 # Lint
 uv tool install -U ruff
-npm install -g biome
+bun install -g biome
 
 # Formatter
-npm install -g @taplo/cli
+bun install -g @taplo/cli
 
 if command -v dotnet &> /dev/null; then
     dotnet tool install csharpier -g
@@ -79,24 +79,20 @@ else
 fi
 
 if ! command -v stylua &> /dev/null; then
-	npm install -g @johnnymorganz/stylua-bin
+	bun install -g @johnnymorganz/stylua-bin
 fi
 
 if ! command -v prettier &> /dev/null; then
-	npm install -g prettier
-fi
-
-if [[ ! -d "$HOME/.local/lib/node_modules/prettier-plugin-toml" ]]; then
-	npm install -g prettier-plugin-toml
+	bun install -g prettier
 fi
 
 if ! command -v tree-sitter &> /dev/null; then
-	npm install -g tree-sitter-cli
+	bun install -g tree-sitter-cli
 fi
 
 # wilder.nvim, telescope.nvim
 if ! command -v fd &> /dev/null; then
-	npm install -g fd-find
+	bun install -g fd-find
 fi
 
 # ripgrep for telescope.nvim

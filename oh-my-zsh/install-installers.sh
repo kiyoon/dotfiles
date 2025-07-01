@@ -3,21 +3,32 @@
 # Run `source ~/.cargo/env` afterwards to activate rustup (cargo install)
 
 INSTALL_DIR="$HOME/.local"
-PIP3="/usr/bin/python3 -m pip"
+# PIP3="/usr/bin/python3 -m pip"
 
 if [[ $OSTYPE == "darwin"* ]]; then
 	# brew install --cask miniconda
 	brew install node
+    brew install bun
 else
 	if ! command -v "$INSTALL_DIR"/bin/npm &>/dev/null; then
 		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
 	fi
+
+    if ! command -v bun &>/dev/null; then
+        curl -fsSL https://bun.sh/install | bash
+    else
+        bun upgrade
+    fi
 fi
 
 if [[ $OSTYPE == "darwin"* ]]; then
     brew install uv
 else
-    $PIP3 install --user --break-system-packages uv 
+    if ! command -v uv &>/dev/null; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    else
+        uv self update
+    fi
 fi
 
 ##### conda

@@ -344,14 +344,14 @@ return {
       end, { silent = false, desc = "Surround parens (function call)" })
 
       -- map <space>tl to make hyperlink for markdown
-      vim.keymap.set("n", "<space>tl", function()
-        vim.cmd.normal("viwS]f]a()")
-        vim.cmd.startinsert()
-      end, { desc = "Make markdown hyperlink" })
-      vim.keymap.set("x", "<space>tl", function()
-        vim.cmd.normal("S]f]a()")
-        vim.cmd.startinsert()
-      end, { desc = "Make markdown hyperlink" })
+      -- vim.keymap.set("n", "<space>tl", function()
+      --   vim.cmd.normal("viwS]f]a()")
+      --   vim.cmd.startinsert()
+      -- end, { desc = "Make markdown hyperlink" })
+      -- vim.keymap.set("x", "<space>tl", function()
+      --   vim.cmd.normal("S]f]a()")
+      --   vim.cmd.startinsert()
+      -- end, { desc = "Make markdown hyperlink" })
     end,
   },
   -- {

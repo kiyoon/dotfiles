@@ -267,7 +267,7 @@ M.toggle_typing_none = function()
     return nil
   end
 
-  local ends_with_none = function(node)
+  local function ends_with_none(node)
     -- Determine if `node` has binary_operator, and the right child is none.
     --  type: (type)
     --    (binary_operator)
@@ -275,15 +275,34 @@ M.toggle_typing_none = function()
     --      right: none
     --
     -- return the left node if the right node is none
+    --
+    -- Case 2: if list[str] | None, it will be shown as:
+    -- (type
+    --   (union_type
+    --     (type
+    --       ..)
+    --     (type
+    --       (none))))
+
     assert(node:type() == "type")
     node = node:named_child(0)
     if has_type(node, "binary_operator") then
       local right_node = node:named_child(1)
       if has_type(right_node, "none") then
-        return node:named_child(0) -- left node
+        return true
+      end
+    elseif has_type(node, "union_type") then
+      -- Case 2
+      local right_node = node:named_child(1)
+      if has_type(right_node, "type") then
+        if has_type(right_node:named_child(0), "none") then
+          return true
+        else
+          return ends_with_none(right_node)
+        end
       end
     end
-    return nil
+    return false
   end
 
   local root_wrappers = {
@@ -303,10 +322,11 @@ M.toggle_typing_none = function()
     -- replace: e.g., Optional[T] => T | None
     new_text = get_text(T_node) .. " | None"
   else
-    local without_none_node = ends_with_none(type_node)
-    if without_none_node then
+    local ends_none = ends_with_none(type_node)
+    if ends_none then
       -- replace: e.g., T | None => T
-      new_text = get_text(without_none_node)
+      -- make count of space irrelevant
+      new_text = get_text(type_node):gsub("%s*|%s*None%s*$", "", 1)
     else
       -- replace: e.g., T => T | None
       new_text = get_text(type_node) .. " | None"

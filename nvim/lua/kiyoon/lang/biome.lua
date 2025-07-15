@@ -154,6 +154,28 @@ M.translate_biome_message = function(code, message)
       elseif lang == "it" then
         return "Le dichiarazioni di blocco sono preferite in questa posizione."
       end
+    elseif code == "lint/correctness/noUnusedFunctionParameters" then
+      -- 🔗 [no-unused-function-parameters] This parameter is unused.
+      if lang == "es" then
+        return "Este parámetro no se usa."
+      elseif lang == "pt-br" then
+        return "Este parâmetro não é usado."
+      elseif lang == "fr" then
+        return "Ce paramètre n'est pas utilisé."
+      elseif lang == "it" then
+        return "Questo parametro non è usato."
+      end
+    elseif code == "lint/style/useImportType" then
+      -- 🔗 [use-import-type] All these imports are only used as types.
+      if lang == "es" then
+        return "Todas estas importaciones solo se usan como tipos."
+      elseif lang == "pt-br" then
+        return "Todas essas importações são usadas apenas como tipos."
+      elseif lang == "fr" then
+        return "Toutes ces importations ne sont utilisées qu'en tant que types."
+      elseif lang == "it" then
+        return "Tutte queste importazioni sono utilizzate solo come tipi."
+      end
     elseif code == "lint/style/useNamingConvention" then
       -- 🔗 [lint/style/useNamingConvention] This {const/let/object property} name should be in {camelCase} or {PascalCase}.
       -- 2nd form: This {} name should be in {}.

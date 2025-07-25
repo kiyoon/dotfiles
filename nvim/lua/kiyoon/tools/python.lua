@@ -231,13 +231,14 @@ M.toggle_pyright_ignore = function(winnr)
 
   local codes = {}
   for _, diagnostic in ipairs(diagnostics) do
-    table.insert(codes, diagnostic.code)
+    codes[diagnostic.code] = true -- make sure codes are unique
   end
-  local codes_concat = table.concat(codes, ", ")
+  local codes_list = vim.tbl_keys(codes)
+  local codes_concat = table.concat(codes_list, ", ")
   local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
   local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
   local comment = "# pyright: ignore"
-  if #codes ~= 0 then
+  if #codes_list ~= 0 then
     comment = comment .. "[" .. codes_concat .. "]"
   end
 

@@ -162,7 +162,42 @@ local function parse_hints(result)
 end
 
 local function inlay_type_hint_to_text_in_buffer()
-  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  local bufnr = vim.api.nvim_get_current_buf()
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+  if not next(clients) then
+    notify("No active LSP clients", vim.log.levels.ERROR)
+    return
+  end
+
+  for _, client in ipairs(clients) do
+    if client.server_capabilities == nil or not client.server_capabilities.inlayHintProvider then
+      goto continue
+    end
+
+    request_current_line_inlay_hints(client, function(err, result, ctx)
+      if err then
+        return
+      end
+
+      if not result or #result == 0 then
+        notify("No inlay hints found", vim.log.levels.INFO)
+        return
+      end
+
+      for _, value in ipairs(result) do
+        vim.lsp.util.apply_text_edits(value.textEdits, bufnr, "utf-8")
+      end
+    end)
+
+    ::continue::
+  end
+end
+
+---Get the text of inlay hints and bake them into the current buffer without using textEdits
+--- which will add imports if needed.
+local function inlay_type_hint_to_text_in_buffer_wo_imports()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
   if not next(clients) then
     notify("No active LSP clients", vim.log.levels.ERROR)
     return
@@ -179,67 +214,22 @@ local function inlay_type_hint_to_text_in_buffer()
         return
       end
 
-      -- vim.print(result)
-      -- Old: just insert the hint at the virtual text position as is.
-      -- local hints = parse_hints(result)
-      -- if hints[current_line_num] == nil then
-      --   return
-      -- end
-      --
-      -- for _, hint in ipairs(hints[current_line_num]) do
-      --   if hint.kind == 1 then
-      --     -- TypeHint
-      --     local current_line = vim.api.nvim_buf_get_lines(ctx.bufnr, current_line_num, current_line_num + 1, true)[1]
-      --     local line_with_hint = current_line:sub(1, hint.range.character)
-      --       .. hint.label
-      --       .. current_line:sub(hint.range.character + 1)
-      --     vim.api.nvim_buf_set_lines(ctx.bufnr, current_line_num, current_line_num + 1, true, { line_with_hint })
-      --   end
-      --   break
-      -- end
-
-      -- New: follow textEdits from the LSP to actually insert properly with imports if needed.
-      if not result or #result == 0 then
-        notify("No inlay hints found", vim.log.levels.INFO)
+      local hints = parse_hints(result)
+      if hints[current_line_num] == nil then
         return
       end
 
-      for _, value in ipairs(result) do
-        if not value.textEdits or #value.textEdits == 0 then
-          goto continue
+      for _, hint in ipairs(hints[current_line_num]) do
+        if hint.kind == 1 then
+          -- TypeHint
+          local current_line = vim.api.nvim_buf_get_lines(ctx.bufnr, current_line_num, current_line_num + 1, true)[1]
+          local line_with_hint = current_line:sub(1, hint.range.character)
+            .. hint.label
+            .. current_line:sub(hint.range.character + 1)
+          vim.api.nvim_buf_set_lines(ctx.bufnr, current_line_num, current_line_num + 1, true, { line_with_hint })
         end
-
-        for _, text_edit in ipairs(value.textEdits) do
-          local start_pos = {
-            text_edit.range.start.line,
-            vim.str_byteindex(
-              vim.api.nvim_buf_get_lines(ctx.bufnr, text_edit.range.start.line, text_edit.range.start.line + 1, true)[1],
-              client.offset_encoding,
-              text_edit.range.start.character
-            ),
-          }
-          local end_pos = {
-            text_edit.range["end"].line,
-            vim.str_byteindex(
-              vim.api.nvim_buf_get_lines(ctx.bufnr, text_edit.range.start.line, text_edit.range.start.line + 1, true)[1],
-              client.offset_encoding,
-              text_edit.range.start.character
-            ),
-          }
-          vim.api.nvim_buf_set_text(
-            ctx.bufnr,
-            start_pos[1],
-            start_pos[2],
-            end_pos[1],
-            end_pos[2],
-            { text_edit.newText }
-          )
-        end
-
-        ::continue::
+        break
       end
-
-      -- vim.print(hints)
     end)
 
     ::continue::

@@ -67,7 +67,7 @@ LOCALBIN="$HOME/.local/bin"
 
 # Lint
 uv tool install -U ruff
-bun install -g biome
+bun install -g @biomejs/biome
 
 # Formatter
 bun install -g @taplo/cli

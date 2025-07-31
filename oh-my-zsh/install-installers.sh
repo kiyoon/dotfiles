@@ -41,6 +41,16 @@ if ! command -v conda &>/dev/null; then
 fi
 
 # rustup, cargo
-if ! command -v rustc &>/dev/null; then
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+if [[ $OSTYPE == "darwin"* ]]; then
+    brew install rustup
+    brew install cargo-binstall
+else
+    if ! command -v rustc &>/dev/null; then
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+        # cargo-binstall
+        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+    else
+        rustup self update
+        cargo binstall cargo-binstall
+    fi
 fi

@@ -116,7 +116,7 @@ else
 	fi
 
 	if ! command -v eza &>/dev/null; then
-		$CARGO install eza
+		$CARGO binstall eza -y
 		wget https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza -P "$INSTALL_DIR/share/zsh/site-functions"
 
 		echo "eza installed at $(which eza)"
@@ -184,15 +184,15 @@ else
 	fi
 
 	if ! command -v bat &> /dev/null; then
-		$CARGO install bat
+		$CARGO binstall bat -y
 	fi
-	$CARGO install viu # --features=sixel
-	$CARGO install bottom
-	$CARGO install du-dust
-	$CARGO install procs
-	$CARGO install csvlens
-    $CARGO install difftastic
-    $CARGO install --locked yazi-fm yazi-cli
+	$CARGO binstall viu -y # --features=sixel
+	$CARGO binstall bottom -y
+	$CARGO binstall du-dust -y
+	$CARGO binstall procs -y
+	$CARGO binstall csvlens -y
+    $CARGO binstall difftastic -y
+    $CARGO binstall --locked yazi-fm yazi-cli -y
     # sudo apt install -y poppler  # yazi pdf preview
 
 	if ! command -v hx &>/dev/null; then

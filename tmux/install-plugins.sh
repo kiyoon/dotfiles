@@ -12,4 +12,4 @@ tmux new-session -d
 # tmux kill-server
 
 # treemux and tmux-window-name dependencies
-/usr/bin/python3 -m pip install pynvim libtmux
+/usr/bin/python3 -m pip install pynvim libtmux --break-system-packages

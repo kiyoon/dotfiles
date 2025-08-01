@@ -38,6 +38,8 @@ if ! command -v conda &>/dev/null; then
 	CONDADIR="$HOME/bin/miniforge3"
 	bash "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh" -b -p "$CONDADIR"
 	rm "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh"
+else
+    mamba update mamba -y
 fi
 
 # rustup, cargo

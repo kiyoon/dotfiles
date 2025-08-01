@@ -1,40 +1,52 @@
 export TZ=Asia/Seoul
 
 if [[ -d "$HOME/bin/miniforge3" ]]; then
-	export MINICONDA_PATH="$HOME/bin/miniforge3"
+	export MAMBA_ROOT_PREFIX="$HOME/bin/miniforge3"
 elif [[ -d "$HOME/miniforge3" ]]; then
-	export MINICONDA_PATH="$HOME/miniforge3"
+	export MAMBA_ROOT_PREFIX="$HOME/miniforge3"
 elif [[ -d "$HOME/bin/miniconda3" ]]; then
-	export MINICONDA_PATH="$HOME/bin/miniconda3"
+	export MAMBA_ROOT_PREFIX="$HOME/bin/miniconda3"
 elif [[ -d "$HOME/miniconda3" ]]; then
-	export MINICONDA_PATH="$HOME/anaconda3"
+	export MAMBA_ROOT_PREFIX="$HOME/anaconda3"
 elif [[ -d "$HOME/anaconda3" ]]; then
-	export MINICONDA_PATH="$HOME/miniconda3"
+	export MAMBA_ROOT_PREFIX="$HOME/miniconda3"
 elif [[ -d "/usr/local/Caskroom/miniforge/base" ]]; then
 	# Mac Homebrew
-	export MINICONDA_PATH="/usr/local/Caskroom/miniforge/base"
+	export MAMBA_ROOT_PREFIX="/usr/local/Caskroom/miniforge/base"
 elif [[ -d "/usr/local/Caskroom/miniconda/base" ]]; then
 	# Mac Homebrew
-	export MINICONDA_PATH="/usr/local/Caskroom/miniconda/base"
+	export MAMBA_ROOT_PREFIX="/usr/local/Caskroom/miniconda/base"
 fi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$("$MINICONDA_PATH/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "$MINICONDA_PATH/etc/profile.d/conda.sh" ]; then
-        . "$MINICONDA_PATH/etc/profile.d/conda.sh"
-    else
-        export PATH="$MINICONDA_PATH/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-if [ -f "$MINICONDA_PATH/etc/profile.d/mamba.sh" ]; then
-    . "$MINICONDA_PATH/etc/profile.d/mamba.sh"
-fi
+# __conda_setup="$("$MINICONDA_PATH/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "$MINICONDA_PATH/etc/profile.d/conda.sh" ]; then
+#         . "$MINICONDA_PATH/etc/profile.d/conda.sh"
+#     else
+#         export PATH="$MINICONDA_PATH/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# if [ -f "$MINICONDA_PATH/etc/profile.d/mamba.sh" ]; then
+#     . "$MINICONDA_PATH/etc/profile.d/mamba.sh"
+# fi
 # <<< conda initialize <<<
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba shell init' !!
+export MAMBA_EXE="$MAMBA_ROOT_PREFIX/bin/mamba";
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias mamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
 #
 # We don't want linuxbrew python to be used as default python, so we add it to the end of the path.
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:/home/linuxbrew/.linuxbrew/bin"

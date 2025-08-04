@@ -1,13 +1,15 @@
 -- Configuration for csv, tsv files
 -- Data files are often very big and slow to load, so we disable most plugins.
 
--- if venv exists, use it
-if vim.fn.isdirectory(vim.fn.expand("~/.virtualenvs/neovim")) == 1 then
-  vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
-  -- vim.g.python3_host_prog = vim.fn.expand("~/bin/miniconda3/envs/nvim/bin/python3")
-else
-  vim.g.python3_host_prog = "/usr/bin/python3"
-end
+-- Requires uv
+
+-- -- if venv exists, use it
+-- if vim.fn.isdirectory(vim.fn.expand("~/.virtualenvs/neovim")) == 1 then
+--   vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
+--   -- vim.g.python3_host_prog = vim.fn.expand("~/bin/miniconda3/envs/nvim/bin/python3")
+-- else
+--   vim.g.python3_host_prog = "/usr/bin/python3"
+-- end
 
 vim.o.number = true
 vim.o.termguicolors = true
@@ -83,47 +85,34 @@ end, { desc = "tmux next window" })
 require("kiyoon.async_run")
 
 vim.api.nvim_create_user_command("CsvAlign", function()
-  vim.cmd([[%!]] .. vim.g.python3_host_prog .. [[ ~/.config/nvim/csv_tools.py align --filetype ]] .. vim.bo.filetype)
+  vim.cmd([[%!uv run ~/.config/nvim/csv_tools.py align --filetype ]] .. vim.bo.filetype)
 end, {})
 
 vim.api.nvim_create_user_command("CsvAlignEdit", function()
-  vim.cmd(
-    [[%!]]
-      .. vim.g.python3_host_prog
-      .. [[ ~/.config/nvim/csv_tools.py align --edit-mode --filetype ]]
-      .. vim.bo.filetype
-  )
+  vim.cmd([[%!uv run ~/.config/nvim/csv_tools.py align --edit-mode --filetype ]] .. vim.bo.filetype)
 end, {})
 
 vim.api.nvim_create_user_command("CsvShrink", function()
-  vim.cmd([[%!]] .. vim.g.python3_host_prog .. [[ ~/.config/nvim/csv_tools.py shrink --filetype ]] .. vim.bo.filetype)
+  vim.cmd([[%!uv run ~/.config/nvim/csv_tools.py shrink --filetype ]] .. vim.bo.filetype)
 end, {})
 
 vim.api.nvim_create_user_command("CsvSelectAndAlign", function(opts)
   vim.cmd(
-    [[%!]]
-      .. vim.g.python3_host_prog
-      .. [[ ~/.config/nvim/csv_tools.py select ']]
+    [[%!uv run ~/.config/nvim/csv_tools.py select ']]
       .. opts.fargs[1]
       .. [[' --filetype ]]
       .. vim.bo.filetype
-      .. [[ | ]]
-      .. vim.g.python3_host_prog
-      .. [[ ~/.config/nvim/csv_tools.py align --filetype ]]
+      .. [[ | uv run ~/.config/nvim/csv_tools.py align --filetype ]]
       .. vim.bo.filetype
   )
 end, { nargs = 1 })
 vim.api.nvim_create_user_command("CsvSelectAndAlignEdit", function(opts)
   vim.cmd(
-    [[%!]]
-      .. vim.g.python3_host_prog
-      .. [[ ~/.config/nvim/csv_tools.py select ']]
+    [[%!uv run ~/.config/nvim/csv_tools.py select ']]
       .. opts.fargs[1]
       .. [[' --filetype ]]
       .. vim.bo.filetype
-      .. [[ | ]]
-      .. vim.g.python3_host_prog
-      .. [[ ~/.config/nvim/csv_tools.py align --edit-mode --filetype ]]
+      .. [[ | uv run ~/.config/nvim/csv_tools.py align --edit-mode --filetype ]]
       .. vim.bo.filetype
   )
 end, { nargs = 1 })
@@ -155,13 +144,21 @@ vim.keymap.set({ "n", "v" }, "H", function()
     end
   end
 
+  local found = false
   if start ~= 1 then
     for i = start - 1, 1, -1 do
       if string.sub(first_line, i, i) == "," then
+        found = true
         start = i + 1
         break
       end
     end
+  end
+
+  if not found then
+    -- there is no comma before the current column
+    -- so it's the first column
+    start = 1
   end
 
   vim.cmd("normal! " .. start .. "|")

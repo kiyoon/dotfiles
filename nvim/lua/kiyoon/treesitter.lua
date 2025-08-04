@@ -170,6 +170,7 @@ require("nvim-treesitter.configs").setup({
         --["isc"] = "@scopename.inner",
         ["as"] = { query = "@scope", query_group = "locals" },
         ["is"] = "@statement.outer",
+        ["aS"] = "@toplevel",
         ["ar"] = { query = "@start", query_group = "aerial" },
       },
       -- You can choose the select mode (default is charwise 'v')

@@ -29,8 +29,6 @@ bun install -g neovim
 uv pip install -U debugpy
 # molten.nvim
 uv pip install -U pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
-# Csv align
-uv pip install -U polars typer
 
 if command -v brew &> /dev/null; then
     # Lint

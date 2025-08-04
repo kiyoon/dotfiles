@@ -3,7 +3,7 @@
 # dependencies = [
 #    "polars",
 #    "cyclopts",
-#    "wcwidth",
+#    "cwcwidth",
 # ]
 # ///
 
@@ -11,8 +11,8 @@ import io
 import sys
 
 import polars as pl
+from cwcwidth import wcswidth
 from cyclopts import App, Parameter
-from wcwidth import wcswidth
 
 app = App(
     help_format="markdown",

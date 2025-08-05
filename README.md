@@ -24,7 +24,7 @@ Also, it has many versions of vim configurations.
 - `vi` to run a fully-featured bleeding-edge configuration of neovim.
 - `vic` to run neovim with stable and mild configuration using CoC. It's a balance between the two, and should be used when the first option is broken.
 - `lazyvim` to run pre-configured [LazyVim](https://github.com/LazyVim/LazyVim).
-- `\vim` to run original vim with no plugins (only simple `.vimrc`)
+- `vim` to run original vim with no plugins (only simple `.vimrc`)
 - `csvi` to read CSV files. `:CsvAlign` or `:TsvAlign` to align columns and `H`, `L` to move by columns.
 - Use `vscode_init.lua` for VSCode-Neovim.
 

@@ -38,7 +38,8 @@ def align(
 
     Args:
         edit_mode: If True, it will append quotes to all values, making it robust for editing.
-        fast: If True, it will use character length for padding. If False, it will use character display width
+        fast: If True, it will use character length for padding (fine for European languages but not with multi-width emojis and CJK letters).
+            If False, it will use character display width
     """
     if filetype == "csv":
         in_separator = ","

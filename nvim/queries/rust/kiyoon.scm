@@ -1,6 +1,5 @@
 ; For toggle_option_type()
 ; not all types should be toggled. Only the definitions, not the uses.
-
 (field_declaration
   type: (_) @type)
 

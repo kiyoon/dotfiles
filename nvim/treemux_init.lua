@@ -195,8 +195,17 @@ require("lazy").setup({
           -- if nvim-tree is open, close it and open oil
           -- check filetype
           if vim.bo.filetype == "NvimTree" then
+            local nt_api = require("nvim-tree.api")
+            local node = nt_api.tree.get_node_under_cursor()
             vim.cmd("NvimTreeClose")
-            vim.cmd("Oil")
+            if node.type == "file" then
+              local dir = vim.fn.fnamemodify(node.absolute_path, ":h")
+              require("oil").open(dir)
+              -- TODO: focus on the file
+            else
+              require("oil").open(node.absolute_path)
+            end
+            -- vim.cmd("Oil")
           elseif vim.bo.filetype == "oil" then
             require("nvim-tree.lib").open({ current_window = true })
           end
@@ -228,6 +237,43 @@ require("lazy").setup({
           ["g\\"] = "actions.toggle_trash",
         },
         use_default_keymaps = false,
+      })
+    end,
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+      "MunifTanjim/nui.nvim",
+    },
+    cmd = "Neotree",
+    keys = {
+      { "<space>nn", "<cmd>Neotree toggle<CR>", mode = { "n", "x" }, desc = "[N]eotree toggle" },
+    },
+    config = function()
+      require("neo-tree").setup({
+        event_handlers = {
+          {
+            event = "file_open_requested",
+            handler = function(args)
+              local nt_remote = require("nvim_tree_remote")
+              local tmux_opts = nt_remote.tmux_defaults()
+              local open_cmd = args.open_cmd
+              if args.open_cmd == "tabnew" then
+                -- HACK: use "tabnew" as a command to open without tmux split
+                -- the keybinding is `t`
+                tmux_opts.split_position = ""
+                open_cmd = "edit"
+              end
+              nt_remote.remote_nvim_open(nil, open_cmd, args.path, tmux_opts)
+
+              -- stop default open; we already did it remotely
+              return { handled = true }
+            end,
+          },
+        },
       })
     end,
   },

@@ -195,6 +195,7 @@ require("lazy").setup({
           -- if nvim-tree is open, close it and open oil
           -- check filetype
           if vim.bo.filetype == "NvimTree" then
+            vim.g.treemux_last_opened = "nvim-tree"
             local nt_api = require("nvim-tree.api")
             local node = nt_api.tree.get_node_under_cursor()
             vim.cmd("NvimTreeClose")
@@ -206,8 +207,22 @@ require("lazy").setup({
               require("oil").open(node.absolute_path)
             end
             -- vim.cmd("Oil")
+          elseif vim.bo.filetype == "neo-tree" then
+            vim.notify("This shouldn't be called here.", vim.log.levels.ERROR)
           elseif vim.bo.filetype == "oil" then
-            require("nvim-tree.lib").open({ current_window = true })
+            if vim.g.treemux_last_opened == "nvim-tree" then
+              -- if oil is open, close it and open nvim-tree
+              vim.cmd("Oil close")
+              require("nvim-tree.lib").open({ current_window = true })
+            elseif vim.g.treemux_last_opened == "neo-tree" then
+              -- if oil is open, close it
+              vim.cmd("Oil close")
+              vim.cmd("Neotree")
+              -- BUG: neo-tree doesn't set filetype correctly
+              vim.schedule(function()
+                vim.bo.filetype = "neo-tree"
+              end)
+            end
           end
         end,
         mode = { "n" },
@@ -252,8 +267,47 @@ require("lazy").setup({
     keys = {
       { "<space>nn", "<cmd>Neotree toggle<CR>", mode = { "n", "x" }, desc = "[N]eotree toggle" },
     },
+    lazy = false, -- neo-tree will lazily load itself
     config = function()
       require("neo-tree").setup({
+        filesystem = {
+          hijack_netrw_behavior = "disabled",
+          window = {
+            mappings = {
+              ["<space>"] = "noop",
+              ["<space>o"] = function(state)
+                vim.g.treemux_last_opened = "neo-tree"
+                local node = state.tree and state.tree:get_node()
+                if not node then
+                  return
+                end
+                -- close Neo-tree first
+                vim.cmd("Neotree close")
+
+                -- BUG: without vim.schedule, neo-tree fires file_open_requested event.
+                vim.schedule(function()
+                  if node.type == "file" then
+                    local dir = vim.fn.fnamemodify(node.path, ":h")
+                    require("oil").open(dir)
+                  -- TODO: focus on the file
+                  elseif node.type == "directory" then
+                    require("oil").open(node.path)
+                  elseif node.type == "message" then
+                    -- e.g. (3 hidden items)
+                    -- use the path of the parent directory
+                    require("oil").open(node:get_parent_id())
+                  else
+                    -- use root path
+                    require("oil").open(state.path)
+                  end
+                end)
+                -- TODO: if you want to focus a specific file inside Oil,
+                -- you'll need extra logic to move the cursor to that entry.
+              end,
+              ["q"] = "noop",
+            },
+          },
+        },
         event_handlers = {
           {
             event = "file_open_requested",

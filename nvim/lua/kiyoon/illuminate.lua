@@ -1,7 +1,7 @@
 vim.g.Illuminate_ftblacklist = { "alpha", "NvimTree" }
 vim.api.nvim_set_keymap("n", "<space>v", '<cmd>lua require"illuminate".textobj_select()<cr>', { noremap = true })
 
-require("illuminate").configure {
+require("illuminate").configure({
   providers = {
     "lsp",
     "treesitter",
@@ -29,4 +29,4 @@ require("illuminate").configure {
   providers_regex_syntax_denylist = {},
   providers_regex_syntax_allowlist = {},
   under_cursor = true,
-}
+})

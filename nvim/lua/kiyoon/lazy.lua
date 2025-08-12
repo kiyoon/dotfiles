@@ -871,6 +871,22 @@ return {
     keys = {
       { "<space>nn", "<cmd>Neotree toggle<CR>", mode = { "n", "x" }, desc = "[N]eotree toggle" },
     },
+    lazy = false, -- neo-tree will lazily load itself
+    config = function()
+      require("neo-tree").setup({
+        -- map keys -> built-ins; the event exposes which one via args.open_cmd
+        filesystem = {
+          hijack_netrw_behavior = "disabled",
+          window = {
+            mappings = {
+              -- ["<C-v>"] = "open_vsplit", -- “modifier” = vsplit
+              -- ["<C-x>"] = "open_split", -- “modifier” = split
+              -- ["<C-t>"] = "open_tabnew", -- “modifier” = tab
+            },
+          },
+        },
+      })
+    end,
   },
   {
     "stevearc/oil.nvim",

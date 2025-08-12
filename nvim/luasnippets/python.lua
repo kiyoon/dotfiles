@@ -1,3 +1,5 @@
+local python_utils = require("python_import.utils")
+local url_utils = require("kiyoon.utils.url")
 local ls = require("luasnip")
 local i = ls.insert_node
 local func_node = ls.function_node
@@ -5,52 +7,8 @@ local func_node = ls.function_node
 local s = ls.snippet
 local t = ls.text_node
 
-local function read_from_url(url)
-  -- curl without progress bar
-  local content = vim.fn.system("curl -s " .. url)
-  -- split by newline
-  local split_content = vim.fn.split(content, "\n")
-  return split_content
-end
-
-local function find_python_first_party_modules()
-  -- find src/module_name in git root
-
-  local git_root = vim.fs.root(0, ".git")
-  if git_root == nil then
-    return nil
-  end
-
-  local src_dir = git_root .. "/src"
-  if vim.fn.isdirectory(src_dir) == 0 then
-    return nil
-  end
-
-  local modules = {}
-  local function find_modules(dir)
-    local files = vim.fn.readdir(dir)
-    for _, file in ipairs(files) do
-      local path = dir .. "/" .. file
-      local stat = vim.loop.fs_stat(path)
-      if stat.type == "directory" then
-        -- no egg-info
-        if file:match("%.egg%-info$") == nil then
-          modules[#modules + 1] = file
-        end
-      end
-    end
-  end
-  find_modules(src_dir)
-
-  if #modules == 0 then
-    return nil
-  end
-
-  return modules
-end
-
 local function find_first_party_module()
-  local modules = find_python_first_party_modules()
+  local modules = python_utils.get_cached_first_party_modules()
   if modules == nil then
     return nil
   end
@@ -192,8 +150,9 @@ return {
   -- }),
   s("config", {
     func_node(function()
-      local content =
-        read_from_url("https://gist.githubusercontent.com/kiyoon/19eea0ea71228ac0f519319ac380ab13/raw/config.py")
+      local content = url_utils.read_from_url(
+        "https://gist.githubusercontent.com/kiyoon/19eea0ea71228ac0f519319ac380ab13/raw/config.py"
+      )
       return content
     end, {}),
   }),

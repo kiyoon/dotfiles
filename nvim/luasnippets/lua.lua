@@ -1,9 +1,11 @@
+local url_utils = require("kiyoon.utils.url")
 local ls = require("luasnip")
 local fmt = require("luasnip.extras.fmt").fmt
 local extras = require("luasnip.extras")
 local l = extras.lambda
 local i = ls.insert_node
 local c = ls.choice_node
+local func_node = ls.function_node
 
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -137,4 +139,12 @@ return {
       { delimiters = "<>" }
     )
   ),
+  s("repro", {
+    func_node(function()
+      local content = url_utils.read_from_url(
+        "https://gist.githubusercontent.com/kiyoon/20475c74cbfcbe530af07a40332b1c57/raw/bb12990e9f331849b7266c70030ec457da2ed1a1/repro.lua"
+      )
+      return content
+    end, {}),
+  }),
 }

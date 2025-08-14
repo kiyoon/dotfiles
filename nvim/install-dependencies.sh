@@ -77,7 +77,7 @@ else
 fi
 
 if ! command -v stylua &> /dev/null; then
-	bun install -g @johnnymorganz/stylua-bin
+	npm install -g @johnnymorganz/stylua-bin
 fi
 
 if ! command -v prettier &> /dev/null; then

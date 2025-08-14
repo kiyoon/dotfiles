@@ -59,6 +59,7 @@ end
 require("lazy").setup({
   {
     "kiyoon/tmux-send.nvim",
+    -- dev = true,
     keys = {
       {
         "-",
@@ -407,6 +408,10 @@ require("lazy").setup({
     end,
   },
 }, {
+  dev = {
+    path = "~/project",
+    -- patterns = { "kiyoon", "nvim-treesitter-textobjects" },
+  },
   performance = {
     rtp = {
       disabled_plugins = {

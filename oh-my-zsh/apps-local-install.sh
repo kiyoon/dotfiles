@@ -2,7 +2,7 @@
 
 INSTALL_DIR="$HOME/.local"
 CARGO="$HOME/.cargo/bin/cargo"
-PIP3="/usr/bin/python3 -m pip"
+# PIP3="/usr/bin/python3 -m pip"
 
 if [[ $OSTYPE == "darwin"* ]]; then
 	INSTALL_DIR="$HOME/.local"
@@ -25,8 +25,8 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	brew install thefuck
 	brew install starship
 
-	$PIP3 install --user --break-system-packages pygments # colorize (ccat)
-	$PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
+	# $PIP3 install --user --break-system-packages pygments # colorize (ccat)
+	# $PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
 
 	# install ranger from github
 	# TEMPDIR=$(mktemp -d)
@@ -75,9 +75,9 @@ else
 		sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$INSTALL_DIR/bin" -y
 	fi
 
-	$PIP3 install --user --break-system-packages pygments # colorize (ccat)
-	$PIP3 install --user --break-system-packages thefuck  # fix last command
-	$PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
+	# $PIP3 install --user --break-system-packages pygments # colorize (ccat)
+    uv tool install --python 3.11 thefuck
+	# $PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
 
 	# install ranger from github
 	# TEMPDIR=$(mktemp -d)

@@ -3,7 +3,7 @@ PIP3="/usr/bin/python3 -m pip"
 # check if uv is installed
 if ! command -v uv &> /dev/null; then
     echo "Error: uv is not installed"
-    echo "(Linux) Install with: pip3 install --user --break-system-packages uv"
+    echo "(Linux) Install with: curl -LsSf https://astral.sh/uv/install.sh | sh"
     echo "(Mac) Install with: brew install uv"
     exit 1
 fi

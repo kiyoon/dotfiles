@@ -6,9 +6,9 @@
 INSTALL_DIR="$HOME/.local"
 mkdir -p "$HOME/bin" && { cd "$HOME/bin" || { echo "Failure"; exit 1; } }
 
-wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-6.1.tar.gz
-tar xf ncurses-6.1.tar.gz
-cd ncurses-6.1 || { echo "Failure"; exit 1; }
+wget https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz
+tar xf ncurses-6.5.tar.gz
+cd ncurses-6.5 || { echo "Failure"; exit 1; }
 ./configure --prefix="$INSTALL_DIR" CXXFLAGS="-fPIC" CFLAGS="-fPIC"
 make -j && make install
 
@@ -35,7 +35,7 @@ make -j && make install
 
 \rm "$ZSH_SRC_NAME"
 \rm -rf "$ZSH_PACK_DIR"
-\rm "$HOME/bin/ncurses-6.1.tar.gz"
-\rm -rf "$HOME/bin/ncurses-6.1"
+\rm "$HOME/bin/ncurses-6.5.tar.gz"
+\rm -rf "$HOME/bin/ncurses-6.5"
 
 echo "zsh installed under $INSTALL_DIR/bin/zsh"

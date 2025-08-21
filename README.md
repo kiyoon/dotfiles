@@ -40,6 +40,9 @@ Also, it has many versions of vim configurations.
   - Try `Ctrl+t` to find file, `Alt+c` to change directory, `Ctrl+r` to reverse search commands.
 - Smart change directory with [Zoxide](https://github.com/ajeetdsouza/zoxide)
   - Try `z <partial dirname..>` like `z dot` will go to the `~/.config/dotfiles`.
+- Move between prompts: (OSC 133)
+  - In Tmux: Alt + k/j
+  - Outside Tmux (WezTerm setting): Shift + Up/Down
 
 ### Neovim
 

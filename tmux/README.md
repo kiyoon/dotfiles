@@ -139,6 +139,24 @@ You can even use mouse right click.
 - ([treemux](https://github.com/kiyoon/treemux)): Ctrl+a + \<Backspace\>: toggle file browser on the side, and focus on it
 - Inside treemux, `<space>o` to toggle between Oil and Nvim-tree.
 
+### Shell integration
+
+OSC 133 is configured in `.zshrc` to move between prompts (commands).
+
+```zsh
+if [[ "$PROMPT" != *$'\e]133;A'* ]]; then
+  PROMPT=$'%{\e]133;A;cl=m;aid='"$$"$'\a%}'"$PROMPT"$'%{\e]133;B\a%}'
+fi
+
+# Before each command, mark StartOutput
+preexec() { printf '\e]133;C;\a'; }
+```
+
+Move between prompts:
+
+- In Tmux: Alt + k/j
+- Outside Tmux (WezTerm setting): Shift + Up/Down
+
 ### Other tips 💡
 
 - If you press Ctrl+s by mistake, it will freeze. Ctrl+q to unfreeze.

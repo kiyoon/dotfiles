@@ -204,3 +204,25 @@ fi
 autoload -Uz compinit
 zstyle ':completion:*' menu select
 fpath+=~/.zfunc
+
+# WezTerm shell integration
+# https://wezfurlong.org/wezterm/shell-integration.html
+# However, OSC 133 previous and next commands are not working inside tmux.
+# So, we disable semantic zones and use hard-wrapped prompt instead.
+export WEZTERM_SHELL_SKIP_SEMANTIC_ZONES=1
+
+# --- keep wezterm integration (cwd, vars, zones) ---
+if [[ -r ~/.config/oh-my-zsh/wezterm.zsh ]]; then
+  source ~/.config/oh-my-zsh/wezterm.zsh
+fi
+
+if [[ "$PROMPT" != *$'\e]133;A'* ]]; then
+  # no gap between prompts
+  # PROMPT=$'%{\e]133;A;cl=m;aid='$$'\a%}'"$PROMPT"$'%{\e]133;B\a%}'
+
+  # start with new line
+  PROMPT=$'%{\e]133;A;cl=m;aid='"$$"$'\a%}'"$PROMPT"$'%{\e]133;B\a%}'
+fi
+
+# Before each command, mark StartOutput
+preexec() { printf '\e]133;C;\a'; }

@@ -49,6 +49,8 @@ if [[ $OSTYPE == "darwin"* ]]; then
 else
     if ! command -v rustc &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+        source "$HOME/.cargo/env"
+        rustup default stable
         # cargo-binstall
         curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
     else

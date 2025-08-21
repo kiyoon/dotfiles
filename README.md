@@ -83,7 +83,7 @@ cd dotfiles
 ```bash
 oh-my-zsh/zsh-local-install.sh
 oh-my-zsh/install-installers.sh
-source ~/.cargo/env  # activate `cargo install ...`
+source ~/.bashrc  # make cargo and bun available
 oh-my-zsh/apps-local-install.sh
 oh-my-zsh/launch-zsh-in-bash.sh
 git submodule update --init --remote  # Install and update all zsh plugins

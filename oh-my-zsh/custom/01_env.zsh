@@ -168,3 +168,26 @@ fi
 # NOTE: it even accepts the next word from zsh-autosuggestions
 bindkey '^[l' forward-word
 bindkey '^[h' backward-word
+
+## zsh-vi-mode paste bug fix
+# Symptom: When pasting in normal mode, the character 'g' is eaten.
+# https://github.com/jeffreytse/zsh-vi-mode/issues/5
+# This routes the start-of-bracketed-paste sequence (\e[200~) to a widget that flips to insert first
+# so your paste is literal and no g is eaten.
+# (This mirrors how "safe-paste" oh-my-zsh plugin handles bracketed paste transitions between keymaps.)
+
+# Ensure bracketed paste widget exists
+autoload -Uz bracketed-paste-magic
+zle -N bracketed-paste bracketed-paste-magic
+
+# In normal mode, switch to insert, then run bracketed paste
+zvm_bracketed_paste_in_insert() {
+  zle vi-insert
+  zle bracketed-paste
+}
+zle -N zvm_bracketed_paste_in_insert
+
+# Bind start-of-bracketed-paste in both keymaps
+bindkey -M vicmd '^[[200~' zvm_bracketed_paste_in_insert
+bindkey -M viins '^[[200~' bracketed-paste
+## End of zsh-vi-mode paste bug fix

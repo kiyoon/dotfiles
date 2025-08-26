@@ -1,5 +1,6 @@
 {
   "Comment.nvim": { "branch": "master", "commit": "e30b7f2008e52442154b66f7c519bfd2f1e32acb" },
+  "CopilotChat.nvim": { "branch": "main", "commit": "f22747ae5a4c88b4aa519e4638fe89b274ea28a4" },
   "Korean-IME.nvim": { "branch": "master", "commit": "c733599b9219e25bb05d8aa0467327edc769be94" },
   "LuaSnip": { "branch": "master", "commit": "458560534a73f7f8d7a11a146c801db00b081df0" },
   "SelectEase": { "branch": "master", "commit": "d478566798afebc1b9dea1d146e0bdb2e00f9b22" },

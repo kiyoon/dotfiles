@@ -603,6 +603,23 @@ return {
       vim.cmd([[inoremap <F6> <Plug>(copilot-accept-word)]])
     end,
   },
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    dependencies = {
+      { "nvim-lua/plenary.nvim", branch = "master" },
+    },
+    build = "make tiktoken",
+    opts = {
+      model = "gpt-5",
+      -- model = "Claude Sonnet 4",
+      temperature = 0.1, -- Lower = focused, higher = creative
+      window = {
+        layout = "vertical", -- 'vertical', 'horizontal', 'float'
+        width = 0.5, -- 50% of screen width
+      },
+      auto_insert_mode = true, -- Enter insert mode when opening
+    },
+  },
   -- Free copilot alternative
   -- "Exafunction/codeium.vim",
   {
@@ -1175,7 +1192,7 @@ return {
       -- { "<space>g", "<cmd>TSJToggle<CR>", desc = "Treesitter Toggle" },
     },
     config = function()
-      require("treesj").setup({ use_default_keymaps = false })
+      require("treesj").setup({ use_default_keymaps = false, max_join_length = 1000 })
     end,
   },
   {

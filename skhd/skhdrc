@@ -12,9 +12,11 @@ alt - 2 : open -a "Google Chrome"
 alt + shift - 2 : open -n -a "Google Chrome"
 alt - 3 : open -a "WezTerm"
 alt + shift - 3 : open -n -a "WezTerm"
-alt - 4 : open -a "Telegram"
-alt - 5 : open -a "Slack"
-alt - 6 : open -a "Notion"
+alt - 4 : open -a "ChatGPT"
+alt + shift - 4 : open -n -a "ChatGPT"
+alt - 5 : open -a "Telegram"
+alt - 6 : open -a "Slack"
+alt - 7 : open -a "Notion"
 # ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \
 # 				  yabai -m window --focus "$window_id" || \
 # 				  open -n -a "WezTerm"
@@ -77,7 +79,8 @@ shift + alt - m : yabai -m window --toggle zoom-fullscreen
 shift + alt - g : yabai -m window --toggle float --grid 8:8:1:1:6:6
 shift + alt - e : yabai -m space --balance
 
-shift + alt - r : yabai -m space --rotate 270
+# shift + alt - r : yabai -m space --rotate 270
+shift + alt - r : bash ~/.config/yabai/scripts/rotate_without_changing_layout.sh cw
 shift + alt - z : yabai -m space --mirror y-axis
 shift + alt - x : yabai -m space --mirror x-axis
 
@@ -116,8 +119,10 @@ shift - f10 : yabai -m window --resize bottom:0:20 2> /dev/null || yabai -m wind
 shift - f8 : yabai -m window --resize bottom:0:-20 2> /dev/null || yabai -m window --resize top:0:-20 2> /dev/null
 ctrl - f10 : yabai -m window --resize right:40:0 2> /dev/null || yabai -m window --resize left:40:0 2> /dev/null
 
-ctrl + shift - f2 : yabai -m space --rotate 90
-ctrl + shift - f6 : yabai -m space --rotate 270
+# ctrl + shift - f2 : yabai -m space --rotate 90
+# ctrl + shift - f6 : yabai -m space --rotate 270
+ctrl + shift - f2 : bash ~/.config/yabai/scripts/rotate_without_changing_layout.sh ccw
+ctrl + shift - f6 : bash ~/.config/yabai/scripts/rotate_without_changing_layout.sh cw
 
 # change layout of desktop
 # basically toggles yabai auto managing tiles but keeping the commands for resizing.

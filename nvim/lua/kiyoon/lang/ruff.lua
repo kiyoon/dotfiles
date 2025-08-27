@@ -925,7 +925,7 @@ M.translate_ruff_message = function(code, message)
       end
     -- 🔗🐍 [D403]	first-line-capitalized	First word of the first line should be capitalized: {} -> {}	✔️ 🛠️
     elseif code == "D403" then
-      local first_word, capitalized = message:match("First word of the first line should be capitalized: (.*) -> (.*)")
+      local first_word, capitalized = message:match("First word of the docstring should be capitalized: (.*) -> (.*)")
       if lang == "es" then
         return string.format(
           "La primera palabra de la primera línea debería estar capitalizada: %s -> %s",

@@ -604,22 +604,39 @@ return {
     end,
   },
   {
-    "CopilotC-Nvim/CopilotChat.nvim",
+    "olimorris/codecompanion.nvim",
     dependencies = {
-      { "nvim-lua/plenary.nvim", branch = "master" },
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
     },
-    build = "make tiktoken",
     opts = {
-      model = "gpt-5",
-      -- model = "Claude Sonnet 4",
-      temperature = 0.1, -- Lower = focused, higher = creative
-      window = {
-        layout = "vertical", -- 'vertical', 'horizontal', 'float'
-        width = 0.5, -- 50% of screen width
+      -- NOTE: The log_level is in `opts.opts`
+      opts = {
+        log_level = "DEBUG", -- or "TRACE"
       },
-      auto_insert_mode = true, -- Enter insert mode when opening
+      strategies = {
+        chat = {
+          adapter = {
+            name = "copilot",
+            -- model = "claude-sonnet-4",
+            model = "gpt-5",
+          },
+          keymaps = {
+            send = {
+              modes = {
+                n = { "<CR>", "<C-s>" },
+                i = "<A-CR>",
+              },
+              index = 2,
+              callback = "keymaps.send",
+              description = "Send",
+            },
+          },
+        },
+      },
     },
   },
+
   -- Free copilot alternative
   -- "Exafunction/codeium.vim",
   {
@@ -706,11 +723,11 @@ return {
         openai_api_key = { "pass", "API-dear/openai" },
         agents = {
           {
-            name = "ChatGPT4o",
+            name = "ChatGPT5",
             chat = true,
             command = false,
             -- string with model name or table with model name and parameters
-            model = { model = "gpt-4o", temperature = 1.1, top_p = 1 },
+            model = { model = "gpt-5", temperature = 1.1, top_p = 1 },
             -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = "You are a general AI assistant.\n\n"
               .. "The user provided the additional info about how they would like you to respond:\n\n"
@@ -721,45 +738,6 @@ return {
               .. "- Use Socratic method to improve your thinking and coding skills.\n"
               .. "- Don't elide any code from your output if the answer requires coding.\n"
               .. "- Take a deep breath; You've got this!\n",
-          },
-          {
-            name = "ChatGPT3-5-Turbo",
-            chat = true,
-            command = false,
-            -- string with model name or table with model name and parameters
-            model = { model = "gpt-3.5-turbo", temperature = 1.1, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = "You are a general AI assistant.\n\n"
-              .. "The user provided the additional info about how they would like you to respond:\n\n"
-              .. "- If you're unsure don't guess and say you don't know instead.\n"
-              .. "- Ask question if you need clarification to provide better answer.\n"
-              .. "- Think deeply and carefully from first principles step by step.\n"
-              .. "- Zoom out first to see the big picture and then zoom in to details.\n"
-              .. "- Use Socratic method to improve your thinking and coding skills.\n"
-              .. "- Don't elide any code from your output if the answer requires coding.\n"
-              .. "- Take a deep breath; You've got this!\n",
-          },
-          {
-            name = "CodeGPT4o",
-            chat = false,
-            command = true,
-            -- string with model name or table with model name and parameters
-            model = { model = "gpt-4o", temperature = 0.8, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = "You are an AI working as a code editor.\n\n"
-              .. "Please AVOID COMMENTARY OUTSIDE OF THE SNIPPET RESPONSE.\n"
-              .. "START AND END YOUR ANSWER WITH:\n\n```",
-          },
-          {
-            name = "CodeGPT3-5-Turbo",
-            chat = false,
-            command = true,
-            -- string with model name or table with model name and parameters
-            model = { model = "gpt-3.5-turbo", temperature = 0.8, top_p = 1 },
-            -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = "You are an AI working as a code editor.\n\n"
-              .. "Please AVOID COMMENTARY OUTSIDE OF THE SNIPPET RESPONSE.\n"
-              .. "START AND END YOUR ANSWER WITH:\n\n```",
           },
         },
       })

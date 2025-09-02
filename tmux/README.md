@@ -154,7 +154,7 @@ preexec() { printf '\e]133;C;\a'; }
 
 Move between prompts:
 
-- In Tmux: Alt + k/j
+- In Tmux: Ctrl + Alt + k/j
 - Outside Tmux (WezTerm setting): Shift + Up/Down
 
 ### Other tips 💡

@@ -205,27 +205,45 @@ call InitBackupDir()
 " make backspace working properly
 set backspace=indent,eol,start
 
-" set tab length to 4 spaces
+"" Modeline support without fighting your preferred defaults
+" Global defaults
+set modeline
+set modelines=5
 set tabstop=4
 set shiftwidth=4
+set noexpandtab
+
+augroup IndentDefaultsEarly
+  autocmd!
+  " Apply per-language defaults BEFORE modeline runs
+  autocmd BufReadPre,BufNewFile *.sh,*.bash,*.zsh,*.py,*.tex,*.lua,*.toml,*.yaml,*.yml,*.json,*.js,*.ts
+        \ setlocal expandtab
+
+  autocmd BufReadPre,BufNewFile *.tex,*.lua,*.toml,*.yaml,*.yml,*.json,*.js,*.ts
+        \ setlocal tabstop=2 shiftwidth=2
+
+  " No wrapping defaults (modeline can override)
+  autocmd BufReadPre,BufNewFile *.sml,*.vim
+        \ setlocal textwidth=0 wrapmargin=0
+augroup END
 
 " automatic indent on bash
 filetype plugin indent on
 
-" use tab as spaces in python, tex
-autocmd FileType sh,python,tex,lua,toml,yaml,json,javascript,typescript set expandtab
-
-" latex settings (global values require vim-latex plugin)
-autocmd FileType tex,lua,toml,yaml,json,javascript,typescript set tabstop=2
-autocmd FileType tex,lua,toml,yaml,json,javascript,typescript set shiftwidth=2
-autocmd FileType tex set iskeyword+=:
-" let g:tex_flavor='latex'
-" let g:Tex_DefaultTargetFormat = 'pdf'
-" let g:Tex_MultipleCompileFormats='pdf, aux'
-
-" turn off automatic new line when the text is too long in a line (e.g. SML)
-autocmd FileType sml set textwidth=0 wrapmargin=0
-autocmd FileType vim set textwidth=0 wrapmargin=0
+" " use tab as spaces in python, tex
+" autocmd FileType sh,python,tex,lua,toml,yaml,json,javascript,typescript set expandtab
+"
+" " latex settings (global values require vim-latex plugin)
+" autocmd FileType tex,lua,toml,yaml,json,javascript,typescript set tabstop=2
+" autocmd FileType tex,lua,toml,yaml,json,javascript,typescript set shiftwidth=2
+" autocmd FileType tex set iskeyword+=:
+" " let g:tex_flavor='latex'
+" " let g:Tex_DefaultTargetFormat = 'pdf'
+" " let g:Tex_MultipleCompileFormats='pdf, aux'
+"
+" " turn off automatic new line when the text is too long in a line (e.g. SML)
+" autocmd FileType sml set textwidth=0 wrapmargin=0
+" autocmd FileType vim set textwidth=0 wrapmargin=0
 
 set wildmenu
 

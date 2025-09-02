@@ -41,7 +41,7 @@ Also, it has many versions of vim configurations.
 - Smart change directory with [Zoxide](https://github.com/ajeetdsouza/zoxide)
   - Try `z <partial dirname..>` like `z dot` will go to the `~/.config/dotfiles`.
 - Move between prompts: (OSC 133)
-  - In Tmux: Alt + k/j
+  - In Tmux: Ctrl + Alt + k/j
   - Outside Tmux (WezTerm setting): Shift + Up/Down
 
 ### Neovim

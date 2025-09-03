@@ -108,6 +108,12 @@ end
 -- NOTE: the default rule doesn't work well with parens, brackets, or braces.
 -- Updated rules following https://github.com/wez/wezterm/issues/3803
 config.hyperlink_rules = {
+	-- Rewrite bare: ssh://github.com/...  -->  https://github.com/...
+	-- Put this BEFORE any generic \w+:// rules in your real config.
+	{
+		regex = [[\bssh://(github\.com)/?([^\s)\]\}>]*)?]],
+		format = "https://$1/$2",
+	},
 	-- Matches: a URL in parens: (URL)
 	{
 		regex = "\\((\\w+://\\S+)\\)",

@@ -394,7 +394,7 @@ M.ruff_fix_current_line = function(bufnr, ruff_codes)
   repeat
     M.run_ruff(bufnr)
     local fixed = false
-    local ruff_outputs = bufnr_to_ruff_per_line[bufnr][current_line]
+    local ruff_outputs = bufnr_to_ruff_per_line_multiline[bufnr][current_line]
     for _, ruff_output in ipairs(ruff_outputs) do
       if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
         local fix = ruff_output["fix"]
@@ -453,7 +453,7 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
   repeat
     M.run_ruff(bufnr)
     local fixed = false
-    for _, ruff_line in pairs(bufnr_to_ruff_per_line[bufnr]) do
+    for _, ruff_line in pairs(bufnr_to_ruff_per_line_multiline[bufnr]) do
       for _, ruff_output in ipairs(ruff_line) do
         if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
           local fix = ruff_output["fix"]

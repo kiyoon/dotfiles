@@ -2,7 +2,7 @@ local wezterm = require("wezterm")
 
 local config = {
 	-- color_scheme = "Dracula (Official)",
-	color_scheme = "catpuccin-frappe",
+	-- color_scheme = "catppuccin-frappe",
 
 	font = wezterm.font_with_fallback({
 		-- "Cascadia Code NF",

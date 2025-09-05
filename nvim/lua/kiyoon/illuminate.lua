@@ -3,9 +3,9 @@ vim.api.nvim_set_keymap("n", "<space>v", '<cmd>lua require"illuminate".textobj_s
 
 require("illuminate").configure({
   providers = {
-    "lsp",
     "treesitter",
     "regex",
+    "lsp", -- lsp provider has incorrect handling of multibyte characters
   },
   delay = 200,
   filetypes_denylist = {

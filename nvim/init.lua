@@ -273,14 +273,4 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 
 -- Some settings can easily override clipboard. For example, Ubuntu didn't use OSC52.
 -- So, force using OSC52 clipboard. (at the end of init.lua)
-vim.g.clipboard = {
-  name = "osc52",
-  copy = {
-    ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-    ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-  },
-  paste = {
-    ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-    ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
-  },
-}
+vim.g.clipboard = "osc52"

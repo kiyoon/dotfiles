@@ -300,6 +300,15 @@
                     },
                     "ignore": false,
                     "mouse_flip_vertical_wheel": true
+                },
+                {
+                    "identifiers": {
+                        "is_pointing_device": true,
+                        "product_id": 45109,
+                        "vendor_id": 1133
+                    },
+                    "ignore": false,
+                    "mouse_flip_vertical_wheel": true
                 }
             ],
             "name": "Default profile",

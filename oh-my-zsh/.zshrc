@@ -1,15 +1,28 @@
-# https://stackoverflow.com/questions/41287226/ssh-asking-every-single-time-for-passphrase
-if ! pgrep -u $UID ssh-agent >/dev/null; then
-	if [[ $OSTYPE == "darwin"* ]]; then
-		ssh-agent -t 9h > ~/.ssh/.agent.pid
-	else
-		ssh-agent -t 3h > ~/.ssh/.agent.pid
-	fi
-fi
-source ~/.ssh/.agent.pid >&/dev/null
+SSH_ENV="$HOME/.ssh/agent.env"
 
-if [[ -f /opt/homebrew/bin/brew ]]; then
-	eval $(/opt/homebrew/bin/brew shellenv)
+start_agent() {
+    echo "Starting new ssh-agent..."
+
+	if [[ $OSTYPE == "darwin"* ]]; then
+		ssh-agent -t 9h >| "$SSH_ENV"
+	else
+		ssh-agent -t 3h >| "$SSH_ENV"
+	fi
+    chmod 600 "$SSH_ENV"
+    . "$SSH_ENV" > /dev/null
+}
+
+# If the file exists, source it and check if it's still valid
+if [ -f "$SSH_ENV" ]; then
+    . "$SSH_ENV" > /dev/null
+	# it does not kill anything. Just checks if the agent is running
+    if ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
+        # Agent dead; restart
+        start_agent
+    fi
+else
+    # No agent file yet
+    start_agent
 fi
 
 # If you come from bash you might have to change your $PATH.

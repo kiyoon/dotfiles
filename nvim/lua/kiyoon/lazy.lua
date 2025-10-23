@@ -2653,10 +2653,11 @@ return {
     "3rd/image.nvim",
     build = false, -- do not use hererocks
     dependencies = {
-      "kiyoon/magick.nvim",
+      { "kiyoon/magick.nvim", dev = false },
     },
     opts = {
       backend = "kitty",
+      processor = "magick_rock",
       integrations = {
         markdown = {
           enabled = false,

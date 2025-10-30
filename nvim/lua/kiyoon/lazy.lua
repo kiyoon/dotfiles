@@ -1136,7 +1136,6 @@ return {
   -- },
   {
     "danymat/neogen",
-    dependencies = "nvim-treesitter/nvim-treesitter",
     config = function()
       local custom_templates = require("kiyoon.neogen")
       require("neogen").setup({
@@ -1422,9 +1421,6 @@ return {
   },
   {
     "mizlan/iswap.nvim",
-    dependencies = {
-      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
-    },
     config = function()
       require("iswap").setup({
         move_cursor = true,
@@ -2195,7 +2191,6 @@ return {
     "theHamsta/nvim-dap-virtual-text",
     dependencies = {
       "mfussenegger/nvim-dap",
-      "nvim-treesitter/nvim-treesitter",
     },
     opts = {},
   },

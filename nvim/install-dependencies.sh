@@ -40,7 +40,8 @@ if command -v brew &> /dev/null; then
     brew install prettier
     brew install taplo
 
-    brew install tree-sitter
+    # brew install tree-sitter
+    bun install -g tree-sitter-cli@latest
 
     # wilder.nvim, telescope.nvim
     brew install fd
@@ -77,16 +78,14 @@ else
 fi
 
 if ! command -v stylua &> /dev/null; then
-	npm install -g @johnnymorganz/stylua-bin
+	bun install -g @johnnymorganz/stylua-bin
 fi
 
 if ! command -v prettier &> /dev/null; then
 	bun install -g prettier
 fi
 
-if ! command -v tree-sitter &> /dev/null; then
-	bun install -g tree-sitter-cli
-fi
+bun install -g tree-sitter-cli@latest
 
 # wilder.nvim, telescope.nvim
 if ! command -v fd &> /dev/null; then

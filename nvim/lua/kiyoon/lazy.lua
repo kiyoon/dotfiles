@@ -7,7 +7,8 @@ local jupynium_dev = false
 local python_import_dev = false
 local korean_ime_dev = false
 local tmux_send_dev = false
-local haskell_scope_highlighting_dev = true
+local haskell_scope_highlighting_dev = false
+local use_nvim_treesitter_main_branch = true
 
 local icons = require("kiyoon.icons")
 
@@ -918,27 +919,42 @@ return {
 
   --- NOTE: Treesitter: Better syntax highlighting, text objects, refactoring, context
   {
+    "MeanderingProgrammer/treesitter-modules.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      if use_nvim_treesitter_main_branch then
+        require("kiyoon.treesitter_main")
+      end
+    end,
+  },
+  {
     "nvim-treesitter/nvim-treesitter",
     event = { "BufReadPost", "BufNewFile" },
+    branch = use_nvim_treesitter_main_branch and "main" or nil,
     build = ":TSUpdate",
-    init = function(plugin)
-      -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
-      -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
-      -- no longer trigger the **nvim-treesitter** module to be loaded in time.
-      -- Luckily, the only things that those plugins need are the custom queries, which we make available
-      -- during startup.
-      require("lazy.core.loader").add_to_rtp(plugin)
-      require("nvim-treesitter.query_predicates")
-    end,
+    -- init = function(plugin)
+    --   -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
+    --   -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
+    --   -- no longer trigger the **nvim-treesitter** module to be loaded in time.
+    --   -- Luckily, the only things that those plugins need are the custom queries, which we make available
+    --   -- during startup.
+    --   require("lazy.core.loader").add_to_rtp(plugin)
+    --   require("nvim-treesitter.query_predicates")
+    -- end,
     config = function()
-      require("kiyoon.treesitter")
+      if not use_nvim_treesitter_main_branch then
+        require("kiyoon.treesitter")
+      end
     end,
     dependencies = {
       {
         "nvim-treesitter/nvim-treesitter-textobjects",
         -- "kiyoon/nvim-treesitter-textobjects",
-        -- branch = "fix/builtin_find",
+        branch = use_nvim_treesitter_main_branch and "main" or nil,
         dev = nvim_treesitter_textobjects_dev,
+        config = function()
+          require("kiyoon.ts_textobjs_main")
+        end,
       },
     },
     dev = nvim_treesitter_dev,
@@ -1447,8 +1463,14 @@ return {
         -- optionally use on_attach to set keymaps when aerial has attached to a buffer
         on_attach = function(bufnr)
           -- Jump forwards/backwards with '{' and '}'
-          local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
-          local anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+          local anext, aprev
+          if use_nvim_treesitter_main_branch then
+            local tstext_repeat_move = require("kiyoon.ts_textobjs_main_extended")
+            anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+          else
+            local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+            anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+          end
           vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
           vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
         end,
@@ -2382,8 +2404,14 @@ return {
           pattern = [[\b(KEYWORDS)(\(\w*\))*:]],
         },
       })
-      local tstext = require("nvim-treesitter.textobjects.repeatable_move")
-      local next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
+      local next_todo, prev_todo
+      if use_nvim_treesitter_main_branch then
+        local tstext = require("kiyoon.ts_textobjs_main_extended")
+        next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
+      else
+        local tstext = require("nvim-treesitter.textobjects.repeatable_move")
+        next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
+      end
       vim.keymap.set("n", "]t", next_todo, { desc = "Next todo comment" })
 
       vim.keymap.set("n", "[t", prev_todo, { desc = "Previous todo comment" })

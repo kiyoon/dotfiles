@@ -2,7 +2,10 @@ return {
   numhl = true,
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
-    local tstext = require "nvim-treesitter.textobjects.repeatable_move"
+    local ok, tstext = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
+    if not ok then
+      tstext = require("kiyoon.ts_textobjs_main_extended")
+    end
 
     local function map(mode, l, r, opts)
       opts = opts or {}
@@ -40,7 +43,7 @@ return {
     map("n", "<leader>hR", gs.reset_buffer, { desc = "Reset buffer" })
     map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview hunk" })
     map("n", "<leader>hb", function()
-      gs.blame_line { full = true }
+      gs.blame_line({ full = true })
     end, { desc = "Blame line" })
     map("n", "<leader>hB", gs.toggle_current_line_blame, { desc = "Toggle current line blame" })
     map("n", "<leader>hd", gs.diffthis, { desc = "Diff this" })

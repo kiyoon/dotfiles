@@ -23,11 +23,6 @@ local function treesitter_incwhitespaces(info)
 end
 
 require("nvim-treesitter.configs").setup({
-  -- vim-matchup
-  matchup = {
-    enable = true, -- mandatory, false will disable the whole extension
-  },
-
   indent = {
     enable = true,
     disable = { "yaml" },

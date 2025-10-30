@@ -7,6 +7,7 @@ local jupynium_dev = false
 local python_import_dev = false
 local korean_ime_dev = false
 local tmux_send_dev = false
+local haskell_scope_highlighting_dev = true
 
 local icons = require("kiyoon.icons")
 
@@ -939,65 +940,65 @@ return {
         -- branch = "fix/builtin_find",
         dev = nvim_treesitter_textobjects_dev,
       },
-      "RRethy/nvim-treesitter-endwise",
-      {
-        "andymass/vim-matchup",
-        init = function()
-          --- Without this, lualine will flicker when matching offscreen
-          --- Maybe it happens when cmdheight is set to 0
-          vim.g.matchup_matchparen_offscreen = { method = "popup" }
-        end,
-      },
-      {
-        "HiPhish/rainbow-delimiters.nvim",
-        config = function()
-          -- https://github.com/ayamir/nvimdots/pull/868/files
-          ---@param threshold number @Use global strategy if nr of lines exceeds this value
-          local function init_strategy(threshold)
-            return function()
-              local errors = 200
-              vim.treesitter.get_parser():for_each_tree(function(lt)
-                if lt:root():has_error() and errors >= 0 then
-                  errors = errors - 1
-                end
-              end)
-              if errors < 0 then
-                return nil
-              end
-              return vim.fn.line("$") > threshold and require("rainbow-delimiters").strategy["global"]
-                or require("rainbow-delimiters").strategy["local"]
-            end
-          end
-
-          vim.g.rainbow_delimiters = {
-            strategy = {
-              [""] = init_strategy(500),
-              c = init_strategy(200),
-              cpp = init_strategy(200),
-              lua = init_strategy(500),
-              vimdoc = init_strategy(300),
-              vim = init_strategy(300),
-              markdown = require("rainbow-delimiters").strategy["global"], -- markdown parser is slow
-            },
-            query = {
-              [""] = "rainbow-delimiters",
-              latex = "rainbow-blocks",
-              javascript = "rainbow-delimiters-react",
-            },
-            highlight = {
-              "RainbowDelimiterRed",
-              "RainbowDelimiterOrange",
-              "RainbowDelimiterYellow",
-              "RainbowDelimiterGreen",
-              "RainbowDelimiterBlue",
-              "RainbowDelimiterCyan",
-              "RainbowDelimiterViolet",
-            },
-          }
-        end,
-      },
     },
     dev = nvim_treesitter_dev,
+  },
+  "RRethy/nvim-treesitter-endwise",
+  {
+    "HiPhish/rainbow-delimiters.nvim",
+    config = function()
+      -- https://github.com/ayamir/nvimdots/pull/868/files
+      ---@param threshold number @Use global strategy if nr of lines exceeds this value
+      local function init_strategy(threshold)
+        return function()
+          local errors = 200
+          vim.treesitter.get_parser():for_each_tree(function(lt)
+            if lt:root():has_error() and errors >= 0 then
+              errors = errors - 1
+            end
+          end)
+          if errors < 0 then
+            return nil
+          end
+          return vim.fn.line("$") > threshold and require("rainbow-delimiters").strategy["global"]
+            or require("rainbow-delimiters").strategy["local"]
+        end
+      end
+
+      vim.g.rainbow_delimiters = {
+        strategy = {
+          [""] = init_strategy(500),
+          c = init_strategy(200),
+          cpp = init_strategy(200),
+          lua = init_strategy(500),
+          vimdoc = init_strategy(300),
+          vim = init_strategy(300),
+          markdown = require("rainbow-delimiters").strategy["global"], -- markdown parser is slow
+        },
+        query = {
+          [""] = "rainbow-delimiters",
+          latex = "rainbow-blocks",
+          javascript = "rainbow-delimiters-react",
+        },
+        highlight = {
+          "RainbowDelimiterRed",
+          "RainbowDelimiterOrange",
+          "RainbowDelimiterYellow",
+          "RainbowDelimiterGreen",
+          "RainbowDelimiterBlue",
+          "RainbowDelimiterCyan",
+          "RainbowDelimiterViolet",
+        },
+      }
+    end,
+  },
+  {
+    "andymass/vim-matchup",
+    init = function()
+      --- Without this, lualine will flicker when matching offscreen
+      --- Maybe it happens when cmdheight is set to 0
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
+    end,
   },
   {
     "mawkler/jsx-element.nvim",
@@ -2860,5 +2861,14 @@ return {
         },
       },
     },
+  },
+  {
+    "kiyoon/haskell-scope-highlighting.nvim",
+    dev = haskell_scope_highlighting_dev,
+    init = function()
+      -- Consider disabling other highlighting
+      vim.cmd([[autocmd FileType haskell syntax off]])
+      vim.cmd([[autocmd FileType haskell TSDisable highlight]])
+    end,
   },
 }

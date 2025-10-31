@@ -8,6 +8,8 @@ local python_import_dev = false
 local korean_ime_dev = false
 local tmux_send_dev = false
 local haskell_scope_highlighting_dev = false
+local indent_blankline_v2_dev = false
+local treesitter_indent_object_dev = false
 local use_nvim_treesitter_main_branch = true
 
 local icons = require("kiyoon.icons")
@@ -1042,8 +1044,10 @@ return {
     end,
   },
   {
-    "lukas-reineke/indent-blankline.nvim",
-    tag = "v2.20.8",
+    "kiyoon/indent-blankline-v2.nvim",
+    dev = indent_blankline_v2_dev,
+    -- "lukas-reineke/indent-blankline.nvim",
+    -- tag = "v2.20.8",
     -- main = "ibl",
     -- opts = {},
     event = "BufReadPost",
@@ -1085,6 +1089,7 @@ return {
   },
   {
     "kiyoon/treesitter-indent-object.nvim",
+    dev = treesitter_indent_object_dev,
     dependencies = {
       "lukas-reineke/indent-blankline.nvim",
     },

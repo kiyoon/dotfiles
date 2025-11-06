@@ -137,3 +137,49 @@ hs.hotkey.bind({}, "f18", function()
     hs.keycodes.currentSourceID("com.apple.inputmethod.Korean.2SetKorean")
   end
 end)
+
+-- 1. Run ./capture_current_display
+-- 2. Open Google Chrome
+-- 3. Open a new tab to Google Translate
+-- 4. Paste from clipboard (image/text)
+
+local hotkey = { "ctrl", "shift", "cmd" }
+local captureScript = os.getenv("HOME") .. "/project/screen-translate/capture_current_display"
+
+hs.hotkey.bind(hotkey, "T", function()
+  -- Step 1: Capture current display
+  hs.execute(captureScript, true)
+  hs.alert.show("📸 Captured current display")
+
+  -- Step 2: Launch Google Chrome
+  hs.application.launchOrFocus("Google Chrome")
+
+  -- Step 3: Wait until Chrome is active, then automate
+  hs.timer.waitUntil(
+    function()
+      return hs.application.frontmostApplication() and hs.application.frontmostApplication():name() == "Google Chrome"
+    end,
+    function()
+      local chrome = hs.application.frontmostApplication()
+      local win = chrome:mainWindow()
+      if win then
+        win:focus()
+        -- Step 4: New tab
+        hs.eventtap.keyStroke({ "cmd" }, "t", 0)
+        hs.timer.doAfter(0.3, function()
+          -- Step 5: Go to Google Translate
+          hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&op=images")
+          hs.eventtap.keyStroke({}, "return", 0)
+          hs.timer.doAfter(1.5, function()
+            -- Step 6: Paste clipboard (image/text)
+            hs.eventtap.keyStroke({ "cmd" }, "v", 0)
+            hs.alert.show("🪄 Pasted into Google Translate")
+          end)
+        end)
+      else
+        hs.alert.show("⚠️ Chrome window not found")
+      end
+    end,
+    0.1 -- check every 100ms
+  )
+end)

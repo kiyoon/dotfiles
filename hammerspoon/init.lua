@@ -144,12 +144,41 @@ end)
 -- 4. Paste from clipboard (image/text)
 
 local hotkey = { "ctrl", "shift", "cmd" }
-local captureScript = os.getenv("HOME") .. "/project/screen-translate/capture_current_display"
+
+local function capture_current_display_to_clipboard()
+  -- Get focused window
+  local win = hs.window.focusedWindow()
+  if not win then
+    hs.alert.show("❌ No focused window found.")
+    return nil
+  end
+
+  -- Get the display that window is on
+  local screen = win:screen()
+  if not screen then
+    hs.alert.show("❌ Could not determine screen.")
+    return nil
+  end
+
+  -- Capture the full screen
+  local img = screen:snapshot()
+  if not img then
+    hs.alert.show("❌ Screenshot failed (check Screen Recording permission).")
+    return nil
+  end
+
+  hs.alert.show("📸 Captured " .. screen:name())
+
+  -- Copy to clipboard
+  hs.pasteboard.writeObjects(img)
+  hs.alert.show("📸 Captured " .. win:screen():name())
+
+  return win, img
+end
 
 hs.hotkey.bind(hotkey, "T", function()
   -- Step 1: Capture current display
-  hs.execute(captureScript, true)
-  hs.alert.show("📸 Captured current display")
+  capture_current_display_to_clipboard()
 
   -- Step 2: Launch Google Chrome
   hs.application.launchOrFocus("Google Chrome")

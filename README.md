@@ -83,7 +83,13 @@ cd dotfiles
 ```bash
 oh-my-zsh/zsh-local-install.sh
 oh-my-zsh/install-installers.sh
-source ~/.bashrc  # make cargo and bun available
+
+# make uv, cargo and bun available
+source ~/.local/bin/env
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+source ~/.cargo/env
+
 oh-my-zsh/apps-local-install.sh
 oh-my-zsh/launch-zsh-in-bash.sh
 git submodule update --init --remote  # Install and update all zsh plugins

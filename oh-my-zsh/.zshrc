@@ -12,16 +12,27 @@ start_agent() {
     . "$SSH_ENV" > /dev/null
 }
 
+is_agent_running() {
+    if [ -z "$SSH_AGENT_PID" ]; then
+        return 1
+    fi
+
+    # Check if process exists AND is actually ssh-agent
+    if ps -p "$SSH_AGENT_PID" -o comm= | grep -q '^ssh-agent$'; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # If the file exists, source it and check if it's still valid
 if [ -f "$SSH_ENV" ]; then
     . "$SSH_ENV" > /dev/null
-	# it does not kill anything. Just checks if the agent is running
-    if ! kill -0 "$SSH_AGENT_PID" 2>/dev/null; then
-        # Agent dead; restart
+
+    if ! is_agent_running; then
         start_agent
     fi
 else
-    # No agent file yet
     start_agent
 fi
 

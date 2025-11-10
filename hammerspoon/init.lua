@@ -167,11 +167,9 @@ local function capture_current_display_to_clipboard()
     return nil
   end
 
-  hs.alert.show("📸 Captured " .. screen:name())
-
   -- Copy to clipboard
   hs.pasteboard.writeObjects(img)
-  hs.alert.show("📸 Captured " .. win:screen():name())
+  hs.alert.show("📸 Captured " .. screen:name())
 
   return win, img
 end

@@ -49,9 +49,18 @@ unset __mamba_setup
 # <<< mamba initialize <<<
 #
 # We don't want linuxbrew python to be used as default python, so we add it to the end of the path.
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:/home/linuxbrew/.linuxbrew/bin"
+export PATH="$HOME/.local/bin:$PATH:/home/linuxbrew/.linuxbrew/bin"
 export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew/lib"
 export MANPATH="$HOME/.local/share/man:$MANPATH"
+
+# if cargo is installed, add cargo bin to path
+if [[ -f "$HOME/.cargo/env" ]]; then
+    source "$HOME/.cargo/env"
+fi
+# if deno is installed, add deno bin to path
+if [[ -f "$HOME/.deno/env" ]]; then
+    source "$HOME/.deno/env"
+fi
 
 if [[ $OSTYPE == "linux-gnu"* ]]; then
 	export TERMINFO="$HOME/.local/share/terminfo" # tmux needs this

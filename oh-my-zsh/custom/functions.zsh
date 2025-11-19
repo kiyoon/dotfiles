@@ -188,11 +188,10 @@ tgz() {
 	if [ $# -eq 1 ]; then
 		# If only one argument is given, use the same name for outfile
 		# strip the trailing slash if it exists
-		if [[ "$1" == */ ]]; then
-			1="${1%/}"
-		fi
-		outfile="$1.tar.zst"
-		infiles=("$1")
+        local name=$1
+        [[ $name == */ ]] && name=${name%/}
+		outfile="$name.tar.zst"
+		infiles=("$name")
 	else
 		outfile="$1"
 		infiles=("${@:2}")
@@ -217,7 +216,10 @@ tgz() {
 	done
 
 	sum_bytes=$(get_sum_bytes "${infiles[@]}")
-	tar cf - "${infiles[@]}" | pv -s $sum_bytes | gzip > "$outfile"
+	tar --exclude='.DS_Store' --exclude='*/.DS_Store' \
+        -cf - "${infiles[@]}" \
+        | pv -s $sum_bytes \
+        | gzip > "$outfile"
 }
 
 tzst() {
@@ -237,11 +239,10 @@ tzst() {
 	if [ $# -eq 1 ]; then
 		# If only one argument is given, use the same name for outfile
 		# strip the trailing slash if it exists
-		if [[ "$1" == */ ]]; then
-			1="${1%/}"
-		fi
-		outfile="$1.tar.zst"
-		infiles=("$1")
+        local name=$1
+        [[ $name == */ ]] && name=${name%/}
+		outfile="$name.tar.zst"
+		infiles=("$name")
 	else
 		outfile="$1"
 		infiles=("${@:2}")
@@ -266,7 +267,10 @@ tzst() {
 	done
 
 	sum_bytes=$(get_sum_bytes "${infiles[@]}")
-	tar cf - "${infiles[@]}" | pv -s $sum_bytes | zstd -T0 -1 > "$outfile"
+	tar --exclude='.DS_Store' --exclude='*/.DS_Store' \
+        -cf - "${infiles[@]}" \
+        | pv -s $sum_bytes \
+        | zstd -T0 -1 > "$outfile"
 }
 
 tzsti() {
@@ -284,12 +288,11 @@ tzsti() {
 	if [ $# -eq 1 ]; then
 		# If only one argument is given, use the same name for outfile
 		# strip the trailing slash if it exists
-		if [[ "$1" == */ ]]; then
-			1="${1%/}"
-		fi
-		outfile="$1.tar.zst"
-		outtree="$1.tree.txt"
-		infiles=("$1")
+        local name=$1
+        [[ $name == */ ]] && name=${name%/}
+		outfile="$name.tar.zst"
+		outtree="$name.tree.txt"
+		infiles=("$name")
 	else
 		outfile="$1"
 		outtree="${outfile%.tar.zst}.tree.txt"
@@ -314,7 +317,7 @@ tzsti() {
 		fi
 	done
 
-	eza -Tla --icons=always "${infiles[@]}" > "$outtree"
+	eza -Tla --icons=always --ignore-glob='.DS_Store' "${infiles[@]}" > "$outtree"
 	tzst "$outfile" "${infiles[@]}"
 }
 

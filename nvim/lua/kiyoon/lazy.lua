@@ -957,6 +957,16 @@ return {
         config = function()
           require("kiyoon.ts_textobjs_main")
         end,
+        {
+          "mawkler/jsx-element.nvim",
+          ft = { "typescriptreact", "javascriptreact", "javascript" },
+          opts = {
+            keymaps = {
+              enable = false,
+              jsx_element = "t",
+            },
+          },
+        },
       },
     },
     dev = nvim_treesitter_dev,
@@ -1017,15 +1027,6 @@ return {
       --- Maybe it happens when cmdheight is set to 0
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
-  },
-  {
-    "mawkler/jsx-element.nvim",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-treesitter/nvim-treesitter-textobjects",
-    },
-    ft = { "typescriptreact", "javascriptreact", "javascript" },
-    opts = {},
   },
   {
     -- "nvim-treesitter/nvim-treesitter-context",

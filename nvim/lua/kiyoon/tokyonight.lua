@@ -35,5 +35,8 @@ require("tokyonight").setup({
     hl.NavicIconsTypeParameter = { bg = c.bg_dark, fg = c.fg }
     hl.NavicText = { bg = c.bg_dark, fg = c.fg }
     hl.NavicSeparator = { bg = c.bg_dark, fg = c.fg }
+    hl.LineNr = { fg = c.white }
+    hl.LineNrAbove = { fg = c.dark5 }
+    hl.LineNrBelow = { fg = c.dark5 }
   end,
 })

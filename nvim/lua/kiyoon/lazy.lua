@@ -932,7 +932,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     event = { "BufReadPost", "BufNewFile" },
-    branch = use_nvim_treesitter_main_branch and "main" or nil,
+    branch = "main",
     build = ":TSUpdate",
     -- init = function(plugin)
     --   -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
@@ -948,28 +948,26 @@ return {
         require("kiyoon.treesitter")
       end
     end,
-    dependencies = {
-      {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        -- "kiyoon/nvim-treesitter-textobjects",
-        branch = use_nvim_treesitter_main_branch and "main" or nil,
-        dev = nvim_treesitter_textobjects_dev,
-        config = function()
-          require("kiyoon.ts_textobjs_main")
-        end,
-        {
-          "mawkler/jsx-element.nvim",
-          ft = { "typescriptreact", "javascriptreact", "javascript" },
-          opts = {
-            keymaps = {
-              enable = false,
-              jsx_element = "t",
-            },
-          },
+    dev = nvim_treesitter_dev,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    -- "kiyoon/nvim-treesitter-textobjects",
+    branch = "main",
+    dev = nvim_treesitter_textobjects_dev,
+    config = function()
+      require("kiyoon.ts_textobjs_main")
+    end,
+    {
+      "mawkler/jsx-element.nvim",
+      ft = { "typescriptreact", "javascriptreact", "javascript" },
+      opts = {
+        keymaps = {
+          enable = false,
+          jsx_element = "t",
         },
       },
     },
-    dev = nvim_treesitter_dev,
   },
   "RRethy/nvim-treesitter-endwise",
   {

@@ -597,6 +597,20 @@ return {
       require("codeium").setup({
         virtual_text = {
           enabled = true,
+          key_bindings = {
+            -- Accept the current completion.
+            accept = "<C-s>",
+            -- Accept the next word.
+            accept_word = "<F5>",
+            -- Accept the next line.
+            accept_line = false,
+            -- Clear the virtual text.
+            clear = false,
+            -- Cycle to the next completion.
+            next = "<M-]>",
+            -- Cycle to the previous completion.
+            prev = "<M-[>",
+          },
         },
       })
     end,

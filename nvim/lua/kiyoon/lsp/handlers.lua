@@ -207,11 +207,9 @@ function M.lsp_keymaps(bufnr)
   local prev_err = function()
     vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
   end
-  local status, tsrepeat = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
-  if status then
-    next_warn, prev_warn = tsrepeat.make_repeatable_move_pair(next_warn, prev_warn)
-    next_err, prev_err = tsrepeat.make_repeatable_move_pair(next_err, prev_err)
-  end
+  local ts_textobjs_main_extended = require("kiyoon.ts_textobjs_main_extended")
+  next_warn, prev_warn = ts_textobjs_main_extended.make_repeatable_move_pair(next_warn, prev_warn)
+  next_err, prev_err = ts_textobjs_main_extended.make_repeatable_move_pair(next_err, prev_err)
 
   keymap({ "n", "x", "o" }, "[w", prev_warn, opts, "Previous [W]arning")
   keymap({ "n", "x", "o" }, "]w", next_warn, opts, "Next [W]arning")

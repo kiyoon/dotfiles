@@ -178,7 +178,6 @@ M.translate_biome_message = function(code, message)
       end
     elseif code == "lint/style/useNamingConvention" then
       -- 🔗 [lint/style/useNamingConvention] This {const/let/object property} name should be in {camelCase} or {PascalCase}.
-      vim.print(message)
       local naming_conventions = message:match("should be in (.*).")
       local variable_type = message:match("This (.*) name should be in")
       if variable_type ~= nil then

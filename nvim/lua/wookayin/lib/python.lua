@@ -505,7 +505,6 @@ M.os_path_to_pathlib = function(wrap_with_path)
     if not node then
       node = vim.treesitter.get_node()
       if node == nil or not vim.list_contains({ "identifier", "string" }, node:type()) then
-        vim.print(node:type())
         notify("Not in a call node, nor is a variable.", "error", {
           title = "os.path to pathlib.Path",
         })
@@ -743,8 +742,6 @@ local visual_surround = function(delimiters, args)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
 
   local first_pos, last_pos = buffer.get_mark("<"), buffer.get_mark(">")
-  vim.print(first_pos)
-  vim.print(last_pos)
   if not delimiters or not first_pos or not last_pos then
     return
   end

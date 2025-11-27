@@ -36,7 +36,10 @@ require("tokyonight").setup({
     hl.NavicText = { bg = c.bg_dark, fg = c.fg }
     hl.NavicSeparator = { bg = c.bg_dark, fg = c.fg }
     hl.LineNr = { fg = c.white }
+
+    -- They are too dim by default. Make it more visible.
     hl.LineNrAbove = { fg = c.dark5 }
     hl.LineNrBelow = { fg = c.dark5 }
+    hl.DiagnosticUnnecessary = { fg = c.dark5 }
   end,
 })

@@ -43,10 +43,15 @@ Also, it has many versions of vim configurations.
 - Move between prompts: (OSC 133)
   - In Tmux: Ctrl + Alt + k/j
   - Outside Tmux (WezTerm setting): Shift + Up/Down
+- Copy to clipboard: (OSC 52)
+  - `osc52copy`, `cppath`, `cpfile` command
+  - Ctrl + o to copy the current command
 
 ### Neovim
 
 - Yank registers synchronised with tmux. Yank from neovim and paste on tmux. Copy from tmux and paste on neovim.
+- Copy to clipboard: (OSC 52)
+  - `<space>y`
 - See more in [nvim/README.md](nvim/README.md)
 
 ### Tmux

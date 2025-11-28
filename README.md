@@ -63,7 +63,7 @@ Also, it has many versions of vim configurations.
 ## Requirements
 
 - Linux x86-64, macOS, Windows WSL2
-- Neovim v0.11.3 (make sure you use this exact version)
+- Neovim v0.11.5 (make sure you use this exact version)
 - Tmux v3.5a
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 

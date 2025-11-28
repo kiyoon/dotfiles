@@ -635,42 +635,39 @@ return {
       vim.cmd([[inoremap <F6> <Plug>(copilot-accept-word)]])
     end,
   },
-  {
-    "olimorris/codecompanion.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    opts = {
-      -- NOTE: The log_level is in `opts.opts`
-      opts = {
-        log_level = "DEBUG", -- or "TRACE"
-      },
-      strategies = {
-        chat = {
-          adapter = {
-            name = "copilot",
-            -- model = "claude-sonnet-4",
-            model = "gpt-5",
-          },
-          keymaps = {
-            send = {
-              modes = {
-                n = { "<CR>", "<C-s>" },
-                i = "<A-CR>",
-              },
-              index = 2,
-              callback = "keymaps.send",
-              description = "Send",
-            },
-          },
-        },
-      },
-    },
-  },
-
-  -- Free copilot alternative
-  -- "Exafunction/codeium.vim",
+  -- {
+  --   "olimorris/codecompanion.nvim",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-treesitter/nvim-treesitter",
+  --   },
+  --   opts = {
+  --     -- NOTE: The log_level is in `opts.opts`
+  --     opts = {
+  --       log_level = "DEBUG", -- or "TRACE"
+  --     },
+  --     strategies = {
+  --       chat = {
+  --         adapter = {
+  --           name = "copilot",
+  --           -- model = "claude-sonnet-4",
+  --           model = "gpt-5",
+  --         },
+  --         keymaps = {
+  --           send = {
+  --             modes = {
+  --               n = { "<CR>", "<C-s>" },
+  --               i = "<A-CR>",
+  --             },
+  --             index = 2,
+  --             callback = "keymaps.send",
+  --             description = "Send",
+  --           },
+  --         },
+  --       },
+  --     },
+  --   },
+  -- },
   {
     "Bryley/neoai.nvim",
     dependencies = {

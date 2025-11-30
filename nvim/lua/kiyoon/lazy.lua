@@ -696,7 +696,7 @@ return {
         models = {
           {
             name = "openai",
-            model = "gpt-4o",
+            model = "gpt-5-mini",
             params = nil,
           },
         },

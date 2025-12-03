@@ -130,7 +130,7 @@ if (($+commands[eza])); then
             case "${realpath:l}" in \
               *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.icns) \
                   # chafa --format=symbols --view-size=$preview_widthx$preview_height --scale=max "$realpath"; \
-                  chafa --format=sixel --size=${preview_width}x${preview_height} --scale=max "$realpath"; \
+                  chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max "$realpath"; \
                 ;; \
               *) \
                 bat --color=always --style=numbers --line-range=:1000 "$realpath"; \

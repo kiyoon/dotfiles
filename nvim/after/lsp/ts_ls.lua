@@ -9,6 +9,7 @@ if root == nil then
   root = vim.fs.root(0, { "tsconfig.json", "jsconfig.json", "package.json", ".git" })
 end
 
+---@type vim.lsp.Config
 return {
   root_dir = root,
   settings = {

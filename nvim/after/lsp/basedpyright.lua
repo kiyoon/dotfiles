@@ -1,3 +1,4 @@
+---@type vim.lsp.Config
 local M = {
   -- handlers = {
   --   ["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {

@@ -35,6 +35,7 @@ local function translate_and_simplify_code(diagnostics)
   end
 end
 
+---@type vim.lsp.Config
 return {
   -- https://github.com/neovim/nvim-lspconfig/pull/2984
   -- by default, biome is active only when biome.json is configured.

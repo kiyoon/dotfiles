@@ -1,19 +1,19 @@
 local lang = require("kiyoon.lang").lang
 
+---@type vim.lsp.Config
 local M = {
+  root_markers = {
+    -- "init.lua",
+    ".luarc.json",
+    ".luarc.jsonc",
+    ".luacheckrc",
+    ".stylua.toml",
+    "stylua.toml",
+    "selene.toml",
+    "selene.yml",
+    ".git",
+  },
   settings = {
-
-    root_dir = vim.fs.root(0, {
-      "init.lua",
-      ".luarc.json",
-      ".luarc.jsonc",
-      ".luacheckrc",
-      ".stylua.toml",
-      "stylua.toml",
-      "selene.toml",
-      "selene.yml",
-      ".git",
-    }),
     Lua = {
       diagnostics = {
         -- neovim development, with plenary tests
@@ -41,16 +41,16 @@ local M = {
       hint = {
         enable = true,
       },
-      -- completion = {
-      --   -- neodev
-      --   callSnippet = "Replace",
-      -- },
     },
   },
 }
 
 if lang ~= "en" then
-  M.cmd = { "lua-language-server", "--locale=pt-br" }
+  M.cmd = {
+    "lua-language-server",
+    -- "--locale=pt-br",
+    "--locale=es-419",
+  }
 end
 
 return M

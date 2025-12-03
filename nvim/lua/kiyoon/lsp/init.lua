@@ -95,7 +95,7 @@ handlers.setup()
 
 -- expand servers to include servers_attach_only
 for _, server in pairs(servers_attach_only) do
-  if not vim.tbl_contains(servers, server) then
+  if not vim.list_contains(servers, server) then
     table.insert(servers, server)
   end
 end
@@ -105,18 +105,14 @@ for _, server in pairs(servers) do
     capabilities = handlers.capabilities,
   }
 
-  server = vim.split(server, "@", {})[1]
-
-  local require_ok, conf_opts = pcall(require, "kiyoon.lsp.settings." .. server)
-  if require_ok then
-    opts = vim.tbl_deep_extend("force", conf_opts, opts)
-    -- opts = conf_opts
-  end
-
-  -- lspconfig[server].setup(opts)
-  vim.lsp.enable(server)
+  -- local require_ok, conf_opts = pcall(require, "kiyoon.lsp.settings." .. server)
+  -- if require_ok then
+  --   opts = vim.tbl_deep_extend("force", conf_opts, opts)
+  --   -- opts = conf_opts
+  -- end
   vim.lsp.config(server, opts)
 end
+vim.lsp.enable(servers)
 
 local status, wk = pcall(require, "which-key")
 if status then

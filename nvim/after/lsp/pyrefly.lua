@@ -23,6 +23,7 @@ local function translate_and_simplify_code(diagnostics)
   end
 end
 
+---@type vim.lsp.Config
 return {
   cmd = { "pyrefly", "lsp" },
   filetypes = { "python" },

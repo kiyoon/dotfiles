@@ -433,17 +433,31 @@ require("lazy").setup({
 vim.cmd([[ colorscheme tokyonight-night ]])
 vim.o.cursorline = true
 
-vim.keymap.set({ "n", "v", "o" }, "<F2>", function()
-  -- tmux previous window
-  vim.fn.system("tmux select-window -t :-")
-end, { desc = "tmux previous window" })
-vim.keymap.set({ "n", "v", "o" }, "<F3>", function()
-  -- tmux previous window
-  vim.fn.system("tmux select-window -t :-")
-end, { desc = "tmux previous window" })
-vim.keymap.set({ "n", "v", "o" }, "<F5>", function()
-  vim.fn.system("tmux select-window -t :+")
-end, { desc = "tmux next window" })
-vim.keymap.set({ "n", "v", "o" }, "<F6>", function()
-  vim.fn.system("tmux select-window -t :+")
-end, { desc = "tmux next window" })
+-- treemux is run with NVIM_APPNAME=nvim-treemux, thus is not possible to load the config files here.
+-- We add the current script directory to runtimepath and load the modules.
+
+local function get_current_script_dir()
+  -- Get information about the current script (level 2 in the call stack)
+  local info = debug.getinfo(2, "S")
+
+  -- 'source' contains the path to the script, usually prefixed with '@'
+  local script_path = info.source:sub(2)
+
+  -- Extract the directory part from the full script path
+  -- This handles both Unix-like and Windows paths
+  local path_separator = package.config:sub(1, 1) -- Get the system's path separator
+  local dir_path = script_path:match("(.*" .. path_separator .. ")")
+
+  return dir_path
+end
+
+-- Example usage:
+local current_script_directory = get_current_script_dir()
+vim.opt.runtimepath:append(current_script_directory)
+require("kiyoon.settings.keychrone_mappings")
+require("kiyoon.settings.korean_langmap")
+require("kiyoon.settings.messages_in_buffer")
+require("kiyoon.settings.tmux_window_name")
+require("kiyoon.settings.highlight_yank")
+require("kiyoon.settings.osc52")
+require("kiyoon.settings.no_lua_ts")

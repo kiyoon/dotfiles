@@ -99,10 +99,12 @@ fi
 
 ## fzf-tab completion with preview for directories, codes, and images
 
-# tmux popup window can't display images properly.
+# tmux popup window can't display images properly, thus disabled.
 # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-# apply to all command
-zstyle ':fzf-tab:*' popup-min-size 1000 20
+# zstyle ':fzf-tab:*' popup-min-size 1000 20
+
+# Make fzf-tab always use a tall popup so preview doesn't shrink
+zstyle ':fzf-tab:*' fzf-min-height 15
 
 # NOTE: by default switch-group is f1 and f2, but we need to reserve f2 for knob.
 zstyle ':fzf-tab:*' switch-group '<' '>'
@@ -114,7 +116,8 @@ if (($+commands[eza])); then
 		# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath'
 		zstyle ':fzf-tab:complete:*' fzf-preview '\
         if [[ -d "$realpath" ]]; then \
-            preview_width=$(( $(tput cols)/2 - 4 )); \
+            # preview_width=$(( $(tput cols)/2 - 4 )); \
+            preview_width=${FZF_PREVIEW_COLUMNS}; \
             if [[ $preview_width -gt 20 ]]; then \
                 eza -w $preview_width --icons=always --color=always --git-ignore "$realpath"; \
             else \
@@ -122,11 +125,12 @@ if (($+commands[eza])); then
             fi; \
         else \
             # file preview: images via chafa, others via bat \
-            preview_width=$(( $(tput cols)/2 - 5 )); \
+            preview_width=${FZF_PREVIEW_COLUMNS}; \
+            preview_height=${FZF_PREVIEW_LINES}; \
             case "${realpath:l}" in \
-              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp) \
-                  # chafa --format=symbols --size=$preview_width "$realpath"; \
-                  chafa --format=sixel --size=$preview_width "$realpath"; \
+              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.icns) \
+                  # chafa --format=symbols --view-size=$preview_widthx$preview_height --scale=max "$realpath"; \
+                  chafa --format=sixel --size=${preview_width}x${preview_height} --scale=max "$realpath"; \
                 ;; \
               *) \
                 bat --color=always --style=numbers --line-range=:1000 "$realpath"; \

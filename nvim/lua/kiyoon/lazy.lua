@@ -2722,10 +2722,10 @@ return {
           filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
         },
       },
-      max_width = 100,
-      max_height = 12,
-      max_height_window_percentage = math.huge,
-      max_width_window_percentage = math.huge,
+      -- max_width = 100,
+      -- max_height = 12,
+      max_height_window_percentage = 95,
+      max_width_window_percentage = 95,
       window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
       window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
       editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus

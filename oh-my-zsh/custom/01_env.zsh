@@ -133,7 +133,7 @@ if (($+commands[eza])); then
                   chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max "$realpath"; \
                 ;; \
               *) \
-                bat --color=always --style=numbers --line-range=:1000 "$realpath"; \
+                bat --color=always --style=numbers --line-range=:999 "$realpath"; \
                 ;; \
             esac; \
         fi'

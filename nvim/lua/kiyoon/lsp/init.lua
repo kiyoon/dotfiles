@@ -1,5 +1,12 @@
 local notify = require("kiyoon.notify").notify
 
+-- remove default keymaps to use "gr"
+vim.keymap.del({ "n" }, "grr")
+vim.keymap.del({ "n" }, "gra")
+vim.keymap.del({ "n" }, "gri")
+vim.keymap.del({ "n" }, "grn")
+vim.keymap.del({ "n" }, "grt")
+
 local servers = {
   "lua_ls",
   "html",
@@ -120,3 +127,14 @@ if status then
     { "<space>p", group = "LS[P] (language server)" },
   })
 end
+
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   callback = function(args)
+--     -- vim.keymap.del("n", "grr", { buffer = args.buf })
+--     vim.keymap.del({ "n" }, "grr")
+--     vim.keymap.del({ "n" }, "gra")
+--     vim.keymap.del({ "n" }, "gri")
+--     vim.keymap.del({ "n" }, "grn")
+--     vim.keymap.del({ "n" }, "grt")
+--   end,
+-- })

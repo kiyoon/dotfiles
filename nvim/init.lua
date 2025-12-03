@@ -241,12 +241,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- remove default keymaps to use "gr"
-vim.keymap.del({ "n" }, "grr")
-vim.keymap.del({ "n" }, "gra")
-vim.keymap.del({ "n" }, "gri")
-vim.keymap.del({ "n" }, "grn")
-
 vim.filetype.add({
   filename = {
     ["skhdrc"] = "skhd",
@@ -295,3 +289,14 @@ vim.g.clipboard = {
   },
   cache_enabled = 0,
 }
+
+-- Prefer lua_ls semantic highlighting over treesitter
+-- See nvim/syntax/README.md
+local ts_stop_group = vim.api.nvim_create_augroup("lua_treesitter_stop", { clear = true })
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = { "lua" },
+  callback = function()
+    vim.treesitter.stop()
+  end,
+  group = ts_stop_group,
+})

@@ -43,6 +43,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
 
   brew install jq
   brew install viu
+  brew install chafa
   brew install bat
   brew install bottom
   brew install dust
@@ -201,6 +202,46 @@ else
     chmod +x "$INSTALL_DIR/bin/hx"
   else
     echo "hx already installed at $(which hx). Skipping.."
+  fi
+
+  # install chafa from https://hpjansson.org/chafa/releases/static/
+  if ! command -v chafa &>/dev/null; then
+    TEMPDIR=$(mktemp -d)
+    cd "$TEMPDIR" || { echo "Failure"; exit 1; }
+
+    # Pick latest x86_64 Linux static build from:
+    # https://hpjansson.org/chafa/releases/static/
+    CHAFA_FILE=$(
+      curl -s https://hpjansson.org/chafa/releases/static/ \
+        | grep -o 'chafa-[0-9.]*-1-x86_64-linux-gnu\.tar\.gz' \
+        | sort -V \
+        | tail -n 1
+    )
+
+    if [ -z "$CHAFA_FILE" ]; then
+      echo "Could not detect latest chafa static binary URL. Skipping chafa install."
+      rm -rf "$TEMPDIR"
+    else
+      echo "Downloading chafa static binary: $CHAFA_FILE"
+      wget "https://hpjansson.org/chafa/releases/static/$CHAFA_FILE"
+
+      tar xzf "$CHAFA_FILE"
+
+      # Find the chafa binary in the extracted tree
+      CHAFA_BIN=$(find . -type f -name chafa -perm -u+x | head -n 1)
+
+      if [ -z "$CHAFA_BIN" ]; then
+        echo "Could not find chafa binary in archive. Skipping chafa install."
+      else
+        mkdir -p "$INSTALL_DIR/bin"
+        install -m 755 "$CHAFA_BIN" "$INSTALL_DIR/bin/chafa"
+        echo "chafa installed at $INSTALL_DIR/bin/chafa"
+      fi
+
+      rm -rf "$TEMPDIR"
+    fi
+  else
+    echo "chafa already installed at $(which chafa). Skipping.."
   fi
 fi
 

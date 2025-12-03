@@ -20,47 +20,8 @@ vim.o.updatetime = 500
 vim.o.wrap = false
 vim.o.laststatus = 3 -- global status line because we have a header window
 
--- Better Korean mapping in normal mode. It's not perfect
-vim.o.langmap =
-  "ㅁa,ㅠb,ㅊc,ㅇd,ㄷe,ㄹf,ㅎg,ㅗh,ㅑi,ㅓj,ㅏk,ㅣl,ㅡm,ㅜn,ㅐo,ㅔp,ㅂq,ㄱr,ㄴs,ㅅt,ㅕu,ㅍv,ㅈw,ㅌx,ㅛy,ㅋz"
 -- Faster filetype detection for neovim
 vim.g.do_filetype_lua = 1
-
--- Add :Messages command to open messages in a buffer. Useful for debugging.
--- Better than the default :messages
-local function open_messages_in_buffer(args)
-  if Bufnr_messages == nil or vim.fn.bufexists(Bufnr_messages) == 0 then
-    -- Create a temporary buffer
-    Bufnr_messages = vim.api.nvim_create_buf(false, true)
-  end
-  -- Create a split and open the buffer
-  vim.cmd([[sb]] .. Bufnr_messages)
-  -- vim.cmd "botright 10new"
-  vim.bo.modifiable = true
-  vim.api.nvim_buf_set_lines(Bufnr_messages, 0, -1, false, {})
-  vim.cmd("put = execute('messages')")
-  vim.bo.modifiable = false
-
-  -- No need for below because we created a temporary buffer
-  -- vim.bo.modified = false
-end
-
-vim.api.nvim_create_user_command("Messages", open_messages_in_buffer, {})
-
-vim.keymap.set({ "n", "v", "o" }, "<F2>", function()
-  -- tmux previous window
-  vim.fn.system("tmux select-window -t :-")
-end, { desc = "tmux previous window" })
-vim.keymap.set({ "n", "v", "o" }, "<F3>", function()
-  -- tmux previous window
-  vim.fn.system("tmux select-window -t :-")
-end, { desc = "tmux previous window" })
-vim.keymap.set({ "n", "v", "o" }, "<F5>", function()
-  vim.fn.system("tmux select-window -t :+")
-end, { desc = "tmux next window" })
-vim.keymap.set({ "n", "v", "o" }, "<F6>", function()
-  vim.fn.system("tmux select-window -t :+")
-end, { desc = "tmux next window" })
 
 -- Align CSV columns. Much faster than rainbow_csv
 -- https://stackoverflow.com/questions/51471554/align-columns-in-comma-separated-file
@@ -183,15 +144,10 @@ vim.keymap.set({ "n", "x" }, "J", "<nop>", { silent = true, noremap = true })
 -- use <space>J to join lines
 vim.keymap.set({ "n", "x" }, "<space>J", "J", { silent = true, noremap = true })
 
--- tmux-window-name
--- NOTE: use /usr/bin/python3 because libtmux is intalled in system python
-vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
-  callback = function()
-    if vim.env.TMUX_PLUGIN_MANAGER_PATH then
-      vim.uv.spawn(
-        "/usr/bin/python3",
-        { args = { vim.env.TMUX_PLUGIN_MANAGER_PATH .. "/tmux-window-name/scripts/rename_session_windows.py" } }
-      )
-    end
-  end,
-})
+require("kiyoon.settings.keychrone_mappings")
+require("kiyoon.settings.korean_langmap")
+require("kiyoon.settings.messages_in_buffer")
+require("kiyoon.settings.tmux_window_name")
+require("kiyoon.settings.highlight_yank")
+require("kiyoon.settings.osc52")
+require("kiyoon.settings.no_lua_ts")

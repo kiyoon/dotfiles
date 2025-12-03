@@ -93,37 +93,46 @@ bindkey "^[OH" beginning-of-line
 if [[ "$TERM" == "wezterm" ]]; then
 	if [[ -z "$TERM_PROGRAM" ]]; then
 		export TERM_PROGRAM=WezTerm
-		export TERM_PROGRAM_VERSION=20230712-072601-f4abf8fd
+		export TERM_PROGRAM_VERSION=20251111-071056-118802c2
 	fi
 fi
 
-## fzf-tab completion
+## fzf-tab completion with preview for directories, codes, and images
 
-# tmux popup
-zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+# tmux popup window can't display images properly.
+# zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 # apply to all command
 zstyle ':fzf-tab:*' popup-min-size 1000 20
 
 # NOTE: by default switch-group is f1 and f2, but we need to reserve f2 for knob.
 zstyle ':fzf-tab:*' switch-group '<' '>'
 
-
-# completion
+# PERF: if image preview is slow, use "chafa --format=symbols"
 if (($+commands[eza])); then
 	if (($+commands[bat])); then
 		# Preview on cd with eza
 		# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath'
 		zstyle ':fzf-tab:complete:*' fzf-preview '\
-			if [[ -d "$realpath" ]]; then \
-				preview_width=$(( $(tput cols)/2 - 4 )); \
-				if [[ $preview_width -gt 20 ]]; then \
-					eza -w $preview_width --icons=always --color=always --git-ignore "$realpath"; \
-				else \
-					eza -w $preview_width --color=always --git-ignore "$realpath"; \
-				fi; \
-			else \
-				bat --color=always --style=numbers --line-range=:1000 "$realpath"; \
-			fi'
+        if [[ -d "$realpath" ]]; then \
+            preview_width=$(( $(tput cols)/2 - 4 )); \
+            if [[ $preview_width -gt 20 ]]; then \
+                eza -w $preview_width --icons=always --color=always --git-ignore "$realpath"; \
+            else \
+                eza -w $preview_width --color=always --git-ignore "$realpath"; \
+            fi; \
+        else \
+            # file preview: images via chafa, others via bat \
+            preview_width=$(( $(tput cols)/2 - 5 )); \
+            case "${realpath:l}" in \
+              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp) \
+                  # chafa --format=symbols --size=$preview_width "$realpath"; \
+                  chafa --format=sixel --size=$preview_width "$realpath"; \
+                ;; \
+              *) \
+                bat --color=always --style=numbers --line-range=:1000 "$realpath"; \
+                ;; \
+            esac; \
+        fi'
 	fi
 fi
 

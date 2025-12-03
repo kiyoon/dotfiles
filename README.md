@@ -64,7 +64,7 @@ Also, it has many versions of vim configurations.
 
 - Linux x86-64, macOS, Windows WSL2
 - Neovim v0.11.5 (make sure you use this exact version)
-- Tmux v3.5a
+- Tmux v3.6
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
 

@@ -16,7 +16,6 @@ local servers = {
   -- "eslint",
   "jsonls",
   "biome",
-  "basedpyright",
   -- "ty",
   -- "ruff_lsp",
   "bashls",
@@ -30,6 +29,7 @@ local servers = {
 local servers_attach_only = {
   -- "ty",
   -- "pyrefly",
+  "basedpyright",
 }
 
 local settings = {

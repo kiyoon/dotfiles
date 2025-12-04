@@ -18,6 +18,7 @@ local servers = {
   "biome",
   "basedpyright",
   -- "ty",
+  -- "pyrefly",
   -- "ruff_lsp",
   "bashls",
   "yamlls",
@@ -27,10 +28,7 @@ local servers = {
   -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
 }
 
-local servers_attach_only = {
-  -- "ty",
-  -- "pyrefly",
-}
+local servers_attach_only = {}
 
 local settings = {
   ui = {

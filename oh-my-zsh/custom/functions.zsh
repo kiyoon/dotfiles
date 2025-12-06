@@ -190,7 +190,7 @@ tgz() {
 		# strip the trailing slash if it exists
         local name=$1
         [[ $name == */ ]] && name=${name%/}
-		outfile="$name.tar.zst"
+		outfile="$name.tar.gz"
 		infiles=("$name")
 	else
 		outfile="$1"

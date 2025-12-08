@@ -20,7 +20,8 @@ vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
 
     -- Use uv python package manager (not vim.uv) if available
     if vim.fn.executable("uv") == 1 then
-      cmd = { "uv", "run", "--with", "libtmux", script }
+      -- avoid using cwd's pyproject.toml by passing --no-project because tmux-window-name is irrelevant to current project
+      cmd = { "uv", "run", "--no-project", "--with", "libtmux", script }
     else
       -- NOTE: use /usr/bin/python3 because libtmux is installed in system python
       cmd = { "/usr/bin/python3", script }

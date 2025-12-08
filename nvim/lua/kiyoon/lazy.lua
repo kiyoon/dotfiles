@@ -980,6 +980,10 @@ return {
     -- "kiyoon/nvim-treesitter-textobjects",
     branch = "main",
     dev = nvim_treesitter_textobjects_dev,
+    init = function()
+      -- disable vim's default python textobjects to avoid conflicts
+      vim.g.no_python_maps = true
+    end,
     config = function()
       require("kiyoon.ts_textobjs_main")
     end,

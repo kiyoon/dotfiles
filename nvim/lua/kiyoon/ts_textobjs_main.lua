@@ -88,8 +88,6 @@ local select_keymaps = {
   is = "@statement.outer",
   aS = "@toplevel",
   ar = { query = "@start", query_group = "aerial" },
-  it = "@jsx_element.inner",
-  at = "@jsx_element.outer",
 }
 
 for lhs, query in pairs(select_keymaps) do
@@ -120,7 +118,6 @@ local swap_next = {
   [")l"] = "@class.outer",
   [")s"] = "@statement.outer",
   [")A"] = "@attribute.outer",
-  [")t"] = "@jsx_element.outer",
 }
 local swap_prev = {
   ["(m"] = "@function.outer",
@@ -130,7 +127,6 @@ local swap_prev = {
   ["(l"] = "@class.outer",
   ["(s"] = "@statement.outer",
   ["(A"] = "@attribute.outer",
-  ["(t"] = "@jsx_element.outer",
 }
 
 for lhs, query in pairs(swap_next) do
@@ -162,7 +158,6 @@ local move_next_start = {
   ["]n"] = "@number.inner",
   ["]g"] = "@assignment.inner",
   ["]l"] = "@class.outer",
-  ["]t"] = "@jsx_element.outer",
   ["]]m"] = "@function.inner",
   ["]]f"] = "@call.inner",
   ["]]d"] = "@conditional.inner",
@@ -170,7 +165,6 @@ local move_next_start = {
   ["]]a"] = "@parameter.inner",
   ["]]b"] = "@block.inner",
   ["]]l"] = "@class.inner",
-  ["]]t"] = "@jsx_element.inner",
 }
 
 local move_next_end = {
@@ -185,7 +179,6 @@ local move_next_end = {
   ["]L"] = "@class.outer",
   ["]N"] = "@number.inner",
   ["]G"] = "@assignment.inner",
-  ["]T"] = "@jsx_element.outer",
   ["]]M"] = "@function.inner",
   ["]]F"] = "@call.inner",
   ["]]D"] = "@conditional.inner",
@@ -193,7 +186,6 @@ local move_next_end = {
   ["]]A"] = "@parameter.inner",
   ["]]B"] = "@block.inner",
   ["]]L"] = "@class.inner",
-  ["]]T"] = "@jsx_element.inner",
 }
 
 local move_prev_start = {
@@ -208,7 +200,6 @@ local move_prev_start = {
   ["[l"] = "@class.outer",
   ["[n"] = "@number.inner",
   ["[g"] = "@assignment.inner",
-  ["[t"] = "@jsx_element.outer",
   ["[[m"] = "@function.inner",
   ["[[f"] = "@call.inner",
   ["[[d"] = "@conditional.inner",
@@ -216,7 +207,6 @@ local move_prev_start = {
   ["[[a"] = "@parameter.inner",
   ["[[b"] = "@block.inner",
   ["[[l"] = "@class.inner",
-  ["[[t"] = "@jsx_element.inner",
 }
 
 local move_prev_end = {
@@ -231,7 +221,6 @@ local move_prev_end = {
   ["[L"] = "@class.outer",
   ["[N"] = "@number.inner",
   ["[G"] = "@assignment.inner",
-  ["[T"] = "@jsx_element.outer",
   ["[[M"] = "@function.inner",
   ["[[F"] = "@call.inner",
   ["[[D"] = "@conditional.inner",
@@ -239,7 +228,6 @@ local move_prev_end = {
   ["[[A"] = "@parameter.inner",
   ["[[B"] = "@block.inner",
   ["[[L"] = "@class.inner",
-  ["[[T"] = "@jsx_element.inner",
 }
 
 for lhs, query in pairs(move_next_start) do

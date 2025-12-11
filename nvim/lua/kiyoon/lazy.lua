@@ -994,18 +994,6 @@ return {
     config = function()
       require("kiyoon.ts_textobjs_main")
     end,
-    dependencies = {
-      {
-        "mawkler/jsx-element.nvim",
-        ft = { "typescriptreact", "javascriptreact", "javascript" },
-        opts = {
-          keymaps = {
-            enable = false,
-            jsx_element = "t",
-          },
-        },
-      },
-    },
   },
   "RRethy/nvim-treesitter-endwise",
   {

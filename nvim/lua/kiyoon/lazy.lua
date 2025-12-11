@@ -981,9 +981,15 @@ return {
     branch = "main",
     dev = nvim_treesitter_textobjects_dev,
     init = function()
-      -- disable vim's default textobjects to avoid conflicts
-      -- vim.g.no_python_maps = true
+      -- Disable entire built-in ftplugin mappings to avoid conflicts.
+      -- See https://github.com/neovim/neovim/tree/master/runtime/ftplugin for built-in ftplugins.
       vim.g.no_plugin_maps = true
+
+      -- Or, disable built-in vim keymaps to avoid conflicts (add as you like)
+      -- vim.g.no_python_maps = true
+      -- vim.g.no_ruby_maps = true
+      -- vim.g.no_rust_maps = true
+      -- vim.g.no_go_maps = true
     end,
     config = function()
       require("kiyoon.ts_textobjs_main")

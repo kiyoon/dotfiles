@@ -210,3 +210,18 @@ hs.hotkey.bind(hotkey, "T", function()
     0.1 -- check every 100ms
   )
 end)
+
+-- Mouse middle click simulation (for testing purposes)
+local eventtap = hs.eventtap
+local mouse = hs.mouse
+local eventTypes = eventtap.event.types
+
+hs.hotkey.bind(hotkey, "m", function()
+  local newEvent = eventtap.event.newMouseEvent(eventTypes.otherMouseDown, mouse.absolutePosition(), "center")
+  newEvent:post()
+  -- Wait a short moment to simulate a click
+  hs.timer.usleep(10000) -- 10 milliseconds
+  newEvent = eventtap.event.newMouseEvent(eventTypes.otherMouseUp, mouse.absolutePosition(), "center")
+  newEvent:post()
+  return true -- block original click
+end)

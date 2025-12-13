@@ -145,7 +145,20 @@ end)
 
 local hotkey = { "ctrl", "shift", "cmd" }
 
-local function capture_current_display_to_clipboard()
+local function downscale_to_max_height(img, max_height)
+  local sz = img:size()
+  if sz.h <= max_height then
+    return img
+  end
+
+  local scale = max_height / sz.h
+  local w = math.floor(sz.w * scale + 0.5)
+
+  return img:bitmapRepresentation({ h = max_height, w = w })
+end
+
+---@param max_height number?
+local function capture_current_display_to_clipboard(max_height)
   -- Get focused window
   local win = hs.window.focusedWindow()
   if not win then
@@ -167,6 +180,13 @@ local function capture_current_display_to_clipboard()
     return nil
   end
 
+  if max_height ~= nil then
+    local sz = img:size() -- { w = ..., h = ... }
+    if sz.h > max_height then
+      img = downscale_to_max_height(img, max_height)
+    end
+  end
+
   -- Copy to clipboard
   hs.pasteboard.writeObjects(img)
   hs.alert.show("📸 Captured " .. screen:name())
@@ -176,7 +196,7 @@ end
 
 hs.hotkey.bind(hotkey, "T", function()
   -- Step 1: Capture current display
-  capture_current_display_to_clipboard()
+  capture_current_display_to_clipboard(720)
 
   -- Step 2: Launch Google Chrome
   hs.application.launchOrFocus("Google Chrome")

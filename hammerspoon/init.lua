@@ -194,6 +194,33 @@ local function capture_current_display_to_clipboard(max_height)
   return win, img
 end
 
+local function chromeIsLoaded()
+  local ok, loading = hs.osascript.applescript([[
+    tell application "Google Chrome"
+      return loading of active tab of front window
+    end tell
+  ]])
+  return ok and (loading == false)
+end
+
+--- Run `onLoaded()` as soon as the page finishes loading
+---@param onLoaded function
+---@param timeoutSeconds number?
+local function waitForChromeLoad(onLoaded, timeoutSeconds)
+  local t = hs.timer.waitUntil(chromeIsLoaded, function()
+    if onLoaded then
+      onLoaded()
+    end
+  end, 0.05) -- check every 50ms  [oai_citation:3‡Hammerspoon](https://www.hammerspoon.org/docs/hs.timer.html)
+
+  -- Optional: fail-safe timeout
+  if timeoutSeconds then
+    hs.timer.doAfter(timeoutSeconds, function()
+      t:stop()
+    end)
+  end
+end
+
 hs.hotkey.bind(hotkey, "T", function()
   -- Step 1: Capture current display
   capture_current_display_to_clipboard(720)
@@ -213,24 +240,34 @@ hs.hotkey.bind(hotkey, "T", function()
         win:focus()
         -- Step 4: New tab
         hs.eventtap.keyStroke({ "cmd" }, "t", 0)
-        hs.timer.doAfter(0.3, function()
+        -- don't need to wait for the new tab to load fully
+        hs.timer.doAfter(0.1, function()
           -- Step 5: Go to Google Translate
           hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&op=images")
           hs.eventtap.keyStroke({}, "return", 0)
-          hs.timer.doAfter(1.0, function()
-            -- Step 6: Paste clipboard (image/text)
+          -- Step 6: Wait until page loads
+          waitForChromeLoad(function()
+            -- Step 7: Paste clipboard (image/text)
+            -- in case user changed focus while loading
+            -- hs.application.launchOrFocus("Google Chrome")
+            win:focus()
             hs.eventtap.keyStroke({ "cmd" }, "v", 0)
             hs.alert.show("🪄 Pasted into Google Translate")
-          end)
-          -- In case the first paste doesn't work, try again
-          hs.timer.doAfter(1.5, function()
-            hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-            hs.alert.show("🪄 Pasted into Google Translate (2nd try)")
-          end)
-          hs.timer.doAfter(2.5, function()
-            hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-            hs.alert.show("🪄 Pasted into Google Translate (3rd try)")
-          end)
+          end, 10)
+          -- hs.timer.doAfter(1.0, function()
+          --   -- Step 6: Paste clipboard (image/text)
+          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
+          --   hs.alert.show("🪄 Pasted into Google Translate")
+          -- end)
+          -- -- In case the first paste doesn't work, try again
+          -- hs.timer.doAfter(1.5, function()
+          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
+          --   hs.alert.show("🪄 Pasted into Google Translate (2nd try)")
+          -- end)
+          -- hs.timer.doAfter(2.5, function()
+          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
+          --   hs.alert.show("🪄 Pasted into Google Translate (3rd try)")
+          -- end)
         end)
       else
         hs.alert.show("⚠️ Chrome window not found")

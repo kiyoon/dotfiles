@@ -143,138 +143,11 @@ end)
 -- 3. Open a new tab to Google Translate
 -- 4. Paste from clipboard (image/text)
 
-local hotkey = { "ctrl", "shift", "cmd" }
-
-local function downscale_to_max_height(img, max_height)
-  local sz = img:size()
-  if sz.h <= max_height then
-    return img
-  end
-
-  local scale = max_height / sz.h
-  local w = math.floor(sz.w * scale + 0.5)
-
-  return img:bitmapRepresentation({ h = max_height, w = w })
-end
-
----@param max_height number?
-local function capture_current_display_to_clipboard(max_height)
-  -- Get focused window
-  local win = hs.window.focusedWindow()
-  if not win then
-    hs.alert.show("❌ No focused window found.")
-    return nil
-  end
-
-  -- Get the display that window is on
-  local screen = win:screen()
-  if not screen then
-    hs.alert.show("❌ Could not determine screen.")
-    return nil
-  end
-
-  -- Capture the full screen
-  local img = screen:snapshot()
-  if not img then
-    hs.alert.show("❌ Screenshot failed (check Screen Recording permission).")
-    return nil
-  end
-
-  if max_height ~= nil then
-    local sz = img:size() -- { w = ..., h = ... }
-    if sz.h > max_height then
-      img = downscale_to_max_height(img, max_height)
-    end
-  end
-
-  -- Copy to clipboard
-  hs.pasteboard.writeObjects(img)
-  hs.alert.show("📸 Captured " .. screen:name())
-
-  return win, img
-end
-
-local function chromeIsLoaded()
-  local ok, loading = hs.osascript.applescript([[
-    tell application "Google Chrome"
-      return loading of active tab of front window
-    end tell
-  ]])
-  return ok and (loading == false)
-end
-
---- Run `onLoaded()` as soon as the page finishes loading
----@param onLoaded function
----@param timeoutSeconds number?
-local function waitForChromeLoad(onLoaded, timeoutSeconds)
-  local t = hs.timer.waitUntil(chromeIsLoaded, function()
-    if onLoaded then
-      onLoaded()
-    end
-  end, 0.05) -- check every 50ms  [oai_citation:3‡Hammerspoon](https://www.hammerspoon.org/docs/hs.timer.html)
-
-  -- Optional: fail-safe timeout
-  if timeoutSeconds then
-    hs.timer.doAfter(timeoutSeconds, function()
-      t:stop()
-    end)
-  end
-end
-
-hs.hotkey.bind(hotkey, "T", function()
-  -- Step 1: Capture current display
-  capture_current_display_to_clipboard(720)
-
-  -- Step 2: Launch Google Chrome
-  hs.application.launchOrFocus("Google Chrome")
-
-  -- Step 3: Wait until Chrome is active, then automate
-  hs.timer.waitUntil(
-    function()
-      return hs.application.frontmostApplication() and hs.application.frontmostApplication():name() == "Google Chrome"
-    end,
-    function()
-      local chrome = hs.application.frontmostApplication()
-      local win = chrome:mainWindow()
-      if win then
-        win:focus()
-        -- Step 4: New tab
-        hs.eventtap.keyStroke({ "cmd" }, "t", 0)
-        -- don't need to wait for the new tab to load fully
-        hs.timer.doAfter(0.1, function()
-          -- Step 5: Go to Google Translate
-          hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&op=images")
-          hs.eventtap.keyStroke({}, "return", 0)
-          -- Step 6: Wait until page loads
-          waitForChromeLoad(function()
-            -- Step 7: Paste clipboard (image/text)
-            -- in case user changed focus while loading
-            -- hs.application.launchOrFocus("Google Chrome")
-            win:focus()
-            hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-            hs.alert.show("🪄 Pasted into Google Translate")
-          end, 10)
-          -- hs.timer.doAfter(1.0, function()
-          --   -- Step 6: Paste clipboard (image/text)
-          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-          --   hs.alert.show("🪄 Pasted into Google Translate")
-          -- end)
-          -- -- In case the first paste doesn't work, try again
-          -- hs.timer.doAfter(1.5, function()
-          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-          --   hs.alert.show("🪄 Pasted into Google Translate (2nd try)")
-          -- end)
-          -- hs.timer.doAfter(2.5, function()
-          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-          --   hs.alert.show("🪄 Pasted into Google Translate (3rd try)")
-          -- end)
-        end)
-      else
-        hs.alert.show("⚠️ Chrome window not found")
-      end
-    end,
-    0.1 -- check every 100ms
-  )
+hs.loadSpoon("TranslateScreen")
+---@type TranslateScreen
+local translate_screen = spoon.TranslateScreen
+hs.hotkey.bind({ "ctrl", "shift", "cmd" }, "T", function()
+  translate_screen:screenshotAndTranslate({ max_height = 720 })
 end)
 
 -- Mouse middle click simulation (for testing purposes)
@@ -282,6 +155,7 @@ local eventtap = hs.eventtap
 local mouse = hs.mouse
 local eventTypes = eventtap.event.types
 
+local hotkey = { "ctrl", "shift", "cmd" }
 hs.hotkey.bind(hotkey, "m", function()
   local newEvent = eventtap.event.newMouseEvent(eventTypes.otherMouseDown, mouse.absolutePosition(), "center")
   newEvent:post()

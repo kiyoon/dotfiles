@@ -3,7 +3,7 @@ import time
 import subprocess
 
 # 1️⃣ Take a screenshot and copy directly to clipboard
-subprocess.Popen("scrot - | xclip -selection clipboard -t image/png -i", shell=True)
+subprocess.Popen("scrot - | convert png:- -resize '1280x720>' png:- | xclip -selection clipboard -t image/png -i", shell=True)
 
 # 2️⃣ Focus or open Chrome
 chrome_running = os.system("wmctrl -lx | grep -q 'google-chrome.Google-chrome'") == 0

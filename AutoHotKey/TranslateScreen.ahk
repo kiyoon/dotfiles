@@ -26,7 +26,8 @@ ScreenshotAndTranslate(maxHeight := "") {
     }
 
     ; 4) Wait until the address bar URL matches (navigation barrier)
-    if !WaitChromeUrlContains("translate.google.com", 5, clipImage) {
+    ; when it's fully loaded, the URL changes from op=images to op=translate
+    if !WaitChromeUrlContains("op=translate", 5, clipImage) {
         ; Fallback: small delay
         Sleep 300
     }

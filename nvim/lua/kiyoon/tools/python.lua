@@ -143,52 +143,54 @@ end
 
 ---@param winnr integer?
 M.toggle_ruff_noqa = function(winnr)
-  winnr = winnr or vim.api.nvim_get_current_win()
-  local bufnr = vim.api.nvim_win_get_buf(winnr)
-  local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
+  utils.make_dot_repeatable(function()
+    winnr = winnr or vim.api.nvim_get_current_win()
+    local bufnr = vim.api.nvim_win_get_buf(winnr)
+    local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
 
-  -- 1. If there is an "# noqa: " comment, remove it.
-  local comment_node = get_line_comment_node(winnr)
-  if comment_node then
-    if remove_comment_startswith(bufnr, comment_node, "noqa: ") then
-      return
-    end
-  end
-
-  -- 2. If not, add "# noqa " comment with existing ruff error codes.
-  M.run_ruff(bufnr)
-
-  if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
-    notify("No ruff error on current line", vim.log.levels.ERROR)
-    return
-  end
-
-  local codes = {}
-  local code_exists = {}
-
-  for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
-    if current_line == ruff_output["noqa_row"] then
-      if not code_exists[ruff_output["code"]] then
-        table.insert(codes, ruff_output["code"])
-        code_exists[ruff_output["code"]] = true
+    -- 1. If there is an "# noqa: " comment, remove it.
+    local comment_node = get_line_comment_node(winnr)
+    if comment_node then
+      if remove_comment_startswith(bufnr, comment_node, "noqa: ") then
+        return
       end
     end
-  end
 
-  if #codes == 0 then
-    notify("No ruff error on current line", vim.log.levels.ERROR)
-    return
-  end
+    -- 2. If not, add "# noqa " comment with existing ruff error codes.
+    M.run_ruff(bufnr)
 
-  local codes_concat = table.concat(codes, " ")
-  local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
-  vim.api.nvim_buf_set_lines(
-    bufnr,
-    current_line - 1,
-    current_line,
-    false,
-    { line_content .. "  # noqa: " .. codes_concat }
-  )
+    if bufnr_to_ruff_per_line_multiline[bufnr][current_line] == nil then
+      notify("No ruff error on current line", vim.log.levels.ERROR)
+      return
+    end
+
+    local codes = {}
+    local code_exists = {}
+
+    for _, ruff_output in ipairs(bufnr_to_ruff_per_line_multiline[bufnr][current_line]) do
+      if current_line == ruff_output["noqa_row"] then
+        if not code_exists[ruff_output["code"]] then
+          table.insert(codes, ruff_output["code"])
+          code_exists[ruff_output["code"]] = true
+        end
+      end
+    end
+
+    if #codes == 0 then
+      notify("No ruff error on current line", vim.log.levels.ERROR)
+      return
+    end
+
+    local codes_concat = table.concat(codes, " ")
+    local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
+    vim.api.nvim_buf_set_lines(
+      bufnr,
+      current_line - 1,
+      current_line,
+      false,
+      { line_content .. "  # noqa: " .. codes_concat }
+    )
+  end)
 end
 
 ---@param winnr integer?
@@ -212,37 +214,39 @@ end
 
 ---@param winnr integer?
 M.toggle_pyright_ignore = function(winnr)
-  winnr = winnr or vim.api.nvim_get_current_win()
-  local bufnr = vim.api.nvim_win_get_buf(winnr)
+  utils.make_dot_repeatable(function()
+    winnr = winnr or vim.api.nvim_get_current_win()
+    local bufnr = vim.api.nvim_win_get_buf(winnr)
 
-  -- 1. If there is an "# pyright: ignore" or "# type: ignore" comment, remove it.
-  local comment_node = get_line_comment_node(winnr)
-  if comment_node then
-    if remove_comment_startswith(bufnr, comment_node, "pyright: ignore") then
-      return
+    -- 1. If there is an "# pyright: ignore" or "# type: ignore" comment, remove it.
+    local comment_node = get_line_comment_node(winnr)
+    if comment_node then
+      if remove_comment_startswith(bufnr, comment_node, "pyright: ignore") then
+        return
+      end
+      if remove_comment_startswith(bufnr, comment_node, "type: ignore") then
+        return
+      end
     end
-    if remove_comment_startswith(bufnr, comment_node, "type: ignore") then
-      return
+
+    -- 2. If not, add "# pyright: ignore[...]" comment with existing pyright error codes.
+    local diagnostics = get_pyright_diagnostics_current_line(winnr)
+
+    local codes = {}
+    for _, diagnostic in ipairs(diagnostics) do
+      codes[diagnostic.code] = true -- make sure codes are unique
     end
-  end
+    local codes_list = vim.tbl_keys(codes)
+    local codes_concat = table.concat(codes_list, ", ")
+    local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
+    local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
+    local comment = "# pyright: ignore"
+    if #codes_list ~= 0 then
+      comment = comment .. "[" .. codes_concat .. "]"
+    end
 
-  -- 2. If not, add "# pyright: ignore[...]" comment with existing pyright error codes.
-  local diagnostics = get_pyright_diagnostics_current_line(winnr)
-
-  local codes = {}
-  for _, diagnostic in ipairs(diagnostics) do
-    codes[diagnostic.code] = true -- make sure codes are unique
-  end
-  local codes_list = vim.tbl_keys(codes)
-  local codes_concat = table.concat(codes_list, ", ")
-  local current_line = vim.api.nvim_win_get_cursor(winnr)[1]
-  local line_content = vim.api.nvim_buf_get_lines(bufnr, current_line - 1, current_line, false)[1]
-  local comment = "# pyright: ignore"
-  if #codes_list ~= 0 then
-    comment = comment .. "[" .. codes_concat .. "]"
-  end
-
-  vim.api.nvim_buf_set_lines(bufnr, current_line - 1, current_line, false, { line_content .. "  " .. comment })
+    vim.api.nvim_buf_set_lines(bufnr, current_line - 1, current_line, false, { line_content .. "  " .. comment })
+  end)
 end
 
 local function notify_diff_pre(bufnr)
@@ -367,94 +371,36 @@ end
 ---@param bufnr integer? vim buffer number
 ---@param ruff_codes table|string|nil ruff code to fix, if nil, fix all
 M.ruff_fix_current_line = function(bufnr, ruff_codes)
-  if bufnr == 0 or bufnr == nil then
-    bufnr = vim.api.nvim_get_current_buf()
-  end
-
-  -- if ruff_code is a string, convert it to a table
-  if type(ruff_codes) == "string" then
-    ruff_codes = { ruff_codes }
-  end
-
-  local do_fix_code = {}
-  if ruff_codes ~= nil then
-    for _, code in pairs(ruff_codes) do
-      do_fix_code[code] = true
+  utils.make_dot_repeatable(function()
+    if bufnr == 0 or bufnr == nil then
+      bufnr = vim.api.nvim_get_current_buf()
     end
-  end
 
-  local prev_buf_str = notify_diff_pre(bufnr)
-  local num_fixed = 0
-  local current_line = vim.fn.line(".")
+    -- if ruff_code is a string, convert it to a table
+    if type(ruff_codes) == "string" then
+      ruff_codes = { ruff_codes }
+    end
 
-  -- PERF: this runs ruff multiple times until it doesn't find any fix
-  -- This can be slow but it's the easiest way to implement it
-  -- NOTE: this will run up to 1000 times to avoid infinite loop
-  --- Apply all ruff fixes, optionally only for a specific code
-  repeat
-    M.run_ruff(bufnr)
-    local fixed = false
-    local ruff_outputs = bufnr_to_ruff_per_line_multiline[bufnr][current_line]
-    for _, ruff_output in ipairs(ruff_outputs) do
-      if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
-        local fix = ruff_output["fix"]
-        if fix ~= vim.NIL then
-          -- NOTE: each fix may have multiple edits
-          -- In this case, we have to reverse the order of the edits
-          -- Otherwise, the prior edits will ruin the later edits
-          local fixes_in_current_edit = utils.list_reverse(fix["edits"])
-          for _, edit in ipairs(fixes_in_current_edit) do
-            apply_ruff_fix(edit)
-          end
-          fixed = true
-          num_fixed = num_fixed + 1
-          break
-        end
+    local do_fix_code = {}
+    if ruff_codes ~= nil then
+      for _, code in pairs(ruff_codes) do
+        do_fix_code[code] = true
       end
     end
-    if fixed then
-      break
-    end
-  until not fixed or num_fixed > 1000
 
-  if num_fixed == 0 then
-    notify("No fix available.", vim.log.levels.ERROR)
-  else
-    notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
-  end
-end
+    local prev_buf_str = notify_diff_pre(bufnr)
+    local num_fixed = 0
+    local current_line = vim.fn.line(".")
 
----@param bufnr integer vim buffer number
----@param ruff_codes table|string|nil ruff code to fix, if nil, fix all
-M.ruff_fix_all = function(bufnr, ruff_codes)
-  if bufnr == 0 or bufnr == nil then
-    bufnr = vim.api.nvim_get_current_buf()
-  end
-
-  -- if ruff_code is a string, convert it to a table
-  if type(ruff_codes) == "string" then
-    ruff_codes = { ruff_codes }
-  end
-
-  local do_fix_code = {}
-  if ruff_codes ~= nil then
-    for _, code in pairs(ruff_codes) do
-      do_fix_code[code] = true
-    end
-  end
-
-  local prev_buf_str = notify_diff_pre(bufnr)
-  local num_fixed = 0
-
-  -- PERF: this runs ruff multiple times until it doesn't find any fix
-  -- This can be slow but it's the easiest way to implement it
-  -- NOTE: this will run up to 1000 times to avoid infinite loop
-  --- Apply all ruff fixes, optionally only for a specific code
-  repeat
-    M.run_ruff(bufnr)
-    local fixed = false
-    for _, ruff_line in pairs(bufnr_to_ruff_per_line_multiline[bufnr]) do
-      for _, ruff_output in ipairs(ruff_line) do
+    -- PERF: this runs ruff multiple times until it doesn't find any fix
+    -- This can be slow but it's the easiest way to implement it
+    -- NOTE: this will run up to 1000 times to avoid infinite loop
+    --- Apply all ruff fixes, optionally only for a specific code
+    repeat
+      M.run_ruff(bufnr)
+      local fixed = false
+      local ruff_outputs = bufnr_to_ruff_per_line_multiline[bufnr][current_line]
+      for _, ruff_output in ipairs(ruff_outputs) do
         if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
           local fix = ruff_output["fix"]
           if fix ~= vim.NIL then
@@ -474,14 +420,76 @@ M.ruff_fix_all = function(bufnr, ruff_codes)
       if fixed then
         break
       end
-    end
-  until not fixed or num_fixed > 1000
+    until not fixed or num_fixed > 1000
 
-  if num_fixed == 0 then
-    notify("No fix available.", vim.log.levels.ERROR)
-  else
-    notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
-  end
+    if num_fixed == 0 then
+      notify("No fix available.", vim.log.levels.ERROR)
+    else
+      notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
+    end
+  end)
+end
+
+---@param bufnr integer vim buffer number
+---@param ruff_codes table|string|nil ruff code to fix, if nil, fix all
+M.ruff_fix_all = function(bufnr, ruff_codes)
+  utils.make_dot_repeatable(function()
+    if bufnr == 0 or bufnr == nil then
+      bufnr = vim.api.nvim_get_current_buf()
+    end
+
+    -- if ruff_code is a string, convert it to a table
+    if type(ruff_codes) == "string" then
+      ruff_codes = { ruff_codes }
+    end
+
+    local do_fix_code = {}
+    if ruff_codes ~= nil then
+      for _, code in pairs(ruff_codes) do
+        do_fix_code[code] = true
+      end
+    end
+
+    local prev_buf_str = notify_diff_pre(bufnr)
+    local num_fixed = 0
+
+    -- PERF: this runs ruff multiple times until it doesn't find any fix
+    -- This can be slow but it's the easiest way to implement it
+    -- NOTE: this will run up to 1000 times to avoid infinite loop
+    --- Apply all ruff fixes, optionally only for a specific code
+    repeat
+      M.run_ruff(bufnr)
+      local fixed = false
+      for _, ruff_line in pairs(bufnr_to_ruff_per_line_multiline[bufnr]) do
+        for _, ruff_output in ipairs(ruff_line) do
+          if ruff_codes == nil or do_fix_code[ruff_output["code"]] then
+            local fix = ruff_output["fix"]
+            if fix ~= vim.NIL then
+              -- NOTE: each fix may have multiple edits
+              -- In this case, we have to reverse the order of the edits
+              -- Otherwise, the prior edits will ruin the later edits
+              local fixes_in_current_edit = utils.list_reverse(fix["edits"])
+              for _, edit in ipairs(fixes_in_current_edit) do
+                apply_ruff_fix(edit)
+              end
+              fixed = true
+              num_fixed = num_fixed + 1
+              break
+            end
+          end
+        end
+        if fixed then
+          break
+        end
+      end
+    until not fixed or num_fixed > 1000
+
+    if num_fixed == 0 then
+      notify("No fix available.", vim.log.levels.ERROR)
+    else
+      notify_diff(bufnr, prev_buf_str, num_fixed .. " fixes applied")
+    end
+  end)
 end
 
 function M.available_actions(bufnr)

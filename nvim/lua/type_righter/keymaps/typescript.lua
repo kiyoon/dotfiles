@@ -10,7 +10,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     bufmap(
       "n",
       "<space>tO",
-      require("wookayin.lib.typescript").toggle_null_or_optional,
+      require("type_righter.languages.typescript").toggle_null_or_optional,
       { remap = true, desc = "Toggle null or optional (?)" }
     )
   end,

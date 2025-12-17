@@ -1,6 +1,7 @@
+local notify = require("type_righter.notify")
 local debug = {
   enabled = false,
-  ns = vim.api.nvim_create_namespace("kiyoon_toggler_hitbox"),
+  ns = vim.api.nvim_create_namespace("type_righter_hitbox"),
 }
 
 local M = {}
@@ -46,7 +47,7 @@ M.toggle_hitbox_debug = function(get_best_capture_fn)
 
   if debug.enabled then
     -- unique augroup
-    local grp = vim.api.nvim_create_augroup("KiyoonHitboxDebug", { clear = true })
+    local grp = vim.api.nvim_create_augroup("TypeRighterHitboxDebug", { clear = true })
     vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
       group = grp,
       callback = function()
@@ -54,10 +55,10 @@ M.toggle_hitbox_debug = function(get_best_capture_fn)
       end,
     })
     update_debug_highlight(get_best_capture_fn)
-    vim.notify("Hitbox debug: ON", vim.log.levels.INFO)
+    notify.notify("Hitbox debug: ON", vim.log.levels.INFO, { title = "type-righter.nvim" })
   else
-    vim.api.nvim_del_augroup_by_name("KiyoonHitboxDebug")
-    vim.notify("Hitbox debug: OFF", vim.log.levels.INFO)
+    vim.api.nvim_del_augroup_by_name("TypeRighterHitboxDebug")
+    notify.notify("Hitbox debug: OFF", vim.log.levels.INFO, { title = "type-righter.nvim" })
   end
 end
 

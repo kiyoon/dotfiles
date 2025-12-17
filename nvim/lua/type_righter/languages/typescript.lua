@@ -1,14 +1,10 @@
+local utils = require("type_righter.utils")
+local notify = require("type_righter.notify")
+local hitbox = require("type_righter.hitbox")
 local M = {}
 
----@param fn function
-local function make_dot_repeatable(fn)
-  _G._kiyoon_toggler_last_function = fn
-  vim.o.opfunc = "v:lua._kiyoon_toggler_last_function"
-  vim.api.nvim_feedkeys("g@l", "n", false)
-end
-
 local function ts_expand_parameter_name_punct(bufnr, node, cap, r)
-  if cap ~= "name" then
+  if cap ~= "parameter.name" then
     return r
   end
   -- only safe for single-line names
@@ -44,15 +40,13 @@ local function ts_expand_parameter_name_punct(bufnr, node, cap, r)
   return r
 end
 
-local hitbox = require("wookayin.hitbox")
-
 ---@return integer?, TSNode?, vim.treesitter.Query?
 local function get_ts_query_and_root()
   local bufnr = vim.api.nvim_get_current_buf()
   local ft = vim.bo[bufnr].filetype
   local lang = vim.treesitter.language.get_lang(ft) or ft
 
-  local q = vim.treesitter.query.get(lang, "kiyoon")
+  local q = vim.treesitter.query.get(lang, "type-righter")
   if not q then
     return nil, nil, nil
   end
@@ -99,7 +93,11 @@ local function toggle_optional_marker(parameter_name_node)
 
   local srow, scol, erow, ecol = parameter_name_node:range()
   if srow ~= erow then
-    vim.notify("Optional toggle: multi-line parameter.name not supported", vim.log.levels.WARN)
+    notify.notify(
+      "Optional toggle: multi-line parameter.name not supported",
+      vim.log.levels.ERROR,
+      { title = "type-righter.nvim" }
+    )
     return
   end
 
@@ -155,10 +153,14 @@ end
 
 -- Public entry: “smart toggle”
 M.toggle_null_or_optional = function()
-  return make_dot_repeatable(function()
+  return utils.make_dot_repeatable(function()
     local node, cap, hitbox = M.get_capture_node_under_cursor()
     if not node then
-      vim.notify("Cursor not in a captured TS type/parameter.name node", vim.log.levels.WARN)
+      notify.notify(
+        "Cursor not in a captured TS type/parameter.name node",
+        vim.log.levels.ERROR,
+        { title = "type-righter.nvim" }
+      )
       return
     end
 
@@ -167,7 +169,7 @@ M.toggle_null_or_optional = function()
     elseif cap == "parameter.name" then
       toggle_optional_marker(node)
     else
-      vim.notify("Unknown capture: " .. tostring(cap), vim.log.levels.WARN)
+      notify.notify("Unknown capture: " .. tostring(cap), vim.log.levels.ERROR, { title = "type-righter.nvim" })
     end
   end)
 end

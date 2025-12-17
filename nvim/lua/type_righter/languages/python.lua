@@ -63,14 +63,20 @@ M.toggle_fstring = function()
     local char = line:sub(scol, scol)
     local is_fstring = (char == "f")
 
+    local row0 = srow - 1 -- 0-based row for API
+    local col0 = scol - 1 -- 0-based col for API
     if is_fstring then
-      vim.cmd([[normal! "_x]])
+      -- vim.cmd([[normal! "_x]])
+      vim.api.nvim_buf_set_text(0, row0, col0, row0, col0 + 1, { "" })
+
       -- if cursor is in the same line as text change
       if srow == cursor[1] then
         cursor[2] = cursor[2] - 1 -- negative offset to cursor
       end
     else
-      vim.cmd([[noautocmd normal if]])
+      -- vim.cmd([[noautocmd normal if]])
+      vim.api.nvim_buf_set_text(0, row0, col0, row0, col0, { "f" })
+
       -- if cursor is in the same line as text change
       if srow == cursor[1] then
         cursor[2] = cursor[2] + 1 -- positive offset to cursor
@@ -227,9 +233,11 @@ M.toggle_typing_none = function()
     end
     -- Find its direct children of type `type`
     ---@type TSNode?
-    local type_node = node and vim.tbl_filter(function(n)
-      return n:type() == "type"
-    end, node:named_children())[1] or nil
+    local type_node = node
+        and vim.tbl_filter(function(n)
+          return n:type() == "type"
+        end, node:named_children())[1]
+      or nil
     if not type_node then
       vim.cmd.echon([["toggle_typing_none: not in a type hint node."]])
       return

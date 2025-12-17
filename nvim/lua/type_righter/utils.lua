@@ -1,10 +1,26 @@
 local M = {}
 
----@param fn function
+-- keep a stable operatorfunc name; update only the "last fn"
+M._last = nil
+
+_G._type_righter_opfunc = function(type)
+  if M._last then
+    return M._last(type)
+  end
+end
+
+vim.go.operatorfunc = "v:lua._type_righter_opfunc"
+
+---@param fn fun(type: string)  -- operatorfunc gets a {type} arg
 function M.make_dot_repeatable(fn)
-  _G._type_righter_last_function = fn
-  vim.o.opfunc = "v:lua._type_righter_last_function"
-  vim.api.nvim_feedkeys("g@l", "n", false)
+  M._last = fn
+
+  if vim.fn.mode() == "i" then
+    -- run one normal command and return to insert automatically
+    vim.api.nvim_feedkeys(vim.keycode("<C-o>g@l"), "n", false)
+  else
+    vim.api.nvim_feedkeys(vim.keycode("g@l"), "n", false)
+  end
 end
 
 return M

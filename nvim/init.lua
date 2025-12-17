@@ -115,7 +115,7 @@ vim.g.do_filetype_lua = 1
 -- augroup END
 -- ]]
 
-require("wookayin.python_keymaps")
+require("type_righter.keymaps.python")
 require("type_righter.keymaps.rust")
 require("type_righter.keymaps.typescript")
 -- local typescript_captures = require("type_righter.languages.typescript").get_capture_node_under_cursor
@@ -161,28 +161,12 @@ vim.keymap.set("x", "<space>pF", function()
   vim.cmd([['<,'>!sql-formatter -c '{ "keywordCase": "upper" }']])
 end, { desc = "Run sql-formatter in selection" })
 
-local make_repeatable_keymap = require("wookayin.utils").make_repeatable_keymap
-local cycle_case = require("kiyoon.tools.cycle_case")
-vim.keymap.set("n", "<space>ta", make_repeatable_keymap("n", "<Plug>(cycle-case)", cycle_case), { remap = true })
+vim.keymap.set("n", "<space>ta", function()
+  require("kiyoon.tools.cycle_case")()
+end, { remap = true })
 
-vim.api.nvim_create_augroup("markdown_mappings", { clear = true })
-vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = { "markdown" },
-  callback = function()
-    local bufmap = function(mode, lhs, rhs, opts)
-      return vim.keymap.set(mode, lhs, rhs, vim.tbl_deep_extend("error", { buffer = true }, opts or {}))
-    end
-    bufmap({ "n", "x" }, "<space>tl", function()
-      require("kiyoon.tools.markdown").turn_to_link({ repeat_content = false })
-      vim.cmd("startinsert")
-    end, { remap = true, desc = "Make markdown hyperlink" })
-    bufmap({ "n", "x" }, "<space>tL", function()
-      require("kiyoon.tools.markdown").turn_to_link({ repeat_content = true })
-    end, { remap = true, desc = "Make markdown hyperlink (content repeat)" })
-  end,
-  group = "markdown_mappings",
-})
-
+require("kiyoon.settings.python_keymaps")
+require("kiyoon.settings.markdown_keymaps")
 require("kiyoon.settings.keychrone_mappings")
 require("kiyoon.settings.korean_langmap")
 require("kiyoon.settings.messages_in_buffer")

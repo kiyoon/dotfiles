@@ -25,6 +25,7 @@
 --
 
 local notify = require("kiyoon.notify").notify
+local utils = require("kiyoon.utils")
 
 local format_table = {
   snake_case = {
@@ -260,19 +261,21 @@ local get_cycle_function = function(user_formats)
   end
 
   local function action()
-    local text, row, start_col, end_col = get_current_word()
+    utils.make_dot_repeatable(function()
+      local text, row, start_col, end_col = get_current_word()
 
-    for i, format in ipairs(formats) do
-      if check_pattern(text, format.pattern) then
-        local next_i = i + 1 > #formats and 1 or i + 1
-        local apply = formats[next_i].apply
-        local standardize = format.standardize
+      for i, format in ipairs(formats) do
+        if check_pattern(text, format.pattern) then
+          local next_i = i + 1 > #formats and 1 or i + 1
+          local apply = formats[next_i].apply
+          local standardize = format.standardize
 
-        local cycled_text = apply(standardize(text))
-        vim.api.nvim_buf_set_text(0, row - 1, start_col, row - 1, end_col - 1, { cycled_text })
-        return
+          local cycled_text = apply(standardize(text))
+          vim.api.nvim_buf_set_text(0, row - 1, start_col, row - 1, end_col - 1, { cycled_text })
+          return
+        end
       end
-    end
+    end)
   end
 
   return action

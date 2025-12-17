@@ -42,14 +42,14 @@ function M.get_node_at_cursor(winnr, ignore_injections)
   local cursor_pos = { cursor[1] - 1, cursor[2] - insert_offset }
   assert(vim.treesitter.get_node, "nvim < 0.9 is unsupported.")
 
-  return vim.treesitter.get_node { pos = cursor_pos, ignore_injections = ignore_injections }
+  return vim.treesitter.get_node({ pos = cursor_pos, ignore_injections = ignore_injections })
 end
 
 ---@backport nvim-treesitter.ts_utils.get_root_for_position()
 --- (only for compatibility during migration to vim.treesitter APIs, 0.9.0+)
 ---@deprecated
 function M.get_root_for_position(line, col, root_lang_tree)
-  local parsers = require "nvim-treesitter.parsers"
+  local parsers = require("nvim-treesitter.parsers")
 
   if not root_lang_tree then
     if not parsers.has_parser() then
@@ -59,7 +59,7 @@ function M.get_root_for_position(line, col, root_lang_tree)
     root_lang_tree = parsers.get_parser()
   end
 
-  local lang_tree = root_lang_tree:language_for_range { line, col, line, col }
+  local lang_tree = root_lang_tree:language_for_range({ line, col, line, col })
 
   for _, tree in pairs(lang_tree:trees()) do
     local root = tree:root()
@@ -94,7 +94,7 @@ function M.get_vim_range(range, buf)
     -- Use the value of the last col of the previous row instead.
     erow = erow - 1
     if not buf or buf == 0 then
-      ecol = vim.fn.col { erow, "$" } - 1
+      ecol = vim.fn.col({ erow, "$" }) - 1
     else
       ecol = #vim.api.nvim_buf_get_lines(buf, erow - 1, erow, false)[1]
     end
@@ -103,5 +103,4 @@ function M.get_vim_range(range, buf)
   return srow, scol, erow, ecol
 end
 
-_G.ts_utils = M
 return M

@@ -117,6 +117,10 @@ vim.g.do_filetype_lua = 1
 
 require("wookayin.python_keymaps")
 require("wookayin.rust_keymaps")
+-- require("wookayin.typescript_keymaps")
+--
+-- local typescript_captures = require("wookayin.lib.typescript").get_capture_node_under_cursor
+-- require("wookayin.hitbox_debugger").toggle_hitbox_debug(typescript_captures)
 
 -- Convert | to │ (box drawing character)
 -- Convert │ to └

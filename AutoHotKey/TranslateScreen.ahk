@@ -4,10 +4,9 @@
 ; Hotkey: Ctrl + Shift + Alt + T
 ^+!t::ScreenshotAndTranslate(720)  ; pass 720, or "" to disable resize
 
-
 ScreenshotAndTranslate(maxHeight := "") {
     ; 1) Screenshot -> clipboard (image)
-    if !CaptureScreenToClipboard(maxHeight) {
+    if !CaptureCurrentMonitorToClipboard("active", maxHeight) {
         MsgBox "Screenshot failed."
         return
     }
@@ -32,12 +31,12 @@ ScreenshotAndTranslate(maxHeight := "") {
         Sleep 300
     }
 
-    A_Clipboard := clipImage
-    Send "{Esc}"
-    Sleep 120
-    ClickChromePage()
-    Sleep 150
-    Send "^v"
+A_Clipboard := clipImage
+Send "{Esc}"
+Sleep 120
+ClickChromePage()
+Sleep 150
+Send "^v"
 }
 
 
@@ -76,44 +75,121 @@ ClickChromePage() {
 }
 
 
-CaptureScreenToClipboard(maxHeight := "") {
-    ; Uses PowerShell to capture Primary Screen and optionally downscale by height, then SetImage() into clipboard.
-    ; This is fast and avoids temp files.
-
-    ps :=
-    (
-    '$ErrorActionPreference="Stop";' .
-    'Add-Type -AssemblyName System.Windows.Forms;' .
-    'Add-Type -AssemblyName System.Drawing;' .
-    '$b=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds;' .
-    '$bmp=New-Object System.Drawing.Bitmap $b.Width,$b.Height;' .
-    '$g=[System.Drawing.Graphics]::FromImage($bmp);' .
-    '$g.CopyFromScreen($b.Location,[System.Drawing.Point]::Empty,$b.Size);' .
-    '$g.Dispose();' .
-    (maxHeight != "" ?
-        ('$mh=' maxHeight ';' .
-         'if($bmp.Height -gt $mh){' .
-         '$scale=$mh/$bmp.Height;' .
-         '$nw=[int]($bmp.Width*$scale);' .
-         '$nh=[int]$mh;' .
-         '$bmp2=New-Object System.Drawing.Bitmap $nw,$nh;' .
-         '$g2=[System.Drawing.Graphics]::FromImage($bmp2);' .
-         '$g2.InterpolationMode=[System.Drawing.Drawing2D.InterpolationMode]::NearestNeighbor;' .
-         '$g2.DrawImage($bmp,0,0,$nw,$nh);' .
-         '$g2.Dispose();' .
-         '$bmp.Dispose();' .
-         '$bmp=$bmp2;' .
-         '}')
-        : '') .
-    '[System.Windows.Forms.Clipboard]::SetImage($bmp);' .
-    '$bmp.Dispose();'
-    )
-
-    ; Run PowerShell hidden, wait until done (this is your "clipboard is ready" barrier)
-    try {
-        RunWait 'powershell.exe -NoProfile -Sta -ExecutionPolicy Bypass -Command "' ps '"', "", "Hide"
-        return true
-    } catch {
+CaptureCurrentMonitorToClipboard(mode := "mouse", maxHeight := "") {
+    rect := GetMonitorRect(mode)
+    if !rect {
+        MsgBox "Couldn't determine monitor rect."
         return false
     }
+    return CaptureRectToClipboard(rect.L, rect.T, rect.W, rect.H, maxHeight)
+}
+
+GetMonitorRect(mode := "mouse") {
+    if (mode = "mouse") {
+        MouseGetPos &x, &y
+        return MonitorRectFromPoint(x, y)
+    } else if (mode = "active") {
+        WinGetPos &wx, &wy, &ww, &wh, "A"
+        cx := wx + ww//2
+        cy := wy + wh//2
+        return MonitorRectFromPoint(cx, cy)
+    }
+    return false
+}
+
+MonitorRectFromPoint(x, y) {
+    count := MonitorGetCount()
+    Loop count {
+        MonitorGet(A_Index, &L, &T, &R, &B)
+        if (x >= L && x < R && y >= T && y < B) {
+            return { L:L, T:T, W:(R-L), H:(B-T) }
+        }
+    }
+    return false
+}
+
+CaptureRectToClipboard(L, T, W, H, maxHeight := "") {
+    if (W <= 0 || H <= 0)
+        return false
+
+    newW := W, newH := H
+    if (maxHeight != "" && H > maxHeight) {
+        newH := maxHeight
+        newW := Round(W * (maxHeight / H))
+    }
+
+    ; Screen DC
+    hdcScreen := DllCall("user32\GetDC", "Ptr", 0, "Ptr")
+    if !hdcScreen
+        return false
+
+    ; Source DC/bitmap
+    hdcSrc := DllCall("gdi32\CreateCompatibleDC", "Ptr", hdcScreen, "Ptr")
+    hbmSrc := DllCall("gdi32\CreateCompatibleBitmap", "Ptr", hdcScreen, "Int", W, "Int", H, "Ptr")
+    obmSrc := DllCall("gdi32\SelectObject", "Ptr", hdcSrc, "Ptr", hbmSrc, "Ptr")
+
+    ; Copy from screen into source bitmap
+    SRCCOPY := 0x00CC0020
+    ok := DllCall("gdi32\BitBlt"
+        , "Ptr", hdcSrc, "Int", 0, "Int", 0, "Int", W, "Int", H
+        , "Ptr", hdcScreen, "Int", L, "Int", T
+        , "UInt", SRCCOPY)
+
+    if !ok {
+        ; cleanup
+        DllCall("gdi32\SelectObject", "Ptr", hdcSrc, "Ptr", obmSrc)
+        DllCall("gdi32\DeleteObject", "Ptr", hbmSrc)
+        DllCall("gdi32\DeleteDC", "Ptr", hdcSrc)
+        DllCall("user32\ReleaseDC", "Ptr", 0, "Ptr", hdcScreen)
+        return false
+    }
+
+    ; If no resize needed, use hbmSrc. Else StretchBlt into a new bitmap.
+    hbmFinal := hbmSrc
+    if (newW != W || newH != H) {
+        hdcDst := DllCall("gdi32\CreateCompatibleDC", "Ptr", hdcScreen, "Ptr")
+        hbmDst := DllCall("gdi32\CreateCompatibleBitmap", "Ptr", hdcScreen, "Int", newW, "Int", newH, "Ptr")
+        obmDst := DllCall("gdi32\SelectObject", "Ptr", hdcDst, "Ptr", hbmDst, "Ptr")
+
+        ; better downscale quality
+        DllCall("gdi32\SetStretchBltMode", "Ptr", hdcDst, "Int", 4) ; HALFTONE
+
+        DllCall("gdi32\StretchBlt"
+            , "Ptr", hdcDst, "Int", 0, "Int", 0, "Int", newW, "Int", newH
+            , "Ptr", hdcSrc, "Int", 0, "Int", 0, "Int", W, "Int", H
+            , "UInt", SRCCOPY)
+
+        ; restore/destroy dst dc selection
+        DllCall("gdi32\SelectObject", "Ptr", hdcDst, "Ptr", obmDst)
+        DllCall("gdi32\DeleteDC", "Ptr", hdcDst)
+
+        ; We'll put hbmDst on clipboard, and we can delete hbmSrc after
+        hbmFinal := hbmDst
+    }
+
+    ; restore src dc selection
+    DllCall("gdi32\SelectObject", "Ptr", hdcSrc, "Ptr", obmSrc)
+    DllCall("gdi32\DeleteDC", "Ptr", hdcSrc)
+    DllCall("user32\ReleaseDC", "Ptr", 0, "Ptr", hdcScreen)
+
+    ; If we created a resized bitmap, delete the original
+    if (hbmFinal != hbmSrc)
+        DllCall("gdi32\DeleteObject", "Ptr", hbmSrc)
+
+    ; Put bitmap on clipboard
+    if !DllCall("user32\OpenClipboard", "Ptr", 0) {
+        DllCall("gdi32\DeleteObject", "Ptr", hbmFinal)
+        return false
+    }
+    DllCall("user32\EmptyClipboard")
+
+    CF_BITMAP := 2
+    ; After SetClipboardData succeeds, the system owns the handle -> do NOT delete it.
+    if !DllCall("user32\SetClipboardData", "UInt", CF_BITMAP, "Ptr", hbmFinal, "Ptr") {
+        DllCall("user32\CloseClipboard")
+        DllCall("gdi32\DeleteObject", "Ptr", hbmFinal)
+        return false
+    }
+    DllCall("user32\CloseClipboard")
+    return true
 }

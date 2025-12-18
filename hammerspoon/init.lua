@@ -165,3 +165,27 @@ hs.hotkey.bind(hotkey, "m", function()
   newEvent:post()
   return true -- block original click
 end)
+
+-- Pause/Resume frontmost application
+-- This is for pausing single-player games when you need more time to read the dialogs
+local suspended = {}
+
+hs.hotkey.bind({ "ctrl", "shift", "cmd" }, "r", function()
+  local app = hs.application.frontmostApplication()
+  if not app then
+    return
+  end
+
+  local pid = app:pid()
+  local name = app:name() or "App"
+
+  if suspended[pid] then
+    hs.task.new("/bin/kill", nil, { "-CONT", tostring(pid) }):start()
+    suspended[pid] = nil
+    hs.alert.show("Resumed: " .. name)
+  else
+    hs.task.new("/bin/kill", nil, { "-STOP", tostring(pid) }):start()
+    suspended[pid] = true
+    hs.alert.show("Paused: " .. name)
+  end
+end)

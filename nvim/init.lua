@@ -165,6 +165,7 @@ vim.keymap.set("n", "<space>ta", function()
   require("kiyoon.tools.cycle_case")()
 end, { remap = true })
 
+require("kiyoon.settings.custom_filetypes")
 require("kiyoon.settings.python_keymaps")
 require("kiyoon.settings.markdown_keymaps")
 require("kiyoon.settings.keychrone_mappings")

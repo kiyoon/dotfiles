@@ -9,11 +9,10 @@ _G._type_righter_opfunc = function(type)
   end
 end
 
-vim.go.operatorfunc = "v:lua._type_righter_opfunc"
-
 ---@param fn fun(type: string)  -- operatorfunc gets a {type} arg
 function M.make_dot_repeatable(fn)
   M._last = fn
+  vim.go.operatorfunc = "v:lua._type_righter_opfunc"
 
   if vim.fn.mode() == "i" then
     -- run one normal command and return to insert automatically

@@ -17,27 +17,6 @@ M.no_paren_ts_node_types = {
   string = true,
 }
 
-M.toggle_breakpoint = function()
-  utils.make_dot_repeatable(function()
-    local pattern = "breakpoint()" -- Use python >= 3.7.
-    local line = vim.fn.getline(".") --[[@as string]]
-    line = vim.trim(line)
-    local lnum = vim.fn.line(".") ---@cast lnum integer
-
-    if vim.startswith(line, pattern) then
-      vim.cmd.normal([["_dd]]) -- delete the line without altering registers
-    else
-      local indents = string.rep(" ", vim.fn.indent(vim.fn.prevnonblank(lnum)) or 0)
-      vim.fn.append(lnum - 1, indents .. pattern)
-      vim.cmd.normal("k")
-    end
-    -- save file without any events
-    if vim.bo.modifiable and vim.bo.modified then
-      vim.cmd([[ silent! noautocmd write ]])
-    end
-  end)
-end
-
 M.toggle_fstring = function()
   utils.make_dot_repeatable(function()
     -- Credit: https://www.reddit.com/r/neovim/comments/tge2ty/python_toggle_fstring_using_treesitter/

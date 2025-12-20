@@ -19,10 +19,6 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       require("type_righter.languages.python").toggle_fstring()
     end, { remap = true, desc = "Toggle f-string" })
 
-    -- ignore ruff
-    bufmap("n", "<space>tQ", function()
-      require("type_righter.languages.python").toggle_line_comment("noqa")
-    end, { remap = true, desc = "Toggle noqa comment" })
     -- black/ruff formatting
     bufmap("n", "<space>tm", function()
       require("type_righter.languages.python").toggle_line_comment("fmt: skip")

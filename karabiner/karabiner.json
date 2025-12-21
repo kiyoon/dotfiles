@@ -4,6 +4,16 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "한/영 to F18",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "japanese_kana" },
+                                "to": [{ "key_code": "f18" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Change Won (₩) to backtick (`).",
                         "manipulators": [
                             {
@@ -309,6 +319,32 @@
                     },
                     "ignore": false,
                     "mouse_flip_vertical_wheel": true
+                },
+                {
+                    "identifiers": {
+                        "is_pointing_device": true,
+                        "product_id": 2378,
+                        "vendor_id": 1008
+                    },
+                    "ignore": false,
+                    "mouse_flip_vertical_wheel": true
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 27160,
+                        "vendor_id": 10874
+                    },
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "left_option" },
+                            "to": [{ "key_code": "left_command" }]
+                        },
+                        {
+                            "from": { "key_code": "left_command" },
+                            "to": [{ "key_code": "left_option" }]
+                        }
+                    ]
                 }
             ],
             "name": "Default profile",

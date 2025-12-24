@@ -1,7 +1,7 @@
 --- NOTE: I keep all plugins in one file, because I often want to disable half of them when I debug what plugin broke my config.
 
 local nvim_treesitter_dev = false
-local nvim_treesitter_textobjects_dev = false
+local nvim_treesitter_textobjects_dev = true
 local nvim_treesitter_context_dev = false
 local jupynium_dev = false
 local python_import_dev = false
@@ -2051,6 +2051,18 @@ return {
   },
 
   {
+    "saecki/live-rename.nvim",
+    keys = {
+      {
+        "<space>pr",
+        function()
+          require("live-rename").rename()
+        end,
+        desc = "[R]ename with live preview",
+      },
+    },
+  },
+  {
     "smjonas/inc-rename.nvim",
     keys = {
       {
@@ -2061,20 +2073,20 @@ return {
         expr = true,
         desc = "[R]ename with live preview",
       },
-      {
-        -- Rename in normal mode, like
-        -- https://blog.viktomas.com/graph/neovim-lsp-rename-normal-mode-keymaps/
-        -- but without the messy autocmd
-        -- and you can return to the command line with <C-c> and see the preview
-        "<space>pr",
-        function()
-          vim.api.nvim_feedkeys(":IncRename " .. vim.fn.expand("<cword>"), "n", false)
-          local key = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
-          vim.api.nvim_feedkeys(key, "c", false)
-          vim.api.nvim_feedkeys("b", "n", false)
-        end,
-        desc = "[R]ename in normal mode",
-      },
+      -- {
+      --   -- Rename in normal mode, like
+      --   -- https://blog.viktomas.com/graph/neovim-lsp-rename-normal-mode-keymaps/
+      --   -- but without the messy autocmd
+      --   -- and you can return to the command line with <C-c> and see the preview
+      --   "<space>pr",
+      --   function()
+      --     vim.api.nvim_feedkeys(":IncRename " .. vim.fn.expand("<cword>"), "n", false)
+      --     local key = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
+      --     vim.api.nvim_feedkeys(key, "c", false)
+      --     vim.api.nvim_feedkeys("b", "n", false)
+      --   end,
+      --   desc = "[R]ename in normal mode",
+      -- },
     },
     config = true,
   },

@@ -2,6 +2,19 @@ local notify = require("kiyoon.notify").notify
 local utils = require("kiyoon.utils")
 local M = {}
 
+-- Node types that do not require parentheses
+-- because they are not multiple statements.
+-- e.g., identifier: variable_name
+--       call: function_call()
+--       subscript: a[0]
+M.no_paren_ts_node_types = {
+  identifier = true,
+  call = true,
+  attribute = true,
+  subscript = true,
+  string = true,
+}
+
 --- replaces os.path with pathlib. Plus, some other function replacements.
 --- e.g., `os.path.join(a, b)` => `Path(a) / b`
 --- `print(a)` => `logger.info(a)`

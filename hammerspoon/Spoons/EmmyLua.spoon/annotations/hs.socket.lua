@@ -1,7 +1,7 @@
 --# selene: allow(unused_variable)
 ---@diagnostic disable: unused-local
 
--- Talk to custom protocols using asynchronous TCP sockets.
+-- Talk to custom protocols using asynchronous TCP sockets or UNIX file sockets.
 --
 -- For UDP sockets see [`hs.socket.udp`](./hs.socket.udp.html).
 --

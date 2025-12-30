@@ -61,6 +61,10 @@ fi
 if [[ -f "$HOME/.deno/env" ]]; then
     source "$HOME/.deno/env"
 fi
+# if dotnet is installed, add dotnet tools to path
+if [[ -d "$HOME/.dotnet/tools" ]]; then
+    export PATH="$HOME/.dotnet/tools:$PATH"
+fi
 
 if [[ $OSTYPE == "linux-gnu"* ]]; then
 	export TERMINFO="$HOME/.local/share/terminfo" # tmux needs this

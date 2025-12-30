@@ -77,7 +77,7 @@ function M:isRunning() end
 --  * arguments - An optional table of command line argument strings for the executable
 --
 -- Returns:
---  * An `hs.task` object
+--  * An `hs.task` object or nil if an error occurred
 --
 -- Notes:
 --  * The arguments are not processed via a shell, so you do not need to do any quoting or escaping. They are passed to the executable exactly as provided.

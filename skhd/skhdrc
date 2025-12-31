@@ -141,6 +141,10 @@ shift + alt - end : yabai -m space --create && \
 shift + alt - home : yabai -m window --space 1 && \
                    yabai -m space --focus 1
 
+shift + alt - space : yabai -m space --create && \
+                   index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
+                   yabai -m space --focus "${index}" && \
+                   open -n -a "Wezterm"
 
 # Move to another display keeping the focus
 # https://github.com/koekeishiya/yabai/issues/225

@@ -68,7 +68,7 @@ require("treesitter-modules").setup({
     -- disable = { "python", "lua" },
     -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
     disable = function(ctx)
-      local disable_langs = { "python", "javascript", "typescript" }
+      local disable_langs = { "python", "javascript", "typescript", "jsx", "tsx" }
 
       if vim.list_contains(disable_langs, ctx.language) then
         -- allow highlighting in floating buffers

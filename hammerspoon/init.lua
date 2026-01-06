@@ -150,15 +150,17 @@ local function setSource(id)
   end
 end
 
+-- Force always English in Wezterm
 local function mapOnEnterWezterm()
-  local cur = hs.keycodes.currentSourceID()
-  if cur == GUREUM_EN then
-    setSource(APPLE_EN)
-  elseif cur == GUREUM_KO then
-    setSource(APPLE_KO)
-  else
-    -- not Gureum EN/KO -> ignore
-  end
+  -- local cur = hs.keycodes.currentSourceID()
+  -- if cur == GUREUM_EN then
+  --   setSource(APPLE_EN)
+  -- elseif cur == GUREUM_KO then
+  --   setSource(APPLE_KO)
+  -- else
+  --   -- not Gureum EN/KO -> ignore
+  -- end
+  setSource(APPLE_EN)
 end
 
 local function mapOnExitWezterm()
@@ -172,20 +174,48 @@ local function mapOnExitWezterm()
   end
 end
 
-local wezImeWatcher = hs.application.watcher.new(function(appName, eventType, app)
-  if appName ~= "WezTerm" then
-    return
+-- Keep timers alive (and cancel previous pending ones to avoid races)
+_G.wezImeTimers = _G.wezImeTimers or {}
+local function doAfter(key, seconds, fn)
+  if _G.wezImeTimers[key] then
+    _G.wezImeTimers[key]:stop()
+    _G.wezImeTimers[key] = nil
   end
+  _G.wezImeTimers[key] = hs.timer.doAfter(seconds, function()
+    _G.wezImeTimers[key] = nil
+    local ok, err = xpcall(fn, debug.traceback)
+    if not ok then
+      hs.printf("[wezIme] error: %s", err)
+    end
+  end)
+end
 
-  if eventType == hs.application.watcher.activated then
-    -- small delay helps avoid racing app/macOS focus changes
-    hs.timer.doAfter(0.15, mapOnEnterWezterm)
-  elseif eventType == hs.application.watcher.deactivated or eventType == hs.application.watcher.terminated then
-    hs.timer.doAfter(0.15, mapOnExitWezterm)
+-- Stop old watcher on reload + keep new one global so it can't be GC'd
+if _G.wezImeWatcher then
+  _G.wezImeWatcher:stop()
+  _G.wezImeWatcher = nil
+end
+
+_G.wezImeWatcher = hs.application.watcher.new(
+  ---@param appName string
+  ---@param eventType number
+  ---@param app hs.application
+  function(appName, eventType, app)
+    -- hs.alert.show("Wezterm event: " .. appName .. " - " .. tostring(eventType))
+    if appName ~= "WezTerm" then
+      return
+    end
+
+    if eventType == hs.application.watcher.activated then
+      -- small delay helps avoid racing app/macOS focus changes
+      hs.timer.doAfter(0.15, mapOnEnterWezterm)
+    elseif eventType == hs.application.watcher.deactivated or eventType == hs.application.watcher.terminated then
+      hs.timer.doAfter(0.15, mapOnExitWezterm)
+    end
   end
-end)
+)
 
-wezImeWatcher:start()
+_G.wezImeWatcher:start()
 
 -- 1. Run ./capture_current_display
 -- 2. Open Google Chrome

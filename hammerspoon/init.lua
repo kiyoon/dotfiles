@@ -174,15 +174,32 @@ local function mapOnExitWezterm()
   end
 end
 
--- Keep timers alive (and cancel previous pending ones to avoid races)
-_G.wezImeTimers = _G.wezImeTimers or {}
-local function doAfter(key, seconds, fn)
-  if _G.wezImeTimers[key] then
-    _G.wezImeTimers[key]:stop()
-    _G.wezImeTimers[key] = nil
+-- Global state to prevent stale timers from applying after fast app switching
+_G.wezIme = _G.wezIme or { token = 0, timer = nil }
+
+local function scheduleGuarded(delay, expectedFrontBundle, fn)
+  _G.wezIme.token = _G.wezIme.token + 1
+  local myToken = _G.wezIme.token
+
+  if _G.wezIme.timer then
+    _G.wezIme.timer:stop()
+    _G.wezIme.timer = nil
   end
-  _G.wezImeTimers[key] = hs.timer.doAfter(seconds, function()
-    _G.wezImeTimers[key] = nil
+
+  _G.wezIme.timer = hs.timer.doAfter(delay, function()
+    _G.wezIme.timer = nil
+
+    -- If something else happened since scheduling, ignore
+    if myToken ~= _G.wezIme.token then
+      return
+    end
+
+    local front = hs.application.frontmostApplication()
+    local frontBid = front and front:bundleID() or ""
+    if frontBid ~= expectedFrontBundle then
+      return
+    end
+
     local ok, err = xpcall(fn, debug.traceback)
     if not ok then
       hs.printf("[wezIme] error: %s", err)
@@ -190,7 +207,7 @@ local function doAfter(key, seconds, fn)
   end)
 end
 
--- Stop old watcher on reload + keep new one global so it can't be GC'd
+-- Stop old watcher on reload + keep global reference
 if _G.wezImeWatcher then
   _G.wezImeWatcher:stop()
   _G.wezImeWatcher = nil
@@ -202,15 +219,20 @@ _G.wezImeWatcher = hs.application.watcher.new(
   ---@param app hs.application
   function(appName, eventType, app)
     -- hs.alert.show("Wezterm event: " .. appName .. " - " .. tostring(eventType))
-    if appName ~= "WezTerm" then
+    if eventType ~= hs.application.watcher.activated then
+      return
+    end
+    if not app then
       return
     end
 
-    if eventType == hs.application.watcher.activated then
-      -- small delay helps avoid racing app/macOS focus changes
-      hs.timer.doAfter(0.15, mapOnEnterWezterm)
-    elseif eventType == hs.application.watcher.deactivated or eventType == hs.application.watcher.terminated then
-      hs.timer.doAfter(0.15, mapOnExitWezterm)
+    local bid = app:bundleID()
+    if appName == "WezTerm" then
+      -- Entering WezTerm: enforce Apple English
+      scheduleGuarded(0.05, bid, mapOnEnterWezterm)
+    else
+      -- Entering any other app: enforce Gureum (only if currently Apple)
+      scheduleGuarded(0.05, bid, mapOnExitWezterm)
     end
   end
 )

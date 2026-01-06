@@ -1,3 +1,8 @@
+local GUREUM_EN = "org.youknowone.inputmethod.Gureum.qwerty"
+local GUREUM_KO = "org.youknowone.inputmethod.Gureum.han2"
+local APPLE_EN = "com.apple.keylayout.ABC"
+local APPLE_KO = "com.apple.inputmethod.Korean.2SetKorean"
+
 hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
 
 ---@param term_text_ansi string
@@ -71,11 +76,11 @@ hs.hotkey.bind({}, "f18", function()
       print("program in wezterm is vi")
       local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
       if status == true and type == "exit" and rc == 0 and output ~= nil and not is_nvim_command_mode(output) then
-        -- if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
-        --   hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+        -- if input_source ~= GUREUM_EN then
+        --   hs.keycodes.currentSourceID(GUREUM_EN)
         -- end
-        if input_source ~= "com.apple.keylayout.ABC" then
-          hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
+        if input_source ~= APPLE_EN then
+          hs.keycodes.currentSourceID(APPLE_EN)
         end
         hs.eventtap.keyStroke({}, "f12")
         return
@@ -107,11 +112,11 @@ hs.hotkey.bind({}, "f18", function()
         print("nvim in tmux")
         if not is_nvim_command_mode(output) then
           print("not in command mode")
-          -- if input_source ~= "org.youknowone.inputmethod.Gureum.qwerty" then
-          --   hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+          -- if input_source ~= GUREUM_EN then
+          --   hs.keycodes.currentSourceID(GUREUM_EN)
           -- end
-          if input_source ~= "com.apple.keylayout.ABC" then
-            hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
+          if input_source ~= APPLE_EN then
+            hs.keycodes.currentSourceID(APPLE_EN)
           end
           hs.eventtap.keyStroke({}, "f12")
           return
@@ -120,23 +125,67 @@ hs.hotkey.bind({}, "f18", function()
     end
   end
 
-  if input_source == "org.youknowone.inputmethod.Gureum.qwerty" then
-    -- hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.han2")
+  if input_source == GUREUM_EN then
+    -- hs.keycodes.currentSourceID(GUREUM_KO)
     -- 구름입력기 한/영 전환 단축키
     hs.eventtap.keyStroke({ "cmd", "shift", "ctrl" }, "space")
-  elseif input_source == "org.youknowone.inputmethod.Gureum.han2" then
-    -- hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.qwerty")
+  elseif input_source == GUREUM_KO then
+    -- hs.keycodes.currentSourceID(GUREUM_EN)
     -- 구름입력기 한/영 전환 단축키
     hs.eventtap.keyStroke({ "cmd", "shift", "ctrl" }, "space")
-  elseif input_source == "com.apple.keylayout.ABC" then
-    hs.keycodes.currentSourceID("com.apple.inputmethod.Korean.2SetKorean")
-  elseif input_source == "com.apple.inputmethod.Korean.2SetKorean" then
-    hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
+  elseif input_source == APPLE_EN then
+    hs.keycodes.currentSourceID(APPLE_KO)
+  elseif input_source == APPLE_KO then
+    hs.keycodes.currentSourceID(APPLE_EN)
   else
-    -- hs.keycodes.currentSourceID("org.youknowone.inputmethod.Gureum.han2")
-    hs.keycodes.currentSourceID("com.apple.inputmethod.Korean.2SetKorean")
+    -- hs.keycodes.currentSourceID(GUREUM_KO)
+    hs.keycodes.currentSourceID(APPLE_KO)
   end
 end)
+
+-- Wezterm uses Apple input and other apps use Gureum
+local function setSource(id)
+  if hs.keycodes.currentSourceID() ~= id then
+    hs.keycodes.currentSourceID(id)
+  end
+end
+
+local function mapOnEnterWezterm()
+  local cur = hs.keycodes.currentSourceID()
+  if cur == GUREUM_EN then
+    setSource(APPLE_EN)
+  elseif cur == GUREUM_KO then
+    setSource(APPLE_KO)
+  else
+    -- not Gureum EN/KO -> ignore
+  end
+end
+
+local function mapOnExitWezterm()
+  local cur = hs.keycodes.currentSourceID()
+  if cur == APPLE_EN then
+    setSource(GUREUM_EN)
+  elseif cur == APPLE_KO then
+    setSource(GUREUM_KO)
+  else
+    -- not Apple EN/KO -> ignore
+  end
+end
+
+local wezImeWatcher = hs.application.watcher.new(function(appName, eventType, app)
+  if appName ~= "WezTerm" then
+    return
+  end
+
+  if eventType == hs.application.watcher.activated then
+    -- small delay helps avoid racing app/macOS focus changes
+    hs.timer.doAfter(0.15, mapOnEnterWezterm)
+  elseif eventType == hs.application.watcher.deactivated or eventType == hs.application.watcher.terminated then
+    hs.timer.doAfter(0.15, mapOnExitWezterm)
+  end
+end)
+
+wezImeWatcher:start()
 
 -- 1. Run ./capture_current_display
 -- 2. Open Google Chrome

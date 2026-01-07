@@ -115,12 +115,6 @@ vim.g.do_filetype_lua = 1
 -- augroup END
 -- ]]
 
-require("type_righter.keymaps.python")
-require("type_righter.keymaps.rust")
-require("type_righter.keymaps.typescript")
--- local typescript_captures = require("type_righter.languages.typescript").get_capture_node_under_cursor
--- require("type_righter.hitbox_debugger").toggle_hitbox_debug(typescript_captures)
-
 -- Convert | to │ (box drawing character)
 -- Convert │ to └
 -- Convert └ to │
@@ -155,6 +149,12 @@ require("type_righter.keymaps.typescript")
 --
 --   vim.api.nvim_buf_set_text(0, current_row, current_col, current_row, current_col + byte_size_old_char, { new_char })
 -- end)
+
+require("type_righter.keymaps.python")
+require("type_righter.keymaps.rust")
+require("type_righter.keymaps.typescript")
+-- local typescript_captures = require("type_righter.languages.typescript").get_capture_node_under_cursor
+-- require("type_righter.hitbox_debugger").toggle_hitbox_debug(typescript_captures)
 
 -- sql formatter for selection
 vim.keymap.set("x", "<space>pF", function()

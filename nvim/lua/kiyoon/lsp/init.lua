@@ -45,6 +45,10 @@ local settings = {
   pip = {
     -- upgrade_pip = true,
   },
+  registries = {
+    "github:mason-org/mason-registry",
+    "github:Crashdummyy/mason-registry", -- for roslyn_ls
+  },
 }
 
 -- List of LSP servers to install, but not necessarily attach to
@@ -93,6 +97,7 @@ end
 -- bashls needs shellcheck, but it's not a server. Thus it's available on mason but not mason-lspconfig's ensure_installed
 install_pkg_background("shellcheck")
 install_pkg_background("actionlint")
+install_pkg_background("roslyn")
 -- install_pkg_background("selene")
 
 -- local lspconfig = require("lspconfig")

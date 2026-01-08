@@ -185,7 +185,11 @@ local function inlay_type_hint_to_text_in_buffer()
       end
 
       for _, value in ipairs(result) do
-        vim.lsp.util.apply_text_edits(value.textEdits, bufnr, "utf-8")
+        if value.textEdits == nil then
+          notify("No textEdits found in inlay hint", vim.log.levels.ERROR)
+        else
+          vim.lsp.util.apply_text_edits(value.textEdits, bufnr, "utf-8")
+        end
       end
     end)
 

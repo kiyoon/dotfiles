@@ -144,6 +144,7 @@ vim.keymap.set({ "n", "x" }, "J", "<nop>", { silent = true, noremap = true })
 -- use <space>J to join lines
 vim.keymap.set({ "n", "x" }, "<space>J", "J", { silent = true, noremap = true })
 
+require("kiyoon.settings.mkview")
 require("kiyoon.settings.keychrone_mappings")
 require("kiyoon.settings.korean_langmap")
 require("kiyoon.settings.messages_in_buffer")

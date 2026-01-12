@@ -92,14 +92,6 @@ require("kiyoon.menu")
 -- -- open folds by default
 -- vim.cmd [[autocmd BufReadPost,FileReadPost * normal zR]]
 
-vim.cmd([[
-augroup AutoView
-  autocmd!
-  autocmd BufWritepre,BufWinLeave ?* silent! mkview
-  autocmd BufWinEnter ?* silent! loadview
-augroup END
-]])
-
 -- Faster filetype detection for neovim
 vim.g.do_filetype_lua = 1
 
@@ -165,6 +157,7 @@ vim.keymap.set("n", "<space>ta", function()
   require("kiyoon.tools.cycle_case")()
 end, { remap = true })
 
+require("kiyoon.settings.mkview")
 require("kiyoon.settings.custom_filetypes")
 require("kiyoon.settings.python_keymaps")
 require("kiyoon.settings.markdown_keymaps")

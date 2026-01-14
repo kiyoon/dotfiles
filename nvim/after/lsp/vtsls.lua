@@ -21,6 +21,9 @@ return {
         functionLikeReturnTypes = { enabled = true },
         enumMemberValues = { enabled = true },
       },
+      preferences = {
+        importModuleSpecifierEnding = "auto",
+      },
     },
     javascript = {
       updateImportsOnFileMove = "always",
@@ -31,6 +34,9 @@ return {
         propertyDeclarationTypes = { enabled = true },
         functionLikeReturnTypes = { enabled = true },
         enumMemberValues = { enabled = true },
+      },
+      preferences = {
+        importModuleSpecifierEnding = "auto",
       },
     },
     vtsls = {

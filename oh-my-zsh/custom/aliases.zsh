@@ -27,3 +27,5 @@ fi
 alias src='omz reload'
 alias ns='nvidia-smi'
 alias rb='gio trash'
+
+alias cl='claude --allow-dangerously-skip-permissions'

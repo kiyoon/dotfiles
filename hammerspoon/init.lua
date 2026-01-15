@@ -30,11 +30,30 @@ end
 ---@param term_text_ansi string
 ---@return boolean
 local function is_nvim_command_mode(term_text_ansi)
+  -- tokyonight command mode: yellow (#ffc777 = 255,199,119)
   if
     string.match(term_text_ansi, [[ .%[38:2::27:29:43m.%[48:2::255:199:119m ]])
     or string.match(
       term_text_ansi,
       [[.%[38:2::27:29:43m.%[48:2::255:199:119m COMMAND .%[38:2::255:199:119m.%[48:2::59:66:97m ]]
+    )
+  then
+    return true
+  end
+  return false
+end
+
+---nvim이 terminal mode인지 확인
+---lualine 왼쪽 "TERMINAL" 혹은 오른쪽 "  " 색깔로 구분. tokyonight theme 가정. terminal mode nvim이 여러개 있지 않다는 가정..
+---@param term_text_ansi string
+---@return boolean
+local function is_nvim_terminal_mode(term_text_ansi)
+  -- tokyonight terminal mode: teal (#4fd6be = 79,214,190)
+  if
+    string.match(term_text_ansi, [[ .%[38:2::27:29:43m.%[48:2::79:214:190m ]])
+    or string.match(
+      term_text_ansi,
+      [[.%[38:2::27:29:43m.%[48:2::79:214:190m TERMINAL .%[38:2::79:214:190m.%[48:2::59:66:97m ]]
     )
   then
     return true
@@ -110,8 +129,8 @@ hs.hotkey.bind({}, "f18", function()
         and get_tmux_current_command(output) == "nvim"
       then
         print("nvim in tmux")
-        if not is_nvim_command_mode(output) then
-          print("not in command mode")
+        if not is_nvim_command_mode(output) and not is_nvim_terminal_mode(output) then
+          print("not in command/terminal mode")
           -- if input_source ~= GUREUM_EN then
           --   hs.keycodes.currentSourceID(GUREUM_EN)
           -- end

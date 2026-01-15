@@ -1,6 +1,6 @@
 require("alpha").setup(require("alpha.themes.dashboard").config)
-local alpha = require "alpha"
-local dashboard = require "alpha.themes.dashboard"
+local alpha = require("alpha")
+local dashboard = require("alpha.themes.dashboard")
 local neovim_version = vim.version()
 local neovim_version_str = string.format(
   "  v%s.%s.%s%s",
@@ -19,7 +19,7 @@ dashboard.section.header.val = {
   [[ \/_/\/_/\/____/\/___/  \/__/    \/_/\/_/\/_/\/_/]] .. neovim_version_str,
 }
 
-local plugins_config_path = vim.fn.stdpath "config" .. "/lua/kiyoon/lazy.lua"
+local plugins_config_path = vim.fn.stdpath("config") .. "/lua/kiyoon/lazy.lua"
 dashboard.section.buttons.val = {
   dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
   dashboard.button("f", "  Find file (\\ff)", ":Telescope find_files hidden=true no_ignore=true<CR>"),
@@ -34,7 +34,8 @@ dashboard.section.buttons.val = {
     "<cmd>lua require'telescope'<cr><cmd>lua require'kiyoon.telescope'.live_grep_gitdir()<cr>"
   ),
   dashboard.button("d", " " .. " Diff view (\\dv)", "<cmd>DiffviewOpen<CR>"),
-  dashboard.button("C", " " .. " ChatGPT (\\cg)", "<cmd>GpChatNew<CR>"),
+  dashboard.button("G", " " .. " ChatGPT (\\cg)", "<cmd>GpChatNew<CR>"),
+  dashboard.button("C", "🆑" .. " Claude Code (\\ac)", "<cmd>ClaudeCode<CR>"),
   dashboard.button("l", " " .. " Install language support (:Mason)", ":Mason<CR>"),
   dashboard.button("p", " " .. " Plugins", "<cmd>Lazy<CR>"),
   dashboard.button("P", " " .. " Plugins config", ":e " .. plugins_config_path .. "<CR>"),
@@ -60,7 +61,7 @@ dashboard.section.buttons.opts.hl = "Keyword"
 
 dashboard.config.opts.noautocmd = true
 
-vim.cmd [[autocmd User AlphaReady echo 'ready']]
+vim.cmd([[autocmd User AlphaReady echo 'ready']])
 
 alpha.setup(dashboard.config)
 

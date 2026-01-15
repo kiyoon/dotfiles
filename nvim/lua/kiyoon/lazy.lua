@@ -658,6 +658,9 @@ return {
       { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
       { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
     },
+    opts = {
+      terminal_cmd = "claude --dangerously-skip-permissions",
+    },
   },
   -- {
   --   "olimorris/codecompanion.nvim",

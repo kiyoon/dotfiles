@@ -27,7 +27,6 @@ local servers = {
   "dockerls",
   -- "grammarly",
   -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
-  "tombi",
 }
 
 local servers_attach_only = {}
@@ -99,6 +98,7 @@ end
 install_pkg_background("shellcheck")
 install_pkg_background("actionlint")
 install_pkg_background("roslyn")
+install_pkg_background("taplo")
 -- install_pkg_background("selene")
 
 -- local lspconfig = require("lspconfig")

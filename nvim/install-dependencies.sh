@@ -68,7 +68,6 @@ uv tool install -U ruff
 bun install -g @biomejs/biome
 
 # Formatter
-
 if command -v dotnet &> /dev/null; then
     dotnet tool install csharpier -g
 else

@@ -2021,7 +2021,7 @@ return {
         c = { "clang-format" },
         cpp = { "clang-format" },
         cs = { "csharpier" },
-        toml = { "tombi" },
+        toml = { "taplo" },
       },
       -- Set up format-on-save
       format_on_save = { timeout_ms = 2000, lsp_fallback = true },

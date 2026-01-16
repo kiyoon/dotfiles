@@ -38,7 +38,6 @@ if command -v brew &> /dev/null; then
     # Formatter
     brew install stylua
     brew install prettier
-    brew install taplo
 
     # brew install tree-sitter
     bun install -g tree-sitter-cli@latest
@@ -69,7 +68,6 @@ uv tool install -U ruff
 bun install -g @biomejs/biome
 
 # Formatter
-bun install -g @taplo/cli
 
 if command -v dotnet &> /dev/null; then
     dotnet tool install csharpier -g

@@ -27,6 +27,7 @@ local servers = {
   "dockerls",
   -- "grammarly",
   -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
+  "tombi",
 }
 
 local servers_attach_only = {}

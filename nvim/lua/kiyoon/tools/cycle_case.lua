@@ -243,6 +243,13 @@ build_simple_conversion_tables("enabled", "disabled")
 build_simple_conversion_tables("yes", "no")
 build_simple_conversion_tables("up", "down")
 build_simple_conversion_tables("left", "right")
+build_simple_conversion_tables("top", "bottom")
+build_simple_conversion_tables("front", "back")
+build_simple_conversion_tables("in", "out")
+build_simple_conversion_tables("read", "write")
+build_simple_conversion_tables("start", "stop")
+build_simple_conversion_tables("open", "close")
+build_simple_conversion_tables("opened", "closed")
 
 local get_cycle_function = function(user_formats)
   user_formats = user_formats or default_formats

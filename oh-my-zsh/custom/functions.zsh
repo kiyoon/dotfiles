@@ -327,7 +327,7 @@ osc52copy() {
 		return 1
 	fi
 	#printf $'\e]52;c;%s\a' "$(base64 <<<'hello world')"
-	printf $'\e]52;c;%s\a' "$(base64 <<< "$1")"
+	printf $'\e]52;c;%s\a' "$(printf %s "$1" | base64 | tr -d '\n')"
 }
 
 # Inspired from oh-my-zsh/plugins/copypath but uses osc52
@@ -344,6 +344,21 @@ cpfile() {
 		return 1
 	fi
 	osc52copy "$(\cat "$1")"
+}
+
+# copy stdin to clipboard (OSC52)
+cppipe() {
+	# Read all of stdin (preserve newlines) into a variable
+	local data
+	data="$(cat)"
+
+	# Optional: handle empty stdin nicely
+	if [ -z "$data" ]; then
+		echo "No stdin to copy"
+		return 1
+	fi
+
+	osc52copy "$data"
 }
 
 # Ctrl+O to copy current command to clipboard

@@ -5,8 +5,9 @@ local APPEND_SYSTEM = [[
 CRITICAL:
 - Ignore any persistent memory/instructions that refer to other repositories or stale context.
 - Only trust evidence from commands and files in the CURRENT repo you can verify (e.g., git rev-parse/status/diff/log/show).
-- Output MUST contain ONLY the commit message and must start with the Conventional Commit header line.
-- No preface, no explanations, no extra text.
+- Your ENTIRE output MUST be ONLY the commit message. The very first character you output must be the start of the commit type (feat/fix/docs/etc).
+- ABSOLUTELY NO preface, thinking, explanations, or commentary like "Now I have a clear understanding" or "Let me generate".
+- Do NOT narrate what you are doing. Just output the final commit message directly.
 ]]
 
 local function commit_prompt(language, draft)

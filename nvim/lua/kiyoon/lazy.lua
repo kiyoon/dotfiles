@@ -669,7 +669,7 @@ return {
       { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
     },
     opts = {
-      terminal_cmd = "claude --dangerously-skip-permissions",
+      terminal_cmd = "claude --allow-dangerously-skip-permissions",
     },
   },
   -- {

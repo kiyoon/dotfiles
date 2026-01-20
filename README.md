@@ -49,6 +49,8 @@ Also, it has many versions of vim configurations.
 
 ### Neovim
 
+My main frameworks/languages: Python (PyTorch, FastAPI), TypeScript (React), C# (Unity), Rust, Lua (Neovim)
+
 - Yank registers synchronised with tmux. Yank from neovim and paste on tmux. Copy from tmux and paste on neovim.
 - Copy to clipboard: (OSC 52)
   - `<space>y`
@@ -174,7 +176,7 @@ docker run -it --rm \
     ghcr.io/kiyoon/dotfiles
 ```
 
-## Implementation details
+## Implementation details (Not important)
 
 ### Keychron knob
 

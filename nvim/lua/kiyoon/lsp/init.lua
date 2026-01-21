@@ -26,10 +26,17 @@ local servers = {
   "vimls",
   "dockerls",
   -- "grammarly",
-  -- "rust_analyzer", -- rust-tools.nvim will attach to LSP, so don't put this here
+  -- "rust_analyzer", -- rustaceanvim will attach to LSP, so don't put this here
 }
 
-local servers_attach_only = {}
+local servers_attach_only = {
+  "roslyn",
+}
+
+-- List of LSP servers to install, but not necessarily attach to
+-- rust_analyzer is attached by rustaceanvim
+local ensure_installed = { unpack(servers) }
+table.insert(ensure_installed, "rust_analyzer")
 
 local settings = {
   ui = {
@@ -50,11 +57,6 @@ local settings = {
     "github:Crashdummyy/mason-registry", -- for roslyn_ls
   },
 }
-
--- List of LSP servers to install, but not necessarily attach to
--- rust_analyzer is attached by rust-tools.nvim
-local ensure_installed = { unpack(servers) }
-table.insert(ensure_installed, "rust_analyzer")
 
 -- Mason makes it easier to install language servers
 -- Always load mason, mason-lspconfig and nvim-lspconfig in order.

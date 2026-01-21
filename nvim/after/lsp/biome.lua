@@ -63,6 +63,7 @@ return {
         translate_and_simplify_code(result.diagnostics)
       end
       return vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
+      -- return vim.lsp.handlers["textDocument/publishDiagnostics"](err, result, ctx, config)
     end,
   },
 }

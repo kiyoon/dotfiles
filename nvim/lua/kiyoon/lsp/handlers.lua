@@ -75,22 +75,36 @@ local function format_float(diagnostic)
     -- match line break at the end
     message =
       diagnostic.message:gsub("for further information visit https://rust%-lang%.github%.io/rust%-clippy/.*\n", "")
-  elseif diagnostic.source == "biome" then
-    -- for biome, translation and code transformation is all done in `settings/biome.lua`
-    -- but we only have the link in specific cases
-    if diagnostic.code ~= "parse" and not diagnostic.code:match("^suppressions/") then
-      return diagnostic.message .. " 🔗"
-    end
-    return diagnostic.message
   else
     message = diagnostic.message
   end
 
-  if source_to_icon[diagnostic.source] ~= nil then
-    return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+  local href = diagnostic.user_data
+    and diagnostic.user_data.lsp
+    and diagnostic.user_data.lsp.codeDescription
+    and diagnostic.user_data.lsp.codeDescription.href
+
+  if href then
+    message = message .. "\n" .. href
   end
 
-  return string.format("%s 🔗%s", message, diagnostic.source)
+  if diagnostic.source == "biome" then
+    -- for biome, translation and code transformation is all done in `settings/biome.lua`
+    -- but we only have the link in specific cases
+    if diagnostic.code ~= "parse" and not diagnostic.code:match("^suppressions/") then
+      message = message .. " 🔗"
+    end
+  else
+    if source_to_icon[diagnostic.source] ~= nil then
+      -- return string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+      message = string.format("%s 🔗%s", message, source_to_icon[diagnostic.source])
+    else
+      -- return string.format("%s 🔗%s", message, diagnostic.source)
+      message = string.format("%s 🔗%s", message, diagnostic.source)
+    end
+  end
+
+  return message
 end
 
 ---@param diagnostic vim.Diagnostic

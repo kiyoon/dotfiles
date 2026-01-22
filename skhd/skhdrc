@@ -5,7 +5,8 @@ passthrough < cmd + shift + alt - b ; default
 cmd + shift + alt - b ; default 
 
 # 0x32: backtick (`) key
-alt - 0x32 : open -a "Visual Studio Code"
+# alt - ` clashes in Korean input method (change won sign to backtick requires alt - `)
+alt + shift - 0x32 : open -a "Visual Studio Code"
 alt + cmd - 0x32 : open -a "Unity"
 alt - 1 : open -a "Finder"
 alt + shift - 1 : open -n -a "Finder" ~

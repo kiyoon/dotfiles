@@ -322,6 +322,10 @@ function git_checkout_b { & git checkout -b $args }
 Set-Alias gcb git_checkout_b -Option AllScope
 function git_checkout { & git checkout $args }
 Set-Alias gco git_checkout -Option AllScope
+function git_switch { & git switch $args }
+Set-Alias gsw git_switch -Option AllScope
+function git_switch_create { & git switch -c $args }
+Set-Alias gswc git_switch_create -Option AllScope
 function gcl { & git clone $args }
 function ghc { & git clone $args }
 function ghcd {

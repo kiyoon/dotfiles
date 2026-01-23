@@ -6,11 +6,6 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       return vim.keymap.set(mode, lhs, rhs, vim.tbl_deep_extend("error", { buffer = true }, opts or {}))
     end
 
-    -- Toggle breakpoint (a non-DAP way)
-    bufmap("n", "<space>tb", function()
-      require("type_righter.languages.python").toggle_breakpoint()
-    end, { remap = true, desc = "Toggle breakpoint (Python)" })
-
     -- Toggle f-string
     bufmap("n", "<space>tf", function()
       require("type_righter.languages.python").toggle_fstring()

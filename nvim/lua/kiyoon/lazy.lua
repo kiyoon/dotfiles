@@ -3,6 +3,7 @@
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local nvim_treesitter_context_dev = false
+local repeatable_move_dev = false
 local jupynium_dev = false
 local python_import_dev = false
 local korean_ime_dev = false
@@ -1032,6 +1033,11 @@ return {
       require("kiyoon.ts_textobjs_main")
     end,
   },
+  {
+    "kiyoon/repeatable-move.nvim",
+    dev = repeatable_move_dev,
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
+  },
   "RRethy/nvim-treesitter-endwise",
   {
     "HiPhish/rainbow-delimiters.nvim",
@@ -1532,8 +1538,8 @@ return {
           -- Jump forwards/backwards with '{' and '}'
           local anext, aprev
           if use_nvim_treesitter_main_branch then
-            local tstext_repeat_move = require("kiyoon.ts_textobjs_main_extended")
-            anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+            local repeat_move = require("repeatable_move")
+            anext, aprev = repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
           else
             local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
             anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
@@ -2494,8 +2500,8 @@ return {
       })
       local next_todo, prev_todo
       if use_nvim_treesitter_main_branch then
-        local tstext = require("kiyoon.ts_textobjs_main_extended")
-        next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
+        local repeat_move = require("repeatable_move")
+        next_todo, prev_todo = repeat_move.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
       else
         local tstext = require("nvim-treesitter.textobjects.repeatable_move")
         next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)

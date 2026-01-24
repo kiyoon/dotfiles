@@ -84,6 +84,7 @@
   "python-syntax": { "branch": "master", "commit": "9ee8bc0c6bf9b260ea2ec9e73478ef9eae8ab817" },
   "rainbow-delimiters.nvim": { "branch": "master", "commit": "d6b802552cbe7d643a3b6b31f419c248d1f1e220" },
   "refactoring.nvim": { "branch": "master", "commit": "6784b54587e6d8a6b9ea199318512170ffb9e418" },
+  "repeatable-move.nvim": { "branch": "master", "commit": "212babf61bfa7fc7c30c3471ab9115628e54ef20" },
   "roslyn.nvim": { "branch": "main", "commit": "2b9a8366a29b0a2a7e51cac87f3ca6345f617790" },
   "rustaceanvim": { "branch": "master", "commit": "e9c5aaba16fead831379d5f44617547a90b913c7" },
   "sibling-swap.nvim": { "branch": "main", "commit": "75e696c340429769aa34d0bbae1511c8d9660c0b" },

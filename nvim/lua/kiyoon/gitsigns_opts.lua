@@ -2,10 +2,7 @@ return {
   numhl = true,
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
-    local ok, tstext = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
-    if not ok then
-      tstext = require("kiyoon.ts_textobjs_main_extended")
-    end
+    local repeat_move = require("repeatable_move")
 
     local function map(mode, l, r, opts)
       opts = opts or {}
@@ -13,7 +10,7 @@ return {
       vim.keymap.set(mode, l, r, opts)
     end
 
-    local next_hunk, prev_hunk = tstext.make_repeatable_move_pair(gs.next_hunk, gs.prev_hunk)
+    local next_hunk, prev_hunk = repeat_move.make_repeatable_move_pair(gs.next_hunk, gs.prev_hunk)
     -- Navigation
     map("n", "]h", function()
       if vim.wo.diff then

@@ -510,8 +510,8 @@ return {
           -- Jump forwards/backwards with '{' and '}'
           local anext, aprev
           if use_nvim_treesitter_main_branch then
-            local tstext_repeat_move = require("kiyoon.ts_textobjs_main_extended")
-            anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
+            local repeat_move = require("repeatable_move")
+            anext, aprev = repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
           else
             local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
             anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)

@@ -288,3 +288,24 @@ end)
 vim.keymap.set({ "n", "x", "o" }, "<end>", function()
   ts_repeat_move.repeat_last_move({ forward = true, start = false })
 end)
+
+local repeat_move = require("repeatable_move")
+local notify = require("repeatable_move.notify").notify
+
+local function qf_next()
+  local result, _ = pcall(vim.cmd, "cnext " .. vim.v.count1)
+  if not result then
+    notify("No more items in quickfix list", vim.log.levels.WARN, { title = "repeatable-move.nvim" })
+  end
+end
+
+local function qf_prev()
+  local result, _ = pcall(vim.cmd, "cprev " .. vim.v.count1)
+  if not result then
+    notify("No more items in quickfix list", vim.log.levels.WARN, { title = "repeatable-move.nvim" })
+  end
+end
+
+local qf_next_repeat, qf_prev_repeat = repeat_move.make_repeatable_move_pair(qf_next, qf_prev)
+vim.keymap.set("n", "]q", qf_next_repeat, { desc = "Next quickfix item" })
+vim.keymap.set("n", "[q", qf_prev_repeat, { desc = "Previous quickfix item" })

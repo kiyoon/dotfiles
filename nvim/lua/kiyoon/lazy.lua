@@ -1,7 +1,7 @@
 --- NOTE: I keep all plugins in one file, because I often want to disable half of them when I debug what plugin broke my config.
 
 local nvim_treesitter_dev = false
-local nvim_treesitter_textobjects_dev = false
+local nvim_treesitter_textobjects_dev = true
 local nvim_treesitter_context_dev = false
 local repeatable_move_dev = false
 local jupynium_dev = false

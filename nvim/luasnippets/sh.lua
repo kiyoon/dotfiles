@@ -79,6 +79,14 @@ return {
       return content
     end, {}),
   }),
+  s("schedule_claude", {
+    func_node(function()
+      local content = url_utils.read_from_url(
+        "https://gist.githubusercontent.com/kiyoon/a0e3e7c5139fddf9004e816cf5389ed9/raw/cf4b48ca2158c633a819a46d3150a8aefe1b6593/schedule_claude_code.sh"
+      )
+      return content
+    end, {}),
+  }),
   s("orx", {
     -- For safe cd
     -- https://www.shellcheck.net/wiki/SC2164

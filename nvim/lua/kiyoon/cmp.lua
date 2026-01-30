@@ -122,8 +122,8 @@ cmp.setup({
     }),
   },
   window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
+    completion = cmp.config.window.bordered({ border = "rounded" }),
+    documentation = cmp.config.window.bordered({ border = "rounded" }),
   },
   --- This shows a virtual text similar to copilot
   --- Good if you don't use copilot but using both isn't possible

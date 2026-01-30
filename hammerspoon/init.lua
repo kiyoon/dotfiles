@@ -9,7 +9,7 @@ hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
 ---@return string?
 local function get_tmux_current_command(term_text_ansi)
   -- " <command> ─" with the right color (active pane)
-  local tmux_active_pane_ansi_pattern = [[ (%a+) .%[38:2::98:114:164m.%[49m─]]
+  local tmux_active_pane_ansi_pattern = [[ ([%w%.%-]+) .%[38:2::98:114:164m.%[49m─]]
   -- If there are mutliple active panes, return the second one.
   -- Beecause there is an output bug in tmux where it prints another window wrongly and the actual content starts from let's say the 3rd line.
   -- The wrong output is not visible in the terminal, but it is visible in the output of `wezterm cli get-text`.
@@ -179,6 +179,7 @@ local function mapOnEnterWezterm()
   -- else
   --   -- not Gureum EN/KO -> ignore
   -- end
+  -- hs.alert.show("Wezterm Activated: EN")
   setSource(APPLE_EN)
 end
 

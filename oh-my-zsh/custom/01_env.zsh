@@ -132,7 +132,7 @@ if (($+commands[eza])); then
             preview_width=${FZF_PREVIEW_COLUMNS}; \
             preview_height=${FZF_PREVIEW_LINES}; \
             case "${realpath:l}" in \
-              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.icns) \
+              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.icns|*.heic) \
                   # chafa --format=symbols --view-size=$preview_widthx$preview_height --scale=max "$realpath"; \
                   chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max "$realpath"; \
                 ;; \

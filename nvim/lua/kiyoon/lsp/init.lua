@@ -31,6 +31,7 @@ local servers = {
 
 local servers_attach_only = {
   "roslyn",
+  -- "typerighter",
 }
 
 -- List of LSP servers to install, but not necessarily attach to

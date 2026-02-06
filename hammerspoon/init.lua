@@ -4,6 +4,8 @@ local APPLE_EN = "com.apple.keylayout.ABC"
 local APPLE_KO = "com.apple.inputmethod.Korean.2SetKorean"
 
 hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
+-- Enables the `hs` command-line tool to talk to Hammerspoon
+require("hs.ipc")
 
 ---@param term_text_ansi string
 ---@return string?

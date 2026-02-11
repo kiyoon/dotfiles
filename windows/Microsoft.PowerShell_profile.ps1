@@ -1,4 +1,3 @@
-
 #$Env:PATH += ";$env:USERPROFILE\bin"
 
 # grep, awk, sed, ...
@@ -224,8 +223,8 @@ function coreutils_uname { & coreutils uname $args }
 Set-Alias uname coreutils_uname -Option AllScope
 function coreutils_unexpand { & coreutils unexpand $args }
 Set-Alias unexpand coreutils_unexpand -Option AllScope
-function coreutils_uniq { & coreutils uniq $args }
-Set-Alias uniq coreutils_uniq -Option AllScope
+#function coreutils_uniq { & coreutils uniq $args }
+#Set-Alias uniq coreutils_uniq -Option AllScope
 function coreutils_unlink { & coreutils unlink $args }
 Set-Alias unlink coreutils_unlink -Option AllScope
 function coreutils_vdir { & coreutils vdir $args }
@@ -317,6 +316,7 @@ Set-Alias gl git_pull -Option AllScope -Force
 function git_restore_staged { & git restore --staged $args }
 Set-Alias grst git_restore_staged -Option AllScope
 function gd { & git diff $args }
+function gds { & git diff --staged $args }
 function glr { & git pull --rebase $args }
 function git_checkout_b { & git checkout -b $args }
 Set-Alias gcb git_checkout_b -Option AllScope
@@ -326,6 +326,17 @@ function git_switch { & git switch $args }
 Set-Alias gsw git_switch -Option AllScope
 function git_switch_create { & git switch -c $args }
 Set-Alias gswc git_switch_create -Option AllScope
+
+function gsta  { & git stash push $args }
+function gstall{ & git stash push --all $args }
+function gstu  { & git stash push --include-untracked $args }
+function gstaa { & git stash apply $args }
+function gstc  { & git stash clear $args }
+function gstd  { & git stash drop $args }
+function gstl  { & git stash list $args }
+function gstp  { & git stash pop $args }
+function gsts  { & git stash show --patch $args }
+
 function gcl { & git clone $args }
 function ghc { & git clone $args }
 function ghcd {
@@ -362,3 +373,39 @@ function cdg { & cd $(git rev-parse --show-toplevel) }
 # Print the URL of the current repository
 function gurl { & git config --get remote.origin.url }
 
+# Alt left, right, up like https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/dirhistory/dirhistory.plugin.zsh
+# Install-Module PSLocationHistory -Scope CurrentUser
+Import-Module PSLocationHistory
+Enable-LocationHistory
+
+Import-Module PSReadLine -ErrorAction SilentlyContinue
+
+Set-PSReadLineKeyHandler -Chord 'Alt+LeftArrow' -ScriptBlock {
+  [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+  cd -b
+  [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+RightArrow' -ScriptBlock {
+  [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+  cd -f
+  [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+UpArrow' -ScriptBlock {
+  [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+  cd ..
+  [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+}
+
+# zoxide -> PSLocationHistory bridge:
+# make `z` resolve the destination via zoxide, then cd to it (history-aware)
+Remove-Item Alias:z -ErrorAction SilentlyContinue
+function z {
+  param([Parameter(ValueFromRemainingArguments=$true)][string[]]$args)
+
+  $dest = & zoxide query -- @args 2>$null
+  if ($LASTEXITCODE -eq 0 -and $dest) {
+    cd $dest
+  }
+}

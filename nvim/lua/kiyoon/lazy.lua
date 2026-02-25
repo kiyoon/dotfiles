@@ -2214,31 +2214,61 @@ return {
       -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
     end,
   },
+  -- {
+  --   "aznhe21/actions-preview.nvim",
+  --   keys = {
+  --     {
+  --       "<space>pa",
+  --       function()
+  --         require("actions-preview").code_actions()
+  --       end,
+  --       desc = "Code [A]ction",
+  --     },
+  --   },
+  --   opts = {
+  --     telescope = {
+  --       sorting_strategy = "ascending",
+  --       layout_strategy = "vertical",
+  --       layout_config = {
+  --         width = 0.8,
+  --         height = 0.9,
+  --         prompt_position = "top",
+  --         preview_cutoff = 20,
+  --         preview_height = function(_, _, max_lines)
+  --           return max_lines - 15
+  --         end,
+  --       },
+  --     },
+  --   },
+  -- },
   {
-    "aznhe21/actions-preview.nvim",
+    "rachartier/tiny-code-action.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      -- "nvim-telescope/telescope.nvim",
+      {
+        "folke/snacks.nvim",
+        opts = {
+          terminal = {},
+        },
+      },
+    },
+    event = "LspAttach",
     keys = {
       {
         "<space>pa",
         function()
-          require("actions-preview").code_actions()
+          require("tiny-code-action").code_action()
         end,
         desc = "Code [A]ction",
       },
     },
     opts = {
-      telescope = {
-        sorting_strategy = "ascending",
-        layout_strategy = "vertical",
-        layout_config = {
-          width = 0.8,
-          height = 0.9,
-          prompt_position = "top",
-          preview_cutoff = 20,
-          preview_height = function(_, _, max_lines)
-            return max_lines - 15
-          end,
-        },
-      },
+      -- backend = "difftastic",
+      backend = "vim",
+      picker = "snacks",
+      -- optional, but nice:
+      -- pickers = { telescope = { ... } }  -- (only if plugin supports picker-specific opts; see note below)
     },
   },
 

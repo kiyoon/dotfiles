@@ -8,7 +8,8 @@ vim.keymap.del({ "n" }, "grn")
 vim.keymap.del({ "n" }, "grt")
 
 local servers = {
-  "lua_ls",
+  -- "lua_ls",
+  "emmylua_ls",
   "html",
   "cssls",
   "tailwindcss",
@@ -17,7 +18,7 @@ local servers = {
   -- "eslint",
   "jsonls",
   "biome",
-  "basedpyright",
+  -- "basedpyright",
   -- "ty",
   -- "pyrefly",
   -- "ruff_lsp",
@@ -31,7 +32,7 @@ local servers = {
 
 local servers_attach_only = {
   "roslyn",
-  -- "typerighter",
+  "typerighter",
 }
 
 -- List of LSP servers to install, but not necessarily attach to

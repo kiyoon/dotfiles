@@ -18,7 +18,7 @@ local servers = {
   -- "eslint",
   "jsonls",
   "biome",
-  -- "basedpyright",
+  "basedpyright",
   -- "ty",
   -- "pyrefly",
   -- "ruff_lsp",
@@ -32,7 +32,7 @@ local servers = {
 
 local servers_attach_only = {
   "roslyn",
-  "typerighter",
+  -- "typerighter",
 }
 
 -- List of LSP servers to install, but not necessarily attach to

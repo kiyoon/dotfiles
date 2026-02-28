@@ -83,6 +83,9 @@ if (($+commands[fzf])); then
 		export FZF_CTRL_T_COMMAND='fd --type f --hidden --exclude .git'
 		export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 	fi
+	_fzf_preview_script="${0:A:h}/../scripts/fzf_preview.sh"
+	export FZF_CTRL_T_OPTS="--preview '$_fzf_preview_script {}'"
+	unset _fzf_preview_script
 fi
 
 # Inside tmux, home and end keys don't work
@@ -135,6 +138,10 @@ if (($+commands[eza])); then
               *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.icns|*.heic) \
                   # chafa --format=symbols --view-size=$preview_widthx$preview_height --scale=max "$realpath"; \
                   chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max "$realpath"; \
+                ;; \
+              *.mp4|*.webm|*.mov|*.mkv|*.avi) \
+                  ffmpeg -ss 5 -i "$realpath" -vframes 1 -f image2 -vcodec mjpeg - 2>/dev/null \
+                    | chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max -; \
                 ;; \
               *) \
                 bat --color=always --style=numbers --line-range=:999 "$realpath"; \

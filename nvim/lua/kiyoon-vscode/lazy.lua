@@ -4,7 +4,6 @@ local python_import_dev = false
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
 local treesitter_indent_object_dev = false
-local use_nvim_treesitter_main_branch = true
 
 return {
   --- NOTE: Python
@@ -268,11 +267,7 @@ return {
     --   require("lazy.core.loader").add_to_rtp(plugin)
     --   require("nvim-treesitter.query_predicates")
     -- end,
-    config = function()
-      if not use_nvim_treesitter_main_branch then
-        require("kiyoon.treesitter")
-      end
-    end,
+    config = function() end,
     dev = nvim_treesitter_dev,
   },
   {
@@ -292,7 +287,7 @@ return {
       -- vim.g.no_go_maps = true
     end,
     config = function()
-      require("kiyoon.ts_textobjs_main")
+      require("kiyoon.ts_textobjs")
     end,
   },
   {
@@ -509,13 +504,8 @@ return {
         on_attach = function(bufnr)
           -- Jump forwards/backwards with '{' and '}'
           local anext, aprev
-          if use_nvim_treesitter_main_branch then
-            local repeat_move = require("repeatable_move")
-            anext, aprev = repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
-          else
-            local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
-            anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
-          end
+          local repeat_move = require("repeatable_move")
+          anext, aprev = repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
           vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
           vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
         end,

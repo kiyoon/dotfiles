@@ -11,7 +11,6 @@ local tmux_send_dev = false
 local haskell_scope_highlighting_dev = false
 local indent_blankline_v2_dev = false
 local treesitter_indent_object_dev = false
-local use_nvim_treesitter_main_branch = true
 
 local icons = require("kiyoon.icons")
 
@@ -987,9 +986,7 @@ return {
     "MeanderingProgrammer/treesitter-modules.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
-      if use_nvim_treesitter_main_branch then
-        require("kiyoon.treesitter_main")
-      end
+      require("kiyoon.treesitter")
     end,
   },
   {
@@ -1006,11 +1003,7 @@ return {
     --   require("lazy.core.loader").add_to_rtp(plugin)
     --   require("nvim-treesitter.query_predicates")
     -- end,
-    config = function()
-      if not use_nvim_treesitter_main_branch then
-        require("kiyoon.treesitter")
-      end
-    end,
+    config = function() end,
     dev = nvim_treesitter_dev,
   },
   {
@@ -1030,7 +1023,7 @@ return {
       -- vim.g.no_go_maps = true
     end,
     config = function()
-      require("kiyoon.ts_textobjs_main")
+      require("kiyoon.ts_textobjs")
     end,
   },
   {
@@ -1260,25 +1253,6 @@ return {
     },
     config = function()
       require("treesj").setup({ use_default_keymaps = false, max_join_length = 1000 })
-    end,
-  },
-  {
-    "ThePrimeagen/refactoring.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      { "nvim-treesitter/nvim-treesitter", dev = nvim_treesitter_dev },
-    },
-    keys = require("kiyoon.refactoring_keys"),
-    init = function()
-      local status, wk = pcall(require, "which-key")
-      if status then
-        wk.add({
-          { "<space>r", group = "[R]efactor" },
-        })
-      end
-    end,
-    config = function()
-      require("refactoring").setup()
     end,
   },
   {
@@ -1537,13 +1511,8 @@ return {
         on_attach = function(bufnr)
           -- Jump forwards/backwards with '{' and '}'
           local anext, aprev
-          if use_nvim_treesitter_main_branch then
-            local repeat_move = require("repeatable_move")
-            anext, aprev = repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
-          else
-            local tstext_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
-            anext, aprev = tstext_repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
-          end
+          local repeat_move = require("repeatable_move")
+          anext, aprev = repeat_move.make_repeatable_move_pair(aerial.next, aerial.prev)
           vim.keymap.set("n", "[r", aprev, { buffer = bufnr, desc = "Aerial prev" })
           vim.keymap.set("n", "]r", anext, { buffer = bufnr, desc = "Aerial next" })
         end,
@@ -2529,13 +2498,8 @@ return {
         },
       })
       local next_todo, prev_todo
-      if use_nvim_treesitter_main_branch then
-        local repeat_move = require("repeatable_move")
-        next_todo, prev_todo = repeat_move.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
-      else
-        local tstext = require("nvim-treesitter.textobjects.repeatable_move")
-        next_todo, prev_todo = tstext.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
-      end
+      local repeat_move = require("repeatable_move")
+      next_todo, prev_todo = repeat_move.make_repeatable_move_pair(todo_comments.jump_next, todo_comments.jump_prev)
       vim.keymap.set("n", "]t", next_todo, { desc = "Next todo comment" })
 
       vim.keymap.set("n", "[t", prev_todo, { desc = "Previous todo comment" })

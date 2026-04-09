@@ -29,3 +29,5 @@ alias ns='nvidia-smi'
 alias rb='gio trash'
 
 alias cl='claude --allow-dangerously-skip-permissions'
+alias cld='claude --dangerously-skip-permissions'
+alias cod='codex --dangerously-bypass-approvals-and-sandbox'

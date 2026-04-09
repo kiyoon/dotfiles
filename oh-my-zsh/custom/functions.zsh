@@ -322,12 +322,22 @@ tzsti() {
 }
 
 osc52copy() {
-	if [ -z "$1" ]; then
+	local data
+	if [ -n "$1" ]; then
+		data="$1"
+	elif [ ! -t 0 ]; then
+		data="$(cat; printf x)"
+		data="${data%x}"
+		if [ -z "$data" ]; then
+			echo "No stdin to copy"
+			return 1
+		fi
+	else
 		echo "Usage: osc52copy [text]"
+		echo "       echo [text] | osc52copy"
 		return 1
 	fi
-	#printf $'\e]52;c;%s\a' "$(base64 <<<'hello world')"
-	printf $'\e]52;c;%s\a' "$(printf %s "$1" | base64 | tr -d '\n')"
+	printf $'\e]52;c;%s\a' "$(printf %s "$data" | base64 | tr -d '\n')"
 }
 
 # Inspired from oh-my-zsh/plugins/copypath but uses osc52
@@ -348,17 +358,7 @@ cpfile() {
 
 # copy stdin to clipboard (OSC52)
 cppipe() {
-	# Read all of stdin (preserve newlines) into a variable
-	local data
-	data="$(cat)"
-
-	# Optional: handle empty stdin nicely
-	if [ -z "$data" ]; then
-		echo "No stdin to copy"
-		return 1
-	fi
-
-	osc52copy "$data"
+	osc52copy
 }
 
 # Ctrl+O to copy current command to clipboard

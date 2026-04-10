@@ -3,7 +3,7 @@
 ---@field waitLoading   fun(self: ChatGPT, onDone: fun(axWin: hs.axuielement)?, timeoutSeconds: number?)
 ---@field waitResponse  fun(self: ChatGPT, onDone: fun()?, timeoutSeconds: number?)
 ---@field scrollToBottom fun(self: ChatGPT, onDone: fun()?)
----@field copyResponse  fun(self: ChatGPT, onDone: fun()?)
+---@field copyResponse  fun(self: ChatGPT, onDone: fun()?, onError: fun(msg: string)?)
 ---@field pasteClipboard fun(self: ChatGPT, send: boolean?)
 ---@field sendToChatGPT fun(self: ChatGPT, chatName: string, ipcDoneFile: string, ipcErrorFile: string)
 
@@ -51,9 +51,11 @@ end
 
 --- Copy the last assistant response to the clipboard.
 --- Hovers the last message if needed to reveal the copy button.
----@param onDone fun()?
-function obj:copyResponse(onDone)
-  actions.copyResponse(onDone)
+--- Retries up to 3 times if the clipboard does not change after clicking.
+---@param onDone  fun()?
+---@param onError fun(msg: string)?
+function obj:copyResponse(onDone, onError)
+  actions.copyResponse(onDone, onError)
 end
 
 --- Paste the current clipboard into the composer and (optionally) send it.
@@ -94,6 +96,8 @@ function obj:sendToChatGPT(chatName, ipcDoneFile, ipcErrorFile)
           actions.scrollToBottom(function()
             actions.copyResponse(function()
               done()
+            end, function(err)
+              fail("copyResponse: " .. (err or "unknown"))
             end)
           end)
         end)

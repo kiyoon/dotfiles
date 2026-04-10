@@ -230,35 +230,48 @@ end
 ---   3. Move the mouse to the last-message area (Joindre.y - 120) to trigger
 ---      the CSS hover state that makes the copy button visible.
 ---   4. Wait 300 ms for the hover animation, then left-click the same point.
----   5. Wait 500 ms for the clipboard write, then call onDone.
+---   5. Poll hs.pasteboard.changeCount() until it increments (clipboard updated)
+---      or the attempt times out.  Retry up to maxRetries times before failing.
 ---
----@param onDone fun()?  called after the copy click is fired
-function M.copyResponse(onDone)
+---@param onDone  fun()?   called after clipboard is confirmed updated
+---@param onError fun(msg: string)?  called if all retries are exhausted
+---@param _retry  number?  internal retry counter (do not pass from outside)
+function M.copyResponse(onDone, onError, _retry)
+  _retry = _retry or 0
+  local maxRetries = 3
+
   local app = hs.application.get("ChatGPT")
   if not app then
     hs.alert.show("ChatGPT: app not found")
+    if onError then onError("app not found") end
     return
   end
   local axWin = ax.window()
   if not axWin then
     hs.alert.show("ChatGPT: window not found")
+    if onError then onError("window not found") end
     return
   end
 
   local joindre = ax.findJoindreButton(axWin)
   if not joindre then
     hs.alert.show("ChatGPT: Joindre/Attach button not found — cannot locate copy button")
+    if onError then onError("Joindre button not found") end
     return
   end
 
   local f = joindre:attributeValue("AXFrame")
   if not f then
     hs.alert.show("ChatGPT: Joindre button has no AXFrame")
+    if onError then onError("Joindre button has no AXFrame") end
     return
   end
 
   -- The copy button appears ~120px above the Joindre button (confirmed empirically).
   local copyPt = { x = f.x, y = f.y - 120 }
+
+  -- Snapshot clipboard state before clicking so we can detect any write.
+  local countBefore = hs.pasteboard.changeCount()
 
   -- 1. Bring app to front so our synthetic events target it.
   app:activate()
@@ -271,9 +284,29 @@ function M.copyResponse(onDone)
     hs.timer.doAfter(0.3, function()
       hs.eventtap.leftClick(copyPt)
 
-      -- 4. Wait for clipboard write, then signal completion.
-      hs.timer.doAfter(0.5, function()
-        if onDone then onDone() end
+      -- 4. Poll until the clipboard change count increments (copy landed).
+      local deadline = hs.timer.secondsSinceEpoch() + 3
+      local t
+      t = hs.timer.doEvery(0.1, function()
+        if hs.pasteboard.changeCount() ~= countBefore then
+          -- Clipboard was updated — success.
+          t:stop()
+          if onDone then onDone() end
+          return
+        end
+        if hs.timer.secondsSinceEpoch() >= deadline then
+          t:stop()
+          if _retry < maxRetries then
+            -- Retry: re-hover and re-click after a short pause.
+            hs.timer.doAfter(0.3, function()
+              M.copyResponse(onDone, onError, _retry + 1)
+            end)
+          else
+            local msg = "copy button did not update clipboard after " .. maxRetries .. " retries"
+            hs.alert.show("ChatGPT: " .. msg)
+            if onError then onError(msg) end
+          end
+        end
       end)
     end)
   end)

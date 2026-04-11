@@ -54,6 +54,25 @@ function M.selectChat(chatName, onDone)
   end)
 end
 
+--- Wait until the composer text area is ABSENT (navigation away has started).
+--- Used before waitLoading to avoid finding the previous chat's text area.
+--- Calls onDone() once absent, or immediately if already absent, or after timeoutSeconds.
+---@param onDone fun()?
+---@param timeoutSeconds number?  default 8
+function M.waitNavAway(onDone, timeoutSeconds)
+  timeoutSeconds = timeoutSeconds or 8
+  local deadline = hs.timer.secondsSinceEpoch() + timeoutSeconds
+  local t
+  t = hs.timer.doEvery(0.1, function()
+    local w = ax.window()
+    local absent = (not w) or (ax.findTextArea(w) == nil)
+    if absent or hs.timer.secondsSinceEpoch() >= deadline then
+      t:stop()
+      if onDone then onDone() end
+    end
+  end)
+end
+
 --- Wait until the chat view has finished loading.
 --- "Loading" means: the AXTextArea (composer) is present in the tree.
 --- Calls onDone() when ready, or shows an alert on timeout.

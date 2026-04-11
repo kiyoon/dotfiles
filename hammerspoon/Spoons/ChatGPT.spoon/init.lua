@@ -88,6 +88,10 @@ function obj:sendToChatGPT(chatName, ipcDoneFile, ipcErrorFile)
   end
 
   actions.selectChat(chatName, function()
+    -- Wait for the old chat's text area to disappear before calling waitLoading.
+    -- Long chats take time to unload; without this, waitLoading finds the previous
+    -- chat's text area and pasteClipboard fires into the wrong/still-loading chat.
+    actions.waitNavAway(function()
     actions.waitLoading(function()
       actions.pasteClipboard(true)
       -- pasteClipboard fires keystrokes asynchronously; give it a moment
@@ -105,8 +109,9 @@ function obj:sendToChatGPT(chatName, ipcDoneFile, ipcErrorFile)
           fail("waitResponse timed out after 540s")
         end)
       end)
-    end)
-  end)
+    end)        -- waitLoading
+    end)        -- waitNavAway
+  end)          -- selectChat
 
   -- selectChat may fail silently; if ipcDoneFile never appears, bash will time out.
 end

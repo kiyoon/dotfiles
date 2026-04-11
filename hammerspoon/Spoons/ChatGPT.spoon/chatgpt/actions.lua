@@ -145,7 +145,8 @@ end
 --- Calls onDone() when complete, or shows an alert on timeout.
 ---@param onDone fun()?
 ---@param timeoutSeconds number?  default 300
-function M.waitResponse(onDone, timeoutSeconds)
+---@param onTimeout fun()?  called instead of onDone when the deadline is exceeded
+function M.waitResponse(onDone, timeoutSeconds, onTimeout)
   timeoutSeconds = timeoutSeconds or 300
   local deadline = hs.timer.secondsSinceEpoch() + timeoutSeconds
   local done = false
@@ -159,6 +160,7 @@ function M.waitResponse(onDone, timeoutSeconds)
         done = true
         t:stop()
         hs.alert.show("ChatGPT: timed out waiting for response to finish")
+        if onTimeout then onTimeout() end
         return
       end
       local axWin = ax.window()

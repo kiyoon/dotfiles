@@ -4,6 +4,7 @@ local APPLE_EN = "com.apple.keylayout.ABC"
 local APPLE_KO = "com.apple.inputmethod.Korean.2SetKorean"
 
 hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
+hs.loadSpoon("ChatGPT")
 -- Enables the `hs` command-line tool to talk to Hammerspoon
 require("hs.ipc")
 

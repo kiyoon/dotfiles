@@ -49,11 +49,31 @@ end
 -- ─── window ──────────────────────────────────────────────────────────────────
 
 --- Return the AXWindow element for the ChatGPT app, or nil.
+--- Three-tier fallback so polling works even when ChatGPT is not focused or
+--- is on a different macOS Space:
+---   1. app:mainWindow()     — fastest, works when ChatGPT is frontmost
+---   2. app:allWindows()[1]  — works when unfocused on the *current* Space
+---   3. hs.window.allWindows() scan — works across *all* Spaces / desktops
+--- The AX tree is readable without focus; no activation is needed here.
 ---@return hs.axuielement?
 function M.window()
   local app = hs.application.get("ChatGPT")
   if not app then return nil end
   local win = app:mainWindow()
+  if not win then
+    local all = app:allWindows()
+    win = all and all[1]
+  end
+  if not win then
+    -- allWindows() only covers the current Space — search globally as last resort.
+    for _, w in ipairs(hs.window.allWindows()) do
+      local wapp = w:application()
+      if wapp and wapp:name() == "ChatGPT" then
+        win = w
+        break
+      end
+    end
+  end
   if not win then return nil end
   return hs.axuielement.windowElement(win)
 end

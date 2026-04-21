@@ -106,10 +106,61 @@ function M.waitLoading(onDone, timeoutSeconds)
   end)
 end
 
+--- Wait until a ready textarea is available after chat navigation.
+---
+--- Two cases:
+---   A) Already on the target chat (textarea unchanged): after a short settle
+---      delay (1 s) the same textarea is still present — proceed immediately.
+---   B) Navigated from a different chat: wait for a new textarea element to
+---      appear (ta ~= oldTextArea).
+---
+--- This replaces the waitNavAway + waitLoading two-step.
+---@param oldTextArea hs.axuielement?  textarea captured before navigation (nil = any textarea)
+---@param onDone fun(axWin: hs.axuielement)?
+---@param timeoutSeconds number?  default 20
+function M.waitNewTextArea(oldTextArea, onDone, timeoutSeconds)
+  timeoutSeconds = timeoutSeconds or 20
+  local deadline = hs.timer.secondsSinceEpoch() + timeoutSeconds
+  -- If the textarea is still oldTA after this many seconds we assume we are
+  -- already on the right chat (click was a no-op) and proceed.
+  local alreadyThereDeadline = hs.timer.secondsSinceEpoch() + 1.0
+  local done = false
+  local t
+
+  hs.timer.doAfter(0.1, function()
+    t = hs.timer.doEvery(0.1, function()
+      if done then return end
+      if hs.timer.secondsSinceEpoch() >= deadline then
+        done = true
+        t:stop()
+        hs.alert.show("ChatGPT: timed out waiting for chat textarea")
+        return
+      end
+      local axWin = ax.window()
+      if not axWin then return end
+      local ta = ax.findTextArea(axWin)
+      if ta then
+        if ta ~= oldTextArea then
+          -- Case B: a genuinely new textarea appeared — navigated to new chat.
+          done = true
+          t:stop()
+          if onDone then onDone(axWin) end
+        elseif hs.timer.secondsSinceEpoch() >= alreadyThereDeadline then
+          -- Case A: same textarea persisted — already on the target chat.
+          done = true
+          t:stop()
+          if onDone then onDone(axWin) end
+        end
+      end
+    end)
+  end)
+end
+
 --- Paste the current clipboard contents into the ChatGPT composer and send.
 --- The composer must already be loaded (call waitLoading first if needed).
----@param send boolean?  true (default) = press Enter/Send after pasting
-function M.pasteClipboard(send)
+---@param send    boolean?  true (default) = press Enter/Send after pasting
+---@param onSent  fun()?    called after the send button / Return has been pressed
+function M.pasteClipboard(send, onSent)
   if send == nil then send = true end
   local axWin = ax.window()
   if not axWin then
@@ -150,6 +201,10 @@ function M.pasteClipboard(send)
             -- Fallback: send Return keystroke.
             hs.eventtap.keyStroke({}, "return", 0)
           end
+          -- Notify caller that send was attempted (short delay for keypress to process).
+          if onSent then
+            hs.timer.doAfter(0.1, onSent)
+          end
         end
       end)
     end
@@ -173,7 +228,13 @@ function M.waitResponse(onDone, timeoutSeconds, onTimeout)
 
   local function startPhase2()
     -- Phase 2: poll until Stop button disappears.
-    t = hs.timer.doEvery(0.5, function()
+    -- 1 s interval keeps Hammerspoon's event loop responsive (IME switching,
+    -- hotkeys, etc.) between AX queries.  Require 2 consecutive polls without
+    -- a Stop button before declaring done — guards against transient AX glitches
+    -- while keeping end-detection latency to ≤ 2 s.
+    local REQUIRED_MISSING = 2
+    local missingCount = 0
+    t = hs.timer.doEvery(1.0, function()
       if done then return end
       if hs.timer.secondsSinceEpoch() >= deadline then
         done = true
@@ -185,18 +246,25 @@ function M.waitResponse(onDone, timeoutSeconds, onTimeout)
       local axWin = ax.window()
       if not axWin then return end
       if ax.findStopButton(axWin) == nil then
-        done = true
-        t:stop()
-        if onDone then onDone() end
+        missingCount = missingCount + 1
+        if missingCount >= REQUIRED_MISSING then
+          done = true
+          t:stop()
+          if onDone then onDone() end
+        end
+      else
+        missingCount = 0  -- Stop button visible again — reset streak
       end
     end)
   end
 
   -- Phase 1: wait up to 15 s for the Stop button to appear, then hand off to phase 2.
+  -- 1 s interval is fine here — we just need to detect that streaming started,
+  -- not the exact millisecond.
   local phase1Deadline = hs.timer.secondsSinceEpoch() + 15
   local appeared = false
   hs.timer.doAfter(0.5, function()
-    t = hs.timer.doEvery(0.3, function()
+    t = hs.timer.doEvery(1.0, function()
       if done then return end
       if appeared then return end  -- already handed off
       local axWin = ax.window()
@@ -271,6 +339,22 @@ function M.copyResponse(onDone, onError, _retry)
   if not axWin then
     hs.alert.show("ChatGPT: window not found")
     if onError then onError("window not found") end
+    return
+  end
+
+  -- Guard: do not attempt to copy while ChatGPT is still streaming.
+  -- Check before every click attempt (including retries) so a false-early
+  -- wakeup from waitResponse cannot race into the copy action.
+  if ax.findStopButton(axWin) ~= nil then
+    if _retry < maxRetries then
+      hs.timer.doAfter(1.0, function()
+        M.copyResponse(onDone, onError, _retry + 1)
+      end)
+    else
+      local msg = "stop button still visible after " .. maxRetries .. " waits — giving up copy"
+      hs.alert.show("ChatGPT: " .. msg)
+      if onError then onError(msg) end
+    end
     return
   end
 

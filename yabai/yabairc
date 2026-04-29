@@ -51,6 +51,7 @@ yabai -m rule --add app="^QuickTime Player$" manage=off
 yabai -m rule --add app="^IINA$" manage=off
 
 yabai -m rule --add app="^Archive Utility$" manage=off
+yabai -m rule --add app="^Utilitaire d’archive$" manage=off
 yabai -m rule --add app="^Wally$" manage=off
 yabai -m rule --add app="^Pika$" manage=off
 yabai -m rule --add app="^balenaEtcher$" manage=off

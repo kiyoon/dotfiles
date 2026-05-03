@@ -134,10 +134,16 @@ shift + alt - s : yabai -m space --layout $(yabai -m query --spaces --space | jq
 
 # https://jasoneckert.github.io/myblog/customizing-macos-for-development/skhdrc.txt
 # create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
+
+# use hammerspoon as a fallback for when yabai space create is broken.
+#shift + alt - f : hs -c 'local s=require("hs.spaces"); local sc=require("hs.screen"); s.addSpaceToScreen(sc.mainScreen():getUUID(), true)' && \
+#                   sleep 1.5 && \
 shift + alt - f : yabai -m space --create && \
                    index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
                    yabai -m window --space "${index}" && \
                    yabai -m space --focus "${index}"
+#shift + alt - end : hs -c 'local s=require("hs.spaces"); local sc=require("hs.screen"); s.addSpaceToScreen(sc.mainScreen():getUUID(), true)' && \
+#                   sleep 1.5 && \
 shift + alt - end : yabai -m space --create && \
                    index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
                    yabai -m window --space "${index}" && \
@@ -145,6 +151,8 @@ shift + alt - end : yabai -m space --create && \
 shift + alt - home : yabai -m window --space 1 && \
                    yabai -m space --focus 1
 
+#shift + alt - space : hs -c 'local s=require("hs.spaces"); local sc=require("hs.screen"); s.addSpaceToScreen(sc.mainScreen():getUUID(), true)' && \
+#                   sleep 1.5 && \
 shift + alt - space : yabai -m space --create && \
                    index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
                    yabai -m space --focus "${index}" && \

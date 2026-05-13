@@ -68,6 +68,12 @@ f6 [
     # "WezTerm"       : skhd --key f5
     # *             : echo "hello everyone"
 ]
+alt - f2 [
+    "Google Chrome"       : skhd --key 'ctrl + shift - pageup'
+]
+alt - f6 [
+    "Google Chrome"       : skhd --key 'ctrl + shift - pagedown'
+]
 
 f8 : yabai -m space --focus prev || yabai -m space --focus last
 f10 : yabai -m space --focus next || yabai -m space --focus first
@@ -191,4 +197,3 @@ resize < left : yabai -m window --resize left:-30:0 || yabai -m window --resize 
 resize < right : yabai -m window --resize right:30:0 || yabai -m window --resize left:30:0
 resize < down : yabai -m window --resize bottom:0:30 || yabai -m window --resize top:0:30
 resize < up : yabai -m window --resize top:0:-30 || yabai -m window --resize bottom:0:-30
-

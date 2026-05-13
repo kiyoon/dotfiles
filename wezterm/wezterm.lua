@@ -45,6 +45,16 @@ local config = {
 			action = wezterm.action.ActivateTabRelative(1),
 		},
 		{
+			key = "LeftArrow",
+			mods = "CTRL|SHIFT",
+			action = wezterm.action.MoveTabRelative(-1),
+		},
+		{
+			key = "RightArrow",
+			mods = "CTRL|SHIFT",
+			action = wezterm.action.MoveTabRelative(1),
+		},
+		{
 			key = "D",
 			mods = "CMD|SHIFT",
 			action = wezterm.action_callback(function(win, pane)

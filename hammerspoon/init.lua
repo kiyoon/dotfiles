@@ -2,6 +2,7 @@ local GUREUM_EN = "org.youknowone.inputmethod.Gureum.qwerty"
 local GUREUM_KO = "org.youknowone.inputmethod.Gureum.han2"
 local APPLE_EN = "com.apple.keylayout.ABC"
 local APPLE_KO = "com.apple.inputmethod.Korean.2SetKorean"
+local KAKAOTALK_BID = "com.kakao.KakaoTalkMac"
 
 hs.loadSpoon("EmmyLua") -- LSP for hammerspoon
 hs.loadSpoon("ChatGPT")
@@ -197,6 +198,16 @@ local function mapOnExitWezterm()
   end
 end
 
+-- KakaoTalk: if already on an Apple keyboard (any language), keep it.
+-- Otherwise (e.g. Gureum), switch to Apple Korean.
+local function mapOnEnterKakaoTalk()
+  local cur = hs.keycodes.currentSourceID()
+  if cur == APPLE_EN or cur == APPLE_KO then
+    return
+  end
+  setSource(APPLE_KO)
+end
+
 -- Global state to prevent stale timers from applying after fast app switching
 _G.wezIme = _G.wezIme or { token = 0, timer = nil }
 
@@ -253,6 +264,9 @@ _G.wezImeWatcher = hs.application.watcher.new(
     if appName == "WezTerm" then
       -- Entering WezTerm: enforce Apple English
       scheduleGuarded(0.05, bid, mapOnEnterWezterm)
+    elseif bid == KAKAOTALK_BID then
+      -- Entering KakaoTalk: keep Apple if already Apple, else use Apple Korean
+      scheduleGuarded(0.05, bid, mapOnEnterKakaoTalk)
     else
       -- Entering any other app: enforce Gureum (only if currently Apple)
       scheduleGuarded(0.05, bid, mapOnExitWezterm)

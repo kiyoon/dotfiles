@@ -315,7 +315,7 @@ codex exec --enable fast_mode --model gpt-5.5 -c model_reasoning_effort=xhigh --
 <your prompt>
 PROMPT
 
-claude -p --model opus --effort max --permission-mode bypassPermissions --disallowedTools "Edit Write NotebookEdit MultiEdit" <<'PROMPT'
+CLAUDE_CODE_EFFORT_LEVEL=max claude -p --model opus --permission-mode bypassPermissions --disallowedTools "Edit" "Write" "NotebookEdit" <<'PROMPT'
 <your prompt>
 PROMPT
 

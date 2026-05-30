@@ -410,3 +410,12 @@ pymv() {
 	DOTFILES_DIR=$(dotfiles_dir)
 	bun ${DOTFILES_DIR}/oh-my-zsh/scripts/basedpyright-tools/rename_module.ts "$@"
 }
+
+# Override oh-my-zsh gitignore plugin's `gi` to always prepend .playwright-mcp/
+# It gets generated a lot in my projects but isn't in the upstream templates.
+gi() {
+	echo ".playwright-mcp/"
+	echo
+	local query="${(j:,:)@}"
+	_gi_curl "$query" || return 1
+}

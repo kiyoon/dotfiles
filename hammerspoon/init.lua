@@ -304,6 +304,28 @@ hs.hotkey.bind(hotkey, "m", function()
   return true -- block original click
 end)
 
+-- Insert multi-agent prompt scaffold with codex + claude usage examples.
+-- Cursor lands on a fresh line after "use multi agents" — type the task there.
+-- Uses keystroke simulation (not paste) so Claude Code's TUI renders it inline
+-- instead of collapsing into a [Pasted text] attachment.
+local CODEX_CLAUDE_TEMPLATE = [[Use cdx switch dear ($20 plan) first; cdx switch hetu ($200 plan) only if rate limited.
+Check rate with: cdx usage
+Use below commands:
+codex exec --enable fast_mode --model gpt-5.5 -c model_reasoning_effort=xhigh --skip-git-repo-check --sandbox read-only <<'PROMPT'
+<your prompt>
+PROMPT
+
+claude -p --model opus --effort max --permission-mode bypassPermissions --disallowedTools "Edit Write NotebookEdit MultiEdit" <<'PROMPT'
+<your prompt>
+PROMPT
+
+use multi agents
+]]
+
+hs.hotkey.bind({ "ctrl", "shift", "cmd" }, "c", function()
+  hs.eventtap.keyStrokes(CODEX_CLAUDE_TEMPLATE)
+end)
+
 -- Pause/Resume frontmost application
 -- This is for pausing single-player games when you need more time to read the dialogs
 local suspended = {}

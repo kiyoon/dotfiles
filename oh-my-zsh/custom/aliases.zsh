@@ -28,6 +28,6 @@ alias src='omz reload'
 alias ns='nvidia-smi'
 alias rb='gio trash'
 
-alias cl='CLAUDE_CODE_EFFORT_LEVEL=max claude --allow-dangerously-skip-permissions'
-alias cld='CLAUDE_CODE_EFFORT_LEVEL=max claude --dangerously-skip-permissions'
+alias cl='claude --effort max --allow-dangerously-skip-permissions'
+alias cld='claude --effort max --dangerously-skip-permissions'
 alias cod='codex --dangerously-bypass-approvals-and-sandbox'

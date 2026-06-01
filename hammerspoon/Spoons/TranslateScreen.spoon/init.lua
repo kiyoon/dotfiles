@@ -46,15 +46,18 @@ function obj:screenshotAndTranslate(opts)
           -- Step 5: Go to Google Translate
           hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&op=images")
           hs.eventtap.keyStroke({}, "return", 0)
-          -- Step 6: Wait until page loads
-          chrome.waitForLoad(function()
-            -- Step 7: Paste clipboard (image/text)
-            -- in case user changed focus while loading
-            -- hs.application.launchOrFocus("Google Chrome")
-            win:focus()
-            hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-            hs.alert.show("🪄 Pasted into Google Translate")
-          end, 10)
+          -- Step 6: Wait until the Translate page has loaded. Detect via the window
+          -- title (Accessibility API); Chrome's AppleScript tab/window queries are
+          -- unreliable on recent versions (reports 0 windows -> isLoaded never fires).
+          chrome.waitForTitle(win, "Google Translate", function()
+            -- Step 7: small settle so the page's paste handler is attached, then paste.
+            hs.timer.doAfter(0.5, function()
+              -- re-focus in case the user changed apps while the page loaded
+              win:focus()
+              hs.eventtap.keyStroke({ "cmd" }, "v", 0)
+              hs.alert.show("🪄 Pasted into Google Translate")
+            end)
+          end, 8)
           -- hs.timer.doAfter(1.0, function()
           --   -- Step 6: Paste clipboard (image/text)
           --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)

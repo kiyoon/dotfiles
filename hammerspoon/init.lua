@@ -308,8 +308,8 @@ end)
 -- Cursor lands on a fresh line after "use multi agents" — type the task there.
 -- Uses keystroke simulation (not paste) so Claude Code's TUI renders it inline
 -- instead of collapsing into a [Pasted text] attachment.
-local CODEX_CLAUDE_TEMPLATE = [[Use cdx switch dear ($20 plan) first; cdx switch hetu ($200 plan) only if rate limited.
-Check rate with: cdx usage
+local CODEX_CLAUDE_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
+Then cdx switch ONCE to dear ($20 plan); use hetu ($200 plan) only if dear is rate limited. Don't switch back and forth; it interferes with others using codex.
 Use below commands:
 codex exec --enable fast_mode --model gpt-5.5 -c model_reasoning_effort=xhigh --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>

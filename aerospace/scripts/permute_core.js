@@ -44,18 +44,25 @@ function computePlan(op, windows) {
 
 	let moveTo = {}
 	if (op === 'rotate-cw' || op === 'rotate-ccw') {
-		// Same math as yabai/scripts/rotate_without_changing_layout.sh:
-		// angle around the centroid with Y flipped (0 = right, CCW positive),
-		// normalized to [0, 2pi); cw walks the ring in descending angle.
+		// Same angle convention as yabai/scripts/rotate_without_changing_layout.sh:
+		// around the centroid with Y flipped (0 = right, CCW positive), normalized
+		// to [0, 2pi). One canonical ring sorted by ascending angle; ties (flat
+		// rows/columns put windows at angle 0 or on the centroid) break by
+		// position (cx, then cy) so the ring is a function of geometry only -
+		// never of which window currently occupies a slot. ccw walks the ring
+		// forward, cw backward: the two are exact inverses on every layout by
+		// construction.
 		const mx = windows.reduce((s, w) => s + w.cx, 0) / windows.length
 		const my = windows.reduce((s, w) => s + w.cy, 0) / windows.length
 		for (const w of windows) {
 			let a = Math.atan2(my - w.cy, w.cx - mx)
 			if (a < 0) a += 2 * Math.PI
-			w.key = op === 'rotate-ccw' ? a : 2 * Math.PI - a
+			w.key = a
 		}
-		const ring = windows.slice().sort((p, q) => p.key - q.key || p.id - q.id)
-		for (let i = 0; i < ring.length; i++) moveTo[ring[i].id] = ring[(i + 1) % ring.length].id
+		const ring = windows.slice().sort((p, q) =>
+			p.key - q.key || p.cx - q.cx || p.cy - q.cy || p.id - q.id)
+		const step = op === 'rotate-ccw' ? 1 : ring.length - 1
+		for (let i = 0; i < ring.length; i++) moveTo[ring[i].id] = ring[(i + step) % ring.length].id
 	} else if (op === 'mirror-y' || op === 'mirror-x') {
 		// Reflect each center across the bounding-box midline, then greedily pair
 		// windows to slots by distance (deterministic: dist, then ids). Exact on

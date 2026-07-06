@@ -34,6 +34,19 @@ MAINSTACK='[{"id":1,"x":0,"y":0,"w":50,"h":100},{"id":2,"x":50,"y":0,"w":50,"h":
 check rotate-cw-mainstack '{"moveTo":{"1":2,"2":3,"3":1}}' \
 	"$(osascript "$CORE" plan rotate-cw "$MAINSTACK")"
 
+# flat 3-window row: middle window sits on the centroid (atan2(0,0) angle tie).
+# cw and ccw must be DISTINCT and mutually inverse; ring ties break by position.
+ROW3='[{"id":1,"x":0,"y":0,"w":50,"h":100},{"id":2,"x":50,"y":0,"w":50,"h":100},{"id":3,"x":100,"y":0,"w":50,"h":100}]'
+check rotate-cw-row '{"moveTo":{"1":3,"2":1,"3":2}}' \
+	"$(osascript "$CORE" plan rotate-cw "$ROW3")"
+check rotate-ccw-row '{"moveTo":{"1":2,"2":3,"3":1}}' \
+	"$(osascript "$CORE" plan rotate-ccw "$ROW3")"
+# same geometry with ids sitting one slot left (the state after one cw):
+# the ring must depend on positions, not ids, so cw keeps shifting the same way
+ROW3B='[{"id":2,"x":0,"y":0,"w":50,"h":100},{"id":3,"x":50,"y":0,"w":50,"h":100},{"id":1,"x":100,"y":0,"w":50,"h":100}]'
+check rotate-cw-row-stability '{"moveTo":{"1":3,"2":1,"3":2}}' \
+	"$(osascript "$CORE" plan rotate-cw "$ROW3B")"
+
 # mirror-y on the grid: swap columns
 check mirror-y-grid '{"moveTo":{"1":2,"2":1,"3":4,"4":3}}' \
 	"$(osascript "$CORE" plan mirror-y "$GRID")"

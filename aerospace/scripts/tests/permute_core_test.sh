@@ -61,5 +61,26 @@ FRAMES="$(osascript "$CORE" frames)"
 check frames-shape true \
 	"$(printf '%s' "$FRAMES" | jq -c 'type == "object" and (to_entries | all(.value | (has("x") and has("y") and has("w") and has("h"))))')"
 
+# swaps: decompose the cw-grid permutation into adjacent DFS transpositions.
+# dfsOrder [1,3,2,4] is the grid's tree order (left column then right column).
+# Worked example: desired final order is [3,4,1,2]; selection-sort bubbling
+# emits: bubble 3 to slot 0, bubble 4 (twice) to slot 1.
+check swaps-cw-grid '3 dfs-prev
+4 dfs-prev
+4 dfs-prev' \
+	"$(osascript "$CORE" swaps '{"moveTo":{"1":2,"2":4,"3":1,"4":3},"dfsOrder":[1,3,2,4]}')"
+
+# a plain 2-cycle among adjacent windows is a single swap
+check swaps-adjacent-pair '2 dfs-prev' \
+	"$(osascript "$CORE" swaps '{"moveTo":{"1":2,"2":1,"3":3},"dfsOrder":[1,2,3]}')"
+
+# id-set mismatch between moveTo and dfsOrder must throw (non-zero exit)
+if osascript "$CORE" swaps '{"moveTo":{"1":2,"2":1},"dfsOrder":[1,9]}' >/dev/null 2>&1; then
+	fail=$(( fail + 1 ))
+	echo "FAIL swaps-mismatch-throws (expected non-zero exit)"
+else
+	pass=$(( pass + 1 ))
+fi
+
 echo "pass=$pass fail=$fail"
 (( fail == 0 ))

@@ -85,9 +85,37 @@ function computePlan(op, windows) {
 	return { moveTo }
 }
 
+function computeSwaps(moveTo, dfsOrder) {
+	// Slots are DFS indices; "swap --window-id X dfs-prev" swaps X with the
+	// window one slot earlier. Selection-sort bubbling realizes any permutation
+	// as adjacent transpositions (<= n(n-1)/2 swaps).
+	const slotOf = {}
+	dfsOrder.forEach((id, i) => { slotOf[id] = i })
+	const desired = new Array(dfsOrder.length)
+	for (const [w, t] of Object.entries(moveTo)) desired[slotOf[t]] = Number(w)
+	if (Object.keys(moveTo).length !== dfsOrder.length || desired.some(d => d === undefined || slotOf[d] === undefined)) {
+		throw new Error('moveTo/dfsOrder id sets differ')
+	}
+	const current = dfsOrder.slice()
+	const lines = []
+	for (let i = 0; i < desired.length; i++) {
+		for (let j = current.indexOf(desired[i]); j > i; j--) {
+			lines.push(`${current[j]} dfs-prev`)
+			const tmp = current[j - 1]
+			current[j - 1] = current[j]
+			current[j] = tmp
+		}
+	}
+	return lines.join('\n')
+}
+
 function run(argv) {
 	const cmd = argv[0]
 	if (cmd === 'frames') return JSON.stringify(cgFrames())
 	if (cmd === 'plan') return JSON.stringify(computePlan(argv[1], JSON.parse(argv[2])))
-	throw new Error('usage: permute_core.js frames | plan <op> <windows-json>')
+	if (cmd === 'swaps') {
+		const input = JSON.parse(argv[1])
+		return computeSwaps(input.moveTo, input.dfsOrder)
+	}
+	throw new Error('usage: permute_core.js frames | plan <op> <windows-json> | swaps <input-json>')
 }

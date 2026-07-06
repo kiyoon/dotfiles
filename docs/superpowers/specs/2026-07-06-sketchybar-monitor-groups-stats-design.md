@@ -2,6 +2,11 @@
 
 **Date:** 2026-07-06
 **Status:** Approved (divider grouping + three-pill stats confirmed by user)
+**Amendment (same day):** the "Stats pills" section below is superseded. A
+parallel implementation (three plugins `cpu.sh`/`gpu.sh`/`ram.sh`, separate
+timers, 60/80 label-color thresholds, vm_stat-based RAM, `?%` fallback
+instead of auto-hide) was built outside this plan and adopted verbatim by
+user decision. The workspace-grouping section remains authoritative.
 
 Builds on the existing setup from
 `2026-07-06-sketchybar-aerospace-design.md`.

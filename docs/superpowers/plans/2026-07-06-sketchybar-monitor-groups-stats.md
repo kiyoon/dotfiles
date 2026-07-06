@@ -358,6 +358,12 @@ Multi-monitor visual verification (plug in an external display, confirm the divi
 
 ### Task 2: CPU / RAM / GPU pills
 
+> **SUPERSEDED — do not execute.** A parallel implementation
+> (`plugins/cpu.sh`, `plugins/gpu.sh`, `plugins/ram.sh` + rc items) was
+> built outside this plan and adopted verbatim by user decision on
+> 2026-07-06. This task is retained for reference only; the adoption commit
+> covers what remained (committing the referenced scripts).
+
 **Files:**
 - Create: `sketchybar/tests/test_stats.sh`
 - Create: `sketchybar/plugins/stats.sh`

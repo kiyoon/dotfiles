@@ -1,0 +1,211 @@
+# Config matched to the yabai/skhd workflow in this dotfiles repo.
+# AeroSpace uses workspaces instead of native macOS Spaces, so bindings that
+# created Spaces in yabai move to or open the next workspace here.
+
+config-version = 2
+
+start-at-login = false
+auto-reload-config = true
+
+# sketchybar runs via `brew services start sketchybar`; on aerospace startup we
+# just refresh its workspace indicators.
+after-startup-command = ['exec-and-forget sketchybar --trigger aerospace_workspace_change']
+
+# Notify sketchybar about workspace changes (see sketchybar/plugins/aerospace_workspaces.sh)
+# and record monitor-focus history for monitor.sh move-recent.
+exec-on-workspace-change = ['/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; "$HOME"/.config/aerospace/scripts/monitor.sh track'
+]
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+accordion-padding = 12
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+# yabai config has mouse_follows_focus off.
+on-focused-monitor-changed = []
+
+[gaps]
+inner.horizontal = 12
+inner.vertical = 12
+outer.left = 12
+outer.bottom = 12
+# On the notched built-in display macOS already reserves the top band where
+# sketchybar sits, so only the normal 12px gap is needed. On external monitors
+# (no reserved band with the menu bar hidden) clear the 36px bar + 12px gap.
+outer.top = [{ monitor.'built-in' = 12 }, 48]
+outer.right = 12
+
+[exec]
+inherit-env-vars = true
+
+[exec.env-vars]
+PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:${PATH}'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^System.*(Preferences|Settings)$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^(Ajustes|Impostazioni|Reglages|Réglages).*(Sistema|Système)$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^(Compression|Archive).*Utility$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^(Karabiner-Elements|VLC|IINA|Keka|Wally|Pika|balenaEtcher|macfeh|KeePassXC|Calculator|Dictionary|mpv)$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^(QuickTime.*Player|Creative.*Cloud|Logi.*Options|Alfred.*Preferences|App.*Store|Activity.*Monitor)$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^Finder$'
+if.window-title-regex-substring = '(Copy|Connect|Move|Info|Finder.*Settings|Copiar|Conectar|Mover|Copia|Connectar|Copie|Connecter|Deplacer|Déplacer)'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^Safari$'
+if.window-title-regex-substring = '^(General|(Tab|Password|Website|Extension)s|AutoFill|Se(arch|curity)|Privacy|Advance)$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.window-title-regex-substring = '(Software.*Update|About.*This.*Mac)'
+run = 'layout floating'
+
+[mode.main.binding]
+# skhd passthrough equivalent. Only cmd-shift-alt-b is active in this mode.
+# Mode switches also update the sketchybar badge (sketchybar/plugins/mode.sh).
+# While skhd runs it consumes this chord and owns the toggle: its passthrough
+# mode unbinds the resize chords and its mode-entry command syncs aerospace and
+# sketchybar (see skhd/skhdrc). This binding is the fallback when skhd is off.
+cmd-alt-b = ['mode passthrough', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=passthrough']
+
+# App launchers from skhd.
+alt-shift-backtick = 'exec-and-forget open -a "Visual Studio Code"'
+cmd-alt-backtick = 'exec-and-forget open -a "Unity"'
+alt-1 = 'exec-and-forget open -a "Finder"'
+alt-shift-1 = 'exec-and-forget open -n -a "Finder" ~'
+alt-2 = 'exec-and-forget open -a "Google Chrome"'
+alt-shift-2 = 'exec-and-forget open -n -a "Google Chrome"'
+alt-3 = 'exec-and-forget open -a "WezTerm"'
+alt-shift-3 = 'exec-and-forget open -n -a "WezTerm"'
+alt-4 = 'exec-and-forget open -a "ChatGPT"'
+alt-shift-4 = 'exec-and-forget open -n -a "ChatGPT"'
+alt-5 = 'exec-and-forget open -a "Telegram"'
+alt-6 = 'exec-and-forget open -a "Slack"'
+alt-7 = 'exec-and-forget open -a "Notion"'
+
+# Browser tab navigation from skhd's app-specific F-key bindings.
+f2 = '''exec-and-forget app="$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true')" && if [[ "$app" == "Google Chrome" || "$app" == "Firefox" ]]; then osascript -e 'tell application "System Events" to keystroke tab using {control down, shift down}'; fi'''
+f6 = '''exec-and-forget app="$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true')" && if [[ "$app" == "Google Chrome" || "$app" == "Firefox" ]]; then osascript -e 'tell application "System Events" to keystroke tab using control down'; fi'''
+alt-f2 = '''exec-and-forget app="$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true')" && if [[ "$app" == "Google Chrome" ]]; then osascript -e 'tell application "System Events" to key code 116 using {control down, shift down}'; fi'''
+alt-f6 = '''exec-and-forget app="$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true')" && if [[ "$app" == "Google Chrome" ]]; then osascript -e 'tell application "System Events" to key code 121 using {control down, shift down}'; fi'''
+
+# Focus/navigation.
+alt-shift-h = 'focus left'
+alt-shift-j = 'focus down'
+alt-shift-k = 'focus up'
+alt-shift-l = 'focus right'
+alt-shift-v = 'focus --wrap-around dfs-prev'
+
+f8 = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh focus-prev-used"'
+f10 = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh focus-next-used"'
+
+alt-shift-q = 'close'
+alt-shift-w = 'focus-monitor --wrap-around next'
+
+# Layout controls.
+alt-shift-m = 'fullscreen --no-outer-gaps'
+alt-shift-g = 'layout floating tiling'
+alt-shift-e = 'balance-sizes'
+# yabai-style rotate/mirror: windows cycle through the existing frame slots
+# (scripts/permute.sh; same idea as yabai's rotate_without_changing_layout.sh).
+alt-shift-r = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/permute.sh rotate-cw"'
+alt-shift-z = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/permute.sh mirror-y"'
+alt-shift-x = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/permute.sh mirror-x"'
+
+# Swap windows.
+alt-shift-left = 'swap left'
+alt-shift-right = 'swap right'
+alt-shift-up = 'swap up'
+alt-shift-down = 'swap down'
+
+# Tree manipulation. AeroSpace has no yabai-style BSP auto-split and no mouse
+# drag, so these build the splits manually.
+# join-with: split with the neighbor in that direction. With a horizontal root,
+# joining left/right creates a vertical stack: on the 3rd window, cmd-alt-h
+# tucks it under the 2nd -> yabai's left | top-right / bottom-right layout.
+cmd-alt-h = 'join-with left'
+cmd-alt-j = 'join-with down'
+cmd-alt-k = 'join-with up'
+cmd-alt-l = 'join-with right'
+
+# move: i3-style move through the tree (in/out of existing splits; at the
+# workspace edge it wraps everything else in a new container).
+cmd-alt-left = 'move left'
+cmd-alt-down = 'move down'
+cmd-alt-up = 'move up'
+cmd-alt-right = 'move right'
+
+# Move windows between AeroSpace workspaces. This replaces yabai native Space moves.
+alt-shift-p = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-prev-used"'
+alt-shift-pageUp = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-prev-used"'
+alt-shift-n = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-next-used"'
+alt-shift-pageDown = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-next-used"'
+alt-shift-home = 'move-node-to-workspace --focus-follows-window 1'
+alt-shift-f = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-new"'
+alt-shift-end = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-new"'
+alt-shift-space = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh open-terminal-new"'
+
+# Move windows between monitors, matching the old yabai/skhd pair-toggle
+# semantics instead of cycling all monitors:
+#   d: bounce to the recently used monitor (yabai `--display recent`)
+#   t: main external <-> laptop (yabai 3 <-> 1)
+#   a: left external <-> laptop (yabai 2 <-> 1, aerospace 'secondary')
+alt-shift-d = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/monitor.sh move-recent"'
+alt-shift-t = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/monitor.sh move-main-toggle"'
+alt-shift-a = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/monitor.sh move-secondary-toggle"'
+
+# Resize bindings from skhd. yabai moved a fixed EDGE (right/bottom, falling
+# back to left/top on the last window), so each key moved the divider in one
+# screen direction no matter which side of it was focused. aerospace resize is
+# size-based (- always shrinks the focused window), so probe for a neighbor
+# (focus there and back, invisible) and flip the sign on the last window:
+# y/o move the vertical divider left/right, u/i move the horizontal one down/up.
+alt-shift-y = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width -20 || resize width +20'
+alt-shift-o = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width +20 || resize width -20'
+alt-shift-u = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height +20 || resize height -20'
+alt-shift-i = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height -20 || resize height +20'
+ctrl-f8 = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width -40 || resize width +40'
+ctrl-f10 = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width +40 || resize width -40'
+shift-f10 = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height +20 || resize height -20'
+shift-f8 = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height -20 || resize height +20'
+# rotate, matching the yabai ctrl-shift-f2/f6 bindings (ccw/cw)
+ctrl-shift-f2 = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/permute.sh rotate-ccw"'
+ctrl-shift-f6 = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/permute.sh rotate-cw"'
+
+# Toggle between tiling and floating layout for the workspace.
+alt-shift-s = 'layout floating tiling'
+
+cmd-alt-r = ['mode resize', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=resize']
+
+# Same divider model as the alt-shift-y/u/i/o bindings above.
+[mode.resize.binding]
+esc = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+h = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width -30 || resize width +30'
+l = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width +30 || resize width -30'
+j = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height +30 || resize height -30'
+k = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height -30 || resize height +30'
+left = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width -30 || resize width +30'
+right = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width +30 || resize width -30'
+down = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height +30 || resize height -30'
+up = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height -30 || resize height +30'
+
+[mode.passthrough.binding]
+cmd-shift-alt-b = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']

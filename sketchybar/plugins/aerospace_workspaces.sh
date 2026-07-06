@@ -82,8 +82,19 @@ for mon in $(cut -d'|' -f2 <<<"$pairs" | sort -n | uniq); do
 		vis_lines+="$sid"$'\n'
 	done
 done
-for dd in $(seq $((d + 1)) 3); do
-	args+=(--set "divider.$dd" drawing=off)
+# Dividers after the last used group (d) stay hidden. Built with a guarded
+# plain loop (not `seq $((d + 1)) 3`): BSD seq counts DOWN when start > end
+# (e.g. `seq 4 3` -> "4 3"), which at d=3 would reference a nonexistent
+# divider.4 and re-emit `--set divider.3 drawing=off` after the drawing=on
+# above. Reused below for the reorder block.
+unused_dividers=()
+for dd in 1 2 3; do
+	if (( dd > d )); then
+		unused_dividers+=("divider.$dd")
+	fi
+done
+for dv in "${unused_dividers[@]}"; do
+	args+=(--set "$dv" drawing=off)
 done
 
 # Nothing visible (e.g. only an out-of-range focused id): treat as hidden bar.
@@ -123,8 +134,8 @@ reorder=("${order[@]}")
 for sid in $(seq 1 30); do
 	grep -Fxq "$sid" <<<"$vis_lines" || reorder+=("space.$sid")
 done
-for dd in $(seq $((d + 1)) 3); do
-	reorder+=("divider.$dd")
+for dv in "${unused_dividers[@]}"; do
+	reorder+=("$dv")
 done
 
 "$SKETCHYBAR" --reorder "${reorder[@]}" "${args[@]}"

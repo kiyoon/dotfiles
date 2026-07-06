@@ -4,7 +4,7 @@
 
 **Goal:** Group the AeroSpace workspace items in SketchyBar by monitor with thin dividers between groups, and add CPU / RAM / GPU usage pills to the right side of the bar.
 
-**Architecture:** Keep the existing `space.1..30` identity items; the listener plugin groups them per monitor via `aerospace … --format '%{workspace}|%{monitor-id}'` and one batched `sketchybar --reorder … --set …` call (verified: named items rearrange within their occupied slots; `--reorder` and `--set` combine in one invocation). Three new right-side items (`cpu`, `ram`, `gpu`) are driven by a single `stats.sh` on the `cpu` item's 5-second timer. Plugins are unit-tested by stubbing the `aerospace`/`sketchybar` binaries via env-var overrides (same pattern as `aerospace/scripts/workspace.sh`'s `AEROSPACE` var).
+**Architecture:** Keep the existing `space.1..30` identity items; the listener plugin groups them per monitor via `aerospace … --format '%{workspace}|%{monitor-id}'` and one batched `sketchybar --reorder … --set …` call (verified: named items rearrange within their occupied slots; `--reorder` and `--set` combine in one invocation). Three new right-side items (`cpu`, `ram`, `gpu`) are driven by a single `stats.sh` on the `cpu` item's 5-second timer. Plugins are unit-tested by stubbing the `aerospace`/`sketchybar` binaries via env-var overrides (same pattern as `aerospace/scripts/workspace.sh`'s `AEROSPACE` var). (Stats architecture superseded — see Task 2 banner.)
 
 **Tech Stack:** bash (macOS `/bin/bash` 3.2-compatible), SketchyBar CLI, AeroSpace CLI, BSD userland (`top`, `memory_pressure`, `ioreg`, `awk`).
 
@@ -18,6 +18,7 @@
 - **launchd PATH/locale:** every plugin sources `$CONFIG_DIR/colors.sh` first (exports PATH and a French `LANG`). Any numeric text parsing in plugins MUST force `LC_ALL=C` on the parsing command.
 - **Item names (exact):** `divider.1` `divider.2` `divider.3`, `cpu`, `ram`, `gpu`.
 - **Color thresholds (exact):** `label.color` = `LABEL_COLOR` below 70, `YELLOW` at 70–89, `RED` at 90+.
+- **SUPERSEDED (stats only):** the two bullets above about stats thresholds do not bind — see Task 2's superseded banner; the adopted cpu.sh/gpu.sh/ram.sh use 60/80.
 - **No `aerospace/aerospace.toml` changes.**
 - Workspace ids outside 1..30 have no bar item and must be skipped (pre-existing v1 behavior).
 - Single monitor must render with zero dividers (visually identical to today).

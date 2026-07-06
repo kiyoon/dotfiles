@@ -88,6 +88,8 @@ Per-pill `label.color`: `LABEL_COLOR` below 70, `YELLOW` at 70–89, `RED` at
 
 ## Edge cases
 
+(Stats-related items below are superseded — see the Amendment in the header.)
+
 - **AeroSpace not running:** the existing hide-all branch now also hides the
   dividers.
 - **Monitor hot-plug:** `display_change` is already subscribed → regroups.
@@ -97,6 +99,8 @@ Per-pill `label.color`: `LABEL_COLOR` below 70, `YELLOW` at 70–89, `RED` at
 - No `aerospace.toml` changes required.
 
 ## Verification
+
+(Stats-related items below are superseded — see the Amendment in the header.)
 
 1. One monitor: bar renders identically to before (no dividers).
 2. Plug an external monitor: workspaces regroup with a divider; switching

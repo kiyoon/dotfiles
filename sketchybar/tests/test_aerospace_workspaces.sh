@@ -100,6 +100,22 @@ run_plugin
 printf '%s\n' "$reorder_list" | grep -q 'space.1761234567' &&
 	fail "ids outside 1..30 must not be referenced"
 
+# ---- Test 6: four monitor groups -> all three dividers, no divider.4 ----
+make_stub "1|1" "$(printf '1|1\n2|2\n3|3\n4|4')" ""
+run_plugin
+
+expected_head="$(printf 'space.1\ndivider.1\nspace.2\ndivider.2\nspace.3\ndivider.3\nspace.4')"
+[ "$(printf '%s\n' "$reorder_list" | head -7)" = "$expected_head" ] ||
+	fail "four-group reorder sequence, got: $(printf '%s' "$reorder_list" | head -7 | tr '\n' ' ')"
+[ "$(printf '%s\n' "$reorder_list" | wc -l | tr -d ' ')" = "33" ] ||
+	fail "four-group reorder block must name all 33 items"
+[ "$(printf '%s\n' "$reorder_list" | grep -cx 'divider.3')" = "1" ] ||
+	fail "divider.3 must appear exactly once in reorder"
+grep -q 'divider\.4' "$OUT" && fail "nonexistent divider.4 must never be referenced"
+[[ "$flat" == *"--set divider.1 drawing=on"* && "$flat" == *"--set divider.2 drawing=on"* &&
+	"$flat" == *"--set divider.3 drawing=on"* ]] || fail "all three dividers must draw with four groups"
+[[ "$flat" == *"--set divider.3 drawing=off"* ]] && fail "divider.3 must not be re-hidden in the same call"
+
 if [ "$fails" -eq 0 ]; then
 	echo "PASS: all assertions"
 else

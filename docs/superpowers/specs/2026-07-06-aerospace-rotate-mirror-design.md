@@ -75,6 +75,12 @@ Pipeline:
      centers, `atan2` angles with flipped Y normalized to [0, 2π), cw = ring
      in descending angle, ccw ascending; each window moves to the next slot
      in the ring.
+     *Erratum (shipped implementation, commit 6fcfdca):* one canonical ring
+     sorted by ascending angle with positional tie-breaks (cx, then cy);
+     cw walks the ring backward. Flat rows put the middle window on the
+     centroid (`atan2(0,0)` angle ties) where the descending/ascending
+     formulation collapses cw==ccw; the canonical ring makes cw/ccw exact
+     inverses on every layout.
    - `mirror-y` / `mirror-x`: reflect each window's center across the
      vertical / horizontal midline of the tiled windows' bounding box; build
      the assignment by greedy nearest-slot matching on reflected points

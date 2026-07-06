@@ -47,6 +47,15 @@ ROW3B='[{"id":2,"x":0,"y":0,"w":50,"h":100},{"id":3,"x":50,"y":0,"w":50,"h":100}
 check rotate-cw-row-stability '{"moveTo":{"1":3,"2":1,"3":2}}' \
 	"$(osascript "$CORE" plan rotate-cw "$ROW3B")"
 
+# flat 4-window COLUMN: two angle-tie groups (pi/2 and 3pi/2) resolved by the
+# cy tie-break leg, which the row tests cannot reach. cw shifts contents up,
+# ccw down, mutually inverse.
+COL4='[{"id":1,"x":0,"y":0,"w":100,"h":50},{"id":2,"x":0,"y":50,"w":100,"h":50},{"id":3,"x":0,"y":100,"w":100,"h":50},{"id":4,"x":0,"y":150,"w":100,"h":50}]'
+check rotate-cw-col '{"moveTo":{"1":4,"2":1,"3":2,"4":3}}' \
+	"$(osascript "$CORE" plan rotate-cw "$COL4")"
+check rotate-ccw-col '{"moveTo":{"1":2,"2":3,"3":4,"4":1}}' \
+	"$(osascript "$CORE" plan rotate-ccw "$COL4")"
+
 # mirror-y on the grid: swap columns
 check mirror-y-grid '{"moveTo":{"1":2,"2":1,"3":4,"4":3}}' \
 	"$(osascript "$CORE" plan mirror-y "$GRID")"
@@ -107,6 +116,22 @@ fi
 if osascript "$CORE" swaps '{"moveTo":{"1":2,"2":2,"3":1},"dfsOrder":[1,2,3]}' >/dev/null 2>&1; then
 	fail=$(( fail + 1 ))
 	echo "FAIL swaps-duplicate-target-throws (expected non-zero exit)"
+else
+	pass=$(( pass + 1 ))
+fi
+
+# mixed-type duplicate targets (JSON 2 vs "2") must throw, not emit bogus swaps
+if osascript "$CORE" swaps '{"moveTo":{"1":2,"2":"2","3":1},"dfsOrder":[1,2,3]}' >/dev/null 2>&1; then
+	fail=$(( fail + 1 ))
+	echo "FAIL swaps-mixed-type-duplicate-throws (expected non-zero exit)"
+else
+	pass=$(( pass + 1 ))
+fi
+
+# unknown top-level subcommand exits non-zero
+if osascript "$CORE" bogus >/dev/null 2>&1; then
+	fail=$(( fail + 1 ))
+	echo "FAIL unknown-subcommand-throws (expected non-zero exit)"
 else
 	pass=$(( pass + 1 ))
 fi

@@ -7,7 +7,7 @@
 //                                op: rotate-cw|rotate-ccw|mirror-y|mirror-x
 //                                windows: [{"id":N, "x":N,"y":N,"w":N,"h":N}]  (geometry
 //                                optional; fetched from CGWindowList when absent)
-//   swaps <input-json>        -> lines "<window-id> dfs-prev"   (added in a later task)
+//   swaps <input-json>        -> lines "<window-id> dfs-prev"
 
 ObjC.import('CoreGraphics')
 
@@ -101,7 +101,7 @@ function computeSwaps(moveTo, dfsOrder) {
 	const srcs = Object.keys(moveTo)
 	const tgts = Object.values(moveTo)
 	if (srcs.length !== dfsOrder.length
-		|| new Set(tgts).size !== dfsOrder.length
+		|| new Set(tgts.map(Number)).size !== dfsOrder.length
 		|| !srcs.every(w => slotOf[w] !== undefined)
 		|| !tgts.every(t => slotOf[t] !== undefined)) {
 		throw new Error('moveTo/dfsOrder id sets differ')

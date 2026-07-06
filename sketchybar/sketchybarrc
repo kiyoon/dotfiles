@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# SketchyBar config, integrated with AeroSpace (see aerospace/aerospace.toml
+# exec-on-workspace-change). Workspaces here are dynamic: items space.1..30 are
+# pre-created hidden and toggled by plugins/aerospace_workspaces.sh.
+
+source "$CONFIG_DIR/colors.sh"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+FONT="JetBrainsMono Nerd Font"
+
+# ---- Bar ----
+sketchybar --bar \
+	position=top \
+	height=36 \
+	display=all \
+	sticky=on \
+	padding_left=10 \
+	padding_right=10 \
+	blur_radius=20 \
+	color=$BAR_COLOR
+
+# ---- Defaults ----
+sketchybar --default \
+	padding_left=4 \
+	padding_right=4 \
+	icon.font="$FONT:Bold:13.0" \
+	icon.color=$LABEL_COLOR \
+	icon.padding_left=8 \
+	icon.padding_right=4 \
+	label.font="$FONT:Medium:12.0" \
+	label.color=$LABEL_COLOR \
+	label.padding_left=2 \
+	label.padding_right=8 \
+	background.color=$ITEM_BG_COLOR \
+	background.corner_radius=6 \
+	background.height=24 \
+	background.drawing=off
+
+# ---- AeroSpace mode badge (leftmost, hidden in main mode) ----
+# Fired by the mode-switching keybindings in aerospace.toml.
+sketchybar --add event aerospace_mode_change
+
+sketchybar --add item aero_mode left \
+	--set aero_mode \
+	drawing=off \
+	updates=on \
+	icon.drawing=off \
+	label.font="$FONT:Bold:11.0" \
+	label.padding_left=8 \
+	label.padding_right=8 \
+	background.drawing=on \
+	script="$PLUGIN_DIR/mode.sh" \
+	--subscribe aero_mode aerospace_mode_change forced
+
+# ---- AeroSpace workspaces (left) ----
+# Fired by aerospace's exec-on-workspace-change.
+sketchybar --add event aerospace_workspace_change
+
+# Pre-create all 30 possible workspace items hidden; the listener plugin
+# toggles drawing + highlight. No add/remove churn -> stable order, no flicker.
+space_args=()
+for sid in $(seq 1 30); do
+	space_args+=(
+		--add item "space.$sid" left
+		--set "space.$sid"
+		drawing=off
+		icon="$sid"
+		icon.padding_left=9
+		icon.padding_right=4
+		label.drawing=off
+		label.font="sketchybar-app-font:Regular:15.0"
+		label.padding_left=0
+		label.padding_right=9
+		background.drawing=on
+		click_script="/opt/homebrew/bin/aerospace workspace $sid"
+	)
+done
+sketchybar "${space_args[@]}"
+
+# Hidden listener that rebuilds workspace visibility on every change.
+# updates=on so it keeps receiving events while drawing=off.
+sketchybar --add item aerospace_listener left \
+	--set aerospace_listener \
+	drawing=off \
+	updates=on \
+	script="$PLUGIN_DIR/aerospace_workspaces.sh" \
+	--subscribe aerospace_listener aerospace_workspace_change forced \
+	system_woke display_change space_windows_change
+
+# ---- Front app (left) ----
+sketchybar --add item front_app left \
+	--set front_app \
+	icon.drawing=off \
+	label.font="$FONT:Bold:12.0" \
+	label.padding_left=8 \
+	script="$PLUGIN_DIR/front_app.sh" \
+	--subscribe front_app front_app_switched forced
+
+# ---- Right side: clock | battery | volume | wifi ----
+sketchybar --add item clock right \
+	--set clock \
+	update_freq=10 \
+	icon=󰃰 \
+	background.drawing=on \
+	click_script="open -a Calendar" \
+	script="$PLUGIN_DIR/clock.sh"
+
+sketchybar --add item battery right \
+	--set battery \
+	update_freq=120 \
+	click_script="open 'x-apple.systempreferences:com.apple.Battery-Settings.extension'" \
+	script="$PLUGIN_DIR/battery.sh" \
+	--subscribe battery power_source_change system_woke
+
+sketchybar --add item volume right \
+	--set volume \
+	click_script="$PLUGIN_DIR/volume_click.sh" \
+	script="$PLUGIN_DIR/volume.sh" \
+	--subscribe volume volume_change forced
+
+sketchybar --add item wifi right \
+	--set wifi \
+	update_freq=30 \
+	click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'" \
+	script="$PLUGIN_DIR/wifi.sh" \
+	--subscribe wifi wifi_change system_woke
+
+# ---- Menu bar app aliases (left of wifi) ----
+# Screen captures of the real macOS menu bar items, so they need Screen
+# Recording permission for sketchybar (System Settings -> Privacy & Security),
+# then a sketchybar restart. The app must be running with its item in the
+# real menu bar (hidden behind the notch is fine, removed is not).
+# On this macOS every status item is hosted by Control Center, under the
+# *localized* app name (CC_OWNER: update it if the system language changes).
+# Each app registers two windows: a transparent bundle-id-named host plus a
+# content window named by the item's autosave name -- alias the latter
+# (found empirically; list candidates: sketchybar --query default_menu_items).
+# AeroSpace is the exception: there the bundle-id window holds the content.
+# Right-position items stack right-to-left, so add order here is reversed.
+# alias.color tints the capture to match the theme (all four are monochrome).
+CC_OWNER="Centre de contrôle"
+
+# Input method (한/A). Its content window is an anonymous "Item-0", so pick
+# the entry listed right before the com.apple.TextInputMenuAgent host window.
+# Its (N) index can drift as windows come and go; --reload re-resolves it.
+# Polled fast so language switches show quickly.
+input_alias="$(sketchybar --query default_menu_items | python3 -c "
+import json, sys
+items = json.load(sys.stdin)
+for i, it in enumerate(items):
+    if ',com.apple.TextInputMenuAgent(' in it and i > 0:
+        print(items[i - 1])
+        break
+")"
+[[ -z "$input_alias" ]] && input_alias="$CC_OWNER,com.apple.TextInputMenuAgent"
+
+sketchybar --add alias "$input_alias" right \
+	--rename "$input_alias" input_method \
+	--set input_method \
+	update_freq=1 \
+	padding_left=0 \
+	padding_right=0 \
+	alias.color=$LABEL_COLOR
+
+sketchybar --add alias "$CC_OWNER,Amphetamine" right \
+	--rename "$CC_OWNER,Amphetamine" amphetamine \
+	--set amphetamine \
+	update_freq=10 \
+	padding_left=0 \
+	padding_right=0 \
+	alias.color=$LABEL_COLOR
+
+sketchybar --add alias "$CC_OWNER,codexbar-merged" right \
+	--rename "$CC_OWNER,codexbar-merged" codexbar \
+	--set codexbar \
+	update_freq=10 \
+	padding_left=0 \
+	padding_right=0 \
+	alias.color=$LABEL_COLOR
+
+# Re-captured on workspace switches (icon shows the focused workspace).
+sketchybar --add alias "$CC_OWNER,bobko.aerospace" right \
+	--rename "$CC_OWNER,bobko.aerospace" aerospace \
+	--set aerospace \
+	update_freq=10 \
+	padding_left=0 \
+	padding_right=0 \
+	alias.color=$LABEL_COLOR \
+	--subscribe aerospace aerospace_workspace_change
+
+# ---- Finalize ----
+sketchybar --update

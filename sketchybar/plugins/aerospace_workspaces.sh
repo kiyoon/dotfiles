@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Toggle visibility/highlight of the pre-created space.1..30 items and render
-# each visible workspace's app icons (sketchybar-app-font ligatures) so the
-# bar is a live map of what's where.
+# Toggle visibility/highlight of the pre-created space.1..30 items, group them
+# by monitor (divider.1..3 between groups, positioned via --reorder), and
+# render each visible workspace's app icons (sketchybar-app-font ligatures) so
+# the bar is a live map of what's where.
 # Visible = non-empty workspaces (all monitors) + the focused one.
 # Runs on: aerospace_workspace_change (FOCUSED_WORKSPACE env from aerospace),
 # forced, system_woke, display_change, space_windows_change.
@@ -9,27 +10,46 @@
 source "$CONFIG_DIR/colors.sh"
 source "$CONFIG_DIR/plugins/icon_map.sh"
 
-if ! command -v aerospace >/dev/null 2>&1; then
+AEROSPACE="${AEROSPACE:-aerospace}"
+SKETCHYBAR="${SKETCHYBAR:-sketchybar}"
+
+if ! command -v "$AEROSPACE" >/dev/null 2>&1; then
 	exit 0
 fi
 
-focused="${FOCUSED_WORKSPACE:-}"
-if [[ -z "$focused" ]]; then
-	focused="$(aerospace list-workspaces --focused 2>/dev/null)"
-fi
-
-# AeroSpace not running: hide everything.
-if [[ -z "$focused" ]]; then
-	args=()
+hide_all() {
+	local args=() sid d
 	for sid in $(seq 1 30); do
 		args+=(--set "space.$sid" drawing=off)
 	done
-	sketchybar "${args[@]}"
+	for d in 1 2 3; do
+		args+=(--set "divider.$d" drawing=off)
+	done
+	"$SKETCHYBAR" "${args[@]}"
+}
+
+# Focused workspace and its monitor. The FOCUSED_WORKSPACE env var (fast path
+# from aerospace's exec-on-workspace-change) wins for the id and is assumed to
+# live on the focused monitor.
+focused_line="$("$AEROSPACE" list-workspaces --focused --format '%{workspace}|%{monitor-id}' 2>/dev/null)"
+focused="${FOCUSED_WORKSPACE:-${focused_line%%|*}}"
+focused_monitor="${focused_line##*|}"
+
+# AeroSpace not running: hide everything.
+if [[ -z "$focused" ]]; then
+	hide_all
 	exit 0
 fi
 
-nonempty="$(aerospace list-workspaces --monitor all --empty no 2>/dev/null)"
-windows="$(aerospace list-windows --all --format '%{workspace}|%{app-name}' 2>/dev/null)"
+# workspace|monitor-id pairs for every workspace that should be visible.
+pairs="$("$AEROSPACE" list-workspaces --monitor all --empty no --format '%{workspace}|%{monitor-id}' 2>/dev/null)"
+if [[ -z "$pairs" ]]; then
+	pairs="$focused|${focused_monitor:-1}"
+elif ! grep -q "^$focused|" <<<"$pairs"; then
+	pairs+=$'\n'"$focused|${focused_monitor:-1}"
+fi
+
+windows="$("$AEROSPACE" list-windows --all --format '%{workspace}|%{app-name}' 2>/dev/null)"
 
 app_icons() {
 	local sid="$1" app out=""
@@ -42,9 +62,38 @@ app_icons() {
 	printf '%s' "${out% }"
 }
 
+# Group by monitor: monitors ascending, workspaces numeric within each group.
+# order = item names in the desired visual sequence, dividers between groups.
+# Ids outside 1..30 have no bar item (date +%s fallback) and are skipped.
+order=()
+vis_lines=""
 args=()
+d=0
+for mon in $(cut -d'|' -f2 <<<"$pairs" | sort -n | uniq); do
+	group="$(awk -F'|' -v m="$mon" '$2 == m && $1 ~ /^[0-9]+$/ && $1 >= 1 && $1 <= 30 { print $1 }' <<<"$pairs" | sort -n | uniq)"
+	[[ -z "$group" ]] && continue
+	if (( ${#order[@]} > 0 && d < 3 )); then
+		d=$((d + 1))
+		order+=("divider.$d")
+		args+=(--set "divider.$d" drawing=on)
+	fi
+	for sid in $group; do
+		order+=("space.$sid")
+		vis_lines+="$sid"$'\n'
+	done
+done
+for dd in $(seq $((d + 1)) 3); do
+	args+=(--set "divider.$dd" drawing=off)
+done
+
+# Nothing visible (e.g. only an out-of-range focused id): treat as hidden bar.
+if (( ${#order[@]} == 0 )); then
+	hide_all
+	exit 0
+fi
+
 for sid in $(seq 1 30); do
-	if [[ "$sid" == "$focused" ]] || grep -Fxq "$sid" <<<"$nonempty"; then
+	if grep -Fxq "$sid" <<<"$vis_lines"; then
 		icons="$(app_icons "$sid")"
 		if [[ -n "$icons" ]]; then
 			label_args=(label="$icons" label.drawing=on)
@@ -66,4 +115,16 @@ for sid in $(seq 1 30); do
 		args+=(--set "space.$sid" drawing=off)
 	fi
 done
-sketchybar "${args[@]}"
+
+# One batched call. The reorder block names all 33 items (visible sequence
+# first, then hidden spaces and unused dividers) so the space/divider block
+# stays contiguous and deterministic between aero_mode and front_app.
+reorder=("${order[@]}")
+for sid in $(seq 1 30); do
+	grep -Fxq "$sid" <<<"$vis_lines" || reorder+=("space.$sid")
+done
+for dd in $(seq $((d + 1)) 3); do
+	reorder+=("divider.$dd")
+done
+
+"$SKETCHYBAR" --reorder "${reorder[@]}" "${args[@]}"

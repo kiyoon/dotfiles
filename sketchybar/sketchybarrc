@@ -77,6 +77,23 @@ for sid in $(seq 1 30); do
 done
 sketchybar "${space_args[@]}"
 
+# Thin separators between per-monitor workspace groups (multi-monitor only).
+# The listener's --reorder positions them; single monitor keeps them hidden.
+divider_args=()
+for d in 1 2 3; do
+	divider_args+=(
+		--add item "divider.$d" left
+		--set "divider.$d"
+		drawing=off
+		icon="│"
+		icon.color=$MUTED_COLOR
+		icon.padding_left=2
+		icon.padding_right=2
+		label.drawing=off
+	)
+done
+sketchybar "${divider_args[@]}"
+
 # Hidden listener that rebuilds workspace visibility on every change.
 # updates=on so it keeps receiving events while drawing=off.
 sketchybar --add item aerospace_listener left \
@@ -125,7 +142,33 @@ sketchybar --add item wifi right \
 	script="$PLUGIN_DIR/wifi.sh" \
 	--subscribe wifi wifi_change system_woke
 
-# ---- Menu bar app aliases (left of wifi) ----
+# ---- System stats: cpu | gpu | ram (left of wifi) ----
+# Right-position items stack right-to-left, so add order here is reversed.
+sketchybar --add item ram right \
+	--set ram \
+	update_freq=10 \
+	icon=󰍛 \
+	icon.color=$MUTED_COLOR \
+	click_script="open -a 'Activity Monitor'" \
+	script="$PLUGIN_DIR/ram.sh"
+
+sketchybar --add item gpu right \
+	--set gpu \
+	update_freq=5 \
+	icon=󰢮 \
+	icon.color=$MUTED_COLOR \
+	click_script="open -a 'Activity Monitor'" \
+	script="$PLUGIN_DIR/gpu.sh"
+
+sketchybar --add item cpu right \
+	--set cpu \
+	update_freq=5 \
+	icon=󰘚 \
+	icon.color=$MUTED_COLOR \
+	click_script="open -a 'Activity Monitor'" \
+	script="$PLUGIN_DIR/cpu.sh"
+
+# ---- Menu bar app aliases (left of the stats) ----
 # Screen captures of the real macOS menu bar items, so they need Screen
 # Recording permission for sketchybar (System Settings -> Privacy & Security),
 # then a sketchybar restart. The app must be running with its item in the

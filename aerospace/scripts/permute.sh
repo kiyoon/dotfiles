@@ -38,6 +38,13 @@ restore_focus() {
 	fi
 }
 
+# Restore focus on EVERY exit from here on - including set -e aborts if the
+# tree changes mid-operation (e.g. a window closes during the walk/swaps).
+# On a mid-sequence swap failure we deliberately stop rather than continue or
+# roll back: a failed swap means the tree changed, so further dfs-relative
+# swaps could pair the wrong windows.
+trap restore_focus EXIT
+
 windows_json="$(jq -cn '[$ARGS.positional[] | {id: tonumber}]' --args "${tiled_ids[@]}")"
 plan_json="$(osascript "$CORE" plan "$op" "$windows_json")"
 
@@ -50,7 +57,6 @@ if (( n == 2 )); then
 	# Any non-identity permutation of two windows is the single swap; no tree
 	# order discovery (and no focus flicker) needed.
 	"$AEROSPACE" swap --window-id "${tiled_ids[0]}" --wrap-around dfs-next
-	restore_focus
 	exit 0
 fi
 
@@ -67,7 +73,6 @@ while (( ${#dfs_order[@]} < n && i < limit )); do
 		if [[ "$t" == "$id" ]]; then found=1; break; fi
 	done
 	if (( found == 0 )); then
-		restore_focus
 		exit 0
 	fi
 	dup=0
@@ -78,7 +83,6 @@ while (( ${#dfs_order[@]} < n && i < limit )); do
 	i=$(( i + 1 ))
 done
 if (( ${#dfs_order[@]} != n )); then
-	restore_focus
 	exit 0
 fi
 
@@ -91,5 +95,3 @@ while read -r wid dir; do
 	[[ -n "$wid" ]] || continue
 	"$AEROSPACE" swap --window-id "$wid" "$dir"
 done <<<"$swaps"
-
-restore_focus

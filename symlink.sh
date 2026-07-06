@@ -44,6 +44,8 @@ if [[ $OSTYPE == "darwin"* ]]; then
 	ln_sb karabiner ~/.config
 	ln_sb skhd ~/.config
 	ln_sb yabai ~/.config
+	ln_sb aerospace ~/.config
+	ln_sb sketchybar ~/.config
     ln_sb hammerspoon ~/.config
 elif [[ $OSTYPE == "linux-gnu" ]]; then
 	ln_sb autokey/data ~/.config/autokey

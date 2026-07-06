@@ -201,24 +201,27 @@ sketchybar --add alias "$input_alias" right \
 	--rename "$input_alias" input_method \
 	--set input_method \
 	update_freq=1 \
-	padding_left=0 \
-	padding_right=0 \
+	click_script="$PLUGIN_DIR/alias_click.sh TextInputMenuAgent input" \
+	padding_left=-9 \
+	padding_right=-9 \
 	alias.color=$LABEL_COLOR
 
 sketchybar --add alias "$CC_OWNER,Amphetamine" right \
 	--rename "$CC_OWNER,Amphetamine" amphetamine \
 	--set amphetamine \
-	update_freq=10 \
-	padding_left=0 \
-	padding_right=0 \
+	update_freq=3 \
+	click_script="$PLUGIN_DIR/amphetamine_click.sh" \
+	padding_left=-9 \
+	padding_right=-9 \
 	alias.color=$LABEL_COLOR
 
 sketchybar --add alias "$CC_OWNER,codexbar-merged" right \
 	--rename "$CC_OWNER,codexbar-merged" codexbar \
 	--set codexbar \
 	update_freq=10 \
-	padding_left=0 \
-	padding_right=0 \
+	click_script="$PLUGIN_DIR/alias_click.sh CodexBar Codex" \
+	padding_left=-9 \
+	padding_right=-9 \
 	alias.color=$LABEL_COLOR
 
 # Re-captured on workspace switches (icon shows the focused workspace).
@@ -226,8 +229,9 @@ sketchybar --add alias "$CC_OWNER,bobko.aerospace" right \
 	--rename "$CC_OWNER,bobko.aerospace" aerospace \
 	--set aerospace \
 	update_freq=10 \
-	padding_left=0 \
-	padding_right=0 \
+	click_script="$PLUGIN_DIR/alias_click.sh AeroSpace AeroSpace" \
+	padding_left=-9 \
+	padding_right=-9 \
 	alias.color=$LABEL_COLOR \
 	--subscribe aerospace aerospace_workspace_change
 

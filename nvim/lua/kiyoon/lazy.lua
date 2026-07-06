@@ -2,7 +2,7 @@
 
 local nvim_treesitter_dev = false
 local nvim_treesitter_textobjects_dev = false
-local nvim_treesitter_context_dev = false
+local nvim_treesitter_context_dev = true
 local repeatable_move_dev = false
 local jupynium_dev = false
 local python_import_dev = false
@@ -1032,62 +1032,73 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
   },
   "RRethy/nvim-treesitter-endwise",
-  {
-    "HiPhish/rainbow-delimiters.nvim",
-    config = function()
-      -- https://github.com/ayamir/nvimdots/pull/868/files
-      ---@param threshold number @Use global strategy if nr of lines exceeds this value
-      local function init_strategy(threshold)
-        return function()
-          local errors = 200
-          vim.treesitter.get_parser():for_each_tree(function(lt)
-            if lt:root():has_error() and errors >= 0 then
-              errors = errors - 1
-            end
-          end)
-          if errors < 0 then
-            return nil
-          end
-          return vim.fn.line("$") > threshold and require("rainbow-delimiters").strategy["global"]
-            or require("rainbow-delimiters").strategy["local"]
-        end
-      end
-
-      vim.g.rainbow_delimiters = {
-        strategy = {
-          [""] = init_strategy(500),
-          c = init_strategy(200),
-          cpp = init_strategy(200),
-          lua = init_strategy(500),
-          vimdoc = init_strategy(300),
-          vim = init_strategy(300),
-          markdown = require("rainbow-delimiters").strategy["global"], -- markdown parser is slow
-        },
-        query = {
-          [""] = "rainbow-delimiters",
-          latex = "rainbow-blocks",
-          javascript = "rainbow-delimiters-react",
-        },
-        highlight = {
-          "RainbowDelimiterRed",
-          "RainbowDelimiterOrange",
-          "RainbowDelimiterYellow",
-          "RainbowDelimiterGreen",
-          "RainbowDelimiterBlue",
-          "RainbowDelimiterCyan",
-          "RainbowDelimiterViolet",
-        },
-      }
-    end,
-  },
-  {
-    "andymass/vim-matchup",
-    init = function()
-      --- Without this, lualine will flicker when matching offscreen
-      --- Maybe it happens when cmdheight is set to 0
-      vim.g.matchup_matchparen_offscreen = { method = "popup" }
-    end,
-  },
+  -- {
+  --   "HiPhish/rainbow-delimiters.nvim",
+  --   config = function()
+  --     -- https://github.com/ayamir/nvimdots/pull/868/files
+  --     ---@param threshold number @Use global strategy if nr of lines exceeds this value
+  --     local function init_strategy(threshold)
+  --       return function()
+  --         -- Disable on very large files
+  --         local line_count = vim.api.nvim_buf_line_count(0)
+  --         if line_count > 15000 then
+  --           return nil
+  --         end
+  --
+  --         local errors = 200
+  --         local parser = vim.treesitter.get_parser()
+  --         if parser == nil then
+  --           return nil
+  --         end
+  --         parser:for_each_tree(function(lt)
+  --           if lt:root():has_error() and errors >= 0 then
+  --             errors = errors - 1
+  --           end
+  --         end)
+  --         if errors < 0 then
+  --           return nil
+  --         end
+  --
+  --         return line_count > threshold and require("rainbow-delimiters").strategy["global"]
+  --           or require("rainbow-delimiters").strategy["local"]
+  --       end
+  --     end
+  --
+  --     vim.g.rainbow_delimiters = {
+  --       strategy = {
+  --         [""] = init_strategy(500),
+  --         c = init_strategy(200),
+  --         cpp = init_strategy(200),
+  --         lua = init_strategy(500),
+  --         vimdoc = init_strategy(300),
+  --         vim = init_strategy(300),
+  --         markdown = require("rainbow-delimiters").strategy["global"], -- markdown parser is slow
+  --       },
+  --       query = {
+  --         [""] = "rainbow-delimiters",
+  --         latex = "rainbow-blocks",
+  --         javascript = "rainbow-delimiters-react",
+  --       },
+  --       highlight = {
+  --         "RainbowDelimiterRed",
+  --         "RainbowDelimiterOrange",
+  --         "RainbowDelimiterYellow",
+  --         "RainbowDelimiterGreen",
+  --         "RainbowDelimiterBlue",
+  --         "RainbowDelimiterCyan",
+  --         "RainbowDelimiterViolet",
+  --       },
+  --     }
+  --   end,
+  -- },
+  -- {
+  --   "andymass/vim-matchup",
+  --   init = function()
+  --     --- Without this, lualine will flicker when matching offscreen
+  --     --- Maybe it happens when cmdheight is set to 0
+  --     vim.g.matchup_matchparen_offscreen = { method = "popup" }
+  --   end,
+  -- },
   {
     -- "nvim-treesitter/nvim-treesitter-context",
     "kiyoon/nvim-treesitter-context",
@@ -1931,6 +1942,9 @@ return {
 
           local bufnr = args.buf
           local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client == nil then
+            return
+          end
           if client.server_capabilities.documentSymbolProvider then
             require("nvim-navic").attach(client, bufnr)
           end
@@ -2576,19 +2590,16 @@ return {
     end,
   },
   {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    ft = { "markdown" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-    init = function()
-      vim.cmd([[
-        function OpenMarkdownPreview (url)
-          execute "silent ! firefox " . a:url
-        endfunction
-        let g:mkdp_browserfunc = 'OpenMarkdownPreview'
-      ]])
+    "selimacerbas/markdown-preview.nvim",
+    dependencies = { "selimacerbas/live-server.nvim" },
+    config = function()
+      require("markdown_preview").setup({
+        -- all optional; sane defaults shown
+        instance_mode = "takeover", -- "takeover" (one tab) or "multi" (tab per instance)
+        port = 0, -- 0 = auto (8421 for takeover, OS-assigned for multi)
+        open_browser = true,
+        debounce_ms = 300,
+      })
     end,
   },
   -- {

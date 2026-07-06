@@ -1,0 +1,203 @@
+# yabai-era skhd config, kept for reference. NOT loaded: skhd only reads
+# skhdrc, which now holds the AeroSpace hold-to-repeat resize keys.
+# To go back to yabai, restore this file as skhdrc.
+
+:: default
+:: passthrough
+cmd + alt - b ; passthrough
+passthrough < cmd + shift + alt - b ; default 
+cmd + shift + alt - b ; default 
+
+# 0x32: backtick (`) key
+# alt - ` clashes in Korean input method (change won sign to backtick requires alt - `)
+alt + shift - 0x32 : open -a "Visual Studio Code"
+alt + cmd - 0x32 : open -a "Unity"
+alt - 1 : open -a "Finder"
+alt + shift - 1 : open -n -a "Finder" ~
+# alt - 2 : open -a "Firefox"
+# alt + shift - 2 : open -n -a "Firefox"
+alt - 2 : open -a "Google Chrome"
+alt + shift - 2 : open -n -a "Google Chrome"
+alt - 3 : open -a "WezTerm"
+alt + shift - 3 : open -n -a "WezTerm"
+alt - 4 : open -a "ChatGPT"
+alt + shift - 4 : open -n -a "ChatGPT"
+alt - 5 : open -a "Telegram"
+alt - 6 : open -a "Slack"
+alt - 7 : open -a "Notion"
+# ctrl + cmd - t : window_id=$(yabai -m query --windows | jq 'map(select(."app" == "WezTerm"))[0]["id"]') && \
+# 				  yabai -m window --focus "$window_id" || \
+# 				  open -n -a "WezTerm"
+# ctrl + alt - s : open -n -a "Slack"
+
+shift + alt - j : yabai -m window --focus south 
+shift + alt - k : yabai -m window --focus north 
+shift + alt - h : yabai -m window --focus west 
+shift + alt - l : yabai -m window --focus east
+
+# `yabai -m query --windows --window` has a bug where it sometimes detect child window in an app and doesn't return the app name.
+# so we first find the current app from all windows in the space.
+# f2 : appname=$(yabai -m query --windows --space | jq -r 'map(select(."has-focus" == true))[0]["app"]') && \
+#     if [[ "$appname" == "WezTerm" ]]; then \
+# 	    echo "pass"; \
+#     elif [[ "$appname" == "Google Chrome" ]]; then \
+#         skhd --key 'ctrl + shift - tab'; \
+#     else \
+# 		echo "$appname" >> ~/skhd.log; \
+#     fi
+# f6 : appname=$(yabai -m query --windows --space | jq -r 'map(select(."has-focus" == true))[0]["app"]') && \
+#     if [[ "$appname" == "WezTerm" ]]; then \
+# 	    echo "pass"; \
+#     elif [[ "$appname" == "Google Chrome" ]]; then \
+#         skhd --key 'ctrl - tab'; \
+#     else \
+# 		echo "$appname" >> ~/skhd.log; \
+#     fi
+
+
+# application specific bindings
+f2 [
+    "Google Chrome"       : skhd --key 'ctrl + shift - tab'
+    "Firefox"       : skhd --key 'ctrl + shift - tab'
+	# "WezTerm"         : skhd --key 'ctrl + shift - tab'
+    # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f3; skhd --key 'cmd + shift + alt - b'
+    # "WezTerm"       : skhd --key f3
+    # *             : echo "hello everyone"
+]
+f6 [
+    "Google Chrome"       : skhd --key 'ctrl - tab'
+    "Firefox"       : skhd --key 'ctrl - tab'
+    # "WezTerm"       : skhd --key 'ctrl - tab'
+    # "WezTerm"       : skhd --key 'cmd + alt - b'; skhd --key f6; skhd --key 'cmd + shift + alt - b'
+    # "WezTerm"       : skhd --key f5
+    # *             : echo "hello everyone"
+]
+alt - f2 [
+    "Google Chrome"       : skhd --key 'ctrl + shift - pageup'
+]
+alt - f6 [
+    "Google Chrome"       : skhd --key 'ctrl + shift - pagedown'
+]
+
+f8 : yabai -m space --focus prev || yabai -m space --focus last
+f10 : yabai -m space --focus next || yabai -m space --focus first
+
+shift + alt - v : yabai -m window --focus prev || yabai -m window --focus last
+# f10 : yabai -m window --focus next || yabai -m window --focus first
+
+shift + alt - q : yabai -m window --close
+# shift + alt - q : yabai -m display --focus prev || yabai -m display --focus last
+shift + alt - w : yabai -m display --focus next || yabai -m display --focus first
+
+shift + alt - m : yabai -m window --toggle zoom-fullscreen
+shift + alt - g : yabai -m window --toggle float --grid 8:8:1:1:6:6
+shift + alt - e : yabai -m space --balance
+
+# shift + alt - r : yabai -m space --rotate 270
+shift + alt - r : bash ~/.config/yabai/scripts/rotate_without_changing_layout.sh cw
+shift + alt - z : yabai -m space --mirror y-axis
+shift + alt - x : yabai -m space --mirror x-axis
+
+shift + alt - left : yabai -m window --swap west
+shift + alt - right : yabai -m window --swap east
+shift + alt - up : yabai -m window --swap north
+shift + alt - down : yabai -m window --swap south
+
+shift + alt - p : window_id=$(yabai -m query --windows --space | jq 'map(select(."has-focus" == true))[0]["id"]') && \
+                  yabai -m window --space prev && \
+				  yabai -m window --focus "$window_id"
+shift + alt - pageup : window_id=$(yabai -m query --windows --space | jq 'map(select(."has-focus" == true))[0]["id"]') && \
+                  yabai -m window --space prev && \
+				  yabai -m window --focus "$window_id"
+shift + alt - n : window_id=$(yabai -m query --windows --space | jq 'map(select(."has-focus" == true))[0]["id"]') && \
+                  yabai -m window --space next && \
+				  yabai -m window --focus "$window_id"
+shift + alt - pagedown : window_id=$(yabai -m query --windows --space | jq 'map(select(."has-focus" == true))[0]["id"]') && \
+                  yabai -m window --space next && \
+				  yabai -m window --focus "$window_id"
+
+# shift + alt - 1 : yabai -m window --space 1;
+# shift + alt - 2 : yabai -m window --space 2;
+# shift + alt - 3 : yabai -m window --space 3;
+# shift + alt - 4 : yabai -m window --space 4;
+
+# adjust window size
+# https://github.com/koekeishiya/yabai/issues/200
+shift + alt - y : yabai -m window --resize right:-20:0 2> /dev/null || yabai -m window --resize left:-20:0 2> /dev/null
+shift + alt - u : yabai -m window --resize bottom:0:20 2> /dev/null || yabai -m window --resize top:0:20 2> /dev/null
+shift + alt - i : yabai -m window --resize bottom:0:-20 2> /dev/null || yabai -m window --resize top:0:-20 2> /dev/null
+shift + alt - o : yabai -m window --resize right:20:0 2> /dev/null || yabai -m window --resize left:20:0 2> /dev/null
+
+ctrl - f8 : yabai -m window --resize right:-40:0 2> /dev/null || yabai -m window --resize left:-40:0 2> /dev/null
+shift - f10 : yabai -m window --resize bottom:0:20 2> /dev/null || yabai -m window --resize top:0:20 2> /dev/null
+shift - f8 : yabai -m window --resize bottom:0:-20 2> /dev/null || yabai -m window --resize top:0:-20 2> /dev/null
+ctrl - f10 : yabai -m window --resize right:40:0 2> /dev/null || yabai -m window --resize left:40:0 2> /dev/null
+
+# ctrl + shift - f2 : yabai -m space --rotate 90
+# ctrl + shift - f6 : yabai -m space --rotate 270
+ctrl + shift - f2 : bash ~/.config/yabai/scripts/rotate_without_changing_layout.sh ccw
+ctrl + shift - f6 : bash ~/.config/yabai/scripts/rotate_without_changing_layout.sh cw
+
+# change layout of desktop
+# basically toggles yabai auto managing tiles but keeping the commands for resizing.
+shift + alt - s : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')
+
+# https://jasoneckert.github.io/myblog/customizing-macos-for-development/skhdrc.txt
+# create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
+
+# use hammerspoon as a fallback for when yabai space create is broken.
+#shift + alt - f : hs -c 'local s=require("hs.spaces"); local sc=require("hs.screen"); s.addSpaceToScreen(sc.mainScreen():getUUID(), true)' && \
+#                   sleep 1.5 && \
+shift + alt - f : yabai -m space --create && \
+                   index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
+                   yabai -m window --space "${index}" && \
+                   yabai -m space --focus "${index}"
+#shift + alt - end : hs -c 'local s=require("hs.spaces"); local sc=require("hs.screen"); s.addSpaceToScreen(sc.mainScreen():getUUID(), true)' && \
+#                   sleep 1.5 && \
+shift + alt - end : yabai -m space --create && \
+                   index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
+                   yabai -m window --space "${index}" && \
+                   yabai -m space --focus "${index}"
+shift + alt - home : yabai -m window --space 1 && \
+                   yabai -m space --focus 1
+
+#shift + alt - space : hs -c 'local s=require("hs.spaces"); local sc=require("hs.screen"); s.addSpaceToScreen(sc.mainScreen():getUUID(), true)' && \
+#                   sleep 1.5 && \
+shift + alt - space : yabai -m space --create && \
+                   index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
+                   yabai -m space --focus "${index}" && \
+                   open -n -a "Wezterm"
+
+# Move to another display keeping the focus
+# https://github.com/koekeishiya/yabai/issues/225
+shift + alt - d : WIN_ID=$(yabai -m query --windows --window | jq '.id') && yabai -m window --display recent && yabai -m window --focus $WIN_ID
+
+# display 2 -> 3, 3 -> 2
+# 3: main external display
+# 2: left external display
+# 1: laptop display
+shift + alt - t : WIN_QUERY=$(yabai -m query --windows --window) && WIN_ID=$(echo "$WIN_QUERY" | jq '.id') && DISPLAY_ID=$(echo "$WIN_QUERY" | jq '.display') \
+                      && yabai -m window --display $(echo "$DISPLAY_ID" | jq 'if . == 3 then 1 else 3 end') \
+                      && yabai -m window --focus $WIN_ID
+# display 1 -> 3, 3 -> 1
+shift + alt - a : WIN_QUERY=$(yabai -m query --windows --window) && WIN_ID=$(echo "$WIN_QUERY" | jq '.id') && DISPLAY_ID=$(echo "$WIN_QUERY" | jq '.display') \
+                      && yabai -m window --display $(echo "$DISPLAY_ID" | jq 'if . == 2 then 1 else 2 end') \
+                      && yabai -m window --focus $WIN_ID
+
+# https://github.com/koekeishiya/skhd/issues/164
+
+:: resize
+
+cmd + alt - r ; resize
+resize < escape ; default
+
+# resize managed window
+resize < h : yabai -m window --resize left:-30:0 || yabai -m window --resize right:-30:0
+resize < l : yabai -m window --resize right:30:0 || yabai -m window --resize left:30:0
+resize < j : yabai -m window --resize bottom:0:30 || yabai -m window --resize top:0:30
+resize < k : yabai -m window --resize top:0:-30 || yabai -m window --resize bottom:0:-30
+
+resize < left : yabai -m window --resize left:-30:0 || yabai -m window --resize right:-30:0
+resize < right : yabai -m window --resize right:30:0 || yabai -m window --resize left:30:0
+resize < down : yabai -m window --resize bottom:0:30 || yabai -m window --resize top:0:30
+resize < up : yabai -m window --resize top:0:-30 || yabai -m window --resize bottom:0:-30

@@ -91,11 +91,16 @@ function computeSwaps(moveTo, dfsOrder) {
 	// as adjacent transpositions (<= n(n-1)/2 swaps).
 	const slotOf = {}
 	dfsOrder.forEach((id, i) => { slotOf[id] = i })
-	const desired = new Array(dfsOrder.length)
-	for (const [w, t] of Object.entries(moveTo)) desired[slotOf[t]] = Number(w)
-	if (Object.keys(moveTo).length !== dfsOrder.length || desired.some(d => d === undefined || slotOf[d] === undefined)) {
+	const srcs = Object.keys(moveTo)
+	const tgts = Object.values(moveTo)
+	if (srcs.length !== dfsOrder.length
+		|| new Set(tgts).size !== dfsOrder.length
+		|| !srcs.every(w => slotOf[w] !== undefined)
+		|| !tgts.every(t => slotOf[t] !== undefined)) {
 		throw new Error('moveTo/dfsOrder id sets differ')
 	}
+	const desired = new Array(dfsOrder.length)
+	for (const [w, t] of Object.entries(moveTo)) desired[slotOf[t]] = Number(w)
 	const current = dfsOrder.slice()
 	const lines = []
 	for (let i = 0; i < desired.length; i++) {

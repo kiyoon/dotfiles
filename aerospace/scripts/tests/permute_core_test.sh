@@ -82,5 +82,21 @@ else
 	pass=$(( pass + 1 ))
 fi
 
+# same-cardinality id substitution must also throw (sparse-array hole regression)
+if osascript "$CORE" swaps '{"moveTo":{"1":2,"2":1,"3":3,"4":4},"dfsOrder":[1,2,3,5]}' >/dev/null 2>&1; then
+	fail=$(( fail + 1 ))
+	echo "FAIL swaps-substitution-throws (expected non-zero exit)"
+else
+	pass=$(( pass + 1 ))
+fi
+
+# duplicate targets (not a bijection) must throw
+if osascript "$CORE" swaps '{"moveTo":{"1":2,"2":2,"3":1},"dfsOrder":[1,2,3]}' >/dev/null 2>&1; then
+	fail=$(( fail + 1 ))
+	echo "FAIL swaps-duplicate-target-throws (expected non-zero exit)"
+else
+	pass=$(( pass + 1 ))
+fi
+
 echo "pass=$pass fail=$fail"
 (( fail == 0 ))

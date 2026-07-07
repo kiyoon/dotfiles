@@ -5,8 +5,8 @@ Custom [SketchyBar](https://github.com/FelixKratz/SketchyBar) config, integrated
 
 **Left:** AeroSpace mode badge · workspaces `1‑30` (grouped per monitor with dividers) ·
 front app.
-**Right:** clock · battery · volume · Wi‑Fi (with **un‑redacted SSID**) · cpu/gpu/ram ·
-input source (한/A) · Amphetamine · CodexBar.
+**Right:** clock · battery · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
+**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine · CodexBar.
 
 `~/.config/sketchybar` is symlinked to this directory.
 
@@ -44,6 +44,7 @@ item present** — hidden behind the notch is fine, quit is not):
 |---|---|---|
 | **Screen Recording** | `sketchybar` | The app aliases (Amphetamine, CodexBar) are live *screen captures* of the real menu‑bar items. Restart sketchybar after granting. |
 | **Location Services** | `wifi-unredactor` | The only way to read the Wi‑Fi SSID on macOS Sonoma+ (see §4). |
+| **Accessibility** | `sketchybar` | Click handlers can open native menu‑bar popups, including Bluetooth / Control Center. |
 | **Accessibility** | `AeroSpace` | Window management + workspace events. |
 
 ## 3. Compiled helpers (built automatically)
@@ -98,6 +99,19 @@ sketchybar --reload                # re-apply after editing the config
 # AeroSpace: set `start-at-login = true` in aerospace/aerospace.toml and launch it once
 open -a AeroSpace
 ```
+
+For the Bluetooth SketchyBar item to open the native macOS popup, Bluetooth must also be shown
+as a standalone macOS menu-bar item:
+
+```bash
+defaults -currentHost write com.apple.controlcenter Bluetooth -int 18
+defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
+killall ControlCenter SystemUIServer
+```
+
+Without that native item, clicking falls back to Bluetooth Settings.
+The `Boucles soniques` connection indicator is event-driven by macOS'
+`com.apple.bluetooth.status` notification, with wake/reload refreshes as backstops.
 
 ## Troubleshooting
 

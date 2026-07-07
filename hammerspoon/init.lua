@@ -322,8 +322,43 @@ PROMPT
 use multi agents
 ]]
 
+-- Prompt registry: single source of truth for both this hotkey and the
+-- sketchybar "prompts" menu (sketchybar/plugins/prompt_action.sh, which calls
+-- PastePrompt/PromptList over `hs -c`). Add an entry here to grow both at once;
+-- give it a `title`, or the menu falls back to a truncated first line.
+PROMPTS = {
+  { id = "codex_claude", title = "Codex + Claude multi-agent", text = CODEX_CLAUDE_TEMPLATE },
+}
+
+-- Type a prompt by id. Keystroke simulation (not paste) -- see note above.
+function PastePrompt(id)
+  for _, p in ipairs(PROMPTS) do
+    if p.id == id then
+      hs.eventtap.keyStrokes(p.text)
+      return
+    end
+  end
+end
+
+-- Menu source for sketchybar: one "id<TAB>label" line per prompt. label = title,
+-- else the prompt's first line trimmed to a reasonable width.
+function PromptList()
+  local out = {}
+  for _, p in ipairs(PROMPTS) do
+    local label = p.title
+    if not label or label == "" then
+      label = (p.text:match("^[^\n]*") or ""):gsub("%s+$", "")
+      if #label > 44 then
+        label = label:sub(1, 44) .. "…"
+      end
+    end
+    out[#out + 1] = p.id .. "\t" .. label
+  end
+  return table.concat(out, "\n")
+end
+
 hs.hotkey.bind({ "ctrl", "shift", "cmd" }, "c", function()
-  hs.eventtap.keyStrokes(CODEX_CLAUDE_TEMPLATE)
+  PastePrompt("codex_claude")
 end)
 
 -- Pause/Resume frontmost application

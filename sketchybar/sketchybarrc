@@ -8,6 +8,11 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 
 FONT="JetBrainsMono Nerd Font"
 
+# Compiled helpers (committed as .swift, binary gitignored, built on demand).
+HELPER_DIR="$CONFIG_DIR/helpers"
+[[ -x "$HELPER_DIR/tis_current" ]] || \
+	swiftc -O "$HELPER_DIR/tis_current.swift" -o "$HELPER_DIR/tis_current" 2>/dev/null
+
 # ---- Bar ----
 sketchybar --bar \
 	position=top \
@@ -114,6 +119,14 @@ sketchybar --add item front_app left \
 	--subscribe front_app front_app_switched forced
 
 # ---- Right side: clock | battery | volume | wifi ----
+# Tighter spacing than the defaults for the small status items (battery,
+# volume, wifi, cpu, gpu, ram), which otherwise carry 30px of padding each.
+compact=(
+	padding_left=2 padding_right=2
+	icon.padding_left=4 icon.padding_right=2
+	label.padding_left=2 label.padding_right=4
+)
+
 sketchybar --add item clock right \
 	--set clock \
 	update_freq=10 \
@@ -124,6 +137,7 @@ sketchybar --add item clock right \
 
 sketchybar --add item battery right \
 	--set battery \
+	"${compact[@]}" \
 	update_freq=120 \
 	click_script="open 'x-apple.systempreferences:com.apple.Battery-Settings.extension'" \
 	script="$PLUGIN_DIR/battery.sh" \
@@ -131,12 +145,14 @@ sketchybar --add item battery right \
 
 sketchybar --add item volume right \
 	--set volume \
+	"${compact[@]}" \
 	click_script="$PLUGIN_DIR/volume_click.sh" \
 	script="$PLUGIN_DIR/volume.sh" \
 	--subscribe volume volume_change forced
 
 sketchybar --add item wifi right \
 	--set wifi \
+	"${compact[@]}" \
 	update_freq=30 \
 	click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'" \
 	script="$PLUGIN_DIR/wifi.sh" \
@@ -146,6 +162,7 @@ sketchybar --add item wifi right \
 # Right-position items stack right-to-left, so add order here is reversed.
 sketchybar --add item ram right \
 	--set ram \
+	"${compact[@]}" \
 	update_freq=10 \
 	icon=󰍛 \
 	icon.color=$MUTED_COLOR \
@@ -154,6 +171,7 @@ sketchybar --add item ram right \
 
 sketchybar --add item gpu right \
 	--set gpu \
+	"${compact[@]}" \
 	update_freq=5 \
 	icon=󰢮 \
 	icon.color=$MUTED_COLOR \
@@ -162,6 +180,7 @@ sketchybar --add item gpu right \
 
 sketchybar --add item cpu right \
 	--set cpu \
+	"${compact[@]}" \
 	update_freq=5 \
 	icon=󰘚 \
 	icon.color=$MUTED_COLOR \
@@ -178,33 +197,48 @@ sketchybar --add item cpu right \
 # Each app registers two windows: a transparent bundle-id-named host plus a
 # content window named by the item's autosave name -- alias the latter
 # (found empirically; list candidates: sketchybar --query default_menu_items).
-# AeroSpace is the exception: there the bundle-id window holds the content.
+# AeroSpace and TextInputMenuAgent are exceptions: there the bundle-id window
+# holds the content.
 # Right-position items stack right-to-left, so add order here is reversed.
 # alias.color tints the capture to match the theme (all four are monochrome).
 CC_OWNER="Centre de contrôle"
 
-# Input method (한/A). Its content window is an anonymous "Item-0", so pick
-# the entry listed right before the com.apple.TextInputMenuAgent host window.
-# Its (N) index can drift as windows come and go; --reload re-resolves it.
-# Polled fast so language switches show quickly.
-input_alias="$(sketchybar --query default_menu_items | python3 -c "
-import json, sys
-items = json.load(sys.stdin)
-for i, it in enumerate(items):
-    if ',com.apple.TextInputMenuAgent(' in it and i > 0:
-        print(items[i - 1])
-        break
-")"
-[[ -z "$input_alias" ]] && input_alias="$CC_OWNER,com.apple.TextInputMenuAgent"
+# Input method (한/A): native item, deliberately NOT an alias. macOS draws
+# the input icon in different windows per source type (method vs layout), only
+# the active display's copy renders, and the plain-layout window is anonymous
+# with a drifting identity -- no capture survives a source switch (verified by
+# pixel-probing). Event-driven via helpers/input_watcher: the OS's own
+# input-switch distributed notifications no longer fire on this macOS (tested
+# with real switches), so the watcher daemon polls the TIS API in-process at
+# 150ms (negligible CPU, no process spawns) and triggers input_change only on
+# actual changes, passing INPUT_SOURCE_ID. update_freq is just a safety net.
+# Drawn as a pill so it is big enough to click; clicking pops the real
+# menu bar dropdown.
+sketchybar --add event input_change
 
-sketchybar --add alias "$input_alias" right \
-	--rename "$input_alias" input_method \
+sketchybar --add item input_method right \
 	--set input_method \
-	update_freq=1 \
+	padding_left=2 \
+	padding_right=2 \
+	update_freq=60 \
+	icon.drawing=off \
+	label.font="$FONT:Bold:13.0" \
+	label.padding_left=7 \
+	label.padding_right=7 \
+	background.drawing=on \
 	click_script="$PLUGIN_DIR/alias_click.sh TextInputMenuAgent input" \
-	padding_left=-9 \
-	padding_right=-9 \
-	alias.color=$LABEL_COLOR
+	script="$PLUGIN_DIR/input_source.sh" \
+	--subscribe input_method input_change
+
+killall input_watcher 2>/dev/null
+[[ -x "$HELPER_DIR/input_watcher" ]] || \
+	swiftc -O "$HELPER_DIR/input_watcher.swift" -o "$HELPER_DIR/input_watcher" 2>/dev/null
+"$HELPER_DIR/input_watcher" &
+
+# Instant re-capture when the user toggles Amphetamine: amphetamine_click.sh
+# fires this event right after the AppleScript toggle, so the icon flips without
+# waiting for the 3s poll (which stays as the backstop for external changes).
+sketchybar --add event amphetamine_change
 
 sketchybar --add alias "$CC_OWNER,Amphetamine" right \
 	--rename "$CC_OWNER,Amphetamine" amphetamine \
@@ -213,7 +247,8 @@ sketchybar --add alias "$CC_OWNER,Amphetamine" right \
 	click_script="$PLUGIN_DIR/amphetamine_click.sh" \
 	padding_left=-9 \
 	padding_right=-9 \
-	alias.color=$LABEL_COLOR
+	alias.color=$LABEL_COLOR \
+	--subscribe amphetamine amphetamine_change
 
 sketchybar --add alias "$CC_OWNER,codexbar-merged" right \
 	--rename "$CC_OWNER,codexbar-merged" codexbar \
@@ -223,17 +258,6 @@ sketchybar --add alias "$CC_OWNER,codexbar-merged" right \
 	padding_left=-9 \
 	padding_right=-9 \
 	alias.color=$LABEL_COLOR
-
-# Re-captured on workspace switches (icon shows the focused workspace).
-sketchybar --add alias "$CC_OWNER,bobko.aerospace" right \
-	--rename "$CC_OWNER,bobko.aerospace" aerospace \
-	--set aerospace \
-	update_freq=10 \
-	click_script="$PLUGIN_DIR/alias_click.sh AeroSpace AeroSpace" \
-	padding_left=-9 \
-	padding_right=-9 \
-	alias.color=$LABEL_COLOR \
-	--subscribe aerospace aerospace_workspace_change
 
 # ---- Finalize ----
 sketchybar --update

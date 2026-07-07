@@ -14,3 +14,6 @@ tell application "Amphetamine"
 	end if
 end tell
 EOF
+
+# Re-capture the alias immediately instead of waiting for the 3s poll.
+sketchybar --trigger amphetamine_change

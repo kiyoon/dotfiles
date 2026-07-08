@@ -13,7 +13,25 @@
 # and `x is "Bluetooth"` silently compares the reference, never the value.
 
 LOG="/tmp/sketchybar_alias_click.log"
+STATE="${TMPDIR:-/tmp}/sketchybar_bluetooth_click_ms"
+SETTINGS_URL="x-apple.systempreferences:com.apple.BluetoothSettings"
+
+now_ms() {
+	perl -MTime::HiRes=time -e 'printf "%d\n", time() * 1000' 2>/dev/null || {
+		printf '%s000\n' "$(date +%s)"
+	}
+}
+
+now="$(now_ms)"
+last="$(cat "$STATE" 2>/dev/null || printf 0)"
+printf '%s\n' "$now" >"$STATE"
 echo "=== $(date '+%F %T') bluetooth_click" >>"$LOG"
+
+if (( now - last <= 700 )); then
+	echo "double-click: opening Bluetooth Settings" >>"$LOG"
+	open "$SETTINGS_URL"
+	exit 0
+fi
 
 if osascript >>"$LOG" 2>&1 <<'EOF'
 tell application "System Events"
@@ -36,4 +54,4 @@ then
 	exit 0
 fi
 
-open "x-apple.systempreferences:com.apple.BluetoothSettings"
+open "$SETTINGS_URL"

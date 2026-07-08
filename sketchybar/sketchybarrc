@@ -201,7 +201,7 @@ sketchybar --add item wifi right \
 	--set wifi \
 	"${compact[@]}" \
 	update_freq=30 \
-	click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'" \
+	click_script="$PLUGIN_DIR/wifi_click.sh" \
 	script="$PLUGIN_DIR/wifi.sh" \
 	--subscribe wifi wifi_change system_woke
 

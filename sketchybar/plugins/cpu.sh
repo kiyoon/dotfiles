@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
-# CPU usage in percent. `top` needs two samples for a real reading (the first
-# is cumulative-since-boot), so this blocks ~1s; sketchybar runs it async.
+# CPU usage as a normalized process sum. This matches tmux-style readings more
+# closely than `top` on this setup, and avoids a slow two-sample `top` run.
 source "$CONFIG_DIR/colors.sh"
-# Parse with C locale so decimal points never follow the system language.
 export LC_ALL=C
 
-cpu="$(top -l 2 -n 0 -s 1 | awk '
-	/^CPU usage/ { gsub("%", "", $7); idle = $7 }
-	END { if (idle == "") print "?"; else printf "%.0f", 100 - idle }')"
+cores="$(sysctl -n hw.logicalcpu 2>/dev/null || echo 1)"
+cpu="$(ps -A -o %cpu= 2>/dev/null | awk -v cores="$cores" '
+	{ sum += $1 }
+	END {
+		if (!cores) { print "?"; exit }
+		usage = sum / cores
+		if (usage > 100) usage = 100
+		printf "%.0f", usage
+	}')"
 
 color=$LABEL_COLOR
 if [[ "$cpu" != "?" ]]; then

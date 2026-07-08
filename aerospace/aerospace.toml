@@ -123,6 +123,7 @@ alt-shift-w = 'focus-monitor --wrap-around next'
 # Layout controls.
 alt-shift-m = 'fullscreen --no-outer-gaps'
 alt-shift-g = 'layout floating tiling'
+alt-shift-c = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/window_layout.sh toggle-monitor-floating"'
 alt-shift-e = 'balance-sizes'
 # yabai-style rotate/mirror: windows cycle through the existing frame slots
 # (scripts/permute.sh; same idea as yabai's rotate_without_changing_layout.sh).

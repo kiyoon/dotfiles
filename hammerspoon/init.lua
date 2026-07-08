@@ -327,7 +327,7 @@ use multi agents
 -- PastePrompt/PromptList over `hs -c`). Add an entry here to grow both at once;
 -- give it a `title`, or the menu falls back to a truncated first line.
 PROMPTS = {
-  { id = "codex_claude", title = "Codex + Claude multi-agent", text = CODEX_CLAUDE_TEMPLATE },
+  { id = "codex_claude", title = "Codex + Claude multi-agent", shortcut = "⌃⇧⌘C", text = CODEX_CLAUDE_TEMPLATE },
 }
 
 -- Type a prompt by id. Keystroke simulation (not paste) -- see note above.
@@ -340,22 +340,134 @@ function PastePrompt(id)
   end
 end
 
+local function promptLabel(p)
+  local label = p.title
+  if not label or label == "" then
+    label = (p.text:match("^[^\n]*") or ""):gsub("%s+$", "")
+    if #label > 44 then
+      label = label:sub(1, 44) .. "…"
+    end
+  end
+
+  if p.shortcut and p.shortcut ~= "" then
+    label = p.shortcut .. "    " .. label
+  end
+
+  return label
+end
+
 -- Menu source for sketchybar: one "id<TAB>label" line per prompt. label = title,
 -- else the prompt's first line trimmed to a reasonable width.
 function PromptList()
   local out = {}
   for _, p in ipairs(PROMPTS) do
-    local label = p.title
-    if not label or label == "" then
-      label = (p.text:match("^[^\n]*") or ""):gsub("%s+$", "")
-      if #label > 44 then
-        label = label:sub(1, 44) .. "…"
-      end
-    end
-    out[#out + 1] = p.id .. "\t" .. label
+    out[#out + 1] = p.id .. "\t" .. promptLabel(p)
   end
   return table.concat(out, "\n")
 end
+
+local function runShell(command)
+  local path = "export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH; "
+  hs.task.new("/bin/bash", nil, { "-lc", path .. command }):start()
+end
+
+local function promptMenuItems()
+  local items = {}
+  for _, p in ipairs(PROMPTS) do
+    items[#items + 1] = {
+      title = promptLabel(p),
+      fn = function()
+        PastePrompt(p.id)
+      end,
+    }
+  end
+  return items
+end
+
+local function replaceCompareMenubar(key, title, autosaveName, tooltip, menuFactory)
+  _G.sketchybarCompareMenubars = _G.sketchybarCompareMenubars or {}
+  if _G.sketchybarCompareMenubars[key] then
+    _G.sketchybarCompareMenubars[key]:delete()
+    _G.sketchybarCompareMenubars[key] = nil
+  end
+
+  local menu = hs.menubar.new(false, autosaveName)
+  menu:setTitle(title)
+  menu:setTooltip(tooltip)
+  menu:setMenu(menuFactory)
+  _G.sketchybarCompareMenubars[key] = menu
+end
+
+local function installSketchybarCompareMenubars()
+  if _G.sketchybarCompareMenubar then
+    _G.sketchybarCompareMenubar:delete()
+    _G.sketchybarCompareMenubar = nil
+  end
+
+  replaceCompareMenubar("reload", "Reload", "sketchybar-compare-reload", "Hammerspoon native reload menu", function()
+    return {
+      {
+        title = "Reload SketchyBar",
+        fn = function()
+          runShell("sketchybar --reload")
+        end,
+      },
+      {
+        title = "Restart AeroSpace",
+        fn = function()
+          runShell("killall AeroSpace 2>/dev/null; open -a AeroSpace")
+        end,
+      },
+    }
+  end)
+
+  replaceCompareMenubar("prompts", "Prompts", "sketchybar-compare-prompts", "Hammerspoon native prompts menu", function()
+    return promptMenuItems()
+  end)
+
+  replaceCompareMenubar("displays", "Displays", "sketchybar-compare-displays", "Hammerspoon native displays menu", function()
+    return {
+      {
+        title = "⌥⇧A    Move window → left display",
+        fn = function()
+          runShell("$HOME/.config/aerospace/scripts/monitor.sh move-secondary-toggle")
+        end,
+      },
+      {
+        title = "⌥⇧T    Move window → right display",
+        fn = function()
+          runShell("$HOME/.config/aerospace/scripts/monitor.sh move-main-toggle")
+        end,
+      },
+      {
+        title = "-",
+      },
+      {
+        title = "⌥⇧P    Move window → previous workspace",
+        fn = function()
+          runShell("$HOME/.config/aerospace/scripts/workspace.sh move-window-prev-used")
+        end,
+      },
+      {
+        title = "⌥⇧N    Move window → next workspace",
+        fn = function()
+          runShell("$HOME/.config/aerospace/scripts/workspace.sh move-window-next-used")
+        end,
+      },
+      {
+        title = "-",
+      },
+      {
+        title = "⌥⇧C    Toggle screen floating",
+        fn = function()
+          runShell("$HOME/.config/aerospace/scripts/window_layout.sh toggle-monitor-floating")
+        end,
+      },
+    }
+  end)
+end
+
+installSketchybarCompareMenubars()
 
 hs.hotkey.bind({ "ctrl", "shift", "cmd" }, "c", function()
   PastePrompt("codex_claude")

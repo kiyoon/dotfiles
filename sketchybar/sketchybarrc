@@ -41,166 +41,35 @@ sketchybar --default \
 	background.height=24 \
 	background.drawing=off
 
-# ---- Restart menu (leftmost): one button whose popup restarts sketchybar or
-# AeroSpace -- recovery for when a monitor change wedges them. `sketchybar
-# --reload` rebuilds the bar in place; AeroSpace is fully relaunched (not
-# `reload-config`, which can't revive a hung server) and its after-startup
-# command re-triggers the workspace refresh. Popup closes on selection and when
-# the pointer leaves it (mouse.exited.global); rows highlight on hover
-# (popup_hover.sh); row actions live in plugins/restart_action.sh.
-sketchybar --add item restart left \
-	--set restart \
+# ---- Hammerspoon native menus ----
+# These are plain SketchyBar buttons. The popups are hidden hs.menubar objects
+# opened by Hammerspoon, not SketchyBar popup menus.
+sketchybar --add item hs_reload_menu left \
+	--set hs_reload_menu \
 	icon=󰜉 \
 	icon.color=$LABEL_COLOR \
 	label.drawing=off \
-	background.drawing=on \
-	popup.background.color=$ITEM_BG_COLOR \
-	popup.background.corner_radius=6 \
-	popup.background.border_width=1 \
-	popup.background.border_color=$MUTED_COLOR \
-	popup.background.shadow.drawing=on \
-	popup.blur_radius=20 \
-	popup.align=left \
-	popup.y_offset=-1 \
-	click_script="sketchybar --set restart popup.drawing=toggle" \
-	script="sketchybar --set restart popup.drawing=off" \
-	--subscribe restart mouse.exited.global
+	padding_left=2 \
+	padding_right=2 \
+	click_script="$PLUGIN_DIR/hammerspoon_menu_click.sh reload"
 
-# Shared look for the two menu rows (label set per item below).
-restart_row=(
-	icon=󰜉
-	icon.color=$LABEL_COLOR
-	icon.padding_left=10
-	icon.padding_right=6
-	label.color=$LABEL_COLOR
-	label.padding_right=14
-	width=150
-	align=left
-	background.corner_radius=6
-	background.height=22
-	background.color=$ACCENT_COLOR
-	background.drawing=off
-)
-
-sketchybar --add item restart.sketchybar popup.restart \
-	--set restart.sketchybar "${restart_row[@]}" \
-	label="sketchybar" \
-	script="$PLUGIN_DIR/popup_hover.sh" \
-	click_script="$PLUGIN_DIR/restart_action.sh sketchybar" \
-	--subscribe restart.sketchybar mouse.entered mouse.exited
-
-sketchybar --add item restart.aerospace popup.restart \
-	--set restart.aerospace "${restart_row[@]}" \
-	label="AeroSpace" \
-	script="$PLUGIN_DIR/popup_hover.sh" \
-	click_script="$PLUGIN_DIR/restart_action.sh aerospace" \
-	--subscribe restart.aerospace mouse.entered mouse.exited
-
-# ---- Prompts menu (next to restart): one button whose popup types a saved
-# prompt into the focused app. Rows are generated from Hammerspoon's
-# PromptList() -- single source of truth in hammerspoon/init.lua -- and each row
-# types its prompt via `hs -c PastePrompt(id)` (keystroke simulation, so Claude
-# Code keeps it inline instead of a [Pasted text] attachment). Add prompts in
-# init.lua, then reload Hammerspoon + sketchybar. Same popup UX as restart. ----
-sketchybar --add item prompts left \
-	--set prompts \
+sketchybar --add item hs_prompts_menu left \
+	--set hs_prompts_menu \
 	icon=󰚩 \
 	icon.color=$LABEL_COLOR \
 	label.drawing=off \
-	background.drawing=on \
-	popup.background.color=$ITEM_BG_COLOR \
-	popup.background.corner_radius=6 \
-	popup.background.border_width=1 \
-	popup.background.border_color=$MUTED_COLOR \
-	popup.background.shadow.drawing=on \
-	popup.blur_radius=20 \
-	popup.align=left \
-	popup.y_offset=-1 \
-	click_script="sketchybar --set prompts popup.drawing=toggle" \
-	script="sketchybar --set prompts popup.drawing=off" \
-	--subscribe prompts mouse.exited.global
+	padding_left=2 \
+	padding_right=2 \
+	click_script="$PLUGIN_DIR/hammerspoon_menu_click.sh prompts"
 
-# Shared row look (label set per prompt below).
-prompt_row=(
-	icon=󰚩
-	icon.color=$LABEL_COLOR
-	icon.padding_left=10
-	icon.padding_right=6
-	label.color=$LABEL_COLOR
-	label.padding_right=16
-	background.corner_radius=6
-	background.height=22
-	background.color=$ACCENT_COLOR
-	background.drawing=off
-)
-
-# One popup row per registered prompt ("id<TAB>label" lines from Hammerspoon).
-# If Hammerspoon is down at load, show a hint row instead of an empty menu.
-prompt_rows="$(hs -c 'return PromptList()' 2>/dev/null)"
-if [[ -n "$prompt_rows" ]]; then
-	while IFS=$'\t' read -r pid plabel; do
-		[[ -z "$pid" ]] && continue
-		sketchybar --add item "prompt.$pid" popup.prompts \
-			--set "prompt.$pid" "${prompt_row[@]}" \
-			label="$plabel" \
-			script="$PLUGIN_DIR/popup_hover.sh" \
-			click_script="$PLUGIN_DIR/prompt_action.sh $pid" \
-			--subscribe "prompt.$pid" mouse.entered mouse.exited
-	done <<<"$prompt_rows"
-else
-	sketchybar --add item prompt.__none popup.prompts \
-		--set prompt.__none icon.padding_left=10 label="(Hammerspoon not running)" \
-		label.color=$MUTED_COLOR label.padding_right=16
-fi
-
-# ---- Displays menu (next to prompts): move the focused window between monitors.
-# Rows mirror the existing AeroSpace bindings (⌥⇧A / ⌥⇧T -> scripts/monitor.sh),
-# so the shortcut is on-screen to memorize; clicking runs the same toggle (to the
-# external display, or back to built-in if the window is already there). ----
-sketchybar --add item displays left \
-	--set displays \
+sketchybar --add item hs_displays_menu left \
+	--set hs_displays_menu \
 	icon=󰍺 \
 	icon.color=$LABEL_COLOR \
 	label.drawing=off \
-	background.drawing=on \
-	popup.background.color=$ITEM_BG_COLOR \
-	popup.background.corner_radius=6 \
-	popup.background.border_width=1 \
-	popup.background.border_color=$MUTED_COLOR \
-	popup.background.shadow.drawing=on \
-	popup.blur_radius=20 \
-	popup.align=left \
-	popup.y_offset=-1 \
-	click_script="sketchybar --set displays popup.drawing=toggle" \
-	script="sketchybar --set displays popup.drawing=off" \
-	--subscribe displays mouse.exited.global
-
-# Shared row look; label leads with the keyboard shortcut (to memorize) then the
-# action. icon off so popup_hover.sh's icon-color reset stays a no-op.
-display_row=(
-	icon.drawing=off
-	label.color=$LABEL_COLOR
-	label.padding_left=10
-	label.padding_right=16
-	background.corner_radius=6
-	background.height=22
-	background.color=$ACCENT_COLOR
-	background.drawing=off
-)
-
-sketchybar --add item display.left popup.displays \
-	--set display.left "${display_row[@]}" \
-	label="⌥⇧A    Move window → left display" \
-	script="$PLUGIN_DIR/popup_hover.sh" \
-	click_script="$PLUGIN_DIR/display_action.sh left" \
-	--subscribe display.left mouse.entered mouse.exited
-
-sketchybar --add item display.right popup.displays \
-	--set display.right "${display_row[@]}" \
-	label="⌥⇧T    Move window → right display" \
-	script="$PLUGIN_DIR/popup_hover.sh" \
-	click_script="$PLUGIN_DIR/display_action.sh right" \
-	--subscribe display.right mouse.entered mouse.exited
+	padding_left=2 \
+	padding_right=2 \
+	click_script="$PLUGIN_DIR/hammerspoon_menu_click.sh displays"
 
 # ---- AeroSpace mode badge (left of workspaces, hidden in main mode) ----
 # Fired by the mode-switching keybindings in aerospace.toml.
@@ -313,14 +182,20 @@ sketchybar --add item volume right \
 
 sketchybar --add event bluetooth_change "com.apple.bluetooth.status" \
 	--add event bluetooth_on "IOBluetoothHostControllerPoweredOnNotification" \
-	--add event bluetooth_off "IOBluetoothHostControllerPoweredOffNotification"
+	--add event bluetooth_off "IOBluetoothHostControllerPoweredOffNotification" \
+	--add event bluetooth_boucles_change
 
 sketchybar --add item bluetooth_boucles right \
 	--set bluetooth_boucles \
 	"${compact[@]}" \
 	click_script="$PLUGIN_DIR/bluetooth_click.sh" \
 	script="$PLUGIN_DIR/bluetooth_boucles.sh" \
-	--subscribe bluetooth_boucles bluetooth_change bluetooth_on bluetooth_off system_woke forced
+	--subscribe bluetooth_boucles bluetooth_boucles_change bluetooth_change bluetooth_on bluetooth_off system_woke forced
+
+killall bluetooth_boucles_watcher 2>/dev/null
+[[ -x "$HELPER_DIR/bluetooth_boucles_watcher" ]] || \
+	swiftc -O "$HELPER_DIR/bluetooth_boucles_watcher.swift" -o "$HELPER_DIR/bluetooth_boucles_watcher" -framework IOBluetooth 2>/dev/null
+"$HELPER_DIR/bluetooth_boucles_watcher" &
 
 sketchybar --add item wifi right \
 	--set wifi \
@@ -358,6 +233,20 @@ sketchybar --add item cpu right \
 	icon.color=$MUTED_COLOR \
 	click_script="open -a 'Activity Monitor'" \
 	script="$PLUGIN_DIR/cpu.sh"
+
+# ---- Built-in macOS screen recording stop ----
+sketchybar --add event recording_check
+
+sketchybar --add item recording_stop right \
+	--set recording_stop \
+	"${compact[@]}" \
+	drawing=off \
+	update_freq=2 \
+	icon=󰓛 \
+	icon.color=$RED \
+	click_script="$PLUGIN_DIR/recording_stop_click.sh" \
+	script="$PLUGIN_DIR/recording_stop.sh" \
+	--subscribe recording_stop recording_check forced
 
 # ---- Menu bar app aliases (left of the stats) ----
 # Screen captures of the real macOS menu bar items, so they need Screen

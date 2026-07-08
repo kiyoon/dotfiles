@@ -21,8 +21,7 @@ brew install felixkratz/formulae/sketchybar
 # Window manager it integrates with
 brew install --cask nikitabobko/tap/aerospace
 
-# Compiler for the Swift helpers (tis_current, input_watcher) — skip if you
-# already have Xcode / its tools
+# Compiler for the Swift helpers — skip if you already have Xcode / its tools
 xcode-select --install
 
 # Fonts
@@ -45,6 +44,7 @@ item present** — hidden behind the notch is fine, quit is not):
 | **Screen Recording** | `sketchybar` | The app aliases (Amphetamine, CodexBar) are live *screen captures* of the real menu‑bar items. Restart sketchybar after granting. |
 | **Location Services** | `wifi-unredactor` | The only way to read the Wi‑Fi SSID on macOS Sonoma+ (see §4). |
 | **Accessibility** | `sketchybar` | Click handlers can open native menu‑bar popups, including Bluetooth / Control Center. |
+| **Bluetooth** | `sketchybar` / `bluetooth_boucles_watcher` if prompted | The `Boucles soniques` indicator uses IOBluetooth connect/disconnect notifications for instant updates. |
 | **Accessibility** | `AeroSpace` | Window management + workspace events. |
 
 ## 3. Compiled helpers (built automatically)
@@ -55,8 +55,16 @@ committed; the binaries are git‑ignored.
 - `helpers/tis_current` — reads the current text input source (한/A).
 - `helpers/input_watcher` — tiny daemon that polls the input API and fires the `input_change`
   event instantly on a source switch.
+- `helpers/bluetooth_boucles_watcher` — tiny daemon that listens for IOBluetooth
+  connect/disconnect notifications for `Boucles soniques` and fires
+  `bluetooth_boucles_change`.
 
-To force a rebuild: `rm helpers/tis_current helpers/input_watcher && sketchybar --reload`.
+To force a rebuild:
+
+```bash
+rm helpers/tis_current helpers/input_watcher helpers/bluetooth_boucles_watcher
+sketchybar --reload
+```
 
 ## 4. Wi‑Fi SSID — `wifi-unredactor`
 
@@ -110,8 +118,13 @@ killall ControlCenter SystemUIServer
 ```
 
 Without that native item, clicking falls back to Bluetooth Settings.
-The `Boucles soniques` connection indicator is event-driven by macOS'
-`com.apple.bluetooth.status` notification, with wake/reload refreshes as backstops.
+The `Boucles soniques` connection indicator is event-driven by
+`helpers/bluetooth_boucles_watcher`; it has no periodic `update_freq` polling. The shell plugin
+only uses `system_profiler` as a one-shot fallback on reload, wake, or Bluetooth power/status
+changes to establish the initial state.
+
+CPU usage uses a normalized `ps` process sum across logical cores, which matches tmux-style CPU
+percentages and avoids the old blocking two-sample `top` call.
 
 ## Troubleshooting
 
@@ -121,5 +134,7 @@ The `Boucles soniques` connection indicator is event-driven by macOS'
   granted (§4). Run the app once and click Allow; confirm it's enabled in Location Services.
 - **한/A input badge not updating** → the `input_watcher` daemon isn't running; `sketchybar
   --reload` relaunches it.
+- **Bluetooth indicator not changing instantly** → the `bluetooth_boucles_watcher` daemon isn't
+  running or Bluetooth permission was denied; `sketchybar --reload` relaunches it.
 - **Workspace numbers/app glyphs missing** → install both fonts (§1) and ensure AeroSpace is
   running (it fires the workspace‑change events).

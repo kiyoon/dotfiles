@@ -8,6 +8,14 @@ source "$CONFIG_DIR/colors.sh"
 CC_OWNER="${CC_OWNER:-Centre de contrôle}"
 menu_items="$(sketchybar --query default_menu_items 2>/dev/null || printf '[]')"
 
+# `sketchybar --query default_menu_items` enumerates the real menu bar and comes
+# back EMPTY on ~1/3 of calls. Treating that as "the apps are gone" removes the
+# aliases, then the next good tick re-adds them -> visible flicker. Bail unless
+# the enumeration is trustworthy (non-empty); a flaky tick becomes a no-op.
+if [[ "$(printf '%s' "$menu_items" | jq 'length' 2>/dev/null || echo 0)" -eq 0 ]]; then
+	exit 0
+fi
+
 has_menu_item() {
 	local target="$1"
 	printf '%s\n' "$menu_items" | jq -e --arg target "$target" \

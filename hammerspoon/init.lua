@@ -327,12 +327,32 @@ PROMPT
 use multi agents
 ]]
 
+local CODEX_CLAUDE_NO_FAST_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
+Do not run cdx switch. Use cdx usage to decide which account has enough quota before starting.
+Use fast mode OFF for both accounts. dear ($20 plan) uses CODEX_HOME; hetu ($200 plan) is the default Codex home.
+Use below commands:
+CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
+<your prompt>
+PROMPT
+
+codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
+<your prompt>
+PROMPT
+
+CLAUDE_CODE_EFFORT_LEVEL=max claude -p --model opus --permission-mode bypassPermissions --disallowedTools "Edit" "Write" "NotebookEdit" <<'PROMPT'
+<your prompt>
+PROMPT
+
+use multi agents
+]]
+
 -- Prompt registry: single source of truth for both this hotkey and the
 -- sketchybar "prompts" menu (sketchybar/plugins/prompt_action.sh, which calls
 -- PastePrompt/PromptList over `hs -c`). Add an entry here to grow both at once;
 -- give it a `title`, or the menu falls back to a truncated first line.
 PROMPTS = {
   { id = "codex_claude", title = "Codex + Claude multi-agent", shortcut = "⌃⇧⌘C", text = CODEX_CLAUDE_TEMPLATE },
+  { id = "codex_claude_no_fast", title = "Codex + Claude multi-agent (fast off)", text = CODEX_CLAUDE_NO_FAST_TEMPLATE },
 }
 
 -- Type a prompt by id. Keystroke simulation (not paste) -- see note above.

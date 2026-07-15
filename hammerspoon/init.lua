@@ -309,8 +309,8 @@ end)
 -- Uses keystroke simulation (not paste) so Claude Code's TUI renders it inline
 -- instead of collapsing into a [Pasted text] attachment.
 local CODEX_CLAUDE_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
-Do not run cdx switch. Use cdx usage to decide whether dear has enough quota before starting.
-Use dear ($20 plan) with fast mode OFF via CODEX_HOME. Use hetu ($200 plan) with fast mode ON; hetu is the default Codex home.
+Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
+Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan) with fast mode ON. hetu is the default Codex home.
 Use below commands:
 CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>
@@ -328,8 +328,8 @@ use multi agents
 ]]
 
 local CODEX_CLAUDE_NO_FAST_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
-Do not run cdx switch. Use cdx usage to decide which account has enough quota before starting.
-Use fast mode OFF for both accounts. dear ($20 plan) uses CODEX_HOME; hetu ($200 plan) is the default Codex home.
+Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
+Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan), also with fast mode OFF. hetu is the default Codex home.
 Use below commands:
 CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>

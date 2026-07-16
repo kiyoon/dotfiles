@@ -11,10 +11,11 @@ auto-reload-config = true
 # just refresh its workspace indicators.
 after-startup-command = ['exec-and-forget sketchybar --trigger aerospace_workspace_change']
 
-# Notify sketchybar about workspace changes (see sketchybar/plugins/aerospace_workspaces.sh)
-# and record monitor-focus history for monitor.sh move-recent.
+# Notify sketchybar about workspace changes. Its listener debounces AeroSpace
+# queries until display/workspace events have been quiet for three seconds,
+# then refreshes the bar and records monitor-focus history for move-recent.
 exec-on-workspace-change = ['/bin/bash', '-c',
-  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; "$HOME"/.config/aerospace/scripts/monitor.sh track'
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
 ]
 
 enable-normalization-flatten-containers = true

@@ -9,13 +9,17 @@ auto-reload-config = true
 
 # sketchybar runs via `brew services start sketchybar`; on aerospace startup we
 # just refresh its workspace indicators.
-after-startup-command = ['exec-and-forget sketchybar --trigger aerospace_workspace_change']
+after-startup-command = [
+  'exec-and-forget sketchybar --trigger aerospace_workspace_change',
+]
 
 # Notify sketchybar about workspace changes. Its listener debounces AeroSpace
 # queries until display/workspace events have been quiet for three seconds,
 # then refreshes the bar and records monitor-focus history for move-recent.
-exec-on-workspace-change = ['/bin/bash', '-c',
-  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+exec-on-workspace-change = [
+  '/bin/bash',
+  '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
 ]
 
 enable-normalization-flatten-containers = true
@@ -85,7 +89,10 @@ run = 'layout floating'
 # While skhd runs it consumes this chord and owns the toggle: its passthrough
 # mode unbinds the resize chords and its mode-entry command syncs aerospace and
 # sketchybar (see skhd/skhdrc). This binding is the fallback when skhd is off.
-cmd-alt-b = ['mode passthrough', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=passthrough']
+cmd-alt-b = [
+  'mode passthrough',
+  'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=passthrough',
+]
 
 # App launchers from skhd.
 alt-shift-backtick = 'exec-and-forget open -a "Visual Studio Code"'
@@ -96,8 +103,8 @@ alt-2 = 'exec-and-forget open -a "Google Chrome"'
 alt-shift-2 = 'exec-and-forget open -n -a "Google Chrome"'
 alt-3 = 'exec-and-forget open -a "WezTerm"'
 alt-shift-3 = 'exec-and-forget open -n -a "WezTerm"'
-alt-4 = 'exec-and-forget open -a "ChatGPT"'
-alt-shift-4 = 'exec-and-forget open -n -a "ChatGPT"'
+alt-4 = 'exec-and-forget open -a "ChatGPT Classic"'
+alt-shift-4 = 'exec-and-forget open -n -a "ChatGPT Classic"'
 alt-5 = 'exec-and-forget open -a "Telegram"'
 alt-6 = 'exec-and-forget open -a "Slack"'
 alt-7 = 'exec-and-forget open -a "Notion"'
@@ -195,11 +202,17 @@ ctrl-shift-f6 = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/
 # Toggle between tiling and floating layout for the workspace.
 alt-shift-s = 'layout floating tiling'
 
-cmd-alt-r = ['mode resize', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=resize']
+cmd-alt-r = [
+  'mode resize',
+  'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=resize',
+]
 
 # Same divider model as the alt-shift-y/u/i/o bindings above.
 [mode.resize.binding]
-esc = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+esc = [
+  'mode main',
+  'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main',
+]
 h = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width -30 || resize width +30'
 l = 'focus right --boundaries-action fail --ignore-floating && focus left --ignore-floating && resize width +30 || resize width -30'
 j = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height +30 || resize height -30'
@@ -210,4 +223,7 @@ down = 'focus down --boundaries-action fail --ignore-floating && focus up --igno
 up = 'focus down --boundaries-action fail --ignore-floating && focus up --ignore-floating && resize height -30 || resize height +30'
 
 [mode.passthrough.binding]
-cmd-shift-alt-b = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+cmd-shift-alt-b = [
+  'mode main',
+  'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main',
+]

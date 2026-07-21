@@ -70,6 +70,7 @@ or, `tmux new -s <session_name>`
 - Ctrl+a + '\<number\>\<Enter\>: jump to the window number (use when bigger than 9)
 - Ctrl+a + ,: change window title
 - Ctrl+Shift+s+Left / Right: re-order windows
+- Mouse: drag and hold a window title for 0.5 seconds; the pink `` shows the exact insertion position
 
 ### Detach and resume
 

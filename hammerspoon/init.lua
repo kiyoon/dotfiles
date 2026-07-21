@@ -65,14 +65,42 @@ local function is_nvim_terminal_mode(term_text_ansi)
   return false
 end
 
+---title에 nvim이 떠 있을 가능성이 있는지 빠르게 판단.
+---zsh가 title을 실행중인 command line으로 설정하므로 (vi/v/dv 등 alias 포함)
+---nvim을 여는 명령이면 title에 흔적이 남는다. git commit처럼 $EDITOR로 nvim을
+---여는 프로그램은 자기 이름이 남으므로 따로 나열. 새 launcher가 생기면 여기 추가.
+---false positive는 ~20ms 스크랩 한 번이 전부라 넉넉하게 매치하고,
+---false negative는 F12가 안 가므로 피해야 한다.
+---@param window_title string
+---@return boolean
+local function title_may_have_nvim(window_title)
+  local hints = {
+    "%f[%w]n?vim?%f[%W]", -- vi, vim, nvim 단어 (viewer/video 같은 단어는 제외)
+    "vim", -- vimdiff, lazyvim, gmtlvim, neovim ...
+    "%f[%w]vic%f[%W]", -- alias vic (coc nvim)
+    "csvi", -- alias csvi (csv 전용 nvim)
+    "%f[%w]v%f[%W]", -- alias v=nvim
+    "%f[%w]dv%f[%W]", -- alias dv='nvim +DiffviewOpen'
+    "git", -- git commit/rebase 등이 $EDITOR(nvim)를 열 때 title은 "git ..."; lazygit 포함
+  }
+  for _, pattern in ipairs(hints) do
+    if string.match(window_title, pattern) then
+      return true
+    end
+  end
+  return false
+end
+
 -- karabiner-elements maps Rcmd and Ralt to F18
 -- Korean-English input source switch
 -- when in Wezterm and inside nvim, press f12 (activate hanguel.vim plugin)
 -- 동작 원리
 -- 1. wezterm인지 확인
 -- 2. window title이 vi 인지 확인 -> f12
--- 3. window title이 tmux 인지 확인
---    -> wezterm cli get-text 실행해 active pane border format (title) 이 nvim인지 확인
+-- 3. 아니면 wezterm cli get-text 실행해 tmux active pane border format (title) 이 nvim인지 확인
+--    (tmux가 set-titles-string "#T"로 inner pane title을 forwarding하므로 window title은
+--    "tmux"가 아니라 "[1/3] vi README.md" 같은 형태. title로는 tmux인지 판단할 수 없음)
+--    (단, title에 vi/nvim/git 등 흔적이 있을 때만 스크랩 -> 일반 shell에서는 바로 한/영 전환)
 --    -> command mode 아닌지 확인 (lualine 왼쪽 "COMMAND" 혹은 오른쪽 "  " 색깔로 구분. tokyonight theme 가정. command mode nvim이 여러개 있지 않다는 가정..)
 --    -> f12
 -- 4. 구름입력기이면 cmd shift ctrl space
@@ -110,8 +138,12 @@ hs.hotkey.bind({}, "f18", function()
       end
     end
 
-    if string.match(window_title, " tmux$") or string.match(window_title, "^tmux$") then
-      print("program in wezterm is tmux")
+    -- tmux는 window title을 inner pane title로 설정하므로 (set-titles-string "#T")
+    -- title이 "tmux"로 끝나지 않는다. title 대신 화면을 스크랩해서
+    -- active pane border title이 nvim인지 확인한다.
+    -- 스크랩(~20ms)은 title에 nvim 흔적이 있을 때만 실행해서
+    -- 일반 shell에서 한/영 전환(F18)이 느려지지 않게 한다.
+    if title_may_have_nvim(window_title) then
       -- In tmux, use wezterm cli to get text of the pane
       -- and detect if the pane border title has nvim
       -- and the focus is in the pane
@@ -346,6 +378,71 @@ PROMPT
 use multi agents
 ]]
 
+local TMUX_READ_AGENT_AND_CONTINUE_TEMPLATE = [[Take over the unfinished work from the already-running coding agent(s) in the tmux pane(s) listed below. This is a session-preserving handoff for changing agent/model/program or exhausted quota. Do not restart, interrupt, close, or replace those agents.
+
+Use stable pane IDs (`%N`) when available. Discover and inspect each target:
+tmux list-panes -a -F '#{pane_id} #{session_name}:#{window_index}.#{pane_index} cmd=#{pane_current_command} cwd=#{pane_current_path} title=#{pane_title} mode=#{pane_in_mode} dead=#{pane_dead}'
+PANE='%N'
+tmux display-message -p -t "$PANE" '#{pane_id} cmd=#{pane_current_command} cwd=#{pane_current_path} title=#{pane_title} mode=#{pane_in_mode} dead=#{pane_dead}'
+tmux capture-pane -p -J -S -300 -t "$PANE"
+tmux capture-pane -p -J -S - -t "$PANE"  # only if more history is needed
+
+Recover the latest user request, decisions, completed work, failures, and remaining steps. Verify the transcript against the current files, git state, and test output, then continue the work yourself to completion. Preserve all existing uncommitted and parallel changes. Pane output may be incomplete or stale, so do not blindly repeat commands or trust claimed completion. Do not ask me to repeat context unless the transcript and workspace genuinely cannot recover it.
+
+Normally treat source panes as read-only. Only if an essential gap blocks progress and a source agent is idle at its normal prompt (not busy, in copy mode, or at a dialog), send one concise handoff question with:
+PANE='%N'
+BUF="a2a-$$-$RANDOM"
+tmux load-buffer -b "$BUF" - <<'TMUX_PROMPT'
+<exact multiline message>
+TMUX_PROMPT
+tmux paste-buffer -d -p -b "$BUF" -t "$PANE"
+tmux send-keys -t "$PANE" Enter
+sleep 1
+tmux capture-pane -p -e -J -S -40 -t "$PANE"
+# Only if the exact draft is visibly still unsent at the normal input (unstyled text, not a dim \e[2m ghost suggestion) and no dialog appeared:
+tmux send-keys -t "$PANE" Enter
+
+Embedded newlines are prompt content because `paste-buffer -p` uses bracketed paste when supported. The separate first Enter submits the whole prompt. agent-watcher's delayed second Enter is only a reliability retry for a swallowed submit, not a newline-then-start sequence. Herdr uses the same text/submit distinction; `pane run` combines text with one Enter. Never retry blindly or press Enter at a permission, confirmation, selection, or plan dialog. Do not use `send-keys -l ... Enter`; `-l` would type the word "Enter".
+
+Input-box text is often autocompletion ghost text, not a human draft: Claude Code and Codex render dim history suggestions and placeholder hints at the input, and a just-sent message can reappear as a dim suggestion at the empty prompt. Distinguish by recapturing with escapes, `tmux capture-pane -p -e -J -S -40 -t "$PANE"`: ghost text is dim (wrapped in \e[2m ... \e[0m) and sits at/after the cursor (`#{cursor_x}` via display-message), while human-typed text is unstyled, ends at the cursor, and grows or edits across captures a few seconds apart. Treat dim-only text as an empty idle prompt; treat unstyled input text as a human draft — never overwrite or Enter-submit it; wait and recapture, or surface it to me.
+
+For multiple source panes, reconcile contradictions using the workspace, tests, timestamps, and newer evidence. Preserve every session and continue the actual task rather than merely summarizing the handoff.
+
+tmux pane(s): ]]
+
+local TMUX_WORK_TOGETHER_TEMPLATE = [[Work with the already-running coding agents in the tmux pane(s) listed below while preserving all existing sessions. Act as lead coordinator: repeatedly inspect their state, delegate bounded work, read results, integrate them, and send follow-ups until the user's task is genuinely complete. Do not restart, close, interrupt, or replace those agents.
+
+Use stable pane IDs (`%N`) when available. Discover and inspect each target:
+tmux list-panes -a -F '#{pane_id} #{session_name}:#{window_index}.#{pane_index} cmd=#{pane_current_command} cwd=#{pane_current_path} title=#{pane_title} mode=#{pane_in_mode} dead=#{pane_dead}'
+PANE='%N'
+tmux display-message -p -t "$PANE" '#{pane_id} cmd=#{pane_current_command} cwd=#{pane_current_path} title=#{pane_title} mode=#{pane_in_mode} dead=#{pane_dead}'
+tmux capture-pane -p -J -S -120 -t "$PANE"
+
+Before every message, inspect the pane and send only when the agent is idle at its normal input prompt. If it is working, wait and capture again. Never inject input while the pane is dead or in copy mode, and never type into or press Enter on a permission, confirmation, selection, or plan dialog; surface such blockers to me.
+
+Send an exact multiline prompt through a unique tmux buffer:
+PANE='%N'
+BUF="a2a-$$-$RANDOM"
+tmux load-buffer -b "$BUF" - <<'TMUX_PROMPT'
+<exact multiline message>
+TMUX_PROMPT
+tmux paste-buffer -d -p -b "$BUF" -t "$PANE"
+tmux send-keys -t "$PANE" Enter
+sleep 1
+tmux capture-pane -p -e -J -S -40 -t "$PANE"
+# Only if the exact draft is visibly still unsent at the normal input (unstyled text, not a dim \e[2m ghost suggestion) and no dialog appeared:
+tmux send-keys -t "$PANE" Enter
+
+Embedded newlines are prompt content because `paste-buffer -p` uses bracketed paste when supported. The separate first Enter submits the whole prompt. agent-watcher's delayed second Enter is only a reliability retry for a swallowed submit, not a newline-then-start sequence. Herdr uses the same text/submit distinction; `pane run` combines text with one Enter. Never retry blindly. Do not use `send-keys -l ... Enter`; `-l` would type the word "Enter".
+
+Input-box text is often autocompletion ghost text, not a human draft: Claude Code and Codex render dim history suggestions and placeholder hints at the input, and a just-sent message can reappear as a dim suggestion at the empty prompt. Distinguish by recapturing with escapes, `tmux capture-pane -p -e -J -S -40 -t "$PANE"`: ghost text is dim (wrapped in \e[2m ... \e[0m) and sits at/after the cursor (`#{cursor_x}` via display-message), while human-typed text is unstyled, ends at the cursor, and grows or edits across captures a few seconds apart. Treat dim-only text as an empty idle prompt; treat unstyled input text as a human draft — never overwrite or Enter-submit it; wait and recapture, or surface it to me.
+
+After sending, poll with `tmux capture-pane -p -J -S -120 -t "$PANE"` until the peer returns to its normal prompt. Give requests unique IDs and ask peers to end replies with `A2A_DONE_<id>` when useful. Read each result, reconcile disagreements, and send follow-ups as needed. Keep this collaboration loop running until the objective is complete or genuinely blocked; do not stop merely because work was delegated once.
+
+Assume agents may share one working tree. Assign non-overlapping work or explicit file ownership, tell every peer to preserve unfamiliar changes, and never let two agents edit the same file concurrently. Keep one coordinator to prevent message loops, and independently verify and integrate peer work before reporting completion.
+
+tmux pane(s): ]]
+
 -- Prompt registry: single source of truth for both this hotkey and the
 -- sketchybar "prompts" menu (sketchybar/plugins/prompt_action.sh, which calls
 -- PastePrompt/PromptList over `hs -c`). Add an entry here to grow both at once;
@@ -353,6 +450,8 @@ use multi agents
 PROMPTS = {
   { id = "codex_claude", title = "Codex + Claude multi-agent", shortcut = "⌃⇧⌘C", text = CODEX_CLAUDE_TEMPLATE },
   { id = "codex_claude_no_fast", title = "Codex + Claude multi-agent (fast off)", text = CODEX_CLAUDE_NO_FAST_TEMPLATE },
+  { id = "tmux_read_agent_and_continue", title = "tmux: read agent and continue", text = TMUX_READ_AGENT_AND_CONTINUE_TEMPLATE },
+  { id = "tmux_work_together", title = "tmux: work together", text = TMUX_WORK_TOGETHER_TEMPLATE },
 }
 
 -- Type a prompt by id. Keystroke simulation (not paste) -- see note above.

@@ -198,7 +198,8 @@ hs.hotkey.bind({}, "f18", function()
   end
 end)
 
--- Wezterm uses Apple input and other apps use Gureum
+-- Use Apple input sources in every app for now.
+-- The old Gureum mapping is kept commented in mapOnExitWezterm.
 local function setSource(id)
   if hs.keycodes.currentSourceID() ~= id then
     hs.keycodes.currentSourceID(id)
@@ -220,14 +221,15 @@ local function mapOnEnterWezterm()
 end
 
 local function mapOnExitWezterm()
-  local cur = hs.keycodes.currentSourceID()
-  if cur == APPLE_EN then
-    setSource(GUREUM_EN)
-  elseif cur == APPLE_KO then
-    setSource(GUREUM_KO)
-  else
-    -- not Apple EN/KO -> ignore
-  end
+  -- Temporarily keep the current Apple source when leaving WezTerm.
+  -- local cur = hs.keycodes.currentSourceID()
+  -- if cur == APPLE_EN then
+  --   setSource(GUREUM_EN)
+  -- elseif cur == APPLE_KO then
+  --   setSource(GUREUM_KO)
+  -- else
+  --   -- not Apple EN/KO -> ignore
+  -- end
 end
 
 -- KakaoTalk: if already on an Apple keyboard (any language), keep it.
@@ -300,7 +302,7 @@ _G.wezImeWatcher = hs.application.watcher.new(
       -- Entering KakaoTalk: keep Apple if already Apple, else use Apple Korean
       scheduleGuarded(0.05, bid, mapOnEnterKakaoTalk)
     else
-      -- Entering any other app: enforce Gureum (only if currently Apple)
+      -- Keep the current Apple source; Gureum mapping is temporarily disabled.
       scheduleGuarded(0.05, bid, mapOnExitWezterm)
     end
   end

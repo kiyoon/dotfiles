@@ -310,6 +310,60 @@ _G.wezImeWatcher = hs.application.watcher.new(
 
 _G.wezImeWatcher:start()
 
+-- AeroSpace can recurse until it crashes while macOS is publishing transient
+-- monitor layouts. After a real topology change has been quiet for five
+-- seconds, relaunch it against the settled layout without querying its CLI.
+local aerospaceRecovery = require("aerospace_recovery")
+
+if _G.aerospaceDisplayRecovery then
+  _G.aerospaceDisplayRecovery:stop()
+  _G.aerospaceDisplayRecovery = nil
+end
+
+local aerospaceRestartScript = os.getenv("HOME") .. "/.config/aerospace/scripts/restart.sh"
+
+_G.aerospaceDisplayRecovery = aerospaceRecovery.start({
+  signature = function()
+    return aerospaceRecovery.screenSignature(hs.screen.allScreens())
+  end,
+  after = function(seconds, callback)
+    return hs.timer.doAfter(seconds, callback)
+  end,
+  watchScreen = function(callback)
+    return hs.screen.watcher.new(callback):start()
+  end,
+  watchWake = function(callback)
+    return hs.caffeinate.watcher
+      .new(function(event)
+        if event == hs.caffeinate.watcher.systemDidWake then
+          callback()
+        end
+      end)
+      :start()
+  end,
+  restart = function(callback)
+    local task = hs.task.new("/bin/bash", function(exitCode, _, stderr)
+      callback(exitCode == 0, stderr)
+    end, { aerospaceRestartScript, "display-change" })
+    if not task then
+      callback(false, "failed to create restart task")
+      return nil
+    end
+    local started = task:start()
+    if not started then
+      callback(false, "failed to start restart task")
+      return nil
+    end
+    return started
+  end,
+  log = function(message)
+    hs.printf("[aerospace-recovery] %s", message)
+  end,
+}, {
+  quietSeconds = 5,
+  busyRetrySeconds = 1,
+})
+
 -- 1. Run ./capture_current_display
 -- 2. Open Google Chrome
 -- 3. Open a new tab to Google Translate
@@ -541,7 +595,7 @@ local function installSketchybarCompareMenubars()
       {
         title = "Restart AeroSpace",
         fn = function()
-          runShell("killall AeroSpace 2>/dev/null; open -a AeroSpace")
+          runShell("$HOME/.config/aerospace/scripts/restart.sh manual")
         end,
       },
     }

@@ -108,6 +108,17 @@ sketchybar --reload                # re-apply after editing the config
 open -a AeroSpace
 ```
 
+Hammerspoon automatically performs one full AeroSpace relaunch after a real
+display-topology change has been quiet for five seconds. The watcher is
+event-driven (no idle polling), ignores Dock-only screen notifications, and
+also runs once after wake because macOS can omit screen events while asleep.
+Recovery history is written to `~/.cache/aerospace/recovery.log`; a manual
+relaunch uses the same safe path:
+
+```bash
+~/.config/aerospace/scripts/restart.sh manual
+```
+
 For the Bluetooth SketchyBar item to open the native macOS popup, Bluetooth must also be shown
 as a standalone macOS menu-bar item:
 

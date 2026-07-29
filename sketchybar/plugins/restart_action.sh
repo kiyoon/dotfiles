@@ -15,7 +15,6 @@ case "$1" in
 		sketchybar --reload
 		;;
 	aerospace)
-		killall AeroSpace 2>/dev/null
-		open -a AeroSpace
+		/bin/bash "$HOME/.config/aerospace/scripts/restart.sh" manual
 		;;
 esac

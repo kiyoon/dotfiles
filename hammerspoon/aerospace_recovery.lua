@@ -30,6 +30,7 @@ end
 --   watchScreen(callback) -> object with :stop()
 --   watchWake(callback) -> object with :stop() (optional)
 --   restart(callback(success, detail)) -> retained async handle
+--   onPending() (optional)
 --   log(message) (optional)
 function M.start(deps, options)
   options = options or {}
@@ -59,6 +60,16 @@ function M.start(deps, options)
     end
   end
 
+  local function setPending()
+    if not state.pending and deps.onPending then
+      local ok, err = pcall(deps.onPending)
+      if not ok then
+        log("failed to mark display recovery pending: " .. tostring(err))
+      end
+    end
+    state.pending = true
+  end
+
   local function sampleSignature()
     local ok, result = pcall(deps.signature)
     if not ok then
@@ -74,7 +85,7 @@ function M.start(deps, options)
 
   local function beginRestart()
     if state.restartInFlight then
-      state.pending = true
+      setPending()
       armTimer(busyRetrySeconds)
       return
     end
@@ -127,13 +138,13 @@ function M.start(deps, options)
 
       local current = sampleSignature()
       if current == nil then
-        state.pending = true
+        setPending()
         armTimer()
         return
       end
       if current ~= state.observedSignature then
         state.observedSignature = current
-        state.pending = true
+        setPending()
         armTimer()
         return
       end
@@ -150,14 +161,14 @@ function M.start(deps, options)
 
     local current = sampleSignature()
     if current == nil then
-      self.pending = true
+      setPending()
       armTimer()
       return
     end
 
     if force or current ~= self.observedSignature then
       self.observedSignature = current
-      self.pending = true
+      setPending()
       armTimer()
     elseif self.pending then
       -- A repeated layout notification is still activity. Preserve a true

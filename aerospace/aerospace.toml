@@ -7,15 +7,17 @@ config-version = 2
 start-at-login = true
 auto-reload-config = true
 
-# sketchybar runs via `brew services start sketchybar`; on aerospace startup we
-# just refresh its workspace indicators.
+# sketchybar runs via `brew services start sketchybar`. The restart helper
+# leaves a one-shot marker after a settled display recovery; the listener
+# consumes its matching generation to rebuild immediately.
 after-startup-command = [
-  'exec-and-forget sketchybar --trigger aerospace_workspace_change',
+  'exec-and-forget sketchybar --trigger aerospace_started',
 ]
 
-# Notify sketchybar about workspace changes. Its listener debounces AeroSpace
-# queries until display/workspace events have been quiet for three seconds,
-# then refreshes the bar and records monitor-focus history for move-recent.
+# Notify sketchybar about workspace changes. The event payload updates focus
+# colors immediately without an AeroSpace query; the complete event-driven
+# render follows after a 50 ms burst coalescer. Display recovery has a separate
+# long safety hold, so routine window moves no longer pay that delay.
 exec-on-workspace-change = [
   '/bin/bash',
   '-c',
@@ -48,6 +50,13 @@ inherit-env-vars = true
 
 [exec.env-vars]
 PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:${PATH}'
+
+# AeroSpace virtual-workspace moves do not change the native macOS Space that
+# SketchyBar watches. Reconcile app icons when AeroSpace finishes binding any
+# newly detected window, while still allowing the layout rules below to run.
+[[on-window-detected]]
+check-further-callbacks = true
+run = 'exec-and-forget sketchybar --trigger aerospace_workspace_change'
 
 [[on-window-detected]]
 if.app-name-regex-substring = '^System.*(Preferences|Settings)$'
@@ -168,6 +177,8 @@ alt-shift-pageUp = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scrip
 alt-shift-n = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-next-used"'
 alt-shift-pageDown = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-next-used"'
 alt-shift-home = 'move-node-to-workspace --focus-follows-window 1'
+# summon-workspace creates the new workspace directly on the current monitor;
+# it avoids the old create-on-main, then relocate sequence.
 alt-shift-f = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-new"'
 alt-shift-end = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh move-window-new"'
 alt-shift-space = 'exec-and-forget /bin/bash -lc "$HOME/.config/aerospace/scripts/workspace.sh open-terminal-new"'

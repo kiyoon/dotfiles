@@ -9,6 +9,8 @@ app_name="${AEROSPACE_RESTART_APP_NAME:-AeroSpace}"
 state_dir="${AEROSPACE_RESTART_STATE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/aerospace}"
 lock_file="$state_dir/restart.lock"
 log_file="$state_dir/recovery.log"
+refresh_marker="${AEROSPACE_RESTART_REFRESH_MARKER:-$state_dir/refresh-now}"
+pending_marker="${AEROSPACE_RESTART_PENDING_MARKER:-$state_dir/recovery-pending}"
 
 lockf_bin="${AEROSPACE_RESTART_LOCKF_BIN:-/usr/bin/lockf}"
 pgrep_bin="${AEROSPACE_RESTART_PGREP_BIN:-/usr/bin/pgrep}"
@@ -30,6 +32,16 @@ log() {
 	printf '%s reason=%s %s\n' "$(/bin/date '+%Y-%m-%dT%H:%M:%S%z')" "$reason" "$*" >>"$log_file"
 }
 
+write_marker() {
+	local path="$1" value="$2" tmp
+	tmp="$path.$$.$RANDOM"
+	if (umask 077 && printf '%s\n' "$value" >"$tmp") && mv -f "$tmp" "$path"; then
+		return 0
+	fi
+	rm -f "$tmp"
+	return 1
+}
+
 is_running() {
 	"$pgrep_bin" -x "$process_name" >/dev/null 2>&1
 }
@@ -46,6 +58,12 @@ wait_for_exit() {
 
 log "restart requested"
 
+recovery_token="$(/bin/date +%s).$$.${RANDOM:-0}"
+if ! write_marker "$pending_marker" "$recovery_token"; then
+	log "failed: could not create recovery-pending marker"
+	exit 1
+fi
+
 if is_running; then
 	"$killall_bin" -TERM "$process_name" >/dev/null 2>&1 || true
 fi
@@ -59,10 +77,16 @@ if ! wait_for_exit "$term_wait_attempts"; then
 	}
 fi
 
+if ! write_marker "$refresh_marker" "$recovery_token"; then
+	log "failed: could not create startup refresh marker"
+	exit 1
+fi
+
 if "$open_bin" -g -a "$app_name"; then
 	log "relaunch requested"
 else
 	status=$?
+	rm -f "$refresh_marker"
 	log "failed: open exited $status"
 	exit "$status"
 fi

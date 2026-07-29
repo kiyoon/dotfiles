@@ -90,6 +90,8 @@ sketchybar --add item aero_mode left \
 # ---- AeroSpace workspaces (left) ----
 # Fired by aerospace's exec-on-workspace-change.
 sketchybar --add event aerospace_workspace_change
+# Distinct readiness event fired by AeroSpace after its startup refresh.
+sketchybar --add event aerospace_started
 
 # Pre-create all 30 possible workspace items hidden; the listener plugin
 # toggles drawing + highlight. No add/remove churn -> stable order, no flicker.
@@ -136,7 +138,7 @@ sketchybar --add item aerospace_listener left \
 	drawing=off \
 	updates=on \
 	script="$PLUGIN_DIR/aerospace_workspaces.sh" \
-	--subscribe aerospace_listener aerospace_workspace_change forced \
+	--subscribe aerospace_listener aerospace_workspace_change aerospace_started forced \
 	system_woke display_change space_windows_change
 
 # ---- Front app (left) ----

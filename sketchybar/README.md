@@ -112,6 +112,19 @@ Hammerspoon automatically performs one full AeroSpace relaunch after a real
 display-topology change has been quiet for five seconds. The watcher is
 event-driven (no idle polling), ignores Dock-only screen notifications, and
 also runs once after wake because macOS can omit screen events while asleep.
+Normal AeroSpace workspace/window changes update the highlighted item
+immediately and coalesce a complete workspace/icon reconciliation for 50 ms.
+This is event-driven—there is no idle polling—and the live rebuild normally
+finishes in well under a second. Actual display transitions create a separate
+recovery-pending marker, so their queries remain held while macOS is publishing
+a transient monitor layout. A recovery restart leaves a one-shot marker that
+makes AeroSpace's startup event perform the full reconciliation immediately
+only when both belong to the same display-recovery generation.
+SketchyBar's `display_change` event only means that the active display changed;
+it follows the normal 50 ms path and does not enter topology recovery.
+Workspace scripts also emit a final-state event after multi-command moves, and
+AeroSpace window-detection events reconcile icons after a newly launched app is
+actually bound to its workspace.
 Recovery history is written to `~/.cache/aerospace/recovery.log`; a manual
 relaunch uses the same safe path:
 
@@ -149,3 +162,7 @@ percentages and avoids the old blocking two-sample `top` call.
   running or Bluetooth permission was denied; `sketchybar --reload` relaunches it.
 - **Workspace numbers/app glyphs missing** → install both fonts (§1) and ensure AeroSpace is
   running (it fires the workspace‑change events).
+- **Edges of hidden workspace windows visible in a bottom corner** → AeroSpace
+  emulates workspaces by parking inactive windows off-screen, and macOS leaves
+  a one-pixel edge. If more is visible, arrange displays so each monitor has a
+  free bottom-left or bottom-right corner.

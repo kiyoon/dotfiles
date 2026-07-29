@@ -321,6 +321,12 @@ if _G.aerospaceDisplayRecovery then
 end
 
 local aerospaceRestartScript = os.getenv("HOME") .. "/.config/aerospace/scripts/restart.sh"
+local aerospaceCacheRoot = os.getenv("XDG_CACHE_HOME")
+if not aerospaceCacheRoot or aerospaceCacheRoot == "" then
+  aerospaceCacheRoot = os.getenv("HOME") .. "/.cache"
+end
+local aerospaceStateDir = aerospaceCacheRoot .. "/aerospace"
+local aerospaceRecoveryPendingMarker = aerospaceStateDir .. "/recovery-pending"
 
 _G.aerospaceDisplayRecovery = aerospaceRecovery.start({
   signature = function()
@@ -355,6 +361,26 @@ _G.aerospaceDisplayRecovery = aerospaceRecovery.start({
       return nil
     end
     return started
+  end,
+  onPending = function()
+    if not hs.fs.attributes(aerospaceStateDir) then
+      local created, mkdirError = hs.fs.mkdir(aerospaceStateDir)
+      if not created then
+        error("could not create " .. aerospaceStateDir .. ": " .. tostring(mkdirError))
+      end
+    end
+    local markerTemp = aerospaceRecoveryPendingMarker .. ".tmp"
+    local marker, markerError = io.open(markerTemp, "w")
+    if not marker then
+      error("could not write " .. markerTemp .. ": " .. tostring(markerError))
+    end
+    marker:write(tostring(os.time()), ".", tostring(hs.timer.absoluteTime()), "\n")
+    marker:close()
+    local renamed, renameError = os.rename(markerTemp, aerospaceRecoveryPendingMarker)
+    if not renamed then
+      os.remove(markerTemp)
+      error("could not publish " .. aerospaceRecoveryPendingMarker .. ": " .. tostring(renameError))
+    end
   end,
   log = function(message)
     hs.printf("[aerospace-recovery] %s", message)

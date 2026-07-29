@@ -2,6 +2,7 @@
 set -euo pipefail
 
 AEROSPACE="${AEROSPACE:-aerospace}"
+SKETCHYBAR="${SKETCHYBAR:-sketchybar}"
 HIST_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/aerospace-monitor-history"
 
 focused_monitor() {
@@ -10,6 +11,13 @@ focused_monitor() {
 
 monitor_count() {
 	"$AEROSPACE" list-monitors | wc -l | tr -d ' '
+}
+
+refresh_sketchybar() {
+	# Moving a node between monitors changes AeroSpace's virtual workspace
+	# mapping but not the native macOS Space watched by SketchyBar. Emit one
+	# final-state event after the AeroSpace command has returned.
+	"$SKETCHYBAR" --trigger aerospace_workspace_change REFRESH_NOW=1 >/dev/null 2>&1 || true
 }
 
 # Called on every workspace change: remember the previously focused monitor so
@@ -35,9 +43,13 @@ move_recent() {
 	fi
 	cur="$(focused_monitor)"
 	if [[ -n "$prev" && "$prev" != "$cur" ]]; then
-		"$AEROSPACE" move-node-to-monitor --focus-follows-window "$prev" 2>/dev/null && return
+		if "$AEROSPACE" move-node-to-monitor --focus-follows-window "$prev" 2>/dev/null; then
+			refresh_sketchybar
+			return
+		fi
 	fi
 	"$AEROSPACE" move-node-to-monitor --focus-follows-window --wrap-around next
+	refresh_sketchybar
 }
 
 # External (non built-in) monitor names sorted left->right by screen x origin.
@@ -83,9 +95,13 @@ move_toggle() {
 	current="$("$AEROSPACE" list-windows --focused --format '%{monitor-name}' 2>/dev/null || true)"
 	[[ -n "$current" ]] || exit 0
 	if [[ "$current" == "$target" ]]; then
-		"$AEROSPACE" move-node-to-monitor --focus-follows-window 'built-in' 2>/dev/null || true
+		if "$AEROSPACE" move-node-to-monitor --focus-follows-window 'built-in' 2>/dev/null; then
+			refresh_sketchybar
+		fi
 	else
-		"$AEROSPACE" move-node-to-monitor --focus-follows-window "^$(regex_escape "$target")\$" 2>/dev/null || true
+		if "$AEROSPACE" move-node-to-monitor --focus-follows-window "^$(regex_escape "$target")\$" 2>/dev/null; then
+			refresh_sketchybar
+		fi
 	fi
 }
 

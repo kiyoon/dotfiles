@@ -13,6 +13,8 @@ source "$CONFIG_DIR/colors.sh"
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
+TEST_REFRESH_MARKER="$TMP/recovery-refresh-now"
+TEST_PENDING_MARKER="$TMP/recovery-pending"
 
 fails=0
 fail() {
@@ -30,7 +32,10 @@ fi
 case "\$*" in
 	*"--focused"*) printf '%s\n' "$1" ;;
 	*"--monitor all"*) printf '%s\n' "$2" ;;
-	*"list-windows"*) printf '%s\n' "$3" ;;
+	*"list-windows"*)
+		[[ -z "\${AEROSPACE_STUB_DELAY:-}" ]] || sleep "\$AEROSPACE_STUB_DELAY"
+		printf '%s\n' "$3"
+		;;
 esac
 EOF
 	chmod +x "$TMP/aerospace"
@@ -39,6 +44,10 @@ EOF
 cat >"$TMP/sketchybar" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$@" >>"$OUT"
+if [[ -n "${SKETCHYBAR_CALLS:-}" ]]; then
+	printf '%q ' "$@" >>"$SKETCHYBAR_CALLS"
+	printf '\n' >>"$SKETCHYBAR_CALLS"
+fi
 EOF
 chmod +x "$TMP/sketchybar"
 
@@ -55,18 +64,27 @@ run_plugin() {
 	: >"$AEROSPACE_CALLS"
 	AEROSPACE="$TMP/aerospace" SKETCHYBAR="$TMP/sketchybar" \
 		AEROSPACE_WORKSPACES_TRACK_MONITOR=0 FOCUSED_WORKSPACE="" \
+		AEROSPACE_WORKSPACES_REFRESH_MARKER="$TEST_REFRESH_MARKER" \
+		AEROSPACE_WORKSPACES_RECOVERY_PENDING_MARKER="$TEST_PENDING_MARKER" \
 		bash "$PLUGIN" --render-now
 	flat="$(tr '\n' ' ' <"$OUT")"
 	reorder_list="$(awk '/^--reorder$/ { f = 1; next } /^--set$/ { f = 0 } f' "$OUT")"
 }
 
-run_debounced_event() {
-	FOCUSED_WORKSPACE="$1" \
+run_event() {
+	local focused="$1"
+	local sender="${2:-aerospace_workspace_change}"
+	local refresh_now="${3:-0}"
+	FOCUSED_WORKSPACE="$focused" SENDER="$sender" REFRESH_NOW="$refresh_now" \
 		AEROSPACE="$TMP/aerospace" SKETCHYBAR="$TMP/sketchybar" \
 		AEROSPACE_CALLS="$AEROSPACE_CALLS" OUT="$OUT" TRACK_OUT="$TRACK_OUT" \
+		SKETCHYBAR_CALLS="${SKETCHYBAR_CALLS:-}" \
 		AEROSPACE_MONITOR_TRACKER="$TMP/monitor-tracker" \
 		AEROSPACE_WORKSPACES_STATE_DIR="$TMP/debounce-state" \
-		AEROSPACE_WORKSPACES_DEBOUNCE_SECONDS=0.5 \
+		AEROSPACE_WORKSPACES_REFRESH_MARKER="$TEST_REFRESH_MARKER" \
+		AEROSPACE_WORKSPACES_RECOVERY_PENDING_MARKER="$TEST_PENDING_MARKER" \
+		AEROSPACE_WORKSPACES_EVENT_COALESCE_SECONDS="${TEST_EVENT_COALESCE_SECONDS:-0.5}" \
+		AEROSPACE_WORKSPACES_RECOVERY_FALLBACK_SECONDS="${TEST_RECOVERY_FALLBACK_SECONDS:-0.5}" \
 		bash "$PLUGIN"
 }
 
@@ -153,17 +171,41 @@ make_stub "1|1" "$(printf '1|1')" ""
 export OUT="$TMP/debounce-out.txt"
 export AEROSPACE_CALLS="$TMP/debounce-aerospace-calls.txt"
 export TRACK_OUT="$TMP/debounce-track-calls.txt"
+export SKETCHYBAR_CALLS="$TMP/debounce-sketchybar-calls.txt"
 : >"$OUT"
 : >"$AEROSPACE_CALLS"
 : >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
 
-run_debounced_event 1
-run_debounced_event 2
-run_debounced_event 3
+run_event 1
+run_event 2
+run_event 3
 
 [ ! -s "$AEROSPACE_CALLS" ] || fail "burst must not query AeroSpace before the quiet period"
 [ ! -s "$TRACK_OUT" ] || fail "burst must not track a monitor before the quiet period"
-[ ! -s "$OUT" ] || fail "burst must not update SketchyBar before the quiet period"
+[ "$(wc -l <"$SKETCHYBAR_CALLS" | tr -d ' ')" = "3" ] ||
+	fail "each focus event must update SketchyBar immediately"
+grep -qx -- '--reorder' "$OUT" &&
+	fail "focus event must not fully render before the quiet period"
+last_fast_call="$(tail -1 "$SKETCHYBAR_CALLS")"
+[[ "$last_fast_call" == *"--set space.3 drawing=on background.color=$ACCENT_COLOR"* ]] ||
+	fail "last immediate focus event must highlight space.3"
+[[ "$last_fast_call" == *"icon.color=$BG_DARK label.color=$BG_DARK"* ]] ||
+	fail "focused workspace must use readable accent text colors"
+[[ "$last_fast_call" == *"background.color=$ITEM_BG_COLOR icon.color=$LABEL_COLOR label.color=$LABEL_COLOR"* ]] ||
+	fail "immediate focus event must clear stale accents"
+
+# SketchyBar compiles selectors as POSIX basic regex. Verify the actual
+# selector emitted by the plugin matches numeric space items without relying
+# on ERE-only operators such as an unescaped '+'.
+space_selector="$(grep -m1 '^/\^space' "$OUT" || true)"
+space_bre="${space_selector#/}"
+space_bre="${space_bre%/}"
+printf '%s\n' space.1 space.30 | grep -q "$space_bre" ||
+	fail "focus reset selector must match numeric workspace items"
+if printf '%s\n' divider.1 space.foo | grep -q "$space_bre"; then
+	fail "focus reset selector must reject non-workspace items"
+fi
 
 wait_for_render
 
@@ -182,12 +224,158 @@ debounce_flat="$(tr '\n' ' ' <"$OUT")"
 : >"$OUT"
 : >"$AEROSPACE_CALLS"
 : >"$TRACK_OUT"
-run_debounced_event 4
+: >"$SKETCHYBAR_CALLS"
+run_event 4
 [ ! -s "$AEROSPACE_CALLS" ] || fail "later event must also wait for its quiet period"
+[ "$(wc -l <"$SKETCHYBAR_CALLS" | tr -d ' ')" = "1" ] ||
+	fail "later focus event must update SketchyBar immediately"
 wait_for_render
 [ "$(grep -cx -- '--reorder' "$OUT" || true)" = "1" ] || fail "later event must render exactly once"
 [ "$(wc -l <"$AEROSPACE_CALLS" | tr -d ' ')" = "3" ] || fail "later render must make exactly three AeroSpace queries"
 [ "$(grep -cx -- 'track' "$TRACK_OUT" || true)" = "1" ] || fail "later event must track the monitor exactly once"
+
+# ---- Test 8: startup recovery refresh bypasses the routine debounce ----
+: >"$OUT"
+: >"$AEROSPACE_CALLS"
+: >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
+printf 'recovery-8\n' >"$TEST_REFRESH_MARKER"
+printf 'recovery-8\n' >"$TEST_PENDING_MARKER"
+TEST_EVENT_COALESCE_SECONDS=5 run_event "" aerospace_started
+
+tries=0
+while ! grep -qx -- '--reorder' "$OUT" 2>/dev/null && [ "$tries" -lt 20 ]; do
+	sleep 0.05
+	tries=$((tries + 1))
+done
+[ "$(grep -cx -- '--reorder' "$OUT" || true)" = "1" ] ||
+	fail "recovery startup event must render without the five-second debounce"
+[ "$(wc -l <"$AEROSPACE_CALLS" | tr -d ' ')" = "3" ] ||
+	fail "recovery startup event must make one complete query set"
+[ ! -e "$TEST_REFRESH_MARKER" ] ||
+	fail "recovery startup event must consume its one-shot refresh marker"
+[ ! -e "$TEST_PENDING_MARKER" ] ||
+	fail "recovery startup event must clear the recovery-pending marker"
+
+# A startup event from an older recovery generation must not clear the newer
+# hazard or perform an immediate query.
+: >"$OUT"
+: >"$AEROSPACE_CALLS"
+: >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
+printf 'old-recovery\n' >"$TEST_REFRESH_MARKER"
+printf 'new-recovery\n' >"$TEST_PENDING_MARKER"
+TEST_RECOVERY_FALLBACK_SECONDS=0.5 run_event "" aerospace_started
+[ ! -s "$AEROSPACE_CALLS" ] ||
+	fail "stale startup handshake must not query AeroSpace immediately"
+[ "$(cat "$TEST_PENDING_MARKER")" = "new-recovery" ] ||
+	fail "stale startup handshake must preserve the newer recovery generation"
+wait_for_render
+[ "$(grep -cx -- '--reorder' "$OUT" || true)" = "1" ] ||
+	fail "newer recovery generation must eventually use its safe fallback"
+
+# ---- Test 9: active-display changes are fast; wake/topology recovery is held ----
+make_stub "2|2" "$(printf '1|1\n2|2')" "2|WezTerm"
+: >"$OUT"
+: >"$AEROSPACE_CALLS"
+: >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
+TEST_EVENT_COALESCE_SECONDS=0.05 run_event "" display_change
+# This is the exact event order produced by a focus-following monitor move:
+# SketchyBar changes active display, then monitor.sh requests a final snapshot.
+TEST_RECOVERY_FALLBACK_SECONDS=0.6 run_event 2 aerospace_workspace_change 1
+
+[ ! -e "$TEST_PENDING_MARKER" ] ||
+	fail "active display_change must not enter topology recovery"
+wait_for_render
+
+[ "$(grep -cx -- '--reorder' "$OUT" || true)" = "1" ] ||
+	fail "active display move plus REFRESH_NOW must perform one prompt full render"
+[ "$(wc -l <"$AEROSPACE_CALLS" | tr -d ' ')" = "3" ] ||
+	fail "active display move must make one complete query set"
+grep -qx 'label=:wezterm:' "$OUT" ||
+	fail "prompt post-move render must include WezTerm on its final workspace"
+
+# Wake is a genuine recovery hazard: Hammerspoon deliberately schedules a
+# topology restart even when screen notifications were missed during sleep.
+: >"$OUT"
+: >"$AEROSPACE_CALLS"
+: >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
+run_event "" system_woke
+
+[ ! -s "$OUT" ] || fail "system_woke must not update workspace items before recovery settles"
+[ ! -s "$AEROSPACE_CALLS" ] || fail "system_woke must not query AeroSpace before recovery settles"
+[ ! -s "$TRACK_OUT" ] || fail "system_woke must not track a monitor before recovery settles"
+[ -e "$TEST_PENDING_MARKER" ] ||
+	fail "system_woke must mark recovery pending"
+
+# A later routine event must preserve, rather than shorten, that recovery hold.
+TEST_EVENT_COALESCE_SECONDS=0 run_event 8 space_windows_change
+[ ! -s "$AEROSPACE_CALLS" ] ||
+	fail "routine event during display recovery must not query AeroSpace immediately"
+run_event "" forced
+[ ! -s "$AEROSPACE_CALLS" ] ||
+	fail "forced event during display recovery must not query AeroSpace immediately"
+wait_for_render
+[ "$(grep -cx -- '--reorder' "$OUT" || true)" = "1" ] ||
+	fail "system_woke must eventually perform one full render"
+[ ! -e "$TEST_PENDING_MARKER" ] ||
+	fail "the winning recovery fallback must consume its pending generation"
+
+# A normal worker armed just before Hammerspoon marks a topology hazard must
+# recheck the marker before its first query.
+: >"$OUT"
+: >"$AEROSPACE_CALLS"
+: >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
+TEST_EVENT_COALESCE_SECONDS=0.2 run_event "" space_windows_change
+printf 'hammerspoon-hazard\n' >"$TEST_PENDING_MARKER"
+sleep 0.35
+[ ! -s "$AEROSPACE_CALLS" ] ||
+	fail "healthy worker must abort if recovery becomes pending before it starts"
+[ ! -s "$OUT" ] ||
+	fail "aborted healthy worker must not commit a bar snapshot"
+rm -f "$TEST_PENDING_MARKER"
+
+# ---- Test 10: an in-progress stale snapshot cannot overwrite newer focus ----
+make_stub "1|1" "$(printf '1|1\n2|1')" ""
+: >"$OUT"
+: >"$AEROSPACE_CALLS"
+: >"$TRACK_OUT"
+: >"$SKETCHYBAR_CALLS"
+mkdir -p "$TMP/debounce-state"
+printf 'old-render\n' >"$TMP/debounce-state/aerospace-workspaces.generation"
+
+FOCUSED_WORKSPACE=1 SENDER=aerospace_workspace_change \
+	AEROSPACE_STUB_DELAY=0.3 \
+	AEROSPACE="$TMP/aerospace" SKETCHYBAR="$TMP/sketchybar" \
+	AEROSPACE_CALLS="$AEROSPACE_CALLS" OUT="$OUT" TRACK_OUT="$TRACK_OUT" \
+	SKETCHYBAR_CALLS="$SKETCHYBAR_CALLS" \
+	AEROSPACE_MONITOR_TRACKER="$TMP/monitor-tracker" \
+	AEROSPACE_WORKSPACES_STATE_DIR="$TMP/debounce-state" \
+	AEROSPACE_WORKSPACES_REFRESH_MARKER="$TEST_REFRESH_MARKER" \
+	bash "$PLUGIN" --render-if-current old-render &
+stale_pid=$!
+
+tries=0
+while ! grep -q -- 'list-windows --all' "$AEROSPACE_CALLS" 2>/dev/null && [ "$tries" -lt 20 ]; do
+	sleep 0.02
+	tries=$((tries + 1))
+done
+TEST_EVENT_COALESCE_SECONDS=0.1 run_event 2
+wait "$stale_pid"
+wait_for_render
+sleep 0.2
+
+[ "$(grep -cx -- '--reorder' "$OUT" || true)" = "1" ] ||
+	fail "new event must prevent stale in-progress snapshot from committing"
+stale_flat="$(tr '\n' ' ' <"$OUT")"
+[[ "$stale_flat" == *"--set space.2 drawing=on background.color=$ACCENT_COLOR"* ]] ||
+	fail "newer focus must remain highlighted after stale snapshot exits"
+last_snapshot="$(tail -1 "$SKETCHYBAR_CALLS")"
+[[ "$last_snapshot" == *"--set space.1 drawing=on background.color=$ACCENT_COLOR"* ]] ||
+	fail "full renderer must use its fresh focus query, not inherited event focus"
 
 grep -q 'monitor\.sh track' "$CONFIG_DIR/../aerospace/aerospace.toml" &&
 	fail "AeroSpace callback must not track immediately outside the debounce gate"

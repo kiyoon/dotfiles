@@ -48,6 +48,14 @@ check() {
 	fi
 }
 
+file_state() {
+	if [[ -f "$1" ]]; then
+		printf 'present'
+	else
+		printf 'absent'
+	fi
+}
+
 run_restart() {
 	local name="$1"
 	shift
@@ -70,11 +78,21 @@ touch "$TMP/process-graceful"
 : >"$TMP/calls-graceful"
 run_restart graceful /usr/bin/env
 check graceful $'killall -TERM AeroSpace\nopen -g -a AeroSpace' "$(cat "$TMP/calls-graceful")"
+check graceful-marker present "$(file_state "$TMP/state-graceful/refresh-now")"
+check graceful-pending present "$(file_state "$TMP/state-graceful/recovery-pending")"
+check graceful-generation \
+	"$(cat "$TMP/state-graceful/recovery-pending")" \
+	"$(cat "$TMP/state-graceful/refresh-now")"
 
 # Recovery also launches AeroSpace when the hot-plug crash already killed it.
 : >"$TMP/calls-dead"
 run_restart dead /usr/bin/env
 check dead 'open -g -a AeroSpace' "$(cat "$TMP/calls-dead")"
+check dead-marker present "$(file_state "$TMP/state-dead/refresh-now")"
+check dead-pending present "$(file_state "$TMP/state-dead/recovery-pending")"
+check dead-generation \
+	"$(cat "$TMP/state-dead/recovery-pending")" \
+	"$(cat "$TMP/state-dead/refresh-now")"
 
 # A wedged process gets a bounded TERM wait and then an exact-name KILL.
 touch "$TMP/process-wedged"
@@ -91,6 +109,8 @@ if run_restart open-failure /usr/bin/env FAKE_OPEN_FAIL=1; then
 else
 	pass=$((pass + 1))
 fi
+check open-failure-marker absent "$(file_state "$TMP/state-open-failure/refresh-now")"
+check open-failure-pending present "$(file_state "$TMP/state-open-failure/recovery-pending")"
 
 printf 'pass=%d fail=%d\n' "$pass" "$fail"
 ((fail == 0))

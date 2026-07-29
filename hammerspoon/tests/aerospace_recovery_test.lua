@@ -51,6 +51,7 @@ local function harness(initialScreens)
   local timers = {}
   local restartCallbacks = {}
   local restartCalls = 0
+  local pendingCalls = 0
   local screenCallback
   local wakeCallback
   local screenWatcher = { stopped = false }
@@ -89,6 +90,9 @@ local function harness(initialScreens)
       restartCallbacks[#restartCallbacks + 1] = callback
       return { call = restartCalls }
     end,
+    onPending = function()
+      pendingCalls = pendingCalls + 1
+    end,
   }, {
     quietSeconds = 5,
     busyRetrySeconds = 1,
@@ -100,6 +104,9 @@ local function harness(initialScreens)
     restartCallbacks = restartCallbacks,
     restartCalls = function()
       return restartCalls
+    end,
+    pendingCalls = function()
+      return pendingCalls
     end,
     setScreens = function(screens)
       currentScreens = screens
@@ -128,6 +135,7 @@ test("Dock-only notification does not schedule recovery", function()
   h.screenEvent()
   assertEqual(#h.timers, 0, "unchanged full geometry must be ignored")
   assertEqual(h.restartCalls(), 0, "unchanged full geometry must not restart")
+  assertEqual(h.pendingCalls(), 0, "unchanged full geometry must not mark recovery pending")
 end)
 
 test("rapid topology changes restart once at the trailing edge", function()
@@ -140,6 +148,7 @@ test("rapid topology changes restart once at the trailing edge", function()
   h.screenEvent()
   local current = h.timers[2]
 
+  assertEqual(h.pendingCalls(), 1, "one transition burst must mark recovery pending once")
   assertEqual(stale.stopped, true, "new event must stop the old timer")
   stale.callback()
   assertEqual(h.restartCalls(), 0, "stale callback must be generation-guarded")
@@ -191,6 +200,7 @@ test("topology change during restart is deferred without overlap", function()
 
   h.setScreens(C)
   h.screenEvent()
+  assertEqual(h.pendingCalls(), 2, "a new transition during restart must create a new pending generation")
   h.timers[2].callback()
   assertEqual(h.restartCalls(), 1, "restart in flight must not overlap")
   assertEqual(h.timers[3].delay, 1, "busy retry must use the short interval")
@@ -204,6 +214,7 @@ test("wake forces recovery when screen events were missed", function()
   local h = harness(A)
   h.wakeEvent()
   assertEqual(#h.timers, 1, "wake must schedule a quiet period")
+  assertEqual(h.pendingCalls(), 1, "wake must mark recovery pending")
   h.timers[1].callback()
   assertEqual(h.restartCalls(), 1, "wake must recover even with identical geometry")
 end)

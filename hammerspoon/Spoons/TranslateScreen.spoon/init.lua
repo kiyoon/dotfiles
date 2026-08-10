@@ -22,9 +22,13 @@ local capture = require("translate-screen.capture")
 ---@param opts ScreenshotAndTranslateOpts?
 function obj:screenshotAndTranslate(opts)
   opts = opts or {}
+  chrome.cancelTranslateOperation()
 
   -- Step 1: Capture current display
-  capture.capture_current_display_to_clipboard(opts.max_height)
+  local _, image = capture.capture_current_display_to_clipboard(opts.max_height)
+  if not image then
+    return
+  end
 
   -- Step 2: Launch Google Chrome
   hs.application.launchOrFocus("Google Chrome")
@@ -38,40 +42,43 @@ function obj:screenshotAndTranslate(opts)
       local chrome_app = hs.application.frontmostApplication()
       local win = chrome_app:mainWindow()
       if win then
+        -- Chrome normally omits webpage content from its Accessibility tree. Keep
+        -- enhanced accessibility enabled, and repair the setting after Chrome restarts.
+        if not chrome.ensureWebAccessibility(chrome_app) then
+          hs.alert.show("⚠️ Could not enable Chrome webpage accessibility")
+          return
+        end
         win:focus()
         -- Step 4: New tab
         hs.eventtap.keyStroke({ "cmd" }, "t", 0)
         -- don't need to wait for the new tab to load fully
         hs.timer.doAfter(0.1, function()
           -- Step 5: Go to Google Translate
-          hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&op=images")
+          -- Pin the interface language because paste confirmation reads the English
+          -- "Translating..." accessibility state.
+          hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&hl=en&op=images")
           hs.eventtap.keyStroke({}, "return", 0)
-          -- Step 6: Wait until the Translate page has loaded. Detect via the window
-          -- title (Accessibility API); Chrome's AppleScript tab/window queries are
-          -- unreliable on recent versions (reports 0 windows -> isLoaded never fires).
-          chrome.waitForTitle(win, "Google Translate", function()
-            -- Step 7: small settle so the page's paste handler is attached, then paste.
-            hs.timer.doAfter(0.5, function()
-              -- re-focus in case the user changed apps while the page loaded
-              win:focus()
-              hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-              hs.alert.show("🪄 Pasted into Google Translate")
-            end)
-          end, 8)
-          -- hs.timer.doAfter(1.0, function()
-          --   -- Step 6: Paste clipboard (image/text)
-          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-          --   hs.alert.show("🪄 Pasted into Google Translate")
-          -- end)
-          -- -- In case the first paste doesn't work, try again
-          -- hs.timer.doAfter(1.5, function()
-          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-          --   hs.alert.show("🪄 Pasted into Google Translate (2nd try)")
-          -- end)
-          -- hs.timer.doAfter(2.5, function()
-          --   hs.eventtap.keyStroke({ "cmd" }, "v", 0)
-          --   hs.alert.show("🪄 Pasted into Google Translate (3rd try)")
-          -- end)
+          -- Step 6: Let the page settle for 0.5 seconds after its title is ready,
+          -- then paste. The Accessibility button gates any Cmd+V retries.
+          chrome.pasteWhenTranslateReady(win, {
+            onConfirmed = function(attempts)
+              local retryNote = attempts > 1 and string.format(" (%d attempts)", attempts) or ""
+              hs.alert.show("🪄 Sent screenshot to Google Translate" .. retryNote)
+            end,
+            onFailed = function(attempts, reason)
+              if reason == "page-not-ready" then
+                hs.alert.show("⚠️ Google Translate image upload did not become ready")
+              elseif reason == "paste-error" then
+                hs.alert.show(string.format("⚠️ Could not paste into Google Translate (%d attempts)", attempts))
+              elseif reason == "unconfirmed" then
+                hs.alert.show(
+                  string.format("⚠️ Google Translate remained on the upload screen (%d attempts)", attempts)
+                )
+              else
+                hs.alert.show("⚠️ Google Translate window became unavailable")
+              end
+            end,
+          })
         end)
       else
         hs.alert.show("⚠️ Chrome window not found")

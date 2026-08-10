@@ -127,12 +127,12 @@ hs.hotkey.bind({}, "f18", function()
       print("program in wezterm is vi")
       local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
       if status == true and type == "exit" and rc == 0 and output ~= nil and not is_nvim_command_mode(output) then
-        -- if input_source ~= GUREUM_EN then
-        --   hs.keycodes.currentSourceID(GUREUM_EN)
-        -- end
-        if input_source ~= APPLE_EN then
-          hs.keycodes.currentSourceID(APPLE_EN)
+        if input_source ~= GUREUM_EN then
+          hs.keycodes.currentSourceID(GUREUM_EN)
         end
+        -- if input_source ~= APPLE_EN then
+        --   hs.keycodes.currentSourceID(APPLE_EN)
+        -- end
         hs.eventtap.keyStroke({}, "f12")
         return
       end
@@ -167,12 +167,12 @@ hs.hotkey.bind({}, "f18", function()
         print("nvim in tmux")
         if not is_nvim_command_mode(output) and not is_nvim_terminal_mode(output) then
           print("not in command/terminal mode")
-          -- if input_source ~= GUREUM_EN then
-          --   hs.keycodes.currentSourceID(GUREUM_EN)
-          -- end
-          if input_source ~= APPLE_EN then
-            hs.keycodes.currentSourceID(APPLE_EN)
+          if input_source ~= GUREUM_EN then
+            hs.keycodes.currentSourceID(GUREUM_EN)
           end
+          -- if input_source ~= APPLE_EN then
+          --   hs.keycodes.currentSourceID(APPLE_EN)
+          -- end
           hs.eventtap.keyStroke({}, "f12")
           return
         end
@@ -198,15 +198,15 @@ hs.hotkey.bind({}, "f18", function()
   end
 end)
 
--- Use Apple input sources in every app for now.
--- The old Gureum mapping is kept commented in mapOnExitWezterm.
+-- WezTerm defaults to Gureum English; KakaoTalk prefers Apple sources.
+-- The old Apple<->Gureum enter/exit mapping is kept commented in mapOnExitWezterm.
 local function setSource(id)
   if hs.keycodes.currentSourceID() ~= id then
     hs.keycodes.currentSourceID(id)
   end
 end
 
--- Force always English in Wezterm
+-- Force always Gureum English in Wezterm
 local function mapOnEnterWezterm()
   -- local cur = hs.keycodes.currentSourceID()
   -- if cur == GUREUM_EN then
@@ -217,7 +217,7 @@ local function mapOnEnterWezterm()
   --   -- not Gureum EN/KO -> ignore
   -- end
   -- hs.alert.show("Wezterm Activated: EN")
-  setSource(APPLE_EN)
+  setSource(GUREUM_EN)
 end
 
 local function mapOnExitWezterm()
@@ -296,7 +296,7 @@ _G.wezImeWatcher = hs.application.watcher.new(
 
     local bid = app:bundleID()
     if appName == "WezTerm" then
-      -- Entering WezTerm: enforce Apple English
+      -- Entering WezTerm: enforce Gureum English
       scheduleGuarded(0.05, bid, mapOnEnterWezterm)
     elseif bid == KAKAOTALK_BID then
       -- Entering KakaoTalk: keep Apple if already Apple, else use Apple Korean

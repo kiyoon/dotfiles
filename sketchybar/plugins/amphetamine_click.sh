@@ -5,8 +5,8 @@
 # hook instead. Needs the Automation consent (sketchybar -> Amphetamine),
 # prompted once on first use.
 
-osascript >>/tmp/sketchybar_alias_click.log 2>&1 <<'EOF'
-tell application "Amphetamine"
+osascript >>/tmp/sketchybar_amphetamine.log 2>&1 <<'EOF'
+tell application id "com.if.Amphetamine"
 	if (session is active) then
 		end session
 	else
@@ -15,5 +15,5 @@ tell application "Amphetamine"
 end tell
 EOF
 
-# Re-capture the alias immediately instead of waiting for the 3s poll.
+# Refresh the native status item immediately instead of waiting for its poll.
 sketchybar --trigger amphetamine_change

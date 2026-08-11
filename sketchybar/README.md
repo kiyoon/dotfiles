@@ -31,17 +31,20 @@ curl -L -o ~/Library/Fonts/sketchybar-app-font.ttf \
   https://github.com/kvndrsslr/sketchybar-app-font/releases/latest/download/sketchybar-app-font.ttf
 ```
 
-**Apps shown as menu‑bar aliases** (each must be installed **and running with its menu‑bar
-item present** — hidden behind the notch is fine, quit is not):
+**Status apps:**
 
-- [Amphetamine](https://apps.apple.com/app/amphetamine/id937984704) (Mac App Store)
-- CodexBar (`com.steipete.codexbar`) — the merged Codex/Claude usage menu‑bar app
+- [Amphetamine](https://apps.apple.com/app/amphetamine/id937984704) (Mac App Store). Its
+  SketchyBar item reads the session state through AppleScript; it is not a screen capture.
+- CodexBar (`com.steipete.codexbar`) — the merged Codex/Claude usage menu‑bar app. This is a
+  live menu‑bar alias, so it must be running with its native item present (behind the notch is
+  fine) when SketchyBar loads.
 
 ## 2. Grant permissions — System Settings → Privacy & Security
 
 | Permission | Grant to | Why |
 |---|---|---|
-| **Screen Recording** | `sketchybar` | The app aliases (Amphetamine, CodexBar) are live *screen captures* of the real menu‑bar items. Restart sketchybar after granting. |
+| **Screen Recording** | `sketchybar` | The CodexBar alias is a live *screen capture* of its real menu‑bar item. Restart sketchybar after granting. |
+| **Automation** | `sketchybar` → Amphetamine | Read and toggle Amphetamine's session state without capturing its menu‑bar icon. macOS prompts on first use. |
 | **Location Services** | `wifi-unredactor` | The only way to read the Wi‑Fi SSID on macOS Sonoma+ (see §4). |
 | **Accessibility** | `sketchybar` | Click handlers can open native menu‑bar popups, including Bluetooth / Control Center. |
 | **Bluetooth** | `sketchybar` / `bluetooth_boucles_watcher` if prompted | The `Boucles soniques` indicator uses IOBluetooth connect/disconnect notifications for instant updates. |
@@ -152,8 +155,10 @@ percentages and avoids the old blocking two-sample `top` call.
 
 ## Troubleshooting
 
-- **App alias is blank** → the app isn't running / has no menu‑bar item, or Screen Recording
-  isn't granted. Fix, then `sketchybar --reload`.
+- **CodexBar alias is blank** → the app isn't running / has no menu‑bar item, or Screen
+  Recording isn't granted. Fix, then `sketchybar --reload`.
+- **Amphetamine item is missing** → Amphetamine isn't running or its Automation permission
+  was denied. Launch it and allow `sketchybar` to control it.
 - **Wi‑Fi shows an icon but no name** → `wifi-unredactor` isn't installed or Location isn't
   granted (§4). Run the app once and click Allow; confirm it's enabled in Location Services.
 - **한/A input badge not updating** → the `input_watcher` daemon isn't running; `sketchybar

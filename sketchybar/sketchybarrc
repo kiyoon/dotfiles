@@ -250,22 +250,6 @@ sketchybar --add item recording_stop right \
 	script="$PLUGIN_DIR/recording_stop.sh" \
 	--subscribe recording_stop recording_check forced
 
-# ---- Menu bar app aliases (left of the stats) ----
-# Screen captures of the real macOS menu bar items, so they need Screen
-# Recording permission for sketchybar (System Settings -> Privacy & Security),
-# then a sketchybar restart. The app must be running with its item in the
-# real menu bar (hidden behind the notch is fine, removed is not).
-# On this macOS every status item is hosted by Control Center, under the
-# *localized* app name (CC_OWNER: update it if the system language changes).
-# Each app registers two windows: a transparent bundle-id-named host plus a
-# content window named by the item's autosave name -- alias the latter
-# (found empirically; list candidates: sketchybar --query default_menu_items).
-# AeroSpace and TextInputMenuAgent are exceptions: there the bundle-id window
-# holds the content.
-# Right-position items stack right-to-left, so add order here is reversed.
-# alias.color tints the capture to match the theme (all four are monochrome).
-CC_OWNER="Centre de contrôle"
-
 # Input method (한/A): native item, deliberately NOT an alias. macOS draws
 # the input icon in different windows per source type (method vs layout), only
 # the active display's copy renders, and the plain-layout window is anonymous
@@ -298,16 +282,29 @@ killall input_watcher 2>/dev/null
 	swiftc -O "$HELPER_DIR/input_watcher.swift" -o "$HELPER_DIR/input_watcher" 2>/dev/null
 "$HELPER_DIR/input_watcher" &
 
-# Instant re-capture when the user toggles Amphetamine: amphetamine_click.sh
-# fires this event right after the AppleScript toggle, so the icon flips without
-# waiting for the 3s poll (which stays as the backstop for external changes).
+# ---- Amphetamine (native item; no screen capture) ----
+# Its AppleScript dictionary exposes the session state directly. The click
+# handler triggers an immediate refresh; the slow poll catches sessions changed
+# from Amphetamine itself and timed/Trigger sessions ending on their own.
 sketchybar --add event amphetamine_change
 
-sketchybar --add item optional_aliases right \
-	--set optional_aliases \
-	drawing=off \
-	update_freq=5 \
-	script="$PLUGIN_DIR/optional_aliases.sh"
+sketchybar --add item amphetamine right \
+	--set amphetamine \
+	"${compact[@]}" \
+	update_freq=30 \
+	icon=󰒲 \
+	icon.color=$MUTED_COLOR \
+	label.drawing=off \
+	click_script="$PLUGIN_DIR/amphetamine_click.sh" \
+	script="$PLUGIN_DIR/amphetamine.sh" \
+	--subscribe amphetamine amphetamine_change system_woke forced
+
+# ---- Optional menu bar app alias (left of Amphetamine) ----
+# CodexBar remains a live capture of its real menu bar item, so SketchyBar still
+# needs Screen Recording permission and macOS may continue showing its capture
+# indicator. Discover it once at load time; SketchyBar 2.24 leaks memory when
+# default_menu_items is polled repeatedly. The app must already be running with
+# its menu item present; reload SketchyBar if CodexBar starts later.
 "$PLUGIN_DIR/optional_aliases.sh"
 
 # ---- Finalize ----

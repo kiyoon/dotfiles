@@ -6,7 +6,8 @@ Custom [SketchyBar](https://github.com/FelixKratz/SketchyBar) config, integrated
 **Left:** AeroSpace mode badge · workspaces `1‑30` (grouped per monitor with dividers) ·
 front app.
 **Right:** clock · battery · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
-**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine · CodexBar.
+**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine · cached
+Codex and Claude quota meters.
 
 `~/.config/sketchybar` is symlinked to this directory.
 
@@ -35,18 +36,21 @@ curl -L -o ~/Library/Fonts/sketchybar-app-font.ttf \
 
 - [Amphetamine](https://apps.apple.com/app/amphetamine/id937984704) (Mac App Store). Its
   SketchyBar item reads the session state through AppleScript; it is not a screen capture.
-- CodexBar (`com.steipete.codexbar`) — the merged Codex/Claude usage menu‑bar app. This is a
-  live menu‑bar alias, so it must be running with its native item present (behind the notch is
-  fine) when SketchyBar loads.
+- CodexBar (`com.steipete.codexbar`) — supplies the Codex and Claude usage data. SketchyBar
+  reads CodexBar's small WidgetKit snapshot from its app-group container and renders two normal
+  items with CodexBar's plain merged-icon two-lane geometry. It never invokes
+  CodexBar's fetching CLI and does not capture the native menu-bar item. If a future CodexBar
+  release changes the cache schema, uncomment `CODEXBAR_DISPLAY_MODE=alias` beside the CodexBar
+  block in `sketchybarrc` and reload to fall back to CodexBar's live merged icon.
 
 ## 2. Grant permissions — System Settings → Privacy & Security
 
 | Permission | Grant to | Why |
 |---|---|---|
-| **Screen Recording** | `sketchybar` | The CodexBar alias is a live *screen capture* of its real menu‑bar item. Restart sketchybar after granting. |
-| **Automation** | `sketchybar` → Amphetamine | Read and toggle Amphetamine's session state without capturing its menu‑bar icon. macOS prompts on first use. |
+| **Screen Recording** *(alias fallback only)* | `sketchybar` | Required only when `CODEXBAR_DISPLAY_MODE=alias`; the default cached items do not capture the screen. |
+| **Automation** | `sketchybar` → Amphetamine / System Events | Read and toggle Amphetamine's session state, and open native menu-bar popups without capturing them. macOS prompts on first use. |
 | **Location Services** | `wifi-unredactor` | The only way to read the Wi‑Fi SSID on macOS Sonoma+ (see §4). |
-| **Accessibility** | `sketchybar` | Click handlers can open native menu‑bar popups, including Bluetooth / Control Center. |
+| **Accessibility** | `sketchybar` | Click handlers can open native menu‑bar popups, including CodexBar and Bluetooth / Control Center. |
 | **Bluetooth** | `sketchybar` / `bluetooth_boucles_watcher` if prompted | The `Boucles soniques` indicator uses IOBluetooth connect/disconnect notifications for instant updates. |
 | **Accessibility** | `AeroSpace` | Window management + workspace events. |
 
@@ -61,11 +65,16 @@ committed; the binaries are git‑ignored.
 - `helpers/bluetooth_boucles_watcher` — tiny daemon that listens for IOBluetooth
   connect/disconnect notifications for `Boucles soniques` and fires
   `bluetooth_boucles_change`.
+- `helpers/codexbar_usage_watcher` — watches CodexBar's atomically replaced widget snapshot,
+  reproduces its 18-point Codex and Claude two-bar icons, and updates only when cached data
+  changes. A 60-second local-file safety check recovers missed events after sleep; neither path
+  asks CodexBar or a provider to refresh.
 
 To force a rebuild:
 
 ```bash
-rm helpers/tis_current helpers/input_watcher helpers/bluetooth_boucles_watcher
+rm helpers/tis_current helpers/input_watcher helpers/bluetooth_boucles_watcher \
+  helpers/codexbar_usage_watcher
 sketchybar --reload
 ```
 
@@ -155,8 +164,11 @@ percentages and avoids the old blocking two-sample `top` call.
 
 ## Troubleshooting
 
-- **CodexBar alias is blank** → the app isn't running / has no menu‑bar item, or Screen
-  Recording isn't granted. Fix, then `sketchybar --reload`.
+- **Codex/Claude quota meter is missing** → open CodexBar once and confirm
+  `~/Library/Group Containers/Y5PE65HELJ.com.steipete.codexbar/widget-snapshot.json` exists,
+  then `sketchybar --reload`. A missing second Codex lane is intentional: CodexBar puts the
+  first available window on top and leaves the lower track dim. If the snapshot format changed,
+  uncomment `CODEXBAR_DISPLAY_MODE=alias` in `sketchybarrc` as a temporary fallback.
 - **Amphetamine item is missing** → Amphetamine isn't running or its Automation permission
   was denied. Launch it and allow `sketchybar` to control it.
 - **Wi‑Fi shows an icon but no name** → `wifi-unredactor` isn't installed or Location isn't

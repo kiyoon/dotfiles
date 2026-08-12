@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Click handler for the menu bar aliases: pops the aliased item's real
-# dropdown by AX-clicking the true status item. Runs as a child of
+# Click handler for items that proxy a native menu-bar popup: opens the real
+# dropdown by AX-clicking its status item. Runs as a child of
 # sketchybar, so sketchybar itself needs Accessibility permission
 # (System Settings -> Privacy & Security -> Accessibility); the System
 # Events automation consent is prompted on first use.

@@ -12,6 +12,10 @@ FONT="JetBrainsMono Nerd Font"
 HELPER_DIR="$CONFIG_DIR/helpers"
 [[ -x "$HELPER_DIR/tis_current" ]] || \
 	swiftc -O "$HELPER_DIR/tis_current.swift" -o "$HELPER_DIR/tis_current" 2>/dev/null
+[[ -x "$HELPER_DIR/codexbar_usage_watcher" && \
+	"$HELPER_DIR/codexbar_usage_watcher" -nt "$HELPER_DIR/codexbar_usage_watcher.swift" ]] || \
+	swiftc -O "$HELPER_DIR/codexbar_usage_watcher.swift" \
+		-o "$HELPER_DIR/codexbar_usage_watcher" -framework AppKit 2>/dev/null
 
 # ---- Bar ----
 sketchybar --bar \
@@ -299,13 +303,52 @@ sketchybar --add item amphetamine right \
 	script="$PLUGIN_DIR/amphetamine.sh" \
 	--subscribe amphetamine amphetamine_change system_woke forced
 
-# ---- Optional menu bar app alias (left of Amphetamine) ----
-# CodexBar remains a live capture of its real menu bar item, so SketchyBar still
-# needs Screen Recording permission and macOS may continue showing its capture
-# indicator. Discover it once at load time; SketchyBar 2.24 leaks memory when
-# default_menu_items is polled repeatedly. The app must already be running with
-# its menu item present; reload SketchyBar if CodexBar starts later.
-"$PLUGIN_DIR/optional_aliases.sh"
+# ---- CodexBar usage ----
+# Default: two zero-capture items rendered from CodexBar's cached widget data.
+# Fallback: uncomment the next line if CodexBar changes its cache schema and you
+# want its live merged menu-bar item instead. Alias mode needs Screen Recording
+# permission and can make macOS show the recording indicator again.
+CODEXBAR_DISPLAY_MODE="${CODEXBAR_DISPLAY_MODE:-native}"
+# CODEXBAR_DISPLAY_MODE=alias
+
+killall codexbar_usage_watcher 2>/dev/null
+if [[ "$CODEXBAR_DISPLAY_MODE" == alias ]]; then
+	"$PLUGIN_DIR/optional_aliases.sh"
+else
+	# The helper watches CodexBar's WidgetKit snapshot directory, renders one
+	# plain merged-style two-lane meter per provider, and never calls its
+	# fetching CLI. Add Claude first because right-position items stack
+	# right-to-left: the visible order is Codex | Claude | Amphetamine.
+	codexbar_usage_item=(
+		padding_left=1 padding_right=1
+		icon="" icon.width=18
+		icon.padding_left=2 icon.padding_right=2
+		icon.background.drawing=on
+		icon.background.color=0x00000000
+		icon.background.height=18
+		icon.background.image.scale=0.5
+		icon.background.image.drawing=on
+		label.drawing=off
+		background.drawing=off
+		click_script="$PLUGIN_DIR/codexbar_click.sh"
+	)
+
+	sketchybar --add item claude_usage right \
+		--set claude_usage \
+		drawing=off \
+		"${codexbar_usage_item[@]}"
+
+	sketchybar --add item codex_usage right \
+		--set codex_usage \
+		drawing=off \
+		"${codexbar_usage_item[@]}"
+
+	if [[ -x "$HELPER_DIR/codexbar_usage_watcher" ]]; then
+		SKETCHYBAR_PID="$PPID" \
+			CODEXBAR_USAGE_COLOR="$LABEL_COLOR" \
+			"$HELPER_DIR/codexbar_usage_watcher" >/dev/null 2>&1 &
+	fi
+fi
 
 # ---- Finalize ----
 sketchybar --update

@@ -15,6 +15,9 @@ package.path = spoonPath .. "/?.lua;" .. spoonPath .. "/?/init.lua;" .. package.
 local chrome = require("translate-screen.chrome")
 local capture = require("translate-screen.capture")
 
+local CHROME_BUNDLE_ID = "com.google.Chrome"
+local TRANSLATE_URL = "https://translate.google.com/?sl=auto&tl=en&hl=en&op=images"
+
 ---@class ScreenshotAndTranslateOpts
 ---@field max_height number? maximum height of the screenshot
 
@@ -30,10 +33,14 @@ function obj:screenshotAndTranslate(opts)
     return
   end
 
-  -- Step 2: Launch Google Chrome
-  hs.application.launchOrFocus("Google Chrome")
+  -- Step 2: Ask Chrome to open Translate directly. This avoids depending on
+  -- browser focus, Cmd+T, omnibox typing, or the state of held modifiers.
+  if not hs.urlevent.openURLWithBundle(TRANSLATE_URL, CHROME_BUNDLE_ID) then
+    hs.alert.show("⚠️ Could not open Google Translate in Chrome")
+    return
+  end
 
-  -- Step 3: Wait until Chrome is active, then automate
+  -- Step 3: Wait until Chrome is active, then paste into the opened page.
   hs.timer.waitUntil(
     function()
       return hs.application.frontmostApplication() and hs.application.frontmostApplication():name() == "Google Chrome"
@@ -48,38 +55,27 @@ function obj:screenshotAndTranslate(opts)
           hs.alert.show("⚠️ Could not enable Chrome webpage accessibility")
           return
         end
-        win:focus()
-        -- Step 4: New tab
-        hs.eventtap.keyStroke({ "cmd" }, "t", 0)
-        -- don't need to wait for the new tab to load fully
-        hs.timer.doAfter(0.1, function()
-          -- Step 5: Go to Google Translate
-          -- Pin the interface language because paste confirmation reads the English
-          -- "Translating..." accessibility state.
-          hs.eventtap.keyStrokes("https://translate.google.com/?sl=auto&tl=en&hl=en&op=images")
-          hs.eventtap.keyStroke({}, "return", 0)
-          -- Step 6: Let the page settle for 0.5 seconds after its title is ready,
-          -- then paste. The Accessibility button gates any Cmd+V retries.
-          chrome.pasteWhenTranslateReady(win, {
-            onConfirmed = function(attempts)
-              local retryNote = attempts > 1 and string.format(" (%d attempts)", attempts) or ""
-              hs.alert.show("🪄 Sent screenshot to Google Translate" .. retryNote)
-            end,
-            onFailed = function(attempts, reason)
-              if reason == "page-not-ready" then
-                hs.alert.show("⚠️ Google Translate image upload did not become ready")
-              elseif reason == "paste-error" then
-                hs.alert.show(string.format("⚠️ Could not paste into Google Translate (%d attempts)", attempts))
-              elseif reason == "unconfirmed" then
-                hs.alert.show(
-                  string.format("⚠️ Google Translate remained on the upload screen (%d attempts)", attempts)
-                )
-              else
-                hs.alert.show("⚠️ Google Translate window became unavailable")
-              end
-            end,
-          })
-        end)
+        -- Pinning the interface language in TRANSLATE_URL lets paste confirmation
+        -- read the English "Translating..." accessibility state.
+        chrome.pasteWhenTranslateReady(win, {
+          onConfirmed = function(attempts)
+            local retryNote = attempts > 1 and string.format(" (%d attempts)", attempts) or ""
+            hs.alert.show("🪄 Sent screenshot to Google Translate" .. retryNote)
+          end,
+          onFailed = function(attempts, reason)
+            if reason == "page-not-ready" then
+              hs.alert.show("⚠️ Google Translate image upload did not become ready")
+            elseif reason == "paste-error" then
+              hs.alert.show(string.format("⚠️ Could not paste into Google Translate (%d attempts)", attempts))
+            elseif reason == "unconfirmed" then
+              hs.alert.show(
+                string.format("⚠️ Google Translate remained on the upload screen (%d attempts)", attempts)
+              )
+            else
+              hs.alert.show("⚠️ Google Translate window became unavailable")
+            end
+          end,
+        })
       else
         hs.alert.show("⚠️ Chrome window not found")
       end

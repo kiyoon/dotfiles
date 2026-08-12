@@ -391,9 +391,8 @@ _G.aerospaceDisplayRecovery = aerospaceRecovery.start({
 })
 
 -- 1. Run ./capture_current_display
--- 2. Open Google Chrome
--- 3. Open a new tab to Google Translate
--- 4. Paste from clipboard (image/text)
+-- 2. Open Google Translate directly in Chrome
+-- 3. Paste from clipboard (image/text)
 
 hs.loadSpoon("TranslateScreen")
 ---@type TranslateScreen

@@ -310,6 +310,57 @@ _G.wezImeWatcher = hs.application.watcher.new(
 
 _G.wezImeWatcher:start()
 
+-- tmux prefix (Ctrl+A) 감지: WezTerm에서 tmux 안이면 구름 영문으로 전환한다.
+-- prefix 다음에 올 tmux command key를 한글 IME가 먹는 문제를 막기 위함.
+-- 전환은 tap 콜백 안에서 "동기적으로" 끝낸 뒤에 Ctrl+A를 통과시킨다 (return false).
+-- 비동기(hs.task)로 하면 빠른 연타(prefix 직후 command key)에서 전환이 늦어 한글이 입력됐다.
+-- 동기 블록(~20-50ms) 동안 이후 키들도 tap 뒤에서 대기하므로 순서가 보장된다.
+-- tmux 여부는 title로 알 수 없으므로 (set-titles-string "#T", F18 handler 참고)
+-- wezterm cli get-text 스크랩에서 active pane border 색으로 판단한다.
+-- 이미 영문이거나 WezTerm이 아니면 스크랩 없이 즉시 통과한다.
+local KEYCODE_A = hs.keycodes.map.a
+-- 콜백이 오래 걸리면 macOS가 tap을 끄고 이 raw type 이벤트를 보낸다 (이 버전 hs에는 enum 없음). 받으면 재시작.
+local TAP_DISABLED_BY_TIMEOUT = 0xFFFFFFFE
+local TAP_DISABLED_BY_USER_INPUT = 0xFFFFFFFF
+
+function TmuxPrefixForceEnglish()
+  local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
+  if status == true and type == "exit" and rc == 0 and output ~= nil and get_tmux_current_command(output) ~= nil then
+    print("[tmux-prefix] tmux detected -> Gureum EN")
+    setSource(GUREUM_EN)
+  else
+    print("[tmux-prefix] not in tmux; keep input source")
+  end
+end
+
+if _G.tmuxPrefixEnTap then
+  _G.tmuxPrefixEnTap:stop()
+  _G.tmuxPrefixEnTap = nil
+end
+
+_G.tmuxPrefixEnTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(e)
+  local etype = e:getType()
+  if etype == TAP_DISABLED_BY_TIMEOUT or etype == TAP_DISABLED_BY_USER_INPUT then
+    _G.tmuxPrefixEnTap:start()
+    return false
+  end
+  if e:getKeyCode() ~= KEYCODE_A or not e:getFlags():containExactly({ "ctrl" }) then
+    return false
+  end
+  if hs.keycodes.currentSourceID() == GUREUM_EN then
+    return false
+  end
+  local front = hs.application.frontmostApplication()
+  if not front or front:name() ~= "WezTerm" then
+    return false
+  end
+  -- 여기서 블록해서 Ctrl+A가 앱에 전달되기 "전에" 영문 전환을 끝낸다.
+  TmuxPrefixForceEnglish()
+  return false
+end)
+
+_G.tmuxPrefixEnTap:start()
+
 -- AeroSpace can recurse until it crashes while macOS is publishing transient
 -- monitor layouts. After a real topology change has been quiet for five
 -- seconds, relaunch it against the settled layout without querying its CLI.

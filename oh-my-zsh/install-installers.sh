@@ -44,7 +44,6 @@ fi
 
 # pixi
 if [[ $OSTYPE == "darwin"* ]]; then
-	# brew install --cask miniconda
 	brew install pixi
 else
     if ! command -v pixi &>/dev/null; then

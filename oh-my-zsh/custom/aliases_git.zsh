@@ -63,6 +63,9 @@ gc () {
 	git commit --verbose --gpg-sign "$@"
 }
 
+# git commit with "." as the message
+alias gcmd='gc -m "."'
+
 # Print the URL of the current repository
 alias gurl='git config --get remote.origin.url'
 

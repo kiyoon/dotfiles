@@ -4,7 +4,7 @@ start_agent() {
     echo "Starting new ssh-agent..."
 
 	if [[ $OSTYPE == "darwin"* ]]; then
-		ssh-agent -t 9h >| "$SSH_ENV"
+		ssh-agent -t 14d >| "$SSH_ENV"
 	else
 		ssh-agent -t 3h >| "$SSH_ENV"
 	fi

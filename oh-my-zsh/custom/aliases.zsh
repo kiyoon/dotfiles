@@ -22,6 +22,7 @@ if (($+commands[nvim])); then
 	# alias svi='sudoedit'
 	alias svi='sudo -e'
 	alias dv='nvim +DiffviewOpen'
+	alias ng='nvim +Neogit'
 fi
 
 alias src='omz reload'

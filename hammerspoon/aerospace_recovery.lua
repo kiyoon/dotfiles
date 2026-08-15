@@ -4,9 +4,24 @@ local function frameNumber(value)
   return string.format("%.6f", tonumber(value) or 0)
 end
 
--- Only include display identity and full geometry. hs.screen.watcher also fires
--- for Dock changes, but those only change the usable frame and must not restart
--- AeroSpace.
+-- Restart decisions key on display identity only (displaySetSignature): games
+-- and streaming clients (Moonlight/Parsec exclusive fullscreen) switch display
+-- modes, which changes geometry with the same display set, and restarting
+-- AeroSpace there yanks macOS out of the fullscreen Space. Only displays
+-- appearing/disappearing destabilize AeroSpace enough to need recovery.
+function M.displaySetSignature(screens)
+  local entries = {}
+  for _, screen in ipairs(screens) do
+    entries[#entries + 1] = screen:getUUID() or tostring(screen:id())
+  end
+  table.sort(entries)
+  return table.concat(entries, "\n")
+end
+
+-- Identity plus full geometry. No longer used for restart decisions (see
+-- displaySetSignature); kept to detect and log ignored geometry-only changes.
+-- hs.screen.watcher also fires for Dock changes, but those only change the
+-- usable frame and change neither signature.
 function M.screenSignature(screens)
   local entries = {}
   for _, screen in ipairs(screens) do

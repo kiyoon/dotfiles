@@ -46,7 +46,7 @@ local C = {
   screen("external-2", 3432, -98, 1920, 1080),
 }
 
-local function harness(initialScreens)
+local function harness(initialScreens, signatureFn)
   local currentScreens = initialScreens
   local timers = {}
   local restartCallbacks = {}
@@ -67,7 +67,7 @@ local function harness(initialScreens)
 
   local controller = recovery.start({
     signature = function()
-      return recovery.screenSignature(currentScreens)
+      return (signatureFn or recovery.screenSignature)(currentScreens)
     end,
     after = function(delay, callback)
       local timer = { delay = delay, callback = callback, stopped = false }
@@ -128,6 +128,34 @@ test("signature is independent of screen enumeration order", function()
     recovery.screenSignature({ C[1], C[2], C[3] }),
     "sorted topology signature"
   )
+end)
+
+test("display set signature ignores geometry-only changes", function()
+  local modeSwitched = { screen("built-in", 0, 0, 1920, 1080) }
+  assertEqual(
+    recovery.displaySetSignature(A),
+    recovery.displaySetSignature(modeSwitched),
+    "same display set with a different mode must produce the same signature"
+  )
+  assertEqual(
+    recovery.displaySetSignature(A) ~= recovery.displaySetSignature(B),
+    true,
+    "an added display must change the signature"
+  )
+  assertEqual(
+    recovery.displaySetSignature({ C[3], C[1], C[2] }),
+    recovery.displaySetSignature({ C[1], C[2], C[3] }),
+    "display set signature must be enumeration-order independent"
+  )
+end)
+
+test("geometry-only change does not schedule recovery when keyed by display set", function()
+  local h = harness(A, recovery.displaySetSignature)
+  h.setScreens({ screen("built-in", 0, 0, 1920, 1080) })
+  h.screenEvent()
+  assertEqual(#h.timers, 0, "display mode switch must be ignored")
+  assertEqual(h.restartCalls(), 0, "display mode switch must not restart")
+  assertEqual(h.pendingCalls(), 0, "display mode switch must not mark recovery pending")
 end)
 
 test("Dock-only notification does not schedule recovery", function()

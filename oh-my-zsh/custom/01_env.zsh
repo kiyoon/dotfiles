@@ -66,6 +66,10 @@ if [[ -d "$HOME/.dotnet/tools" ]]; then
     export PATH="$HOME/.dotnet/tools:$PATH"
 fi
 
+if (( $+commands[pixi] )); then
+	export PATH="$HOME/.pixi/bin:$PATH"
+fi
+
 if [[ $OSTYPE == "linux-gnu"* ]]; then
 	export TERMINFO="$HOME/.local/share/terminfo" # tmux needs this
 fi

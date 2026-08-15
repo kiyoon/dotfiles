@@ -92,6 +92,21 @@ run = 'layout floating'
 if.window-title-regex-substring = '(Software.*Update|About.*This.*Mac)'
 run = 'layout floating'
 
+# Game-streaming clients: float AND park each app alone on its own named
+# workspace (named ones never collide with numbered workspaces, and sketchybar
+# hides non-numeric ones). When a window enters native fullscreen from a
+# workspace with siblings, AeroSpace focuses a sibling and macOS follows it out
+# of the fullscreen Space (verified live); from a single-window workspace
+# nothing gets yanked. One workspace per app so the two clients can never
+# become each other's siblings. Their dialogs/popups land there as well.
+[[on-window-detected]]
+if.app-id = 'com.moonlight-stream.Moonlight'
+run = ['layout floating', 'move-node-to-workspace moonlight']
+
+[[on-window-detected]]
+if.app-id = 'tv.parsec.www'
+run = ['layout floating', 'move-node-to-workspace parsec']
+
 [mode.main.binding]
 # skhd passthrough equivalent. Only cmd-shift-alt-b is active in this mode.
 # Mode switches also update the sketchybar badge (sketchybar/plugins/mode.sh).

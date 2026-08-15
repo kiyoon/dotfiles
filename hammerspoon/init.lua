@@ -81,6 +81,7 @@ local function title_may_have_nvim(window_title)
     "csvi", -- alias csvi (csv 전용 nvim)
     "%f[%w]v%f[%W]", -- alias v=nvim
     "%f[%w]dv%f[%W]", -- alias dv='nvim +DiffviewOpen'
+    "%f[%w]ng%f[%W]", -- alias ng='nvim +Neogit'
     "git", -- git commit/rebase 등이 $EDITOR(nvim)를 열 때 title은 "git ..."; lazygit 포함
   }
   for _, pattern in ipairs(hints) do
@@ -364,6 +365,10 @@ _G.tmuxPrefixEnTap:start()
 -- AeroSpace can recurse until it crashes while macOS is publishing transient
 -- monitor layouts. After a real topology change has been quiet for five
 -- seconds, relaunch it against the settled layout without querying its CLI.
+-- Display mode switches (games / Moonlight / Parsec fullscreen) keep the same
+-- display set and are ignored: restarting there kicked macOS out of the
+-- fullscreen Space every time (recovery.log showed display-change restarts on
+-- every streaming session).
 local aerospaceRecovery = require("aerospace_recovery")
 
 if _G.aerospaceDisplayRecovery then
@@ -379,9 +384,19 @@ end
 local aerospaceStateDir = aerospaceCacheRoot .. "/aerospace"
 local aerospaceRecoveryPendingMarker = aerospaceStateDir .. "/recovery-pending"
 
+-- Track both signatures so ignored mode switches stay visible in the console.
+local lastGeoSig, lastSetSig
+
 _G.aerospaceDisplayRecovery = aerospaceRecovery.start({
   signature = function()
-    return aerospaceRecovery.screenSignature(hs.screen.allScreens())
+    local screens = hs.screen.allScreens()
+    local setSig = aerospaceRecovery.displaySetSignature(screens)
+    local geoSig = aerospaceRecovery.screenSignature(screens)
+    if lastGeoSig ~= nil and geoSig ~= lastGeoSig and setSig == lastSetSig then
+      hs.printf("[aerospace-recovery] geometry-only display change ignored (mode switch/fullscreen)")
+    end
+    lastGeoSig, lastSetSig = geoSig, setSig
+    return setSig
   end,
   after = function(seconds, callback)
     return hs.timer.doAfter(seconds, callback)

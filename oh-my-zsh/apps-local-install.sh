@@ -4,6 +4,10 @@ INSTALL_DIR="$HOME/.local"
 CARGO="$HOME/.cargo/bin/cargo"
 # PIP3="/usr/bin/python3 -m pip"
 
+pixi global install eza
+pixi global install fd-find
+pixi global install ripgrep
+
 if [[ $OSTYPE == "darwin"* ]]; then
   INSTALL_DIR="$HOME/.local"
 
@@ -33,9 +37,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
   # git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
   # $PIP3 install --user --break-system-packages "$TEMPDIR"
 
-  brew install fd
   brew install tig
-  brew install eza
 
   brew install gh
   gh extension install github/gh-copilot
@@ -85,10 +87,6 @@ else
   # git clone --depth=1 https://github.com/ranger/ranger "$TEMPDIR"
   # $PIP3 install --user --break-system-packages "$TEMPDIR"
 
-  if ! command -v fd &>/dev/null; then
-    npm install -g fd-find
-  fi
-
   if ! command -v tig &>/dev/null; then
     if [ -f "$INSTALL_DIR/include/ncurses/curses.h" ]; then
       echo "Ncurses not found in $INSTALL_DIR/include"
@@ -114,15 +112,6 @@ else
     fi
   else
     echo "tig already installed at $(which tig). Skipping.."
-  fi
-
-  if ! command -v eza &>/dev/null; then
-    $CARGO binstall eza -y
-    wget https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza -P "$INSTALL_DIR/share/zsh/site-functions"
-
-    echo "eza installed at $(which eza)"
-  else
-    echo "eza already installed at $(which eza). Skipping.."
   fi
 
   if ! command -v gh &>/dev/null; then

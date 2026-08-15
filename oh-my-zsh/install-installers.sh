@@ -42,6 +42,18 @@ else
     mamba update mamba -y
 fi
 
+# pixi
+if [[ $OSTYPE == "darwin"* ]]; then
+	# brew install --cask miniconda
+	brew install pixi
+else
+    if ! command -v pixi &>/dev/null; then
+        curl -fsSL https://pixi.sh/install.sh | sh
+    else
+        pixi self-update
+    fi
+fi
+
 # rustup, cargo
 if [[ $OSTYPE == "darwin"* ]]; then
     brew install rustup

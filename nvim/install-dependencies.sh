@@ -30,6 +30,11 @@ uv pip install -U debugpy
 # molten.nvim
 uv pip install -U pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 
+# ripgrep for telescope.nvim
+pixi global install ripgrep
+# wilder.nvim, telescope.nvim
+pixi global install fd-find
+
 if command -v brew &> /dev/null; then
     # Lint
     brew install ruff
@@ -42,11 +47,6 @@ if command -v brew &> /dev/null; then
     # brew install tree-sitter
     bun install -g tree-sitter-cli@latest
 
-    # wilder.nvim, telescope.nvim
-    brew install fd
-
-    # ripgrep for telescope.nvim
-    brew install ripgrep
     brew install viu
 
     # molten.nvim
@@ -83,27 +83,6 @@ if ! command -v prettier &> /dev/null; then
 fi
 
 bun install -g tree-sitter-cli@latest
-
-# wilder.nvim, telescope.nvim
-if ! command -v fd &> /dev/null; then
-	bun install -g fd-find
-fi
-
-# ripgrep for telescope.nvim
-if ! command -v rg &> /dev/null; then
-	echo "ripgrep (rg) could not be found. Installing in $LOCALBIN"
-	TEMPDIR=$(mktemp -d)
-	mkdir -p "$LOCALBIN"
-	curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest \
-		| grep "browser_download_url.*-x86_64-unknown-linux-musl.tar.gz" \
-		| cut -d : -f 2,3 \
-		| tr -d \" \
-		| wget -qi - -O - | tar -xz --strip-components=1 -C "$TEMPDIR"
-	mv "$TEMPDIR"/rg "$LOCALBIN"
-	rm -rf "$TEMPDIR"
-else
-	echo "ripgrep found at $(which rg). Skipping installation."
-fi
 
 # view images in terminal, used in telescope preview etc.
 if ! command -v viu &> /dev/null; then

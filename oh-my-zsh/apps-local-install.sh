@@ -7,11 +7,6 @@ CARGO="$HOME/.cargo/bin/cargo"
 pixi global install eza
 pixi global install fd-find
 pixi global install ripgrep
-pixi global install zoxide
-pixi global install fzf
-pixi global install starship
-pixi global install jq
-pixi global install bat
 
 if [[ $OSTYPE == "darwin"* ]]; then
   INSTALL_DIR="$HOME/.local"
@@ -28,6 +23,9 @@ if [[ $OSTYPE == "darwin"* ]]; then
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
   fi
 
+  brew install zoxide
+  brew install fzf
+  brew install pipx
   brew install thefuck
   brew install starship
 
@@ -45,8 +43,10 @@ if [[ $OSTYPE == "darwin"* ]]; then
   gh extension install github/gh-copilot
   gh extension upgrade gh-copilot
 
+  brew install jq
   brew install viu
   brew install chafa
+  brew install bat
   brew install bottom
   brew install dust
   brew install procs
@@ -60,6 +60,22 @@ else
   ##### oh-my-zsh
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+  fi
+
+  ##### zoxide
+  if ! command -v zoxide &>/dev/null; then
+    curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+  fi
+
+  ##### fzf
+  if ! command -v fzf &>/dev/null; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install --bin
+  fi
+
+  ##### Starship prompt
+  if ! command -v starship &>/dev/null; then
+    sh -c "$(curl -fsSL https://starship.rs/install.sh)" sh -b "$INSTALL_DIR/bin" -y
   fi
 
   # $PIP3 install --user --break-system-packages pygments # colorize (ccat)
@@ -115,6 +131,18 @@ else
   gh extension install github/gh-copilot
   gh extension upgrade gh-copilot
 
+  if ! command -v jq &>/dev/null; then
+    curl -s https://api.github.com/repos/stedolan/jq/releases/latest |
+      grep "browser_download_url.*jq-linux64" |
+      cut -d : -f 2,3 |
+      tr -d \" |
+      wget -qi - -O "$INSTALL_DIR/bin/jq"
+    chmod +x "$INSTALL_DIR/bin/jq"
+    echo "jq installed at $(which jq)"
+  else
+    echo "jq already installed at $(which jq). Skipping.."
+  fi
+
   if ! command -v pv &>/dev/null; then
     TEMPDIR=$(mktemp -d)
     cd "$TEMPDIR" || { echo "Failure"; exit 1; }
@@ -146,6 +174,9 @@ else
     npm install -g @builder.io/ai-shell
   fi
 
+  if ! command -v bat &> /dev/null; then
+    $CARGO binstall bat -y
+  fi
   $CARGO binstall viu -y # --features=sixel
   $CARGO binstall bottom -y
   $CARGO binstall du-dust -y

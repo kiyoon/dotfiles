@@ -44,8 +44,7 @@ if command -v brew &> /dev/null; then
     brew install stylua
     brew install prettier
 
-    # brew install tree-sitter
-    bun install -g tree-sitter-cli@latest
+    brew install tree-sitter-cli
 
     brew install viu
 

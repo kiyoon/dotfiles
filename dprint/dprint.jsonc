@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    "https://plugins.dprint.dev/toml-0.8.0.wasm@69cb40cba5e8a53560ccea7fdced073a55d04eb05492f0d9b877f916b976945d"
+  ]
+}

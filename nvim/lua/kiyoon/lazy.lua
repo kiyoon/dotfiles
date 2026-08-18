@@ -2010,12 +2010,22 @@ return {
         c = { "clang-format" },
         cpp = { "clang-format" },
         cs = { "csharpier" },
-        toml = { "taplo" },
+        toml = { "dprint" },
       },
       -- Set up format-on-save
       format_on_save = { timeout_ms = 2000, lsp_fallback = true },
       -- Customize formatters
       formatters = {
+        dprint = {
+          args = function(_, ctx)
+            local filename = ctx.filename
+            -- New files do not exist yet during BufWritePre, so dprint cannot canonicalize their absolute paths.
+            if vim.uv.fs_stat(filename) == nil then
+              filename = vim.fs.basename(filename)
+            end
+            return { "fmt", "--stdin", filename }
+          end,
+        },
         shfmt = {
           prepend_args = { "-i", "2" },
         },

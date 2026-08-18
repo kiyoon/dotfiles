@@ -1,3 +1,5 @@
+(& pixi completion --shell powershell) | Out-String | Invoke-Expression
+
 #$Env:PATH += ";$env:USERPROFILE\bin"
 
 # grep, awk, sed, ...

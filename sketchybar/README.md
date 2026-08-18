@@ -144,6 +144,16 @@ relaunch uses the same safe path:
 ~/.config/aerospace/scripts/restart.sh manual
 ```
 
+The reload menu also has separate **Stop AeroSpace** and **Start / Restart
+AeroSpace** actions. Stop leaves an intentional-stop marker so automatic
+display recovery cannot relaunch AeroSpace during a native-fullscreen session;
+Start / Restart clears the marker. CLI equivalents are:
+
+```bash
+~/.config/aerospace/scripts/restart.sh stop
+~/.config/aerospace/scripts/restart.sh manual
+```
+
 For the Bluetooth SketchyBar item to open the native macOS popup, Bluetooth must also be shown
 as a standalone macOS menu-bar item:
 

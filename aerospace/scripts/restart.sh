@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
-# Relaunch AeroSpace without asking its possibly wedged CLI server for state.
-# Calls are serialized because manual and display-recovery restarts can overlap.
+# Start, restart, or intentionally stop AeroSpace without asking its possibly
+# wedged CLI server for state. Calls are serialized because menu actions and
+# display-recovery restarts can overlap.
 set -u
 
 reason="${1:-manual}"
+action="restart"
+if [[ "$reason" == "stop" ]]; then
+	action="stop"
+fi
 process_name="${AEROSPACE_RESTART_PROCESS_NAME:-AeroSpace}"
 app_name="${AEROSPACE_RESTART_APP_NAME:-AeroSpace}"
 state_dir="${AEROSPACE_RESTART_STATE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/aerospace}"
@@ -11,6 +16,7 @@ lock_file="$state_dir/restart.lock"
 log_file="$state_dir/recovery.log"
 refresh_marker="${AEROSPACE_RESTART_REFRESH_MARKER:-$state_dir/refresh-now}"
 pending_marker="${AEROSPACE_RESTART_PENDING_MARKER:-$state_dir/recovery-pending}"
+manual_stop_marker="${AEROSPACE_RESTART_MANUAL_STOP_MARKER:-$state_dir/manually-stopped}"
 
 lockf_bin="${AEROSPACE_RESTART_LOCKF_BIN:-/usr/bin/lockf}"
 pgrep_bin="${AEROSPACE_RESTART_PGREP_BIN:-/usr/bin/pgrep}"
@@ -23,8 +29,12 @@ wait_seconds="${AEROSPACE_RESTART_WAIT_SECONDS:-0.1}"
 
 mkdir -p "$state_dir" || exit 1
 exec 9>"$lock_file"
-if ! "$lockf_bin" -s -t 0 9; then
-	# Another invocation owns the restart. It will leave AeroSpace healthy.
+if [[ "$reason" != "display-change" ]]; then
+	# User actions must not get lost behind each other. Wait for the bounded
+	# critical section so Stop followed immediately by Start ends in Start.
+	"$lockf_bin" -s 9 || exit 1
+elif ! "$lockf_bin" -s -t 0 9; then
+	# Automatic recovery may coalesce with another in-flight action.
 	exit 0
 fi
 
@@ -56,12 +66,38 @@ wait_for_exit() {
 	! is_running
 }
 
-log "restart requested"
+if [[ "$action" == "restart" && "$reason" == "display-change" && -f "$manual_stop_marker" ]]; then
+	if is_running; then
+		# AeroSpace was launched outside this helper (for example at the next
+		# login), so the old manual-stop marker is no longer authoritative.
+		rm -f "$manual_stop_marker"
+		log "cleared stale manual-stop marker"
+	else
+		# Do not let automatic display recovery undo an intentional stop.
+		rm -f "$refresh_marker" "$pending_marker"
+		log "restart skipped: manually stopped"
+		exit 0
+	fi
+fi
 
-recovery_token="$(/bin/date +%s).$$.${RANDOM:-0}"
-if ! write_marker "$pending_marker" "$recovery_token"; then
-	log "failed: could not create recovery-pending marker"
-	exit 1
+if [[ "$action" == "stop" ]]; then
+	stop_token="$(/bin/date +%s).$$.${RANDOM:-0}"
+	if ! write_marker "$manual_stop_marker" "$stop_token"; then
+		log "stop failed: could not create manual-stop marker"
+		exit 1
+	fi
+	rm -f "$refresh_marker" "$pending_marker"
+	log "stop requested"
+else
+	# A click on Start / Restart explicitly clears the manual hold.
+	rm -f "$manual_stop_marker"
+	log "restart requested"
+
+	recovery_token="$(/bin/date +%s).$$.${RANDOM:-0}"
+	if ! write_marker "$pending_marker" "$recovery_token"; then
+		log "failed: could not create recovery-pending marker"
+		exit 1
+	fi
 fi
 
 if is_running; then
@@ -75,6 +111,11 @@ if ! wait_for_exit "$term_wait_attempts"; then
 		log "failed: old process is still running"
 		exit 1
 	}
+fi
+
+if [[ "$action" == "stop" ]]; then
+	log "stopped"
+	exit 0
 fi
 
 if ! write_marker "$refresh_marker" "$recovery_token"; then

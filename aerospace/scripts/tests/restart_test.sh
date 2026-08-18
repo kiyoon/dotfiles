@@ -15,6 +15,9 @@ EOF
 cat >"$TMP/bin/killall" <<'EOF'
 #!/usr/bin/env bash
 printf 'killall %s\n' "$*" >>"$FAKE_CALLS"
+if [[ -n "${FAKE_KILLALL_DELAY:-}" ]]; then
+	/bin/sleep "$FAKE_KILLALL_DELAY"
+fi
 if [[ "$1" == "-KILL" || "${FAKE_IGNORE_TERM:-0}" != "1" ]]; then
 	rm -f "$FAKE_PROCESS_STATE"
 fi
@@ -56,9 +59,10 @@ file_state() {
 	fi
 }
 
-run_restart() {
+run_action() {
 	local name="$1"
-	shift
+	local reason="$2"
+	shift 2
 	local state_dir="$TMP/state-$name"
 	mkdir -p "$state_dir"
 	FAKE_PROCESS_STATE="$TMP/process-$name" \
@@ -70,7 +74,13 @@ run_restart() {
 		AEROSPACE_RESTART_SLEEP_BIN="$TMP/bin/sleep" \
 		AEROSPACE_RESTART_TERM_WAIT_ATTEMPTS=2 \
 		AEROSPACE_RESTART_KILL_WAIT_ATTEMPTS=1 \
-		"$@" /bin/bash "$SCRIPT" "$name"
+		"$@" /bin/bash "$SCRIPT" "$reason"
+}
+
+run_restart() {
+	local name="$1"
+	shift
+	run_action "$name" "$name" "$@"
 }
 
 # A healthy process receives TERM, fully exits, then LaunchServices is called.
@@ -111,6 +121,69 @@ else
 fi
 check open-failure-marker absent "$(file_state "$TMP/state-open-failure/refresh-now")"
 check open-failure-pending present "$(file_state "$TMP/state-open-failure/recovery-pending")"
+
+# Manual stop records an intentional hold, clears recovery markers, and never
+# relaunches AeroSpace.
+touch "$TMP/process-stop-running"
+mkdir -p "$TMP/state-stop-running"
+touch "$TMP/state-stop-running/refresh-now" "$TMP/state-stop-running/recovery-pending"
+: >"$TMP/calls-stop-running"
+run_action stop-running stop /usr/bin/env
+check stop-running 'killall -TERM AeroSpace' "$(cat "$TMP/calls-stop-running")"
+check stop-running-marker present "$(file_state "$TMP/state-stop-running/manually-stopped")"
+check stop-running-refresh absent "$(file_state "$TMP/state-stop-running/refresh-now")"
+check stop-running-pending absent "$(file_state "$TMP/state-stop-running/recovery-pending")"
+
+# Stopping an already-dead server still establishes the hold.
+: >"$TMP/calls-stop-dead"
+run_action stop-dead stop /usr/bin/env
+check stop-dead '' "$(cat "$TMP/calls-stop-dead")"
+check stop-dead-marker present "$(file_state "$TMP/state-stop-dead/manually-stopped")"
+
+# Start / Restart clears the hold and launches a stopped AeroSpace.
+mkdir -p "$TMP/state-start-after-stop"
+touch "$TMP/state-start-after-stop/manually-stopped"
+: >"$TMP/calls-start-after-stop"
+run_action start-after-stop manual /usr/bin/env
+check start-after-stop 'open -g -a AeroSpace' "$(cat "$TMP/calls-start-after-stop")"
+check start-after-stop-marker absent "$(file_state "$TMP/state-start-after-stop/manually-stopped")"
+
+# Display recovery must not undo an intentional stop.
+mkdir -p "$TMP/state-held-recovery"
+touch "$TMP/state-held-recovery/manually-stopped" \
+	"$TMP/state-held-recovery/refresh-now" \
+	"$TMP/state-held-recovery/recovery-pending"
+: >"$TMP/calls-held-recovery"
+run_action held-recovery display-change /usr/bin/env
+check held-recovery '' "$(cat "$TMP/calls-held-recovery")"
+check held-recovery-marker present "$(file_state "$TMP/state-held-recovery/manually-stopped")"
+check held-recovery-refresh absent "$(file_state "$TMP/state-held-recovery/refresh-now")"
+check held-recovery-pending absent "$(file_state "$TMP/state-held-recovery/recovery-pending")"
+
+# If AeroSpace is already running (for example after login), an old hold is
+# stale and normal recovery resumes.
+mkdir -p "$TMP/state-stale-hold"
+touch "$TMP/state-stale-hold/manually-stopped" "$TMP/process-stale-hold"
+: >"$TMP/calls-stale-hold"
+run_action stale-hold display-change /usr/bin/env
+check stale-hold $'killall -TERM AeroSpace\nopen -g -a AeroSpace' "$(cat "$TMP/calls-stale-hold")"
+check stale-hold-marker absent "$(file_state "$TMP/state-stale-hold/manually-stopped")"
+
+# A rapid Stop -> Start click sequence is serialized. Start waits for Stop's
+# bounded TERM path and then clears the hold instead of being silently dropped.
+touch "$TMP/process-stop-start-race"
+: >"$TMP/calls-stop-start-race"
+run_action stop-start-race stop /usr/bin/env FAKE_KILLALL_DELAY=0.2 &
+stop_pid=$!
+for _ in {1..100}; do
+	grep -q '^killall -TERM AeroSpace$' "$TMP/calls-stop-start-race" && break
+	/bin/sleep 0.01
+done
+run_action stop-start-race manual /usr/bin/env
+wait "$stop_pid"
+check stop-start-race $'killall -TERM AeroSpace\nopen -g -a AeroSpace' \
+	"$(cat "$TMP/calls-stop-start-race")"
+check stop-start-race-marker absent "$(file_state "$TMP/state-stop-start-race/manually-stopped")"
 
 printf 'pass=%d fail=%d\n' "$pass" "$fail"
 ((fail == 0))

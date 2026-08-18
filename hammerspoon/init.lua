@@ -365,10 +365,8 @@ _G.tmuxPrefixEnTap:start()
 -- AeroSpace can recurse until it crashes while macOS is publishing transient
 -- monitor layouts. After a real topology change has been quiet for five
 -- seconds, relaunch it against the settled layout without querying its CLI.
--- Display mode switches (games / Moonlight / Parsec fullscreen) keep the same
--- display set and are ignored: restarting there kicked macOS out of the
--- fullscreen Space every time (recovery.log showed display-change restarts on
--- every streaming session).
+-- Display mode switches keep the same display set and are ignored. Restarting
+-- for geometry-only changes can disrupt macOS native fullscreen Spaces.
 local aerospaceRecovery = require("aerospace_recovery")
 
 if _G.aerospaceDisplayRecovery then
@@ -684,9 +682,15 @@ local function installSketchybarCompareMenubars()
         end,
       },
       {
-        title = "Restart AeroSpace",
+        title = "Start / Restart AeroSpace",
         fn = function()
           runShell("$HOME/.config/aerospace/scripts/restart.sh manual")
+        end,
+      },
+      {
+        title = "Stop AeroSpace",
+        fn = function()
+          runShell("$HOME/.config/aerospace/scripts/restart.sh stop")
         end,
       },
     }

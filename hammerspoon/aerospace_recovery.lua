@@ -4,11 +4,10 @@ local function frameNumber(value)
   return string.format("%.6f", tonumber(value) or 0)
 end
 
--- Restart decisions key on display identity only (displaySetSignature): games
--- and streaming clients (Moonlight/Parsec exclusive fullscreen) switch display
--- modes, which changes geometry with the same display set, and restarting
--- AeroSpace there yanks macOS out of the fullscreen Space. Only displays
--- appearing/disappearing destabilize AeroSpace enough to need recovery.
+-- Restart decisions key on display identity only (displaySetSignature): display
+-- mode changes can alter geometry without changing the connected display set.
+-- Only displays appearing/disappearing destabilize AeroSpace enough to need
+-- recovery.
 function M.displaySetSignature(screens)
   local entries = {}
   for _, screen in ipairs(screens) do

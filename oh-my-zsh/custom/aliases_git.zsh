@@ -42,6 +42,7 @@ fi
 alias cdg='cd $(git rev-parse --show-toplevel)'
 alias groot='git rev-parse --show-toplevel'
 alias glr='git pull --rebase'
+alias gad='ga .'
 
 gglr() {
 	# from oh-my-zsh glr but with --rebase option

@@ -65,7 +65,7 @@ My main frameworks/languages: Python (PyTorch, FastAPI), TypeScript (React), C# 
 ## Requirements
 
 - Linux x86-64, macOS, Windows WSL2
-- Neovim v0.11.5 (make sure you use this exact version)
+- Neovim v0.12.4 (make sure you use this exact version)
 - Tmux v3.6
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
@@ -176,32 +176,3 @@ docker run -it --rm \
     ghcr.io/kiyoon/dotfiles
 ```
 
-## Implementation details (Not important)
-
-### Keychron knob
-
-To support Keychron knob, I mapped the knob using VIA as following:
-
-- Counter Clockwise: `F3` (`F2` on Mac)
-- Clockwise: `F6`
-- Press: `F7`
-- Fn + Counter Clockwise: `F8`
-- Fn + Clockwise: `F10`
-- Fn + Press: `F9`
-
-You'll see the keymaps in tmux, wezterm, zsh and neovim.
-
-For example,
-
-```sh
-# 01_env.sh
-bindkey "^[OR" dirhistory_zle_dirhistory_back  # F3, knob counter-clockwise
-bindkey "^[[15~" dirhistory_zle_dirhistory_back  # F2, knob counter-clockwise (mac)
-bindkey "^[[17~" dirhistory_zle_dirhistory_future  # F6, knob clockwise
-bindkey "^[[18~" dirhistory_zle_dirhistory_up  # F7, knob click 
-```
-
-In NeoVim, `<F13>` means `Shift + F1`, `<F25>` means `Ctrl + F1`.
-
-Sometimes it is hard to pass the exact key sequence to the terminal. For example, skhd intercepts `F6` and it can't
-pass the same key to the terminal. Thus, I used `F5` in some cases.

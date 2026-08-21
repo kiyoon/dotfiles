@@ -76,6 +76,19 @@ The timings above measure installed command execution, not package installation 
 update speed. Homebrew and Zerobrew do not add a wrapper when launching `rg`;
 Homebrew's speed disadvantage is in package-manager operations.
 
+### Conclusion
+
+Pixi is a last resort, not a default. It is used only on Linux machines where a
+tool cannot reasonably be installed any other way: no administrator access, no
+official static binary, no cargo/mise route, and a source build that would need
+cmake plus system development headers (e.g. poppler for `pdftoppm`). On Windows
+it is avoided entirely — the trampoline added +7.102 ms startup overhead per
+invocation in these tests. Even on Linux it is avoided for speed-sensitive or
+frequently invoked tools (ripgrep, fd, eza and similar): those are installed
+with cargo-binstall, official static binaries, or bun instead, because Pixi's
++0.374 ms trampoline startup overhead (Linux, table above) is paid on every
+single invocation.
+
 ### References
 
 - [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux)

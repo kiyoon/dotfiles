@@ -1861,6 +1861,9 @@ return {
     event = "LspAttach",
     config = function()
       require("lsp-endhints").setup({
+        icons = {
+          unknown = "",
+        },
         label = {
           truncateAtChars = 40,
         },

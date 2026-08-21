@@ -18,20 +18,20 @@ local servers = {
   -- "eslint",
   "jsonls",
   "biome",
-  "basedpyright",
+  -- "basedpyright",
   -- "ty",
-  -- "pyrefly",
-  -- "ruff_lsp",
-  "bashls",
-  "yamlls",
-  "vimls",
-  "dockerls",
-  -- "grammarly",
-  -- "rust_analyzer", -- rustaceanvim will attach to LSP, so don't put this here
+  "pyrefly",
+  --   "ruff_lsp",
+  --   "bashls",
+  --   "yamlls",
+  --   "vimls",
+  --   "dockerls",
+  --   -- "grammarly",
+  --   -- "rust_analyzer", -- rustaceanvim will attach to LSP, so don't put this here
 }
 
 local servers_attach_only = {
-  "roslyn",
+  --   "roslyn",
   -- "typerighter",
 }
 
@@ -102,7 +102,7 @@ end
 install_pkg_background("shellcheck")
 install_pkg_background("actionlint")
 install_pkg_background("roslyn")
-install_pkg_background("taplo")
+install_pkg_background("dprint")
 -- install_pkg_background("selene")
 
 -- local lspconfig = require("lspconfig")

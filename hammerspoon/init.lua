@@ -9,6 +9,24 @@ hs.loadSpoon("ChatGPT")
 -- Enables the `hs` command-line tool to talk to Hammerspoon
 require("hs.ipc")
 
+-- 구름입력기 한글 상태에서 hs.keycodes.currentSourceID(GUREUM_EN)로 직접 전환하면
+-- 메뉴바(보고값)만 EN이 되고 실제 조합 엔진은 한글로 남는다 (EN으로 보이는데 한글 입력됨).
+-- 같은 IME 안의 형제 소스 전환에서만 생기는 버그라, 먼저 ABC(다른 IME)로 나갔다가
+-- 구름 영문으로 다시 들어오면 새로 활성화되면서 엔진이 실제로 따라온다 (bounce).
+-- 합성 키 입력(cmd+shift+ctrl+space, F18, fn+F18)은 hs에서 보내도 소스 전환을
+-- 일으키지 못한다 (2026-08-21 실험으로 확인; macOS가 입력소스 단축키의 합성 이벤트를 무시).
+local function forceGureumEnglish()
+  local cur = hs.keycodes.currentSourceID()
+  if cur == GUREUM_EN then
+    return
+  end
+  if cur == GUREUM_KO then
+    hs.keycodes.currentSourceID(APPLE_EN)
+    hs.timer.usleep(80000)
+  end
+  hs.keycodes.currentSourceID(GUREUM_EN)
+end
+
 ---@param term_text_ansi string
 ---@return string?
 local function get_tmux_current_command(term_text_ansi)
@@ -92,6 +110,16 @@ local function title_may_have_nvim(window_title)
   return false
 end
 
+-- Hammerspoon을 wezterm 셸에서 재시작하면 WEZTERM_UNIX_SOCKET을 물려받는데,
+-- 그 wezterm 인스턴스가 죽으면 이후 모든 `wezterm cli` 자식이 죽은 소켓에 붙다
+-- 실패한다 (exit 1). 심지어 mux server를 daemonize로 띄우려다 stdio 파이프를
+-- 물려줘서 hs.task 종료 콜백까지 영영 안 불린다 (완전 무증상 실패).
+-- env를 지워 살아있는 GUI 소켓을 auto-discover 하게 하고, 서버 auto-start는 막는다.
+local WEZTERM_CLI = "/opt/homebrew/bin/wezterm"
+local function weztermCli(args)
+  return hs.execute("unset WEZTERM_UNIX_SOCKET; " .. WEZTERM_CLI .. " cli --no-auto-start " .. args)
+end
+
 -- karabiner-elements maps Rcmd and Ralt to F18
 -- Korean-English input source switch
 -- when in Wezterm and inside nvim, press f12 (activate hanguel.vim plugin)
@@ -126,11 +154,9 @@ hs.hotkey.bind({}, "f18", function()
       or string.match(window_title, "^nvim$")
     then
       print("program in wezterm is vi")
-      local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
+      local output, status, type, rc = weztermCli("get-text --escapes")
       if status == true and type == "exit" and rc == 0 and output ~= nil and not is_nvim_command_mode(output) then
-        if input_source ~= GUREUM_EN then
-          hs.keycodes.currentSourceID(GUREUM_EN)
-        end
+        forceGureumEnglish()
         -- if input_source ~= APPLE_EN then
         --   hs.keycodes.currentSourceID(APPLE_EN)
         -- end
@@ -150,7 +176,7 @@ hs.hotkey.bind({}, "f18", function()
       -- and the focus is in the pane
 
       -- Run `wezterm cli get-text` to get the text of the pane
-      local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
+      local output, status, type, rc = weztermCli("get-text --escapes")
       -- print(output)
       -- print(get_tmux_current_command(output))
 
@@ -168,9 +194,7 @@ hs.hotkey.bind({}, "f18", function()
         print("nvim in tmux")
         if not is_nvim_command_mode(output) and not is_nvim_terminal_mode(output) then
           print("not in command/terminal mode")
-          if input_source ~= GUREUM_EN then
-            hs.keycodes.currentSourceID(GUREUM_EN)
-          end
+          forceGureumEnglish()
           -- if input_source ~= APPLE_EN then
           --   hs.keycodes.currentSourceID(APPLE_EN)
           -- end
@@ -218,7 +242,7 @@ local function mapOnEnterWezterm()
   --   -- not Gureum EN/KO -> ignore
   -- end
   -- hs.alert.show("Wezterm Activated: EN")
-  setSource(GUREUM_EN)
+  forceGureumEnglish()
 end
 
 local function mapOnExitWezterm()
@@ -325,10 +349,10 @@ local TAP_DISABLED_BY_TIMEOUT = 0xFFFFFFFE
 local TAP_DISABLED_BY_USER_INPUT = 0xFFFFFFFF
 
 function TmuxPrefixForceEnglish()
-  local output, status, type, rc = hs.execute("/opt/homebrew/bin/wezterm cli get-text --escapes")
+  local output, status, type, rc = weztermCli("get-text --escapes")
   if status == true and type == "exit" and rc == 0 and output ~= nil and get_tmux_current_command(output) ~= nil then
     print("[tmux-prefix] tmux detected -> Gureum EN")
-    setSource(GUREUM_EN)
+    forceGureumEnglish()
   else
     print("[tmux-prefix] not in tmux; keep input source")
   end
@@ -483,8 +507,8 @@ end)
 
 -- Insert multi-agent prompt scaffold with codex + claude usage examples.
 -- Cursor lands on a fresh line after "use multi agents" — type the task there.
--- Uses keystroke simulation (not paste) so Claude Code's TUI renders it inline
--- instead of collapsing into a [Pasted text] attachment.
+-- Uses small, paced paste chunks so Claude Code and Codex keep the text inline
+-- and editable instead of collapsing it into a large-paste attachment.
 local CODEX_CLAUDE_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
 Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
 Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan) with fast mode ON. hetu is the default Codex home.
@@ -599,11 +623,180 @@ PROMPTS = {
   { id = "tmux_work_together", title = "tmux: work together", text = TMUX_WORK_TOGETHER_TEMPLATE },
 }
 
--- Type a prompt by id. Keystroke simulation (not paste) -- see note above.
+local PROMPT_INSERT_INITIAL_DELAY = 0.2
+local PROMPT_INSERT_INTERVAL = 0.02
+local PROMPT_PASTE_CHUNK_SIZE = 400
+
+local promptInsertTimer = nil
+local promptInsertTask = nil
+local promptInsertActive = false
+
+local function stopPromptInsert(message)
+  if promptInsertTimer then
+    promptInsertTimer:stop()
+    promptInsertTimer = nil
+  end
+
+  if promptInsertTask and promptInsertTask:isRunning() then
+    promptInsertTask:terminate()
+  end
+
+  promptInsertTask = nil
+  promptInsertActive = false
+
+  if message then
+    hs.alert.show(message)
+  end
+end
+
+local function promptTargetIsFocused(target)
+  local app = hs.application.frontmostApplication()
+  if not app or app:pid() ~= target.appPid then
+    return false
+  end
+
+  if target.windowId then
+    local window = hs.window.focusedWindow()
+    if not window or window:id() ~= target.windowId then
+      return false
+    end
+  end
+
+  return true
+end
+
+local function focusedWezTermPaneId(appPid)
+  local output, status = weztermCli("list-clients --format json")
+  if not status then
+    return nil, "wezterm cli list-clients failed"
+  end
+
+  local ok, clients = pcall(hs.json.decode, output)
+  if not ok or type(clients) ~= "table" then
+    return nil, "could not decode wezterm client list"
+  end
+
+  for _, client in ipairs(clients) do
+    if tonumber(client.pid) == appPid and client.focused_pane_id ~= nil then
+      return tostring(client.focused_pane_id)
+    end
+  end
+
+  return nil, "the focused application is not a wezterm client"
+end
+
+local function pastePromptPaced(text)
+  if promptInsertActive then
+    hs.alert.show("A prompt is still being inserted")
+    return false
+  end
+
+  text = text:gsub("\r\n", "\n"):gsub("\r", "\n")
+
+  if text == "" then
+    return true
+  end
+
+  promptInsertActive = true
+
+  local byteIndex = 1
+  local target = nil
+
+  local function pasteNextChunk()
+    promptInsertTimer = nil
+
+    -- Capture the target after the menu/popup has had time to dismiss.
+    if not target then
+      local app = hs.application.frontmostApplication()
+      local window = hs.window.focusedWindow()
+      if not app then
+        stopPromptInsert("Prompt insertion stopped: no focused application")
+        return
+      end
+
+      local paneId, paneError = focusedWezTermPaneId(app:pid())
+      if not paneId then
+        hs.printf("[prompt-insert] %s", paneError)
+        stopPromptInsert("Prompt insertion requires a focused WezTerm pane")
+        return
+      end
+
+      target = {
+        appPid = app:pid(),
+        windowId = window and window:id() or nil,
+        paneId = paneId,
+      }
+    elseif not promptTargetIsFocused(target) then
+      stopPromptInsert("Prompt insertion stopped: focus changed")
+      return
+    else
+      local paneId = focusedWezTermPaneId(target.appPid)
+      if paneId ~= target.paneId then
+        stopPromptInsert("Prompt insertion stopped: terminal pane changed")
+        return
+      end
+    end
+
+    local nextByte = utf8.offset(text, PROMPT_PASTE_CHUNK_SIZE + 1, byteIndex)
+    local newlineByte = text:find("\n", byteIndex, true)
+    local chunk
+    if newlineByte and (not nextByte or newlineByte < nextByte) then
+      -- Include at most one newline in each bracketed-paste chunk.
+      chunk = text:sub(byteIndex, newlineByte)
+      byteIndex = newlineByte + 1
+    elseif nextByte then
+      chunk = text:sub(byteIndex, nextByte - 1)
+      byteIndex = nextByte
+    else
+      chunk = text:sub(byteIndex)
+      byteIndex = #text + 1
+    end
+
+    -- /usr/bin/env -u: hs.task은 env를 못 바꾸므로 (물려받은 stale socket 참고, 파일 상단)
+    local task = hs.task.new("/usr/bin/env", function(exitCode, _, stderr)
+      promptInsertTask = nil
+
+      if not promptInsertActive then
+        return
+      end
+
+      if exitCode ~= 0 then
+        hs.printf("[prompt-insert] wezterm send-text failed: %s", tostring(stderr))
+        stopPromptInsert("Prompt insertion failed; see the Hammerspoon console")
+        return
+      end
+
+      if byteIndex <= #text then
+        promptInsertTimer = hs.timer.doAfter(PROMPT_INSERT_INTERVAL, pasteNextChunk)
+      else
+        stopPromptInsert()
+      end
+    end, { "-u", "WEZTERM_UNIX_SOCKET", WEZTERM_CLI, "cli", "--no-auto-start", "send-text", "--pane-id", target.paneId })
+
+    if not task then
+      stopPromptInsert("Prompt insertion failed: could not start wezterm cli")
+      return
+    end
+
+    promptInsertTask = task
+    task:setInput(chunk)
+    if not task:start() then
+      promptInsertTask = nil
+      stopPromptInsert("Prompt insertion failed: could not run wezterm cli")
+      return
+    end
+  end
+
+  promptInsertTimer = hs.timer.doAfter(PROMPT_INSERT_INITIAL_DELAY, pasteNextChunk)
+  return true
+end
+
+-- Type a prompt by id. Small line-aware paste chunks preserve multiline editing
+-- without triggering Codex or Claude Code's large-paste placeholder.
 function PastePrompt(id)
   for _, p in ipairs(PROMPTS) do
     if p.id == id then
-      hs.eventtap.keyStrokes(p.text)
+      pastePromptPaced(p.text)
       return
     end
   end

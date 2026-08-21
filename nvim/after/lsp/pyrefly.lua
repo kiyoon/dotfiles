@@ -36,6 +36,22 @@ return {
     "pyrightconfig.json",
     ".git",
   },
+  on_init = function(client)
+    -- Pyrefly can cancel Neovim's initial inlay-hint request while it
+    -- finishes setting up the workspace. Refresh attached buffers once the
+    -- server has settled so hints appear without requiring an edit.
+    vim.defer_fn(function()
+      if client:is_stopped() then
+        return
+      end
+
+      for bufnr in pairs(client.attached_buffers) do
+        if vim.api.nvim_buf_is_valid(bufnr) then
+          vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+        end
+      end
+    end, 100)
+  end,
   -- settings = {},
   handlers = {
     ["textDocument/publishDiagnostics"] = function(err, result, ctx)

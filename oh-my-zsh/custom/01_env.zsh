@@ -147,6 +147,11 @@ if (($+commands[eza])); then
                   ffmpeg -ss 5 -i "$realpath" -vframes 1 -f image2 -vcodec mjpeg - 2>/dev/null \
                     | chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max -; \
                 ;; \
+              *.pdf) \
+                  # first page to PNG on stdout (no temp files), then sixel \
+                  pdftoppm -png -r 100 -f 1 -l 1 "$realpath" 2>/dev/null \
+                    | chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max -; \
+                ;; \
               *) \
                 bat --color=always --style=numbers --line-range=:999 "$realpath"; \
                 ;; \

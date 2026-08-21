@@ -4,10 +4,6 @@ INSTALL_DIR="$HOME/.local"
 CARGO="$HOME/.cargo/bin/cargo"
 # PIP3="/usr/bin/python3 -m pip"
 
-pixi global install eza
-pixi global install fd-find
-pixi global install ripgrep
-
 if [[ $OSTYPE == "darwin"* ]]; then
   INSTALL_DIR="$HOME/.local"
 
@@ -23,6 +19,9 @@ if [[ $OSTYPE == "darwin"* ]]; then
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
   fi
 
+  brew install eza
+  brew install fd
+  brew install ripgrep
   brew install zoxide
   brew install fzf
   brew install pipx
@@ -55,7 +54,7 @@ if [[ $OSTYPE == "darwin"* ]]; then
   brew install helix
   brew install pv
   brew install yazi
-  brew install poppler  # yazi pdf preview
+  brew install poppler  # yazi pdf preview, fzf-tab pdf preview (custom/01_env.zsh)
 else
   ##### oh-my-zsh
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -177,6 +176,9 @@ else
   if ! command -v bat &> /dev/null; then
     $CARGO binstall bat -y
   fi
+  $CARGO binstall eza -y
+  $CARGO binstall fd-find -y
+  $CARGO binstall ripgrep -y
   $CARGO binstall viu -y # --features=sixel
   $CARGO binstall bottom -y
   $CARGO binstall du-dust -y
@@ -184,7 +186,11 @@ else
   $CARGO binstall csvlens -y
   $CARGO binstall difftastic -y
   $CARGO binstall --locked yazi-fm yazi-cli -y
-  # sudo apt install -y poppler  # yazi pdf preview
+  # pdftoppm for yazi/fzf-tab pdf preview (custom/01_env.zsh). No official static
+  # binary, no mise/binstall route, and building from source needs cmake + system
+  # dev headers -- so conda-forge via pixi is the only clean no-root install.
+  # pixi itself is installed by install-installers.sh; ~/.pixi/bin is on PATH (01_env.zsh).
+  pixi global install poppler
 
   if ! command -v hx &>/dev/null; then
     wget https://github.com/helix-editor/helix/releases/download/24.07/helix-24.07-x86_64.AppImage -O "$INSTALL_DIR/bin/hx"

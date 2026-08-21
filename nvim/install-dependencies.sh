@@ -30,11 +30,6 @@ uv pip install -U debugpy
 # molten.nvim
 uv pip install -U pynvim jupyter_client cairosvg plotly kaleido pnglatex pyperclip
 
-# ripgrep for telescope.nvim
-pixi global install ripgrep
-# wilder.nvim, telescope.nvim
-pixi global install fd-find
-
 if command -v brew &> /dev/null; then
     # Lint
     brew install ruff
@@ -46,6 +41,11 @@ if command -v brew &> /dev/null; then
 
     brew install tree-sitter-cli
 
+    # wilder.nvim, telescope.nvim
+    brew install fd
+
+    # ripgrep for telescope.nvim
+    brew install ripgrep
     brew install viu
 
     # molten.nvim
@@ -83,10 +83,17 @@ fi
 
 bun install -g tree-sitter-cli@latest
 
+# cargo-binstall downloads prebuilt binaries (no compile). No command -v guards needed:
+# it skips if already up to date and upgrades if outdated. The curl line installs or
+# updates binstall itself into ~/.cargo/bin (cargo finds subcommands there).
+curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+# wilder.nvim, telescope.nvim
+cargo binstall -y fd-find
+# ripgrep for telescope.nvim
+cargo binstall -y ripgrep
 # view images in terminal, used in telescope preview etc.
-if ! command -v viu &> /dev/null; then
-	cargo install viu
-fi
+cargo binstall -y viu
 
 # molten.nvim
 # We need to extract the AppImage because the luarocks magick (bundled in this dotfiles)

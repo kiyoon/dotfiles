@@ -89,7 +89,7 @@ RUN chmod 777 $HOME/bin -R
 
 # NOTE: error: too many open files if we install all of them at once
 RUN sudo -i -u linuxbrew brew install ripgrep eza bat fd zoxide fzf pipx thefuck tig gh jq viu bottom dust procs csvlens helix
-RUN sudo -i -u linuxbrew brew install neovim tmux tree-sitter stylua prettier ruff uv imagemagick
+RUN sudo -i -u linuxbrew brew install neovim tmux tree-sitter stylua prettier ruff uv imagemagick chafa poppler
 
 # Neovim dependencies
 # RUN pip3 install --user virtualenv # for Mason.nvim

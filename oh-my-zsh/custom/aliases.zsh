@@ -32,3 +32,5 @@ alias rb='gio trash'
 alias cl='claude --effort max --allow-dangerously-skip-permissions'
 alias cld='claude --effort max --dangerously-skip-permissions'
 alias cod='codex --dangerously-bypass-approvals-and-sandbox'
+
+alias fx='fnox exec --'   # fx python script.py, fx uvx llm, ...

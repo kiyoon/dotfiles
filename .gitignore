@@ -1,2 +1,3 @@
 /karabiner/automatic_backups/
 .DS_Store
+.playwright-mcp/

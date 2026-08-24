@@ -308,7 +308,6 @@
                         "product_id": 9488,
                         "vendor_id": 2362
                     },
-                    "ignore": false,
                     "mouse_flip_vertical_wheel": true
                 },
                 {
@@ -355,16 +354,16 @@
                     "to": [{ "key_code": "left_control" }]
                 },
                 {
+                    "from": { "key_code": "lang2" },
+                    "to": [{ "apple_vendor_top_case_key_code": "keyboard_fn" }]
+                },
+                {
                     "from": { "key_code": "right_command" },
                     "to": [{ "key_code": "f18" }]
                 },
                 {
                     "from": { "key_code": "right_option" },
                     "to": [{ "key_code": "left_command" }]
-                },
-                {
-                    "from": { "key_code": "lang2" },
-                    "to": [{ "apple_vendor_top_case_key_code": "keyboard_fn" }]
                 }
             ],
             "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }

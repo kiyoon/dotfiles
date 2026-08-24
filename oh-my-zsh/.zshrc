@@ -250,3 +250,6 @@ fi
 
 # Before each command, mark StartOutput
 preexec() { printf '\e]133;C;\a'; }
+
+# bun completions
+[ -s "/Users/kiyoon/.bun/_bun" ] && source "/Users/kiyoon/.bun/_bun"

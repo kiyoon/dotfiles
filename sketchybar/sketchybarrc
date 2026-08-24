@@ -16,6 +16,11 @@ HELPER_DIR="$CONFIG_DIR/helpers"
 	"$HELPER_DIR/codexbar_usage_watcher" -nt "$HELPER_DIR/codexbar_usage_watcher.swift" ]] || \
 	swiftc -O "$HELPER_DIR/codexbar_usage_watcher.swift" \
 		-o "$HELPER_DIR/codexbar_usage_watcher" -framework AppKit 2>/dev/null
+[[ -x "$HELPER_DIR/battery_charge_limit" && \
+	"$HELPER_DIR/battery_charge_limit" -nt "$HELPER_DIR/battery_charge_limit.m" ]] || \
+	clang -O2 -fobjc-arc -Wall -Wextra \
+		"$HELPER_DIR/battery_charge_limit.m" -framework Foundation \
+		-o "$HELPER_DIR/battery_charge_limit" 2>/dev/null
 
 # ---- Bar ----
 sketchybar --bar \
@@ -154,9 +159,10 @@ sketchybar --add item front_app left \
 	script="$PLUGIN_DIR/front_app.sh" \
 	--subscribe front_app front_app_switched forced
 
-# ---- Right side: clock | battery | volume | bluetooth | wifi ----
+# ---- Right side: clock | battery | charge limit | volume | bluetooth | wifi ----
 # Tighter spacing than the defaults for the small status items (battery,
-# volume, bluetooth, wifi, cpu, gpu, ram), which otherwise carry 30px of padding each.
+# charge limit, volume, bluetooth, wifi, cpu, gpu, ram), which otherwise carry
+# 30px of padding each.
 compact=(
 	padding_left=2 padding_right=2
 	icon.padding_left=4 icon.padding_right=2
@@ -178,6 +184,19 @@ sketchybar --add item battery right \
 	click_script="open 'x-apple.systempreferences:com.apple.Battery-Settings.extension'" \
 	script="$PLUGIN_DIR/battery.sh" \
 	--subscribe battery power_source_change system_woke
+
+# macOS 26.4+ native maximum-charge policy. Clicks trigger the custom event;
+# the poll picks up changes made separately in System Settings. PowerUI's own
+# change signal is Darwin-only, while SketchyBar maps distributed notifications.
+sketchybar --add event battery_limit_change
+
+sketchybar --add item battery_limit right \
+	--set battery_limit \
+	"${compact[@]}" \
+	update_freq=30 \
+	click_script="$PLUGIN_DIR/battery_limit_click.sh" \
+	script="$PLUGIN_DIR/battery_limit.sh" \
+	--subscribe battery_limit battery_limit_change power_source_change system_woke forced
 
 sketchybar --add item volume right \
 	--set volume \
@@ -303,6 +322,18 @@ sketchybar --add item amphetamine right \
 	script="$PLUGIN_DIR/amphetamine.sh" \
 	--subscribe amphetamine amphetamine_change system_woke forced
 
+# ---- End Windows gaming session ----
+# One left click connects Tailscale if needed, performs the verified Steam
+# shutdown on windows-tail, and then closes Moonlight locally. The plugin
+# owns its busy/success/failure feedback and rejects duplicate clicks.
+sketchybar --add item gaming_stop right \
+	--set gaming_stop \
+	"${compact[@]}" \
+	icon=󰊴 \
+	icon.color=$RED \
+	label.drawing=off \
+	click_script="$PLUGIN_DIR/gaming_stop.sh"
+
 # ---- CodexBar usage ----
 # Default: two zero-capture items rendered from CodexBar's cached widget data.
 # Fallback: uncomment the next line if CodexBar changes its cache schema and you
@@ -318,7 +349,8 @@ else
 	# The helper watches CodexBar's WidgetKit snapshot directory, renders one
 	# plain merged-style two-lane meter per provider, and never calls its
 	# fetching CLI. Add Claude first because right-position items stack
-	# right-to-left: the visible order is Codex | Claude | Amphetamine.
+	# right-to-left: the visible order is Codex | Claude | gaming stop |
+	# Amphetamine.
 	codexbar_usage_item=(
 		padding_left=1 padding_right=1
 		icon="" icon.width=18

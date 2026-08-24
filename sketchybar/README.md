@@ -5,9 +5,9 @@ Custom [SketchyBar](https://github.com/FelixKratz/SketchyBar) config, integrated
 
 **Left:** AeroSpace mode badge · workspaces `1‑30` (grouped per monitor with dividers) ·
 front app.
-**Right:** clock · battery · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
-**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine · cached
-Codex and Claude quota meters.
+**Right:** clock · battery · native charge limit · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
+**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine · Windows
+gaming-stop button · cached Codex and Claude quota meters.
 
 `~/.config/sketchybar` is symlinked to this directory.
 
@@ -36,6 +36,9 @@ curl -L -o ~/Library/Fonts/sketchybar-app-font.ttf \
 
 - [Amphetamine](https://apps.apple.com/app/amphetamine/id937984704) (Mac App Store). Its
   SketchyBar item reads the session state through AppleScript; it is not a screen capture.
+- [Tailscale for macOS](https://tailscale.com/docs/install/mac) with its CLI installed, and
+  [Moonlight](https://github.com/moonlight-stream/moonlight-qt). The gaming-stop button uses
+  Tailscale to reach the Windows host and closes Moonlight after the remote Steam shutdown is confirmed.
 - CodexBar (`com.steipete.codexbar`) — supplies the Codex and Claude usage data. SketchyBar
   reads CodexBar's small WidgetKit snapshot from its app-group container and renders two normal
   items with CodexBar's plain merged-icon two-lane geometry. It never invokes
@@ -65,6 +68,9 @@ committed; the binaries are git‑ignored.
 - `helpers/bluetooth_boucles_watcher` — tiny daemon that listens for IOBluetooth
   connect/disconnect notifications for `Boucles soniques` and fires
   `bluetooth_boucles_change`.
+- `helpers/battery_charge_limit` — reads and sets the native macOS manual charge limit while
+  keeping Optimized Battery Charging enabled. It loads PowerUI at runtime and hides the button
+  cleanly on unsupported Macs or macOS releases.
 - `helpers/codexbar_usage_watcher` — watches CodexBar's atomically replaced widget snapshot,
   reproduces its 18-point Codex and Claude two-bar icons, and updates only when cached data
   changes. A 60-second local-file safety check recovers missed events after sleep; neither path
@@ -74,7 +80,7 @@ To force a rebuild:
 
 ```bash
 rm helpers/tis_current helpers/input_watcher helpers/bluetooth_boucles_watcher \
-  helpers/codexbar_usage_watcher
+  helpers/battery_charge_limit helpers/codexbar_usage_watcher
 sketchybar --reload
 ```
 
@@ -172,6 +178,84 @@ changes to establish the initial state.
 CPU usage uses a normalized `ps` process sum across logical cores, which matches tmux-style CPU
 percentages and avoids the old blocking two-sample `top` call.
 
+### Native battery charge-limit button
+
+On an Apple-silicon Mac running macOS 26.4 or later, the limit button cycles
+`80% → 90% → 95% → 100% → 80%`. Its battery-fill icon changes with the target, and its exact
+label (`≤80%`, for example) avoids ambiguity at 95%. The 100% choice leaves
+**Optimized Battery Charging enabled**, so it requests full capacity without disabling Apple's
+battery protection. Button clicks refresh immediately, while a change made separately in System
+Settings is picked up by the 30-second poll. Apple's native policy may still occasionally charge to
+100% to calibrate its state-of-charge estimate, as documented in
+[Apple's Charge Limit guide](https://support.apple.com/102338).
+
+The helper uses macOS's private PowerUI client because Apple exposes the feature in System
+Settings and Shortcuts but not through a command-line utility. If a future macOS update changes
+that client, the item hides instead of displaying or applying a guessed limit; the existing
+battery-percentage item remains available.
+
+## 6. Windows gaming-stop button
+
+The red gamepad button ends the `windows-tail` gaming session in this order:
+
+Save game progress before clicking it: this is intentionally a one-click shutdown action.
+
+1. Read Tailscale's machine state. If it is not `Running`, open Tailscale and run a bounded
+   `tailscale up`, then wait for the interface to become ready.
+2. Use non-interactive SSH to run `plugins/steam_stop.ps1` in PowerShell on Windows. The helper
+   accepts exactly one Steam AppID only when Steam's registry, `gameprocess_log.txt`, and live
+   process tree agree, and the live Steam executable matches a valid Valve signature. It asks
+   Steam to stop that AppID without a force flag, confirms the game is gone, then requests
+   `steam.exe -shutdown` and confirms Steam exited.
+3. Send one `TERM` to the verified Moonlight app PID on the Mac. Moonlight handles this signal
+   by interrupting the active stream and exiting. If it has not exited after ten seconds, only
+   that verified PID receives a final `KILL` fallback.
+
+If Tailscale, SSH, game shutdown, or Steam shutdown fails, the sequence stops and Moonlight is
+left open so the Windows session is still visible for saving or diagnosis. The button turns red
+and reports `Failed` rather than pretending that the partial shutdown succeeded.
+
+There is no public Steam API that lets an external utility reliably stop the local active game.
+The [Steam Web API](https://partner.steamgames.com/doc/webapi/ISteamUser) can expose
+presence/current-game information when privacy settings allow it, but it cannot control the
+client. This helper therefore uses a local Steam client command after cross-checking Steam's own
+local state. It never uses `taskkill`, `Stop-Process`, or a forced Steam `app_stop`; ambiguity or
+timeout fails closed and Steam is not shut down while a game is still reported running.
+
+No separate Moonlight “disconnect” action is needed here. Moonlight's graceful termination
+already tears down the client stream. Closing Moonlight by itself intentionally leaves the host
+game running, which is why the verified Windows game/Steam step happens first.
+
+Prerequisites:
+
+- Tailscale must already be installed and logged in once. A first-time browser login cannot be
+  completed inside a SketchyBar click.
+- `windows-tail` must resolve in `~/.ssh/config` and accept key-based SSH with
+  `BatchMode=yes`. The SSH Windows account must be the same account that is running Steam.
+- SketchyBar runs under launchd and does not inherit the interactive terminal's custom SSH
+  agent. The plugin safely reads only `SSH_AUTH_SOCK` from `~/.ssh/agent.env`, which this
+  dotfiles setup's `.zshrc` already maintains. The referenced agent must still be running and
+  contain the key shown by `ssh-add -l`; the plugin never reads or copies a private key.
+- The SSH command pins `~/.ssh/id_ed25519` with `IdentitiesOnly=yes`, disables implicit agent
+  mutation, and enables macOS `UseKeychain`. Today the loaded custom agent unlocks that encrypted
+  key; if its passphrase is later stored in Keychain, the same command can also work without it.
+  After a fresh login or agent-key expiry, unlock the key in that custom agent once before using
+  the button; until then, authentication fails closed and Moonlight is preserved.
+- `pwsh.exe` (PowerShell 7) must be available on the Windows `PATH`.
+
+The PowerShell helper defaults to a read-only probe unless its caller explicitly sets stop mode.
+This command deliberately removes the current terminal's agent variable, then exercises the
+same `~/.ssh/agent.env` authentication path used by SketchyBar without closing anything:
+
+```bash
+env -u SSH_AUTH_SOCK \
+  ~/.config/sketchybar/plugins/gaming_stop.sh probe
+```
+
+Click results appear briefly beside the icon: `Game stopped`, `Steam stopped`, or `No Steam running`
+replaces the old generic success message, while errors still show `Failed`. Detailed output is appended to
+`$TMPDIR/sketchybar_gaming_stop.log` (normally under the per-user macOS temporary directory).
+
 ## Troubleshooting
 
 - **Codex/Claude quota meter is missing** → open CodexBar once and confirm
@@ -181,12 +265,21 @@ percentages and avoids the old blocking two-sample `top` call.
   uncomment `CODEXBAR_DISPLAY_MODE=alias` in `sketchybarrc` as a temporary fallback.
 - **Amphetamine item is missing** → Amphetamine isn't running or its Automation permission
   was denied. Launch it and allow `sketchybar` to control it.
+- **Charge-limit item is missing** → it requires an Apple-silicon Mac on macOS 26.4 or later.
+  Confirm Xcode Command Line Tools are installed, remove `helpers/battery_charge_limit`, and run
+  `sketchybar --reload` to rebuild it.
 - **Wi‑Fi shows an icon but no name** → `wifi-unredactor` isn't installed or Location isn't
   granted (§4). Run the app once and click Allow; confirm it's enabled in Location Services.
 - **한/A input badge not updating** → the `input_watcher` daemon isn't running; `sketchybar
   --reload` relaunches it.
 - **Bluetooth indicator not changing instantly** → the `bluetooth_boucles_watcher` daemon isn't
   running or Bluetooth permission was denied; `sketchybar --reload` relaunches it.
+- **Gaming-stop button shows `Failed`** → inspect `$TMPDIR/sketchybar_gaming_stop.log`. Common
+  causes are a first-time Tailscale login, an offline Windows host, SSH prompting instead of
+  key authentication, more than one Steam AppID reported running, or Steam not confirming a
+  graceful game/client exit before the bounded timeout. For `Permission denied (publickey)`,
+  confirm `~/.ssh/agent.env` names a live socket and that `SSH_AUTH_SOCK=<that socket> ssh-add -l`
+  lists the Windows key, then run the read-only probe above.
 - **Workspace numbers/app glyphs missing** → install both fonts (§1) and ensure AeroSpace is
   running (it fires the workspace‑change events).
 - **Edges of hidden workspace windows visible in a bottom corner** → AeroSpace

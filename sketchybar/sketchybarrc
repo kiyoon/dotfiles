@@ -29,7 +29,7 @@ sketchybar --bar \
 	display=all \
 	sticky=on \
 	padding_left=10 \
-	padding_right=10 \
+	padding_right=4 \
 	blur_radius=20 \
 	color=$BAR_COLOR
 
@@ -49,6 +49,22 @@ sketchybar --default \
 	background.corner_radius=6 \
 	background.height=24 \
 	background.drawing=off
+
+# ---- Transient gaming-stop status ----
+# The destructive action lives in the Hammerspoon reload/restart menu. Keep a
+# permanently hidden, label-only item first in the left-side order so progress
+# and the final result can appear briefly at the absolute left edge.
+sketchybar --add item gaming_stop left \
+	--set gaming_stop \
+	drawing=off \
+	width=150 \
+	icon=󰊴 \
+	icon.drawing=off \
+	label.drawing=off \
+	label.font="$FONT:Bold:11.0" \
+	label.padding_left=6 \
+	label.padding_right=6 \
+	background.drawing=on
 
 # ---- Hammerspoon native menus ----
 # These are plain SketchyBar buttons. The popups are hidden hs.menubar objects
@@ -160,43 +176,46 @@ sketchybar --add item front_app left \
 	--subscribe front_app front_app_switched forced
 
 # ---- Right side: clock | battery | charge limit | volume | bluetooth | wifi ----
-# Tighter spacing than the defaults for the small status items (battery,
-# charge limit, volume, bluetooth, wifi, cpu, gpu, ram), which otherwise carry
-# 30px of padding each.
+# Keep right-side outer gaps at zero so the complete group stays to the right
+# of the MacBook notch. Internal icon/label padding preserves click targets.
 compact=(
-	padding_left=2 padding_right=2
+	padding_left=0 padding_right=0
 	icon.padding_left=4 icon.padding_right=2
 	label.padding_left=2 label.padding_right=4
 )
 
 sketchybar --add item clock right \
 	--set clock \
+	padding_left=0 \
+	padding_right=0 \
 	update_freq=10 \
 	icon=󰃰 \
 	background.drawing=on \
 	click_script="open -a Calendar" \
 	script="$PLUGIN_DIR/clock.sh"
 
-sketchybar --add item battery right \
-	--set battery \
-	"${compact[@]}" \
-	update_freq=30 \
-	click_script="open 'x-apple.systempreferences:com.apple.Battery-Settings.extension'" \
-	script="$PLUGIN_DIR/battery.sh" \
-	--subscribe battery power_source_change system_woke
-
 # macOS 26.4+ native maximum-charge policy. Clicks trigger the custom event;
 # the poll picks up changes made separately in System Settings. PowerUI's own
 # change signal is Darwin-only, while SketchyBar maps distributed notifications.
+# Right-position items render in reverse declaration order, so declare the blue
+# cap suffix first and the current charge second to display: icon 74≤80%.
 sketchybar --add event battery_limit_change
 
 sketchybar --add item battery_limit right \
 	--set battery_limit \
 	"${compact[@]}" \
+	icon.drawing=off \
+	label.padding_left=0 \
+	click_script="$PLUGIN_DIR/battery_limit_click.sh"
+
+sketchybar --add item battery right \
+	--set battery \
+	"${compact[@]}" \
+	label.padding_right=0 \
 	update_freq=30 \
-	click_script="$PLUGIN_DIR/battery_limit_click.sh" \
-	script="$PLUGIN_DIR/battery_limit.sh" \
-	--subscribe battery_limit battery_limit_change power_source_change system_woke forced
+	click_script="open 'x-apple.systempreferences:com.apple.Battery-Settings.extension'" \
+	script="$PLUGIN_DIR/battery.sh" \
+	--subscribe battery battery_limit_change power_source_change system_woke forced
 
 sketchybar --add item volume right \
 	--set volume \
@@ -288,8 +307,8 @@ sketchybar --add event input_change
 
 sketchybar --add item input_method right \
 	--set input_method \
-	padding_left=2 \
-	padding_right=2 \
+	padding_left=0 \
+	padding_right=0 \
 	update_freq=60 \
 	icon.drawing=off \
 	label.font="$FONT:Bold:13.0" \
@@ -322,18 +341,6 @@ sketchybar --add item amphetamine right \
 	script="$PLUGIN_DIR/amphetamine.sh" \
 	--subscribe amphetamine amphetamine_change system_woke forced
 
-# ---- End Windows gaming session ----
-# One left click immediately closes Moonlight locally while it connects Tailscale
-# if needed and performs the verified Steam shutdown on windows-tail. The plugin
-# owns its busy/success/failure feedback and rejects duplicate clicks.
-sketchybar --add item gaming_stop right \
-	--set gaming_stop \
-	"${compact[@]}" \
-	icon=󰊴 \
-	icon.color=$RED \
-	label.drawing=off \
-	click_script="$PLUGIN_DIR/gaming_stop.sh"
-
 # ---- CodexBar usage ----
 # Default: two zero-capture items rendered from CodexBar's cached widget data.
 # Fallback: uncomment the next line if CodexBar changes its cache schema and you
@@ -349,10 +356,9 @@ else
 	# The helper watches CodexBar's WidgetKit snapshot directory, renders one
 	# plain merged-style two-lane meter per provider, and never calls its
 	# fetching CLI. Add Claude first because right-position items stack
-	# right-to-left: the visible order is Codex | Claude | gaming stop |
-	# Amphetamine.
+	# right-to-left: the visible order is Codex | Claude | Amphetamine.
 	codexbar_usage_item=(
-		padding_left=1 padding_right=1
+		padding_left=0 padding_right=0
 		icon="" icon.width=18
 		icon.padding_left=2 icon.padding_right=2
 		icon.background.drawing=on

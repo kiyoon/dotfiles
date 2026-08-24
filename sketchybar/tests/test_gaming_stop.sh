@@ -9,6 +9,7 @@ CONFIG_DIR="$(dirname "$HERE")"
 PLUGIN="$CONFIG_DIR/plugins/gaming_stop.sh"
 REMOTE_SCRIPT="$CONFIG_DIR/plugins/steam_stop.ps1"
 SKETCHYBARRC="$CONFIG_DIR/sketchybarrc"
+HAMMERSPOON_INIT="$(dirname "$CONFIG_DIR")/hammerspoon/init.lua"
 README="$CONFIG_DIR/README.md"
 
 TEST_TMP="$(mktemp -d)"
@@ -250,7 +251,11 @@ assert_contains "$TEST_CALLS" "-o ConnectTimeout=8 -o ConnectionAttempts=1 -o Se
 assert_contains "$TEST_CALLS" 'pwsh.exe -NoLogo -NoProfile -NonInteractive -Command "& ([scriptblock]::Create([Console]::In.ReadToEnd()))"' "SSH must execute the complete stdin payload as one PowerShell script"
 assert_contains "$TEST_CALLS" 'kill -TERM 4242' "Moonlight must receive graceful TERM"
 assert_not_contains "$TEST_CALLS" 'kill -KILL' "responsive Moonlight must never receive KILL"
+assert_contains "$TEST_CALLS" 'drawing=on icon.drawing=on' "accepted action must reveal the transient gamepad"
+assert_contains "$TEST_CALLS" 'label=Stopping…' "accepted action must reveal transient busy status"
+assert_contains "$TEST_CALLS" 'label=Game stopped' "success result must remain visible while feedback is shown"
 assert_contains "$TEST_CALLS" 'label=Game stopped' "game shutdown must report that the game stopped"
+assert_contains "$TEST_CALLS" 'drawing=off icon.drawing=off label.drawing=off' "finished action must hide the complete status item"
 assert_not_contains "$TEST_CALLS" 'label=Done' "success feedback must not use a generic Done label"
 assert_not_contains "$TEST_CALLS" 'label=Test Game' "remote game names must never become SketchyBar commands"
 assert_before "$TEST_CALLS" 'open -gj -a Tailscale' 'tailscale up --timeout=12s' "Tailscale app must open before up"
@@ -294,6 +299,7 @@ invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "Tailscale failure must return nonzero"
 assert_not_contains "$TEST_CALLS" 'ssh -T ' "Tailscale failure must skip SSH"
 assert_contains "$TEST_CALLS" 'kill -TERM 4242' "Moonlight shutdown must start independently of Tailscale"
+assert_contains "$TEST_CALLS" 'drawing=on icon.drawing=on' "failure feedback must reveal the transient gamepad"
 assert_contains "$TEST_CALLS" 'label=Failed' "Tailscale failure must show visible failure feedback"
 [[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "Tailscale failure must not keep Moonlight running"
 [[ ! -e "$GAMING_STOP_LOCK_DIR" ]] || fail "Tailscale failure must release its lock"
@@ -426,18 +432,25 @@ invoke_plugin right
 [[ "$last_status" -eq 0 ]] || fail "right click should be an idempotent no-op"
 [[ ! -s "$TEST_CALLS" ]] || fail "right click must not invoke an external action"
 
-# 16. Static integration: SketchyBar can only reach the destructive action via
-# click_script. The Amphetamine block is a known-positive control proving the
-# update-script detector is live before it checks the gaming block's absence.
+# 16. Static integration: the status item is hidden, label-only, and first on
+# the left. The destructive action is reachable only from the Hammerspoon menu,
+# never from a periodic SketchyBar update or an always-visible icon.
 gaming_block="$TEST_CASE_DIR/gaming-block"
 amphetamine_block="$TEST_CASE_DIR/amphetamine-block"
-sed -n '/--add item gaming_stop right/,/^$/p' "$SKETCHYBARRC" >"$gaming_block"
+sed -n '/--add item gaming_stop left/,/^$/p' "$SKETCHYBARRC" >"$gaming_block"
 sed -n '/--add item amphetamine right/,/^$/p' "$SKETCHYBARRC" >"$amphetamine_block"
-assert_contains "$gaming_block" 'click_script="$PLUGIN_DIR/gaming_stop.sh"' "SketchyBar item must wire the click handler"
+assert_contains "$gaming_block" 'drawing=off' "gaming status must be hidden at rest"
+assert_contains "$gaming_block" 'width=150' "gaming status must keep one fixed visible width"
+assert_contains "$gaming_block" 'icon=󰊴' "gaming status must provide a transient gamepad"
+assert_contains "$gaming_block" 'icon.drawing=off' "gaming status must never reserve a normal icon"
+assert_not_contains "$gaming_block" 'click_script=' "hidden gaming status must not expose a direct click action"
+assert_before "$SKETCHYBARRC" '--add item gaming_stop left' '--add item hs_reload_menu left' "gaming status must be the absolute leftmost item"
 grep -Eq '^[[:space:]]*script=' "$amphetamine_block" || fail "positive control must detect an update script"
 if grep -Eq '^[[:space:]]*script=' "$gaming_block"; then
 	fail "gaming shutdown must never be wired as an update script"
 fi
+assert_contains "$HAMMERSPOON_INIT" 'title = "Stop Windows gaming session"' "Hammerspoon reload menu must expose the gaming action"
+assert_contains "$HAMMERSPOON_INIT" 'BUTTON=left NAME=gaming_stop "$HOME/.config/sketchybar/plugins/gaming_stop.sh" stop' "Hammerspoon action must invoke the stop plugin explicitly"
 
 # The remote helper must remain fail-safe. Prove the unsafe-token checker with
 # a positive fixture before asserting those force mechanisms are absent.

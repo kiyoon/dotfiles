@@ -12,7 +12,7 @@ ITEM="${NAME:-battery_limit}"
 
 status="$("$HELPER" status 2>>"$LOG")" || {
 	"$SKETCHYBAR" --set "$ITEM" \
-		icon=󰂃 icon.color="$RED" label="Limit!" label.color="$RED"
+		drawing=on icon.drawing=off label="Limit!" label.color="$RED"
 	exit 1
 }
 
@@ -30,7 +30,7 @@ esac
 
 if ! "$HELPER" set "$next" >>"$LOG" 2>&1; then
 	"$SKETCHYBAR" --set "$ITEM" \
-		icon=󰂃 icon.color="$RED" label="Limit!" label.color="$RED"
+		drawing=on icon.drawing=off label="Limit!" label.color="$RED"
 	exit 1
 fi
 

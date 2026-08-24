@@ -3,11 +3,11 @@
 Custom [SketchyBar](https://github.com/FelixKratz/SketchyBar) config, integrated with
 [AeroSpace](https://github.com/nikitabobko/AeroSpace).
 
-**Left:** AeroSpace mode badge · workspaces `1‑30` (grouped per monitor with dividers) ·
-front app.
-**Right:** clock · battery · native charge limit · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
-**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine · Windows
-gaming-stop button · cached Codex and Claude quota meters.
+**Left:** transient gaming-stop gamepad/result · AeroSpace mode badge · workspaces `1‑30`
+(grouped per monitor with dividers) · front app. The gaming item is absent at rest.
+**Right:** clock · combined battery/native charge limit · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
+**un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine ·
+cached Codex and Claude quota meters.
 
 `~/.config/sketchybar` is symlinked to this directory.
 
@@ -37,8 +37,8 @@ curl -L -o ~/Library/Fonts/sketchybar-app-font.ttf \
 - [Amphetamine](https://apps.apple.com/app/amphetamine/id937984704) (Mac App Store). Its
   SketchyBar item reads the session state through AppleScript; it is not a screen capture.
 - [Tailscale for macOS](https://tailscale.com/docs/install/mac) with its CLI installed, and
-  [Moonlight](https://github.com/moonlight-stream/moonlight-qt). The gaming-stop button uses
-  Tailscale to reach the Windows host while closing Moonlight independently from the first click.
+  [Moonlight](https://github.com/moonlight-stream/moonlight-qt). The gaming-stop menu action uses
+  Tailscale to reach the Windows host while closing Moonlight independently as soon as selected.
 - CodexBar (`com.steipete.codexbar`) — supplies the Codex and Claude usage data. SketchyBar
   reads CodexBar's small WidgetKit snapshot from its app-group container and renders two normal
   items with CodexBar's plain merged-icon two-lane geometry. It never invokes
@@ -153,7 +153,9 @@ relaunch uses the same safe path:
 The reload menu also has separate **Stop AeroSpace** and **Start / Restart
 AeroSpace** actions. Stop leaves an intentional-stop marker so automatic
 display recovery cannot relaunch AeroSpace during a native-fullscreen session;
-Start / Restart clears the marker. CLI equivalents are:
+Start / Restart clears the marker. It also contains **Stop Windows gaming
+session**, whose progress and result appear temporarily at the far-left edge of
+SketchyBar. The AeroSpace CLI equivalents are:
 
 ```bash
 ~/.config/aerospace/scripts/restart.sh stop
@@ -178,11 +180,12 @@ changes to establish the initial state.
 CPU usage uses a normalized `ps` process sum across logical cores, which matches tmux-style CPU
 percentages and avoids the old blocking two-sample `top` call.
 
-### Native battery charge-limit button
+### Combined native battery charge-limit readout
 
-On an Apple-silicon Mac running macOS 26.4 or later, the limit button cycles
-`80% → 90% → 95% → 100% → 80%`. Its battery-fill icon changes with the target, and its exact
-label (`≤80%`, for example) avoids ambiguity at 95%. The 100% choice leaves
+On an Apple-silicon Mac running macOS 26.4 or later, the two touching click zones render as one
+readout such as `74≤80%`. Clicking the battery icon/current-charge region opens Battery Settings;
+clicking the blue `≤80%` suffix cycles `80% → 90% → 95% → 100% → 80%`. The exact suffix avoids
+ambiguity at 95%. A red `!80%` means the configured policy is not currently active. The 100% choice leaves
 **Optimized Battery Charging enabled**, so it requests full capacity without disabling Apple's
 battery protection. Button clicks refresh immediately, while a change made separately in System
 Settings is picked up by the 30-second poll. Apple's native policy may still occasionally charge to
@@ -191,14 +194,15 @@ Settings is picked up by the 30-second poll. Apple's native policy may still occ
 
 The helper uses macOS's private PowerUI client because Apple exposes the feature in System
 Settings and Shortcuts but not through a command-line utility. If a future macOS update changes
-that client, the item hides instead of displaying or applying a guessed limit; the existing
-battery-percentage item remains available.
+that client, only the limit suffix hides instead of displaying or applying a guessed limit; the
+current-charge region restores its ordinary `%` suffix.
 
-## 6. Windows gaming-stop button
+## 6. Windows gaming-stop action
 
-The red gamepad button ends the `windows-tail` gaming session with this workflow:
+Choose **Stop Windows gaming session** from the Hammerspoon reload/restart menu
+to end the `windows-tail` gaming session with this workflow:
 
-Save game progress before clicking it: this is intentionally a one-click shutdown action.
+Save game progress before selecting it: this is intentionally a one-click shutdown action.
 
 1. Immediately start the local Moonlight shutdown branch. Send `TERM` to its verified app PID;
    during an active stream, Moonlight 6.1 may use the first signal to end the session while leaving
@@ -211,11 +215,11 @@ Save game progress before clicking it: this is intentionally a one-click shutdow
    process tree agree, and the live Steam executable matches a valid Valve signature. It asks
    Steam to stop that AppID without a force flag, confirms the game is gone, then requests
    `steam.exe -shutdown` and confirms Steam exited.
-4. Wait for both local and remote branches. The button reports `Failed` if either one fails.
+4. Wait for both local and remote branches. The transient status reports `Failed` if either one fails.
 
-Moonlight shutdown is deliberately independent: once a stop click is accepted, it continues even
+Moonlight shutdown is deliberately independent: once the menu action is accepted, it continues even
 if Tailscale, authentication, SSH, game shutdown, or Steam shutdown fails. A failed branch still
-turns the button red and reports `Failed` rather than hiding the partial result.
+reports `Failed` rather than hiding the partial result.
 
 There is no public Steam API that lets an external utility reliably stop the local active game.
 The [Steam Web API](https://partner.steamgames.com/doc/webapi/ISteamUser) can expose
@@ -231,7 +235,7 @@ Closing Moonlight by itself does not stop the host game, so both branches must s
 Prerequisites:
 
 - Tailscale must already be installed and logged in once. A first-time browser login cannot be
-  completed inside a SketchyBar click.
+  completed from the SketchyBar menu action.
 - `windows-tail` must resolve in `~/.ssh/config` and accept key-based SSH with
   `BatchMode=yes`. The SSH Windows account must be the same account that is running Steam.
 - SketchyBar runs under launchd and does not inherit the interactive terminal's custom SSH
@@ -242,7 +246,7 @@ Prerequisites:
   mutation, and enables macOS `UseKeychain`. Today the loaded custom agent unlocks that encrypted
   key; if its passphrase is later stored in Keychain, the same command can also work without it.
   After a fresh login or agent-key expiry, unlock the key in that custom agent once before using
-  the button; until then, authentication fails closed and Moonlight is preserved.
+  the action; until then, authentication fails closed and Moonlight is preserved.
 - `pwsh.exe` (PowerShell 7) must be available on the Windows `PATH`.
 
 The PowerShell helper defaults to a read-only probe unless its caller explicitly sets stop mode.
@@ -254,9 +258,11 @@ env -u SSH_AUTH_SOCK \
   ~/.config/sketchybar/plugins/gaming_stop.sh probe
 ```
 
-Click results appear briefly beside the icon: `Game stopped`, `Steam stopped`, or `No Steam running`
-replaces the old generic success message, while errors still show `Failed`. Detailed output is appended to
-`$TMPDIR/sketchybar_gaming_stop.log` (normally under the per-user macOS temporary directory).
+The far-left status appears with a gamepad only while the action is running and for its brief result:
+`Game stopped`, `Steam stopped`, or `No Steam running`; errors show `Failed`. Its fixed 150-point
+width prevents the neighboring icons from moving when the label changes, then the whole item disappears.
+Detailed output is appended to `$TMPDIR/sketchybar_gaming_stop.log` (normally under the per-user
+macOS temporary directory).
 
 ## Troubleshooting
 
@@ -276,7 +282,7 @@ replaces the old generic success message, while errors still show `Failed`. Deta
   --reload` relaunches it.
 - **Bluetooth indicator not changing instantly** → the `bluetooth_boucles_watcher` daemon isn't
   running or Bluetooth permission was denied; `sketchybar --reload` relaunches it.
-- **Gaming-stop button shows `Failed`** → inspect `$TMPDIR/sketchybar_gaming_stop.log`. Common
+- **Gaming-stop status shows `Failed`** → inspect `$TMPDIR/sketchybar_gaming_stop.log`. Common
   causes are a first-time Tailscale login, an offline Windows host, SSH prompting instead of
   key authentication, more than one Steam AppID reported running, or Steam not confirming a
   graceful game/client exit before the bounded timeout. For `Permission denied (publickey)`,

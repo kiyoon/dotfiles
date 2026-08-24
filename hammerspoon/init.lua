@@ -886,6 +886,15 @@ local function installSketchybarCompareMenubars()
           runShell("$HOME/.config/aerospace/scripts/restart.sh stop")
         end,
       },
+      {
+        title = "-",
+      },
+      {
+        title = "Stop Windows gaming session",
+        fn = function()
+          runShell('BUTTON=left NAME=gaming_stop "$HOME/.config/sketchybar/plugins/gaming_stop.sh" stop')
+        end,
+      },
     }
   end)
 

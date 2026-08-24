@@ -70,22 +70,22 @@ set_button() {
 	case "$state" in
 	busy)
 		"$SKETCHYBAR_BIN" --set "$ITEM_NAME" \
-			icon.color="$YELLOW" \
+			drawing=on icon.drawing=on icon.color="$YELLOW" \
 			label="Stopping…" label.color="$YELLOW" label.drawing=on >/dev/null 2>&1 || true
 		;;
 	success)
 		"$SKETCHYBAR_BIN" --set "$ITEM_NAME" \
-			icon.color="$GREEN" \
+			drawing=on icon.drawing=on icon.color="$GREEN" \
 			label="$REMOTE_SUCCESS_LABEL" label.color="$GREEN" label.drawing=on >/dev/null 2>&1 || true
 		;;
 	failure)
 		"$SKETCHYBAR_BIN" --set "$ITEM_NAME" \
-			icon.color="$RED" \
+			drawing=on icon.drawing=on icon.color="$RED" \
 			label="Failed" label.color="$RED" label.drawing=on >/dev/null 2>&1 || true
 		;;
 	idle)
 		"$SKETCHYBAR_BIN" --set "$ITEM_NAME" \
-			icon.color="$RED" label.drawing=off >/dev/null 2>&1 || true
+			drawing=off icon.drawing=off label.drawing=off >/dev/null 2>&1 || true
 		;;
 	esac
 }
@@ -464,7 +464,7 @@ if ensure_tailscale; then
 		log "Skipping SSH because its configured authentication is invalid"
 	elif ! remote_inputs_are_ready; then
 		status=1
-		log "Skipping SSH and Moonlight because the remote inputs are invalid"
+		log "Skipping SSH because the remote inputs are invalid"
 	else
 		if [[ "$RUN_MODE" == stop ]]; then
 			log "Requesting verified Steam game stop and Steam shutdown over SSH"

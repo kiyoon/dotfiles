@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# End the windows-tail gaming session in a fixed, bounded order:
-# connect Tailscale, ask Steam to stop its tracked game and then exit, and
-# finally terminate Moonlight locally (which gracefully tears down its stream).
+# End the windows-tail gaming session with bounded, verified branches:
+# connect Tailscale, then stop the tracked Steam game/client while closing
+# Moonlight concurrently on the Mac.
 
 set -u
 set -o pipefail
@@ -50,6 +50,7 @@ SKETCHYBAR_BIN="${GAMING_STOP_SKETCHYBAR_BIN:-sketchybar}"
 ITEM_NAME="${NAME:-gaming_stop}"
 REMOTE_SUCCESS_LABEL="Stopped"
 REMOTE_RESULT_FILE=""
+MOONLIGHT_JOB_PID=""
 
 log() {
 	printf '[%s] %s\n' "$(date '+%F %T')" "$*" >>"$LOG_FILE"
@@ -160,26 +161,35 @@ ensure_tailscale() {
 	return 0
 }
 
-run_remote() {
-	local mode="$1"
-	local parsed_result remote_outcome
-	local ssh_identity_args=()
+remote_inputs_are_ready() {
 	if [[ ! -r "$REMOTE_SCRIPT" ]]; then
 		log "Remote Steam helper is unreadable: $REMOTE_SCRIPT"
 		return 1
 	fi
-	if [[ -r "$SSH_IDENTITY_FILE" ]]; then
-		ssh_identity_args=(
-			-i "$SSH_IDENTITY_FILE"
-			-o IdentitiesOnly=yes
-			-o AddKeysToAgent=no
-			-o UseKeychain=yes
-		)
-		log "Using the pinned Windows SSH identity"
-	else
+	if [[ ! -r "$SSH_IDENTITY_FILE" ]]; then
 		log "Pinned SSH identity is unreadable; refusing an unpinned connection"
 		return 1
 	fi
+	if [[ ! -x "$SSH_BIN" ]]; then
+		log "SSH client is unavailable: $SSH_BIN"
+		return 1
+	fi
+	return 0
+}
+
+run_remote() {
+	local mode="$1"
+	local parsed_result remote_outcome
+	local ssh_identity_args=(
+		-i "$SSH_IDENTITY_FILE"
+		-o IdentitiesOnly=yes
+		-o AddKeysToAgent=no
+		-o UseKeychain=yes
+	)
+	if ! remote_inputs_are_ready; then
+		return 1
+	fi
+	log "Using the pinned Windows SSH identity"
 
 	# Prepending the mode keeps steam_stop.ps1 read-only when it is invoked by
 	# hand. Feeding the script to pwsh also works regardless of whether Windows
@@ -308,17 +318,38 @@ run_remote() {
 	return 0
 }
 
+moonlight_pid_is_running() {
+	local pid="$1" command_path
+	[[ "$pid" =~ ^[0-9]+$ ]] || return 1
+	command_path="$($PS_BIN -p "$pid" -o comm= 2>/dev/null)"
+	[[ "$command_path" == */Moonlight.app/Contents/MacOS/Moonlight ]]
+}
+
 moonlight_pids() {
-	local pid command_path
+	local pid
 	while IFS= read -r pid; do
-		[[ "$pid" =~ ^[0-9]+$ ]] || continue
-		command_path="$($PS_BIN -p "$pid" -o comm= 2>/dev/null)"
-		case "$command_path" in
-		*/Moonlight.app/Contents/MacOS/Moonlight)
+		if moonlight_pid_is_running "$pid"; then
 			printf '%s\n' "$pid"
-			;;
-		esac
+		fi
 	done < <("$PGREP_BIN" -x Moonlight 2>/dev/null || true)
+}
+
+remaining_moonlight_pids() {
+	local original_pids="$1" pid
+	while IFS= read -r pid; do
+		if moonlight_pid_is_running "$pid"; then
+			printf '%s\n' "$pid"
+		fi
+	done <<<"$original_pids"
+}
+
+wait_for_moonlight_job() {
+	local job_status
+	[[ -n "$MOONLIGHT_JOB_PID" ]] || return 0
+	wait "$MOONLIGHT_JOB_PID"
+	job_status=$?
+	MOONLIGHT_JOB_PID=""
+	return "$job_status"
 }
 
 close_moonlight() {
@@ -329,16 +360,17 @@ close_moonlight() {
 		return 0
 	fi
 
-	log "Sending one graceful TERM to Moonlight"
+	# Moonlight 6.1 may interpret the first TERM during an active stream as a
+	# request to end the session, then remain open at its main window. Give that
+	# teardown a brief grace period before a second TERM asks the app to exit.
+	log "Sending first TERM to end Moonlight's active stream"
 	while IFS= read -r pid; do
 		[[ -n "$pid" ]] || continue
 		"$KILL_BIN" -TERM "$pid" >>"$LOG_FILE" 2>&1 || true
 	done <<<"$pids"
 
-	# Moonlight handles its first TERM by interrupting the stream and exiting.
-	# Do not send a second TERM while that transition is in progress.
-	for ((attempt = 0; attempt < 40; attempt++)); do
-		remaining="$(moonlight_pids)"
+	for ((attempt = 0; attempt < 8; attempt++)); do
+		remaining="$(remaining_moonlight_pids "$pids")"
 		[[ -z "$remaining" ]] && {
 			log "Moonlight exited cleanly"
 			return 0
@@ -346,19 +378,35 @@ close_moonlight() {
 		"$SLEEP_BIN" 0.25
 	done
 
-	remaining="$(moonlight_pids)"
-	log "Moonlight did not exit within 10 seconds; forcing only the verified remaining PID(s)"
+	remaining="$(remaining_moonlight_pids "$pids")"
+	log "Moonlight ended its session but remained open; sending second TERM to close the app"
+	while IFS= read -r pid; do
+		[[ -n "$pid" ]] || continue
+		"$KILL_BIN" -TERM "$pid" >>"$LOG_FILE" 2>&1 || true
+	done <<<"$remaining"
+
+	for ((attempt = 0; attempt < 4; attempt++)); do
+		remaining="$(remaining_moonlight_pids "$pids")"
+		[[ -z "$remaining" ]] && {
+			log "Moonlight exited after its second TERM"
+			return 0
+		}
+		"$SLEEP_BIN" 0.25
+	done
+
+	remaining="$(remaining_moonlight_pids "$pids")"
+	log "Moonlight ignored both TERM requests; forcing only the original verified remaining PID(s)"
 	while IFS= read -r pid; do
 		[[ -n "$pid" ]] || continue
 		"$KILL_BIN" -KILL "$pid" >>"$LOG_FILE" 2>&1 || true
 	done <<<"$remaining"
 	"$SLEEP_BIN" 0.25
 
-	if [[ -n "$(moonlight_pids)" ]]; then
+	if [[ -n "$(remaining_moonlight_pids "$pids")" ]]; then
 		log "Moonlight is still running"
 		return 1
 	fi
-	log "Moonlight was force-closed after its graceful timeout"
+	log "Moonlight was force-closed after both TERM requests"
 	return 0
 }
 
@@ -387,6 +435,9 @@ if ! mkdir "$LOCK_DIR" 2>/dev/null; then
 	exit 0
 fi
 cleanup_lock() {
+	if [[ -n "$MOONLIGHT_JOB_PID" ]]; then
+		wait_for_moonlight_job >/dev/null 2>&1 || true
+	fi
 	clear_remote_result
 	rmdir "$LOCK_DIR" 2>/dev/null || true
 }
@@ -396,10 +447,12 @@ trap 'exit 130' HUP INT TERM
 log "=== gaming $RUN_MODE requested for $SSH_TARGET"
 if [[ "$RUN_MODE" == stop ]]; then
 	set_button busy
+	log "Starting Moonlight shutdown immediately alongside local/Tailscale preparation"
+	close_moonlight &
+	MOONLIGHT_JOB_PID=$!
 fi
 
 status=0
-remote_succeeded=0
 ssh_auth_ready=1
 if ! prepare_ssh_auth; then
 	status=1
@@ -409,6 +462,9 @@ fi
 if ensure_tailscale; then
 	if [[ "$ssh_auth_ready" -ne 1 ]]; then
 		log "Skipping SSH because its configured authentication is invalid"
+	elif ! remote_inputs_are_ready; then
+		status=1
+		log "Skipping SSH and Moonlight because the remote inputs are invalid"
 	else
 		if [[ "$RUN_MODE" == stop ]]; then
 			log "Requesting verified Steam game stop and Steam shutdown over SSH"
@@ -417,7 +473,6 @@ if ensure_tailscale; then
 		fi
 		if run_remote "$RUN_MODE"; then
 			log "Remote Steam $RUN_MODE succeeded"
-			remote_succeeded=1
 		else
 			log "Remote Steam $RUN_MODE failed"
 			status=1
@@ -428,17 +483,21 @@ else
 	status=1
 fi
 
-# Probe mode is read-only by contract and never touches Moonlight. In stop mode,
-# preserve the viewer when the host step fails: the user may still need it to
-# save the game or diagnose the Windows side.
+# Probe mode is read-only by contract and never touches Moonlight. Stop mode
+# waits for the local branch that began alongside SSH, regardless of whether
+# the remote branch eventually succeeds or fails.
 if [[ "$RUN_MODE" == probe ]]; then
 	log "Probe mode leaves Moonlight unchanged"
-elif [[ "$remote_succeeded" -eq 1 ]]; then
-	if ! close_moonlight; then
+elif [[ -n "$MOONLIGHT_JOB_PID" ]]; then
+	if wait_for_moonlight_job; then
+		log "Concurrent Moonlight shutdown succeeded"
+	else
+		log "Concurrent Moonlight shutdown failed"
 		status=1
 	fi
 else
-	log "Leaving Moonlight open because the remote shutdown was not confirmed"
+	log "Moonlight shutdown job was not started"
+	status=1
 fi
 
 if [[ "$RUN_MODE" == probe ]]; then

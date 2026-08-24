@@ -38,7 +38,7 @@ curl -L -o ~/Library/Fonts/sketchybar-app-font.ttf \
   SketchyBar item reads the session state through AppleScript; it is not a screen capture.
 - [Tailscale for macOS](https://tailscale.com/docs/install/mac) with its CLI installed, and
   [Moonlight](https://github.com/moonlight-stream/moonlight-qt). The gaming-stop button uses
-  Tailscale to reach the Windows host and closes Moonlight after the remote Steam shutdown is confirmed.
+  Tailscale to reach the Windows host while closing Moonlight independently from the first click.
 - CodexBar (`com.steipete.codexbar`) — supplies the Codex and Claude usage data. SketchyBar
   reads CodexBar's small WidgetKit snapshot from its app-group container and renders two normal
   items with CodexBar's plain merged-icon two-lane geometry. It never invokes
@@ -196,24 +196,26 @@ battery-percentage item remains available.
 
 ## 6. Windows gaming-stop button
 
-The red gamepad button ends the `windows-tail` gaming session in this order:
+The red gamepad button ends the `windows-tail` gaming session with this workflow:
 
 Save game progress before clicking it: this is intentionally a one-click shutdown action.
 
-1. Read Tailscale's machine state. If it is not `Running`, open Tailscale and run a bounded
-   `tailscale up`, then wait for the interface to become ready.
-2. Use non-interactive SSH to run `plugins/steam_stop.ps1` in PowerShell on Windows. The helper
+1. Immediately start the local Moonlight shutdown branch. Send `TERM` to its verified app PID;
+   during an active stream, Moonlight 6.1 may use the first signal to end the session while leaving
+   its main window open. After a two-second cleanup window, a second `TERM` closes the app; if the
+   same original PID remains after one more second, only that PID receives a final `KILL` fallback.
+2. Concurrently prepare SSH and read Tailscale's machine state. If Tailscale is not `Running`, open
+   it, run a bounded `tailscale up`, and wait for the interface to become ready.
+3. Use non-interactive SSH to run `plugins/steam_stop.ps1` in PowerShell on Windows. The helper
    accepts exactly one Steam AppID only when Steam's registry, `gameprocess_log.txt`, and live
    process tree agree, and the live Steam executable matches a valid Valve signature. It asks
    Steam to stop that AppID without a force flag, confirms the game is gone, then requests
    `steam.exe -shutdown` and confirms Steam exited.
-3. Send one `TERM` to the verified Moonlight app PID on the Mac. Moonlight handles this signal
-   by interrupting the active stream and exiting. If it has not exited after ten seconds, only
-   that verified PID receives a final `KILL` fallback.
+4. Wait for both local and remote branches. The button reports `Failed` if either one fails.
 
-If Tailscale, SSH, game shutdown, or Steam shutdown fails, the sequence stops and Moonlight is
-left open so the Windows session is still visible for saving or diagnosis. The button turns red
-and reports `Failed` rather than pretending that the partial shutdown succeeded.
+Moonlight shutdown is deliberately independent: once a stop click is accepted, it continues even
+if Tailscale, authentication, SSH, game shutdown, or Steam shutdown fails. A failed branch still
+turns the button red and reports `Failed` rather than hiding the partial result.
 
 There is no public Steam API that lets an external utility reliably stop the local active game.
 The [Steam Web API](https://partner.steamgames.com/doc/webapi/ISteamUser) can expose
@@ -222,9 +224,9 @@ client. This helper therefore uses a local Steam client command after cross-chec
 local state. It never uses `taskkill`, `Stop-Process`, or a forced Steam `app_stop`; ambiguity or
 timeout fails closed and Steam is not shut down while a game is still reported running.
 
-No separate Moonlight “disconnect” action is needed here. Moonlight's graceful termination
-already tears down the client stream. Closing Moonlight by itself intentionally leaves the host
-game running, which is why the verified Windows game/Steam step happens first.
+No separate Moonlight “disconnect” action is needed here. Its first termination request tears
+down the client stream while the independent Windows branch stops the host game and Steam.
+Closing Moonlight by itself does not stop the host game, so both branches must still complete.
 
 Prerequisites:
 

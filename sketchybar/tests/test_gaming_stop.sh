@@ -77,6 +77,17 @@ up)
 	if [[ "${STUB_TS_UP_EXIT:-0}" -ne 0 ]]; then
 		exit "$STUB_TS_UP_EXIT"
 	fi
+	: >"$TEST_TAILSCALE_STARTED"
+	if [[ "${STUB_REQUIRE_TAILSCALE_PARALLEL:-0}" -eq 1 ]]; then
+		for ((attempt = 0; attempt < 100; attempt++)); do
+			[[ -e "$TEST_MOONLIGHT_STARTED" ]] && break
+			/bin/sleep 0.01
+		done
+		if [[ ! -e "$TEST_MOONLIGHT_STARTED" ]]; then
+			exit 88
+		fi
+		: >"$TEST_TAILSCALE_SAW_MOONLIGHT"
+	fi
 	: >"$TEST_TS_ONLINE"
 	;;
 wait)
@@ -131,7 +142,27 @@ cat >"$STUB_DIR/kill" <<'EOF'
 printf 'kill %s\n' "$*" >>"$TEST_CALLS"
 case "${1:-}" in
 -TERM)
-	if [[ "${STUB_MOONLIGHT_STUBBORN:-0}" -ne 1 ]]; then
+	term_count=0
+	if [[ -r "$TEST_TERM_COUNT" ]]; then
+		read -r term_count <"$TEST_TERM_COUNT"
+	fi
+	term_count=$((term_count + 1))
+	printf '%s\n' "$term_count" >"$TEST_TERM_COUNT"
+	if [[ "$term_count" -eq 1 ]]; then
+		: >"$TEST_MOONLIGHT_STARTED"
+		if [[ "${STUB_REQUIRE_TAILSCALE_PARALLEL:-0}" -eq 1 ]]; then
+			for ((attempt = 0; attempt < 100; attempt++)); do
+				[[ -e "$TEST_TAILSCALE_STARTED" ]] && break
+				/bin/sleep 0.01
+			done
+			if [[ -e "$TEST_TAILSCALE_STARTED" ]]; then
+				: >"$TEST_MOONLIGHT_SAW_TAILSCALE"
+			fi
+		fi
+	fi
+	if [[ "${STUB_MOONLIGHT_NEEDS_SECOND_TERM:-0}" -eq 1 && "$term_count" -ge 2 ]]; then
+		/bin/rm -f "$TEST_MOONLIGHT_RUNNING"
+	elif [[ "${STUB_MOONLIGHT_NEEDS_SECOND_TERM:-0}" -ne 1 && "${STUB_MOONLIGHT_STUBBORN:-0}" -ne 1 ]]; then
 		/bin/rm -f "$TEST_MOONLIGHT_RUNNING"
 	fi
 	;;
@@ -162,6 +193,11 @@ new_case() {
 	export TEST_CALLS="$TEST_CASE_DIR/calls"
 	export TEST_TS_ONLINE="$TEST_CASE_DIR/tailscale-online"
 	export TEST_MOONLIGHT_RUNNING="$TEST_CASE_DIR/moonlight-running"
+	export TEST_TERM_COUNT="$TEST_CASE_DIR/moonlight-term-count"
+	export TEST_TAILSCALE_STARTED="$TEST_CASE_DIR/tailscale-started"
+	export TEST_MOONLIGHT_STARTED="$TEST_CASE_DIR/moonlight-started"
+	export TEST_TAILSCALE_SAW_MOONLIGHT="$TEST_CASE_DIR/tailscale-saw-moonlight"
+	export TEST_MOONLIGHT_SAW_TAILSCALE="$TEST_CASE_DIR/moonlight-saw-tailscale"
 	export TEST_SSH_STDIN="$TEST_CASE_DIR/ssh-stdin.ps1"
 	: >"$TEST_CALLS"
 	: >"$TEST_SSH_STDIN"
@@ -184,7 +220,7 @@ new_case() {
 	export GAMING_STOP_SSH_IDENTITY_FILE="$TEST_CASE_DIR/id_ed25519"
 	: >"$GAMING_STOP_SSH_IDENTITY_FILE"
 	unset GAMING_STOP_SSH_AUTH_SOCK
-	unset STUB_TS_UP_EXIT STUB_OPEN_EXIT STUB_SSH_EXIT STUB_SSH_JSON STUB_MOONLIGHT_STUBBORN STUB_MOONLIGHT_UNKILLABLE
+	unset STUB_TS_UP_EXIT STUB_OPEN_EXIT STUB_SSH_EXIT STUB_SSH_JSON STUB_REQUIRE_TAILSCALE_PARALLEL STUB_MOONLIGHT_NEEDS_SECOND_TERM STUB_MOONLIGHT_STUBBORN STUB_MOONLIGHT_UNKILLABLE
 }
 
 invoke_plugin() {
@@ -198,10 +234,11 @@ invoke_probe() {
 	last_status=$?
 }
 
-# 1. Offline happy path: connection is established before SSH, and Moonlight
-# receives one graceful TERM only after the remote step succeeds.
+# 1. Offline happy path: Moonlight and Tailscale prove through a two-party
+# barrier that local shutdown starts without waiting for network readiness.
 new_case offline_happy
 : >"$TEST_MOONLIGHT_RUNNING"
+export STUB_REQUIRE_TAILSCALE_PARALLEL=1
 invoke_plugin
 [[ "$last_status" -eq 0 ]] || fail "offline happy path should succeed"
 assert_contains "$TEST_CALLS" 'open -gj -a Tailscale' "offline path must open Tailscale"
@@ -218,7 +255,9 @@ assert_not_contains "$TEST_CALLS" 'label=Done' "success feedback must not use a 
 assert_not_contains "$TEST_CALLS" 'label=Test Game' "remote game names must never become SketchyBar commands"
 assert_before "$TEST_CALLS" 'open -gj -a Tailscale' 'tailscale up --timeout=12s' "Tailscale app must open before up"
 assert_before "$TEST_CALLS" 'tailscale up --timeout=12s' 'ssh -T ' "Tailscale must connect before SSH"
-assert_before "$TEST_CALLS" 'ssh -T ' 'kill -TERM 4242' "remote shutdown must finish before Moonlight closes"
+assert_before "$TEST_CALLS" 'tailscale wait --timeout=5s' 'ssh -T ' "Tailscale readiness wait must finish before SSH"
+[[ -e "$TEST_TAILSCALE_SAW_MOONLIGHT" ]] || fail "Tailscale must observe the concurrent Moonlight branch"
+[[ -e "$TEST_MOONLIGHT_SAW_TAILSCALE" ]] || fail "Moonlight must observe the concurrent Tailscale branch"
 [[ "$(head -1 "$TEST_SSH_STDIN")" == '$env:GAMING_STOP_MODE = "stop"' ]] || fail "stop opt-in must be the first PowerShell statement"
 assert_contains "$TEST_SSH_STDIN" '$env:GAMING_STOP_MODE = "stop"' "SSH stdin must explicitly opt into stop mode"
 assert_contains "$TEST_SSH_STDIN" 'Set-StrictMode -Version 3.0' "SSH must receive the committed PowerShell helper"
@@ -246,20 +285,20 @@ invoke_plugin
 [[ "$last_status" -eq 0 ]] || fail "Steam-only stop should succeed"
 assert_contains "$TEST_CALLS" 'label=Steam stopped' "Steam-only shutdown must report that Steam stopped"
 
-# 4. A Tailscale failure skips both SSH and Moonlight, returns failure feedback,
-# and releases the lock so a later click can retry.
+# 4. A Tailscale failure skips SSH but cannot delay or cancel the independent
+# Moonlight close, and the lock is still released for a later retry.
 new_case tailscale_failure
 : >"$TEST_MOONLIGHT_RUNNING"
 export STUB_TS_UP_EXIT=7
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "Tailscale failure must return nonzero"
 assert_not_contains "$TEST_CALLS" 'ssh -T ' "Tailscale failure must skip SSH"
-assert_not_contains "$TEST_CALLS" 'kill -' "Tailscale failure must preserve Moonlight"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "Moonlight shutdown must start independently of Tailscale"
 assert_contains "$TEST_CALLS" 'label=Failed' "Tailscale failure must show visible failure feedback"
-[[ -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "Tailscale failure must leave Moonlight running"
+[[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "Tailscale failure must not keep Moonlight running"
 [[ ! -e "$GAMING_STOP_LOCK_DIR" ]] || fail "Tailscale failure must release its lock"
 
-# 5. SSH/PowerShell failure likewise preserves the local viewer for diagnosis.
+# 5. SSH failure likewise cannot cancel the independent local close.
 new_case ssh_failure
 : >"$TEST_TS_ONLINE"
 : >"$TEST_MOONLIGHT_RUNNING"
@@ -267,8 +306,8 @@ export STUB_SSH_EXIT=9
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "SSH failure must return nonzero"
 assert_contains "$TEST_CALLS" 'ssh -T ' "SSH failure case must attempt SSH"
-assert_not_contains "$TEST_CALLS" 'kill -' "SSH failure must preserve Moonlight"
-[[ -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "SSH failure must leave Moonlight running"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "SSH failure must not cancel concurrent Moonlight shutdown"
+[[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "Moonlight must close after the SSH branch starts"
 [[ ! -e "$GAMING_STOP_LOCK_DIR" ]] || fail "SSH failure must release its lock"
 
 # 6. A successful SSH transport with malformed output also fails closed.
@@ -278,7 +317,8 @@ new_case malformed_remote_result
 export STUB_SSH_JSON='not-json'
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "malformed remote result must fail"
-assert_not_contains "$TEST_CALLS" 'kill -' "malformed remote result must preserve Moonlight"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "malformed remote result must not cancel concurrent Moonlight shutdown"
+[[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "malformed remote result must still close Moonlight"
 assert_contains "$TEST_CALLS" 'label=Failed' "malformed remote result must show failure feedback"
 
 # 7. Multiple otherwise-valid results are ambiguous and must fail closed.
@@ -288,7 +328,7 @@ new_case multiple_remote_results
 export STUB_SSH_JSON=$'{"Mode":"stop","SteamRunning":false,"SteamPidCount":0,"RunningAppId":0,"RunningApps":[],"TrackedProcesses":[],"SteamExecutableTrusted":false,"ReadyToStop":false,"Actions":["Steam was not running"],"Success":true}\n{"Mode":"stop","SteamRunning":false,"SteamPidCount":0,"RunningAppId":0,"RunningApps":[],"TrackedProcesses":[],"SteamExecutableTrusted":false,"ReadyToStop":false,"Actions":["Steam was not running"],"Success":true}'
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "multiple remote results must fail"
-assert_not_contains "$TEST_CALLS" 'kill -' "multiple remote results must preserve Moonlight"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "multiple remote results must not cancel concurrent Moonlight shutdown"
 
 # 8. Contradictory but well-typed state must not receive a contextual label.
 new_case inconsistent_remote_result
@@ -297,11 +337,10 @@ new_case inconsistent_remote_result
 export STUB_SSH_JSON='{"Mode":"stop","SteamRunning":false,"SteamPidCount":1,"RunningAppId":0,"RunningApps":[],"TrackedProcesses":[],"SteamExecutableTrusted":false,"ReadyToStop":false,"Actions":["Steam was not running"],"Success":true}'
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "inconsistent remote result must fail"
-assert_not_contains "$TEST_CALLS" 'kill -' "inconsistent remote result must preserve Moonlight"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "inconsistent remote result must not cancel concurrent Moonlight shutdown"
 assert_contains "$TEST_CALLS" 'label=Failed' "inconsistent remote result must show failure feedback"
 
-# 9. Invalid authentication configuration fails before SSH and preserves the
-# local viewer instead of silently falling back to another identity.
+# 9. Invalid authentication fails before SSH without delaying the local close.
 new_case invalid_agent_override
 : >"$TEST_TS_ONLINE"
 : >"$TEST_MOONLIGHT_RUNNING"
@@ -309,10 +348,11 @@ export GAMING_STOP_SSH_AUTH_SOCK="$TEST_CASE_DIR/not-a-socket"
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "invalid SSH agent override must fail"
 assert_not_contains "$TEST_CALLS" 'ssh -T ' "invalid SSH agent override must skip SSH"
-assert_not_contains "$TEST_CALLS" 'kill -' "invalid SSH agent override must preserve Moonlight"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "invalid SSH agent override must not delay Moonlight shutdown"
+[[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "invalid SSH agent override must not keep Moonlight running"
 assert_contains "$TEST_CALLS" 'label=Failed' "invalid SSH agent override must show failure feedback"
 
-# 10. An unreadable pinned key also fails closed before opening SSH.
+# 10. An unreadable pinned key skips SSH while Moonlight still closes.
 new_case missing_identity
 : >"$TEST_TS_ONLINE"
 : >"$TEST_MOONLIGHT_RUNNING"
@@ -320,21 +360,34 @@ export GAMING_STOP_SSH_IDENTITY_FILE="$TEST_CASE_DIR/missing-id_ed25519"
 invoke_plugin
 [[ "$last_status" -ne 0 ]] || fail "missing pinned SSH identity must fail"
 assert_not_contains "$TEST_CALLS" 'ssh -T ' "missing pinned SSH identity must skip SSH"
-assert_not_contains "$TEST_CALLS" 'kill -' "missing pinned SSH identity must preserve Moonlight"
+assert_contains "$TEST_CALLS" 'kill -TERM 4242' "missing identity must not delay Moonlight shutdown"
+[[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "missing identity must not keep Moonlight running"
 
-# 11. A stubborn but verified Moonlight PID gets exactly one TERM, then one KILL
-# after the bounded wait. This is the only local force path.
+# 11. An active stream may consume the first TERM; a second TERM then closes
+# the Moonlight program without requiring KILL.
+new_case two_stage_moonlight
+: >"$TEST_TS_ONLINE"
+: >"$TEST_MOONLIGHT_RUNNING"
+export STUB_MOONLIGHT_NEEDS_SECOND_TERM=1
+invoke_plugin
+[[ "$last_status" -eq 0 ]] || fail "two-stage Moonlight shutdown should succeed"
+[[ "$(grep -Fc 'kill -TERM 4242' "$TEST_CALLS")" -eq 2 ]] || fail "streaming Moonlight must receive a second TERM"
+assert_not_contains "$TEST_CALLS" 'kill -KILL' "second-TERM success must not receive KILL"
+[[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "second TERM must close the Moonlight program"
+
+# 12. A process that ignores both TERM requests gets one final KILL. This is
+# the only local force path.
 new_case stubborn_moonlight
 : >"$TEST_TS_ONLINE"
 : >"$TEST_MOONLIGHT_RUNNING"
 export STUB_MOONLIGHT_STUBBORN=1
 invoke_plugin
 [[ "$last_status" -eq 0 ]] || fail "Moonlight KILL fallback should complete successfully"
-[[ "$(grep -Fc 'kill -TERM 4242' "$TEST_CALLS")" -eq 1 ]] || fail "Moonlight must receive exactly one TERM"
+[[ "$(grep -Fc 'kill -TERM 4242' "$TEST_CALLS")" -eq 2 ]] || fail "stubborn Moonlight must receive exactly two TERM requests"
 [[ "$(grep -Fc 'kill -KILL 4242' "$TEST_CALLS")" -eq 1 ]] || fail "stubborn Moonlight must receive exactly one KILL fallback"
 [[ ! -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "KILL fallback must clear the verified Moonlight process"
 
-# 12. Even a valid remote outcome must show Failed if Moonlight cannot close.
+# 13. Even a valid remote outcome must show Failed if Moonlight cannot close.
 new_case unkillable_moonlight
 : >"$TEST_TS_ONLINE"
 : >"$TEST_MOONLIGHT_RUNNING"
@@ -345,7 +398,7 @@ invoke_plugin
 assert_contains "$TEST_CALLS" 'label=Failed' "Moonlight failure must override contextual remote feedback"
 assert_not_contains "$TEST_CALLS" 'label=Game stopped' "partial local failure must not display remote success"
 
-# 13. Probe mode uses the same SSH/authentication path but never opts into a
+# 14. Probe mode uses the same SSH/authentication path but never opts into a
 # remote stop, signals Moonlight, or changes the live SketchyBar item.
 new_case read_only_probe
 : >"$TEST_TS_ONLINE"
@@ -359,7 +412,7 @@ assert_not_contains "$TEST_CALLS" 'kill -' "probe must not signal Moonlight"
 assert_not_contains "$TEST_CALLS" 'sketchybar --set' "probe must not alter button feedback"
 [[ -e "$TEST_MOONLIGHT_RUNNING" ]] || fail "probe must leave Moonlight running"
 
-# 14. Duplicate and non-left clicks are inert.
+# 15. Duplicate and non-left clicks are inert.
 new_case duplicate_click
 : >"$TEST_TS_ONLINE"
 mkdir "$GAMING_STOP_LOCK_DIR"
@@ -373,7 +426,7 @@ invoke_plugin right
 [[ "$last_status" -eq 0 ]] || fail "right click should be an idempotent no-op"
 [[ ! -s "$TEST_CALLS" ]] || fail "right click must not invoke an external action"
 
-# 15. Static integration: SketchyBar can only reach the destructive action via
+# 16. Static integration: SketchyBar can only reach the destructive action via
 # click_script. The Amphetamine block is a known-positive control proving the
 # update-script detector is live before it checks the gaming block's absence.
 gaming_block="$TEST_CASE_DIR/gaming-block"
@@ -403,7 +456,7 @@ assert_contains "$REMOTE_SCRIPT" "Assert-NoSteamGameReported -Stage 'after Steam
 
 assert_contains "$README" 'There is no public Steam API' "README must explain the Steam API limitation"
 assert_contains "$README" 'No separate Moonlight' "README must explain Moonlight disconnect semantics"
-assert_contains "$README" 'left open' "README must document partial-failure preservation"
+assert_contains "$README" 'Moonlight shutdown is deliberately independent' "README must document concurrent partial-failure behavior"
 
 if [[ "$fails" -ne 0 ]]; then
 	echo "$fails gaming stop test(s) failed"

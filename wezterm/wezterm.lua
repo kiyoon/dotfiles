@@ -19,6 +19,13 @@ local config = {
 	underline_position = -4,
 	keys = {
 		{
+			-- Give Shift+Enter a distinct CSI-u sequence so tmux can forward it
+			-- to applications such as Codex as a multiline/newline shortcut.
+			key = "Enter",
+			mods = "SHIFT",
+			action = wezterm.action.SendString("\x1b[13;2u"),
+		},
+		{
 			-- Used in neovim (python-import.nvim)
 			key = "Enter",
 			mods = "ALT",

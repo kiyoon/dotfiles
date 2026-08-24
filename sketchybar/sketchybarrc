@@ -323,8 +323,8 @@ sketchybar --add item amphetamine right \
 	--subscribe amphetamine amphetamine_change system_woke forced
 
 # ---- End Windows gaming session ----
-# One left click connects Tailscale if needed, performs the verified Steam
-# shutdown on windows-tail, and then closes Moonlight locally. The plugin
+# One left click immediately closes Moonlight locally while it connects Tailscale
+# if needed and performs the verified Steam shutdown on windows-tail. The plugin
 # owns its busy/success/failure feedback and rejects duplicate clicks.
 sketchybar --add item gaming_stop right \
 	--set gaming_stop \

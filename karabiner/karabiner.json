@@ -308,6 +308,7 @@
                         "product_id": 9488,
                         "vendor_id": 2362
                     },
+                    "ignore": false,
                     "mouse_flip_vertical_wheel": true
                 },
                 {

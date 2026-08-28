@@ -27,6 +27,20 @@ local function forceGureumEnglish()
   hs.keycodes.currentSourceID(GUREUM_EN)
 end
 
+-- forceGureumEnglish의 반대 방향. 형제 소스 desync는 방향을 가리지 않으므로
+-- 한글로 갈 때도 ABC를 거쳐야 조합 엔진이 실제로 따라온다.
+local function forceGureumKorean()
+  local cur = hs.keycodes.currentSourceID()
+  if cur == GUREUM_KO then
+    return
+  end
+  if cur == GUREUM_EN then
+    hs.keycodes.currentSourceID(APPLE_EN)
+    hs.timer.usleep(80000)
+  end
+  hs.keycodes.currentSourceID(GUREUM_KO)
+end
+
 -- ANSI 패턴 감지(tmux active pane, nvim command/terminal mode)는
 -- terminal.lua로 옮겼다. wezterm과 kitty가 SGR를 다르게 직렬화해서
 -- 터미널별 패턴이 필요하고, 거기서 테스트한다 (tests/terminal_test.lua).
@@ -182,13 +196,11 @@ hs.hotkey.bind({}, "f18", function()
   end
 
   if input_source == GUREUM_EN then
-    -- hs.keycodes.currentSourceID(GUREUM_KO)
-    -- 구름입력기 한/영 전환 단축키
-    hs.eventtap.keyStroke({ "cmd", "shift", "ctrl" }, "space")
+    -- 합성 단축키(cmd+shift+ctrl+space)는 macOS가 무시하므로 소스를 직접 바꾼다.
+    -- 터미널로 새는 키가 없어야 zsh-vi-mode가 insert에서 튕겨나오지 않는다.
+    forceGureumKorean()
   elseif input_source == GUREUM_KO then
-    -- hs.keycodes.currentSourceID(GUREUM_EN)
-    -- 구름입력기 한/영 전환 단축키
-    hs.eventtap.keyStroke({ "cmd", "shift", "ctrl" }, "space")
+    forceGureumEnglish()
   elseif input_source == APPLE_EN then
     hs.keycodes.currentSourceID(APPLE_KO)
   elseif input_source == APPLE_KO then

@@ -80,6 +80,7 @@ if (($+commands[nvim])); then
 fi
 
 # setup fzf Ctrl+t and Alt+c
+_fzf_preview_script="${0:A:h}/../scripts/fzf_preview.sh"
 if (($+commands[fzf])); then
 	if (($+commands[fd])); then
 		export FZF_DEFAULT_OPTS='-m --bind ctrl-s:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,F2:up,F3:up,F5:down,F6:down,F7:accept'
@@ -87,9 +88,7 @@ if (($+commands[fzf])); then
 		export FZF_CTRL_T_COMMAND='fd --type f --hidden --exclude .git'
 		export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 	fi
-	_fzf_preview_script="${0:A:h}/../scripts/fzf_preview.sh"
 	export FZF_CTRL_T_OPTS="--preview '$_fzf_preview_script {}'"
-	unset _fzf_preview_script
 fi
 
 # Inside tmux, home and end keys don't work
@@ -120,45 +119,13 @@ zstyle ':fzf-tab:*' fzf-min-height 15
 # NOTE: by default switch-group is f1 and f2, but we need to reserve f2 for knob.
 zstyle ':fzf-tab:*' switch-group '<' '>'
 
-# PERF: if image preview is slow, use "chafa --format=symbols"
-if (($+commands[eza])); then
-	if (($+commands[bat])); then
-		# Preview on cd with eza
-		# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath'
-		zstyle ':fzf-tab:complete:*' fzf-preview '\
-        if [[ -d "$realpath" ]]; then \
-            # preview_width=$(( $(tput cols)/2 - 4 )); \
-            preview_width=${FZF_PREVIEW_COLUMNS}; \
-            if [[ $preview_width -gt 20 ]]; then \
-                eza -w $preview_width --icons=always --color=always --git-ignore "$realpath"; \
-            else \
-                eza -w $preview_width --color=always --git-ignore "$realpath"; \
-            fi; \
-        else \
-            # file preview: images via chafa, others via bat \
-            preview_width=${FZF_PREVIEW_COLUMNS}; \
-            preview_height=${FZF_PREVIEW_LINES}; \
-            case "${realpath:l}" in \
-              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.icns|*.heic) \
-                  # chafa --format=symbols --view-size=$preview_widthx$preview_height --scale=max "$realpath"; \
-                  chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max "$realpath"; \
-                ;; \
-              *.mp4|*.webm|*.mov|*.mkv|*.avi) \
-                  ffmpeg -ss 5 -i "$realpath" -vframes 1 -f image2 -vcodec mjpeg - 2>/dev/null \
-                    | chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max -; \
-                ;; \
-              *.pdf) \
-                  # first page to PNG on stdout (no temp files), then sixel \
-                  pdftoppm -png -r 100 -f 1 -l 1 "$realpath" 2>/dev/null \
-                    | chafa --format=sixel --view-size=${preview_width}x${preview_height} --scale=max -; \
-                ;; \
-              *) \
-                bat --color=always --style=numbers --line-range=:999 "$realpath"; \
-                ;; \
-            esac; \
-        fi'
-	fi
-fi
+# Same previewer as Ctrl-T, so image protocol, video seeking and PDF handling
+# stay in one place. Set FZF_PREVIEW_IMG_BACKEND=kitty|sixel|none to override
+# the terminal the previewer detects.
+# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -w $(( $(tput cols)/2 - 3 )) --color=always --git-ignore $realpath'
+zstyle ':fzf-tab:complete:*' fzf-preview "${(q)_fzf_preview_script} \"\$realpath\""
+
+unset _fzf_preview_script
 
 # Ignore some patterns in cd completion
 # NOTE: fzf-tab only changes the UI of the completion, not the completion itself.

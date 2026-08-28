@@ -1,9 +1,9 @@
 (& pixi completion --shell powershell) | Out-String | Invoke-Expression
+(&mise activate pwsh) | Out-String | Invoke-Expression
 
 #$Env:PATH += ";$env:USERPROFILE\bin"
 
 # grep, awk, sed, ...
-$Env:PATH += ";$env:LOCALAPPDATA\Microsoft\WinGet\Packages\uutils.coreutils_Microsoft.Winget.Source_8wekyb3d8bbwe\coreutils-0.10.0-x86_64-pc-windows-msvc"
 $Env:PATH += ";$env:HOMEDRIVE\cygwin64\bin"
 $Env:PATH += ";$env:ProgramFiles\7-Zip"
 $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"

@@ -3,34 +3,16 @@
 Basic linux feels within powershell.
 
 ```powershell
+winget install -e --id jdx.mise
 winget install -e --id Microsoft.PowerShell --source winget
-winget install -e --id uutils.coreutils
 winget install -e --id JernejSimoncic.Wget
-
-winget install -e --id eza-community.eza
-winget install -e --id sharkdp.bat
-winget install -e --id=BurntSushi.ripgrep.MSVC
-winget install -e --id=sharkdp.fd
-winget install -e --id=ajeetdsouza.zoxide
-winget install -e --id Clement.bottom
-winget install -e --id=bootandy.dust
-winget install -e --id=sxyazi.yazi
-winget install -e --id=YS-L.csvlens
-
-winget install -e --id=junegunn.fzf
 Install-Module -Name PSFzf
-
-winget install Neovim.Neovim
 winget install -e --id Git.Git
 winget install wez.wezterm
 winget install -e --id DEVCOM.JetBrainsMonoNerdFont
 winget install -e --id Starship.Starship
-
 winget install -e --id LGUG2Z.komorebi
 winget install -e --id LGUG2Z.whkd
-
-winget install -e --id=astral-sh.uv
-winget install -e --id=astral-sh.ruff
 ```
 
 > [!NOTE]
@@ -38,7 +20,36 @@ winget install -e --id=astral-sh.ruff
 
 The profile file location is at `nvim $profile`. Put the profile file content there.
 
-Missing commands like `grep`, `awk`, `sed` etc. comes with Cygwin.
+Missing commands like `grep`, `awk`, `sed` etc. comes with uutils-coreutils and Cygwin.
+
+### Mise-managed CLI tools
+
+Global CLI tools are installed with `mise`. Put the following files
+
+> mise/config.toml -> ~/.config/mise/config.toml
+> mise/mise.lock   -> ~/.config/mise/mise.lock
+
+On the first machine, install the tools and generate the lockfile:
+
+```sh
+mise install
+mise lock --global
+```
+
+Commit both mise/config.toml and mise/mise.lock.
+
+On a new machine where the lockfile already exists:
+
+```sh
+mise install --locked
+```
+
+To update the managed tools later:
+
+```sh
+mise upgrade
+mise lock --global
+```
 
 ### Cygwin
 

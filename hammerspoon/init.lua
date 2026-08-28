@@ -920,7 +920,7 @@ _G.tmuxRestoreAgentsMenuController = tmuxRestoreAgentsMenu.new({
   open = "/usr/bin/open",
   weztermBundleId = "com.github.wez.wezterm",
   env = "/usr/bin/env",
-  checkout = tmuxRestoreAgentsHome .. "/project/lazarus",
+  checkout = tmuxRestoreAgentsHome .. "/project/tmux-restore-agents",
   home = tmuxRestoreAgentsHome,
   stateDir = tmuxRestoreAgentsHome .. "/.tmux-restore-agents",
 })

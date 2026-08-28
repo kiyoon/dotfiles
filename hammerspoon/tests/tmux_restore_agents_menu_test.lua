@@ -518,6 +518,10 @@ test("tmux actions are appended below gaming stop in the reload menu", function(
     init:find('stateDir = tmuxRestoreAgentsHome .. "/.tmux-restore-agents"', 1, true),
     "snapshot history must read the state directory"
   )
+  assert(
+    init:find('checkout = tmuxRestoreAgentsHome .. "/project/tmux-restore-agents"', 1, true),
+    "uv must run from the tmux-restore-agents checkout"
+  )
   assert(init:find("hs.fs.dir", 1, true), "snapshot history must list directories with hs.fs.dir")
   assert(init:find("hs.json.decode", 1, true), "snapshot counts must decode JSON with hs.json.decode")
 end)

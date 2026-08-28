@@ -27,61 +27,9 @@ local function forceGureumEnglish()
   hs.keycodes.currentSourceID(GUREUM_EN)
 end
 
----@param term_text_ansi string
----@return string?
-local function get_tmux_current_command(term_text_ansi)
-  -- " <command> ─" with the right color (active pane)
-  local tmux_active_pane_ansi_pattern = [[ ([%w%.%-]+) .%[38:2::98:114:164m.%[49m─]]
-  -- If there are mutliple active panes, return the second one.
-  -- Beecause there is an output bug in tmux where it prints another window wrongly and the actual content starts from let's say the 3rd line.
-  -- The wrong output is not visible in the terminal, but it is visible in the output of `wezterm cli get-text`.
-  local current_command
-  local i = 1
-  for current_command_candidate in string.gmatch(term_text_ansi, tmux_active_pane_ansi_pattern) do
-    current_command = current_command_candidate
-    if i == 2 then
-      break
-    end
-    i = i + 1
-  end
-  return current_command
-end
-
----nvim이 command mode인지 확인
----lualine 왼쪽 "COMMAND" 혹은 오른쪽 "  " 색깔로 구분. tokyonight theme 가정. command mode nvim이 여러개 있지 않다는 가정..
----@param term_text_ansi string
----@return boolean
-local function is_nvim_command_mode(term_text_ansi)
-  -- tokyonight command mode: yellow (#ffc777 = 255,199,119)
-  if
-    string.match(term_text_ansi, [[ .%[38:2::27:29:43m.%[48:2::255:199:119m ]])
-    or string.match(
-      term_text_ansi,
-      [[.%[38:2::27:29:43m.%[48:2::255:199:119m COMMAND .%[38:2::255:199:119m.%[48:2::59:66:97m ]]
-    )
-  then
-    return true
-  end
-  return false
-end
-
----nvim이 terminal mode인지 확인
----lualine 왼쪽 "TERMINAL" 혹은 오른쪽 "  " 색깔로 구분. tokyonight theme 가정. terminal mode nvim이 여러개 있지 않다는 가정..
----@param term_text_ansi string
----@return boolean
-local function is_nvim_terminal_mode(term_text_ansi)
-  -- tokyonight terminal mode: teal (#4fd6be = 79,214,190)
-  if
-    string.match(term_text_ansi, [[ .%[38:2::27:29:43m.%[48:2::79:214:190m ]])
-    or string.match(
-      term_text_ansi,
-      [[.%[38:2::27:29:43m.%[48:2::79:214:190m TERMINAL .%[38:2::79:214:190m.%[48:2::59:66:97m ]]
-    )
-  then
-    return true
-  end
-  return false
-end
+-- ANSI 패턴 감지(tmux active pane, nvim command/terminal mode)는
+-- terminal.lua로 옮겼다. wezterm과 kitty가 SGR를 다르게 직렬화해서
+-- 터미널별 패턴이 필요하고, 거기서 테스트한다 (tests/terminal_test.lua).
 
 ---title에 nvim이 떠 있을 가능성이 있는지 빠르게 판단.
 ---zsh가 title을 실행중인 command line으로 설정하므로 (vi/v/dv 등 alias 포함)
@@ -110,14 +58,32 @@ local function title_may_have_nvim(window_title)
   return false
 end
 
--- Hammerspoon을 wezterm 셸에서 재시작하면 WEZTERM_UNIX_SOCKET을 물려받는데,
--- 그 wezterm 인스턴스가 죽으면 이후 모든 `wezterm cli` 자식이 죽은 소켓에 붙다
--- 실패한다 (exit 1). 심지어 mux server를 daemonize로 띄우려다 stdio 파이프를
--- 물려줘서 hs.task 종료 콜백까지 영영 안 불린다 (완전 무증상 실패).
--- env를 지워 살아있는 GUI 소켓을 auto-discover 하게 하고, 서버 auto-start는 막는다.
-local WEZTERM_CLI = "/opt/homebrew/bin/wezterm"
-local function weztermCli(args)
-  return hs.execute("unset WEZTERM_UNIX_SOCKET; " .. WEZTERM_CLI .. " cli --no-auto-start " .. args)
+-- wezterm/kitty CLI 호출과 ANSI 패턴은 terminal.lua에 있다.
+-- (wezterm은 물려받은 죽은 WEZTERM_UNIX_SOCKET 때문에 env를 지워야 하고,
+--  kitty는 kitty.conf의 allow_remote_control/listen_on + pid 기반 소켓이 필요하다.
+--  자세한 이유는 terminal.lua 주석 참고.)
+local terminal = require("terminal")
+
+---지금 포커스된 앱이 터미널이면 그 종류와 앱을 준다.
+---@return string? kind, hs.application? app
+local function frontTerminal()
+  local app = hs.application.frontmostApplication()
+  if not app then
+    return nil, nil
+  end
+  return terminal.kindForAppName(app:name()), app
+end
+
+---포커스된 pane의 화면 텍스트를 escape 포함해 가져온다.
+---@param kind string
+---@param app hs.application?
+---@return string? output, boolean? status, string? type, number? rc
+local function termGetText(kind, app)
+  local command = terminal.getTextCommand(kind, app and app:pid())
+  if not command then
+    return nil, false, nil, nil
+  end
+  return hs.execute(command)
 end
 
 -- karabiner-elements maps Rcmd and Ralt to F18
@@ -139,7 +105,8 @@ hs.hotkey.bind({}, "f18", function()
   local current_app = hs.application.frontmostApplication()
   print("current_app: " .. current_app:name())
 
-  if current_app:name() == "WezTerm" then
+  local term_kind = terminal.kindForAppName(current_app:name())
+  if term_kind then
     -- get current window title
     local window_title = current_app:focusedWindow():title()
     -- ends with vi/vim/nvim
@@ -153,9 +120,15 @@ hs.hotkey.bind({}, "f18", function()
       or string.match(window_title, "^vim$")
       or string.match(window_title, "^nvim$")
     then
-      print("program in wezterm is vi")
-      local output, status, type, rc = weztermCli("get-text --escapes")
-      if status == true and type == "exit" and rc == 0 and output ~= nil and not is_nvim_command_mode(output) then
+      print("program in " .. term_kind .. " is vi")
+      local output, status, type, rc = termGetText(term_kind, current_app)
+      if
+        status == true
+        and type == "exit"
+        and rc == 0
+        and output ~= nil
+        and not terminal.isNvimCommandMode(term_kind, output)
+      then
         forceGureumEnglish()
         -- if input_source ~= APPLE_EN then
         --   hs.keycodes.currentSourceID(APPLE_EN)
@@ -175,10 +148,10 @@ hs.hotkey.bind({}, "f18", function()
       -- and detect if the pane border title has nvim
       -- and the focus is in the pane
 
-      -- Run `wezterm cli get-text` to get the text of the pane
-      local output, status, type, rc = weztermCli("get-text --escapes")
+      -- Run the terminal's get-text to get the text of the pane
+      local output, status, type, rc = termGetText(term_kind, current_app)
       -- print(output)
-      -- print(get_tmux_current_command(output))
+      -- print(terminal.tmuxCurrentCommand(term_kind, output))
 
       -- match the output to detect if the pane border title has nvim
       -- more specifically, nvim ─ with the right color (active pane)
@@ -189,10 +162,13 @@ hs.hotkey.bind({}, "f18", function()
         and type == "exit"
         and rc == 0
         and output ~= nil
-        and get_tmux_current_command(output) == "nvim"
+        and terminal.tmuxCurrentCommand(term_kind, output) == "nvim"
       then
         print("nvim in tmux")
-        if not is_nvim_command_mode(output) and not is_nvim_terminal_mode(output) then
+        if
+          not terminal.isNvimCommandMode(term_kind, output)
+          and not terminal.isNvimTerminalMode(term_kind, output)
+        then
           print("not in command/terminal mode")
           forceGureumEnglish()
           -- if input_source ~= APPLE_EN then
@@ -320,8 +296,8 @@ _G.wezImeWatcher = hs.application.watcher.new(
     end
 
     local bid = app:bundleID()
-    if appName == "WezTerm" then
-      -- Entering WezTerm: enforce Gureum English
+    if terminal.kindForAppName(appName) then
+      -- Entering WezTerm/kitty: enforce Gureum English
       scheduleGuarded(0.05, bid, mapOnEnterWezterm)
     elseif bid == KAKAOTALK_BID then
       -- Entering KakaoTalk: keep Apple if already Apple, else use Apple Korean
@@ -349,8 +325,18 @@ local TAP_DISABLED_BY_TIMEOUT = 0xFFFFFFFE
 local TAP_DISABLED_BY_USER_INPUT = 0xFFFFFFFF
 
 function TmuxPrefixForceEnglish()
-  local output, status, type, rc = weztermCli("get-text --escapes")
-  if status == true and type == "exit" and rc == 0 and output ~= nil and get_tmux_current_command(output) ~= nil then
+  local kind, app = frontTerminal()
+  if not kind then
+    return
+  end
+  local output, status, type, rc = termGetText(kind, app)
+  if
+    status == true
+    and type == "exit"
+    and rc == 0
+    and output ~= nil
+    and terminal.tmuxCurrentCommand(kind, output) ~= nil
+  then
     print("[tmux-prefix] tmux detected -> Gureum EN")
     forceGureumEnglish()
   else
@@ -376,7 +362,7 @@ _G.tmuxPrefixEnTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, functi
     return false
   end
   local front = hs.application.frontmostApplication()
-  if not front or front:name() ~= "WezTerm" then
+  if not front or not terminal.kindForAppName(front:name()) then
     return false
   end
   -- 여기서 블록해서 Ctrl+A가 앱에 전달되기 "전에" 영문 전환을 끝낸다.
@@ -665,24 +651,33 @@ local function promptTargetIsFocused(target)
   return true
 end
 
-local function focusedWezTermPaneId(appPid)
-  local output, status = weztermCli("list-clients --format json")
+---포커스된 터미널의 pane(wezterm) / window(kitty) id.
+---@param kind string
+---@param appPid number
+---@param platformWindowId number? hs.window:id() (kitty에서 os window 매칭에 쓴다)
+---@return string? id, string? err
+local function focusedTerminalTargetId(kind, appPid, platformWindowId)
+  local command = terminal.listTargetsCommand(kind, appPid)
+  if not command then
+    return nil, "unknown terminal"
+  end
+
+  local output, status = hs.execute(command)
   if not status then
-    return nil, "wezterm cli list-clients failed"
-  end
-
-  local ok, clients = pcall(hs.json.decode, output)
-  if not ok or type(clients) ~= "table" then
-    return nil, "could not decode wezterm client list"
-  end
-
-  for _, client in ipairs(clients) do
-    if tonumber(client.pid) == appPid and client.focused_pane_id ~= nil then
-      return tostring(client.focused_pane_id)
+    local socket = terminal.socketPath(kind, appPid)
+    local socketExists = nil
+    if socket then
+      socketExists = hs.fs.attributes(socket) ~= nil
     end
+    return nil, terminal.cliFailureReason(kind, appPid, socketExists)
   end
 
-  return nil, "the focused application is not a wezterm client"
+  local ok, decoded = pcall(hs.json.decode, output)
+  if not ok then
+    decoded = nil
+  end
+
+  return terminal.parseFocusedTarget(kind, decoded, { appPid = appPid, platformWindowId = platformWindowId })
 end
 
 local function pastePromptPaced(text)
@@ -714,23 +709,32 @@ local function pastePromptPaced(text)
         return
       end
 
-      local paneId, paneError = focusedWezTermPaneId(app:pid())
+      local kind = terminal.kindForAppName(app:name())
+      if not kind then
+        stopPromptInsert("Prompt insertion requires a focused WezTerm or kitty pane")
+        return
+      end
+
+      local windowId = window and window:id() or nil
+      local paneId, paneError = focusedTerminalTargetId(kind, app:pid(), windowId)
       if not paneId then
         hs.printf("[prompt-insert] %s", paneError)
-        stopPromptInsert("Prompt insertion requires a focused WezTerm pane")
+        -- 포커스 탓으로 말하지 않는다. 실제로는 remote control이 안 열린 경우가 많다.
+        stopPromptInsert("Prompt insertion failed: " .. tostring(paneError))
         return
       end
 
       target = {
+        kind = kind,
         appPid = app:pid(),
-        windowId = window and window:id() or nil,
+        windowId = windowId,
         paneId = paneId,
       }
     elseif not promptTargetIsFocused(target) then
       stopPromptInsert("Prompt insertion stopped: focus changed")
       return
     else
-      local paneId = focusedWezTermPaneId(target.appPid)
+      local paneId = focusedTerminalTargetId(target.kind, target.appPid, target.windowId)
       if paneId ~= target.paneId then
         stopPromptInsert("Prompt insertion stopped: terminal pane changed")
         return
@@ -752,8 +756,14 @@ local function pastePromptPaced(text)
       byteIndex = #text + 1
     end
 
-    -- /usr/bin/env -u: hs.task은 env를 못 바꾸므로 (물려받은 stale socket 참고, 파일 상단)
-    local task = hs.task.new("/usr/bin/env", function(exitCode, _, stderr)
+    -- 텍스트는 stdin으로 넣어서 escape 해석 없이 그대로 보낸다 (terminal.lua 참고)
+    local program, arguments = terminal.sendTextArgv(target.kind, target.appPid, target.paneId)
+    if not program then
+      stopPromptInsert("Prompt insertion failed: unknown terminal")
+      return
+    end
+
+    local task = hs.task.new(program, function(exitCode, _, stderr)
       promptInsertTask = nil
 
       if not promptInsertActive then
@@ -761,7 +771,7 @@ local function pastePromptPaced(text)
       end
 
       if exitCode ~= 0 then
-        hs.printf("[prompt-insert] wezterm send-text failed: %s", tostring(stderr))
+        hs.printf("[prompt-insert] %s send-text failed: %s", target.kind, tostring(stderr))
         stopPromptInsert("Prompt insertion failed; see the Hammerspoon console")
         return
       end
@@ -771,10 +781,10 @@ local function pastePromptPaced(text)
       else
         stopPromptInsert()
       end
-    end, { "-u", "WEZTERM_UNIX_SOCKET", WEZTERM_CLI, "cli", "--no-auto-start", "send-text", "--pane-id", target.paneId })
+    end, arguments)
 
     if not task then
-      stopPromptInsert("Prompt insertion failed: could not start wezterm cli")
+      stopPromptInsert("Prompt insertion failed: could not start " .. target.kind .. " cli")
       return
     end
 
@@ -782,7 +792,7 @@ local function pastePromptPaced(text)
     task:setInput(chunk)
     if not task:start() then
       promptInsertTask = nil
-      stopPromptInsert("Prompt insertion failed: could not run wezterm cli")
+      stopPromptInsert("Prompt insertion failed: could not run " .. target.kind .. " cli")
       return
     end
   end
@@ -833,6 +843,76 @@ local function runShell(command)
   hs.task.new("/bin/bash", nil, { "-lc", path .. command }):start()
 end
 
+local tmuxRestoreAgentsMenu = require("tmux_restore_agents_menu")
+local tmuxRestoreAgentsHome = os.getenv("HOME")
+local tmuxRestoreAgentsPath = tmuxRestoreAgentsHome
+  .. "/.local/bin:"
+  .. tmuxRestoreAgentsHome
+  .. "/.bun/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+if _G.tmuxRestoreAgentsMenuController then
+  _G.tmuxRestoreAgentsMenuController:stop()
+  _G.tmuxRestoreAgentsMenuController = nil
+end
+
+_G.tmuxRestoreAgentsMenuController = tmuxRestoreAgentsMenu.new({
+  alert = function(message)
+    hs.alert.show(message)
+  end,
+  listDirectory = function(path)
+    local ok, iterate, directory = pcall(hs.fs.dir, path)
+    if not ok or not iterate then
+      return nil
+    end
+    local entries = {}
+    for entry in iterate, directory do
+      entries[#entries + 1] = entry
+    end
+    return entries
+  end,
+  readFile = function(path)
+    local file = io.open(path, "r")
+    if not file then
+      return nil
+    end
+    local contents = file:read("*a")
+    file:close()
+    return contents
+  end,
+  decodeJson = function(text)
+    local ok, value = pcall(hs.json.decode, text)
+    if ok then
+      return value
+    end
+    return nil
+  end,
+  newTask = function(executable, callback, arguments)
+    local task = hs.task.new(executable, callback, arguments)
+    if task then
+      local environment = task:environment()
+      environment.PATH = tmuxRestoreAgentsPath
+      environment.COLORTERM = "truecolor"
+      environment.NO_COLOR = nil
+      environment.TERM = "wezterm"
+      environment.TMUX = nil
+      environment.TMUX_PANE = nil
+      environment.WEZTERM_UNIX_SOCKET = nil
+      task:setEnvironment(environment)
+    end
+    return task
+  end,
+}, {
+  uv = "/opt/homebrew/bin/uv",
+  tmux = "/opt/homebrew/bin/tmux",
+  wezterm = terminal.WEZTERM_CLI,
+  open = "/usr/bin/open",
+  weztermBundleId = "com.github.wez.wezterm",
+  env = "/usr/bin/env",
+  checkout = tmuxRestoreAgentsHome .. "/project/lazarus",
+  home = tmuxRestoreAgentsHome,
+  stateDir = tmuxRestoreAgentsHome .. "/.tmux-restore-agents",
+})
+
 local function promptMenuItems()
   local items = {}
   for _, p in ipairs(PROMPTS) do
@@ -867,11 +947,17 @@ local function installSketchybarCompareMenubars()
   end
 
   replaceCompareMenubar("reload", "Reload", "sketchybar-compare-reload", "Hammerspoon native reload menu", function()
-    return {
+    local items = {
       {
         title = "Reload SketchyBar",
         fn = function()
           runShell("sketchybar --reload")
+        end,
+      },
+      {
+        title = "Restart SketchyBar",
+        fn = function()
+          runShell("brew services restart sketchybar")
         end,
       },
       {
@@ -895,7 +981,15 @@ local function installSketchybarCompareMenubars()
           runShell('BUTTON=left NAME=gaming_stop "$HOME/.config/sketchybar/plugins/gaming_stop.sh" stop')
         end,
       },
+      {
+        title = "-",
+      },
     }
+
+    for _, item in ipairs(_G.tmuxRestoreAgentsMenuController:menuItems()) do
+      items[#items + 1] = item
+    end
+    return items
   end)
 
   replaceCompareMenubar("prompts", "Prompts", "sketchybar-compare-prompts", "Hammerspoon native prompts menu", function()

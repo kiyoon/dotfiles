@@ -25,7 +25,6 @@ if [[ $OSTYPE == "darwin"* ]]; then
   brew install zoxide
   brew install fzf
   brew install pipx
-  brew install thefuck
   brew install starship
 
   # $PIP3 install --user --break-system-packages pygments # colorize (ccat)
@@ -78,7 +77,6 @@ else
   fi
 
   # $PIP3 install --user --break-system-packages pygments # colorize (ccat)
-  uv tool install --python 3.11 thefuck
   # $PIP3 install --user --break-system-packages pillow   # my custom ranger viu image viewer uses this
 
   # install ranger from github

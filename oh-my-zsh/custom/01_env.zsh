@@ -233,3 +233,7 @@ zle -N zvm_bracketed_paste_in_insert
 bindkey -M vicmd '^[[200~' zvm_bracketed_paste_in_insert
 bindkey -M viins '^[[200~' bracketed-paste
 ## End of zsh-vi-mode paste bug fix
+
+if (($+commands[mise])); then
+  eval "$(mise activate)"
+fi

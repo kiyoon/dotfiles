@@ -151,7 +151,6 @@ plugins=(
 	gh
 	fzf
 	zoxide
-	thefuck
 
 	# The below are implemented on my own (customised)
 	# copypath

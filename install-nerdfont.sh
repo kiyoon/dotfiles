@@ -6,6 +6,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	brew tap homebrew/cask-fonts
 	brew install font-jetbrains-mono-nerd-font
 	brew install font-fira-code
+	# kitty falls back to Apple Color Emoji; wezterm uses its built-in Noto.
+	# kitty/kitty.conf symbol_map points emoji at this to match wezterm.
+	brew install --cask font-noto-color-emoji
     # brew install font-cascadia-code-nf
     # brew install font-caskaydia-cove-nerd-font
 else

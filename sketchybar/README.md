@@ -155,7 +155,9 @@ AeroSpace** actions. Stop leaves an intentional-stop marker so automatic
 display recovery cannot relaunch AeroSpace during a native-fullscreen session;
 Start / Restart clears the marker. It also contains **Stop Windows gaming
 session**, whose progress and result appear temporarily at the far-left edge of
-SketchyBar. The AeroSpace CLI equivalents are:
+SketchyBar. Directly below that action are tmux actions that can save the latest
+`main` snapshot and stop tmux, or resume the latest `main` or `cron` snapshot.
+The AeroSpace CLI equivalents are:
 
 ```bash
 ~/.config/aerospace/scripts/restart.sh stop

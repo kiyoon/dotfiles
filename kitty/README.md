@@ -20,6 +20,7 @@ Same as the wezterm config:
 - `Shift+Enter`: send CSI-u `ESC[13;2u` so tmux can forward it (Codex multiline)
 - `Cmd+Shift+R`: reload config
 - `Cmd+Shift+F2` / `Cmd+Shift+F3`: previous tab, `Cmd+Shift+F6`: next tab
+- `Cmd+1`..`Cmd+9`: go to that tab; the number is the one the tab shows
 - `Ctrl+Shift+Left/Right`: move tab
 - `Cmd+Shift+D`: detach pane into a new window, `Cmd+Shift+C`: into a new tab
 - `Ctrl+Shift+Alt+|`: split pane right, `Ctrl+Shift+Alt+_`: split pane down

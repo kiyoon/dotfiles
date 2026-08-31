@@ -1,6 +1,4 @@
-# Copy this file to 00_keys.zsh and fill in your API keys
-# This file is used when 00_keys.zsh is not loaded (so nvim chatgpt wouldn't throw an error)
-export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# Copy this file to 00_keys.zsh for local changes.
 
 # export LANGUAGE=es:it:pt_BR:fr:en
 # export LANG=es_ES.UTF-8

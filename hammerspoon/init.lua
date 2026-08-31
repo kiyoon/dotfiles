@@ -898,6 +898,16 @@ _G.tmuxRestoreAgentsMenuController = tmuxRestoreAgentsMenu.new({
     end
     return nil
   end,
+  ---실행 중인 kitty의 remote control 소켓. kitty는 pid마다 따로 listen하므로
+  ---(kitty.conf `listen_on unix:/tmp/kitty`) attach할 때마다 새로 찾는다.
+  kittySocket = function()
+    local apps = hs.application.applicationsForBundleID("net.kovidgoyal.kitty")
+    local app = apps and apps[1]
+    if not app then
+      return nil
+    end
+    return terminal.kittySocket(app:pid())
+  end,
   newTask = function(executable, callback, arguments)
     local task = hs.task.new(executable, callback, arguments)
     if task then
@@ -905,7 +915,10 @@ _G.tmuxRestoreAgentsMenuController = tmuxRestoreAgentsMenu.new({
       environment.PATH = tmuxRestoreAgentsPath
       environment.COLORTERM = "truecolor"
       environment.NO_COLOR = nil
-      environment.TERM = "wezterm"
+      -- tmux.conf sets default-terminal "${TERM}", so the TERM this background
+      -- task creates the server with is the TERM every restored pane gets.
+      -- environment.TERM = "wezterm"
+      environment.TERM = "xterm-kitty"
       environment.TMUX = nil
       environment.TMUX_PANE = nil
       environment.WEZTERM_UNIX_SOCKET = nil
@@ -916,9 +929,11 @@ _G.tmuxRestoreAgentsMenuController = tmuxRestoreAgentsMenu.new({
 }, {
   uv = "/opt/homebrew/bin/uv",
   tmux = "/opt/homebrew/bin/tmux",
-  wezterm = terminal.WEZTERM_CLI,
+  -- wezterm = terminal.WEZTERM_CLI,
+  kitten = terminal.KITTEN_CLI,
   open = "/usr/bin/open",
-  weztermBundleId = "com.github.wez.wezterm",
+  -- weztermBundleId = "com.github.wez.wezterm",
+  kittyBundleId = "net.kovidgoyal.kitty",
   env = "/usr/bin/env",
   checkout = tmuxRestoreAgentsHome .. "/project/tmux-restore-agents",
   home = tmuxRestoreAgentsHome,

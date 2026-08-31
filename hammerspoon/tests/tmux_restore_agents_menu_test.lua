@@ -45,6 +45,12 @@ local function harness(options)
     decodeJson = function(text)
       return (options.json or {})[text]
     end,
+    kittySocket = function()
+      if options.noKitty then
+        return nil
+      end
+      return "/tmp/kitty-4242"
+    end,
     now = function()
       return options.now or 1787804000
     end,
@@ -63,7 +69,7 @@ local function harness(options)
           local stdout = ""
           if self.executable == "/tmux" and self.arguments[1] == "show-environment" then
             stdout = "TMUX_RESTORE_AGENTS_ATTACH_SESSION_ID=$5\n"
-          elseif self.executable == "/wezterm" then
+          elseif self.executable == "/kitten" then
             stdout = "42\n"
           end
           self:complete(0, stdout, "")
@@ -87,9 +93,9 @@ local function harness(options)
   local controller = menuModule.new(deps, {
     uv = "/uv",
     tmux = "/tmux",
-    wezterm = "/wezterm",
+    kitten = "/kitten",
     open = "/open",
-    weztermBundleId = "com.example.WezTerm",
+    kittyBundleId = "net.example.kitty",
     env = "/env",
     checkout = "/checkout",
     home = "/home/user",
@@ -221,7 +227,7 @@ test("submenu entries resume their exact snapshot", function()
   assertEqual(alerts[#alerts], "Restoring main tmux snapshot from 30m ago...", "submenu restoring alert")
   completeRestore(tasks, "$5")
   assertEqual(alerts[#alerts], "Restored main snapshot from 30m ago; attaching $5...", "submenu restored alert")
-  assertEqual(tasks[3].executable, "/wezterm", "submenu resume attaches")
+  assertEqual(tasks[3].executable, "/kitten", "submenu resume attaches")
 end)
 
 test("cron submenu entries resume with the cron tag", function()
@@ -317,6 +323,7 @@ test("main capture kills tmux only after a successful snapshot", function()
     UV_PREFIX[5],
     "snapshot",
     "--require-write",
+    "--no-skip-agentless",
   }, "main snapshot")
   assertEqual(#tasks, 1, "tmux remains alive during capture")
 
@@ -365,14 +372,14 @@ test("completed restore reads its attach target and opens an existing GUI", func
   assertEqual(tasks[2].executable, "/tmux", "attach target query executable")
   assertArguments(tasks[2].arguments, { "show-environment", "-g", ATTACH_ENVIRONMENT }, "attach target query")
   tasks[2]:complete(0, ATTACH_ENVIRONMENT .. "=$5\n", "")
-  assertEqual(tasks[3].executable, "/wezterm", "existing GUI executable")
+  assertEqual(tasks[3].executable, "/kitten", "existing GUI executable")
   assertArguments(tasks[3].arguments, {
-    "cli",
-    "--no-auto-start",
-    "spawn",
-    "--cwd",
-    "/home/user",
-    "--",
+    "@",
+    "--to",
+    "unix:/tmp/kitty-4242",
+    "launch",
+    "--type=tab",
+    "--cwd=/home/user",
     "/env",
     "-u",
     "NO_COLOR",
@@ -398,7 +405,7 @@ test("immediate terminal spawn completion cannot leave a stale lock", function()
   assertEqual(#tasks, 6, "both immediate restore chains start")
 end)
 
-test("missing WezTerm socket falls back to a new GUI process", function()
+test("missing kitty socket falls back to a new GUI process", function()
   local controller, tasks, alerts = harness()
   assertEqual(controller:resume("main"), true, "background restore starts")
   completeRestore(tasks, "$5")
@@ -409,12 +416,9 @@ test("missing WezTerm socket falls back to a new GUI process", function()
   assertArguments(tasks[4].arguments, {
     "-n",
     "-b",
-    "com.example.WezTerm",
+    "net.example.kitty",
     "--args",
-    "start",
-    "--cwd",
-    "/home/user",
-    "--",
+    "--directory=/home/user",
     "/env",
     "-u",
     "NO_COLOR",
@@ -428,9 +432,22 @@ test("missing WezTerm socket falls back to a new GUI process", function()
     "-t",
     "$5",
   }, "new GUI fallback")
-  assertEqual(alerts[#alerts], "No running WezTerm; opening a new window...", "fallback alert")
+  assertEqual(alerts[#alerts], "No running kitty; opening a new window...", "fallback alert")
 
   tasks[4]:complete(0)
+  assertEqual(controller:resume("cron"), true, "completed GUI launch releases the lock")
+end)
+
+test("no running kitty opens a new GUI without a remote control attempt", function()
+  local controller, tasks, alerts = harness({ noKitty = true })
+  assertEqual(controller:resume("main"), true, "background restore starts")
+  completeRestore(tasks, "$5")
+
+  assertEqual(#tasks, 3, "a missing kitty skips the remote control task")
+  assertEqual(tasks[3].executable, "/open", "attach goes straight to LaunchServices")
+  assertEqual(alerts[#alerts], "No running kitty; opening a new window...", "fallback alert")
+
+  tasks[3]:complete(0)
   assertEqual(controller:resume("cron"), true, "completed GUI launch releases the lock")
 end)
 
@@ -505,14 +522,14 @@ test("tmux actions are appended below gaming stop in the reload menu", function(
   assertEqual(init:find('replaceCompareMenubar("tmux"', 1, true), nil, "standalone Tmux menu must be removed")
   assert(init:find("environment.NO_COLOR = nil", 1, true), "restore task must remove NO_COLOR")
   assert(
-    init:find('environment.TERM = "wezterm"', 1, true),
-    "background restore must create a WezTerm-capable tmux server"
+    init:find('environment.TERM = "xterm-kitty"', 1, true),
+    "background restore must create a kitty-capable tmux server"
   )
   assert(init:find("environment.TMUX = nil", 1, true), "background restore must not inherit a parent tmux client")
   assert(init:find('open = "/usr/bin/open"', 1, true), "missing-GUI fallback must use LaunchServices")
   assert(
-    init:find('weztermBundleId = "com.github.wez.wezterm"', 1, true),
-    "missing-GUI fallback must target the installed WezTerm bundle"
+    init:find('kittyBundleId = "net.kovidgoyal.kitty"', 1, true),
+    "missing-GUI fallback must target the installed kitty bundle"
   )
   assert(
     init:find('stateDir = tmuxRestoreAgentsHome .. "/.tmux-restore-agents"', 1, true),

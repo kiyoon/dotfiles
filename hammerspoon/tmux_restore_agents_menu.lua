@@ -86,14 +86,19 @@ function M.new(deps, options)
   assert(type(deps.listDirectory) == "function", "listDirectory dependency is required")
   assert(type(deps.readFile) == "function", "readFile dependency is required")
   assert(type(deps.decodeJson) == "function", "decodeJson dependency is required")
+  -- kitty's remote control socket is per-pid (kitty.conf: listen_on unix:/tmp/kitty),
+  -- so the caller resolves it per attach and returns nil when kitty is not running.
+  assert(type(deps.kittySocket) == "function", "kittySocket dependency is required")
   local now = deps.now or os.time
   options = options or {}
 
   local uv = requireString(options, "uv")
   local tmux = requireString(options, "tmux")
-  local wezterm = requireString(options, "wezterm")
+  -- local wezterm = requireString(options, "wezterm")
+  local kitten = requireString(options, "kitten")
   local open = requireString(options, "open")
-  local weztermBundleId = requireString(options, "weztermBundleId")
+  -- local weztermBundleId = requireString(options, "weztermBundleId")
+  local kittyBundleId = requireString(options, "kittyBundleId")
   local env = requireString(options, "env")
   local checkout = requireString(options, "checkout")
   local home = requireString(options, "home")
@@ -202,7 +207,11 @@ function M.new(deps, options)
 
   function controller:snapshotAndKill()
     deps.alert("Saving main tmux snapshot...")
-    return startTask("tmux snapshot", uv, uvArguments("snapshot", "--require-write"), function(exitCode, stdout, stderr)
+    -- --no-skip-agentless: the CLI drops an agentless capture by default, which
+    -- would make --require-write fail and leave the server running in exactly the
+    -- case this menu item is for -- stopping tmux after the agents are gone.
+    local snapshotArguments = uvArguments("snapshot", "--require-write", "--no-skip-agentless")
+    return startTask("tmux snapshot", uv, snapshotArguments, function(exitCode, stdout, stderr)
       if exitCode ~= 0 then
         deps.alert("tmux snapshot failed: " .. taskError(stdout, stderr))
         return
@@ -225,9 +234,9 @@ function M.new(deps, options)
       assert(type(snapshot.age) == "string" and snapshot.age ~= "", "invalid snapshot age")
     end
     -- The Python package is terminal-emulator agnostic. This personal desktop
-    -- adapter completes restore in a short background task, then asks an
-    -- existing WezTerm GUI to attach. If none exists, LaunchServices starts a
-    -- new GUI without making hs.task own its lifetime.
+    -- adapter completes restore in a short background task, then asks a running
+    -- kitty to open a tab on it. If none is running, LaunchServices starts a new
+    -- GUI without making hs.task own its lifetime.
     local function launchAttach(sessionId)
       local attachArguments = {
         env,
@@ -244,43 +253,58 @@ function M.new(deps, options)
         sessionId,
       }
 
-      local spawnArguments = {
-        "cli",
-        "--no-auto-start",
-        "spawn",
-        "--cwd",
-        home,
-        "--",
-      }
-      for _, argument in ipairs(attachArguments) do
-        spawnArguments[#spawnArguments + 1] = argument
-      end
-
+      -- WezTerm equivalents, kept for switching back:
+      --   spawn: wezterm { "cli", "--no-auto-start", "spawn", "--cwd", home, "--", attach... }
+      --   open:  open { "-n", "-b", weztermBundleId, "--args", "start", "--cwd", home, "--", attach... }
+      -- kitty takes the program to run as trailing arguments, so no "--" separator.
       local openArguments = {
         "-n",
         "-b",
-        weztermBundleId,
+        kittyBundleId,
         "--args",
-        "start",
-        "--cwd",
-        home,
-        "--",
+        "--directory=" .. home,
       }
       for _, argument in ipairs(attachArguments) do
         openArguments[#openArguments + 1] = argument
       end
 
-      startTask("tmux attach", wezterm, spawnArguments, function(exitCode)
-        if exitCode == 0 then
-          return
-        end
-
-        deps.alert("No running WezTerm; opening a new window...")
-        startTask("new WezTerm tmux attach", open, openArguments, function(openExitCode, stdout, stderr)
+      local function openNewWindow()
+        startTask("new kitty tmux attach", open, openArguments, function(openExitCode, stdout, stderr)
           if openExitCode ~= 0 then
             deps.alert("Could not open restored tmux: " .. taskError(stdout, stderr))
           end
         end)
+      end
+
+      local socket = deps.kittySocket()
+      if not socket then
+        deps.alert("No running kitty; opening a new window...")
+        openNewWindow()
+        return
+      end
+
+      -- --type=tab matches `wezterm cli spawn` without --new-window: a running
+      -- terminal gets a tab, not a second OS window. (kitty's own default,
+      -- --type=window, would split the active tab instead.)
+      local spawnArguments = {
+        "@",
+        "--to",
+        "unix:" .. socket,
+        "launch",
+        "--type=tab",
+        "--cwd=" .. home,
+      }
+      for _, argument in ipairs(attachArguments) do
+        spawnArguments[#spawnArguments + 1] = argument
+      end
+
+      startTask("tmux attach", kitten, spawnArguments, function(exitCode)
+        if exitCode == 0 then
+          return
+        end
+
+        deps.alert("No running kitty; opening a new window...")
+        openNewWindow()
       end)
     end
 

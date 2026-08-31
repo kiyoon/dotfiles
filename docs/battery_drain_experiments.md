@@ -3,7 +3,7 @@
 Status: **ongoing**  
 Timezone for every wall-clock timestamp: **Asia/Seoul (KST, UTC+09:00)**  
 Investigation started: 2026-08-25  
-Last durable update: 2026-08-28, immediately before a planned reboot
+Last durable update: 2026-08-28 21:00 KST, after the post-reboot trial E-20260828-1
 
 This is the durable source of truth for the battery investigation. Append new
 experiments; do not silently replace old measurements when the interpretation
@@ -40,8 +40,9 @@ percentage:
 The most defensible working model is a mixed regression: workload and/or display
 rendering is a large variable component; the desktop stack may add overhead; and
 the degraded, manually capped battery turns the watt increase into very short
-wall-clock runtime. A reboot followed by counterbalanced measurements is the next
-step.
+wall-clock runtime. The post-reboot trial E-20260828-1 measured the full all-on
+stack at 13.87 W, below every 2026-08-26 trial, but under a lighter and unmatched
+workload; a workload-matched replicate is now the blocking next step.
 
 ## Battery and machine context
 
@@ -51,7 +52,8 @@ step.
 | Battery health on 2026-08-25    | 77% maximum capacity, 795 cycles, Service Recommended                                                    |
 | Battery health on 2026-08-28    | 77% maximum capacity, 800 cycles, Service Recommended                                                    |
 | Manual charge limit             | 80%                                                                                                      |
-| Displays during the latest work | Built-in Retina Display plus two LG ULTRAFINE displays                                                   |
+| Displays, pre-reboot desk state  | Built-in Retina Display plus two LG ULTRAFINE displays (as snapshotted 2026-08-28 13:25)                 |
+| Displays during controlled tests | Built-in display only. The 2026-08-26 A/B/C tests and the 2026-08-28 post-reboot trial ran laptop-only.  |
 | Relevant versions               | AeroSpace 0.21.1-Beta; SketchyBar 2.24.0; Hammerspoon 1.1.1; tmux 3.7c; WezTerm 20251111-071056-118802c2 |
 
 At a charge limit of 80%, a battery with 77% of original capacity starts with at
@@ -193,6 +195,15 @@ comparison.
 
 Application states were checked at the boundaries. `pp/h` means displayed
 percentage points per hour.
+
+**Display-condition correction, recorded 2026-08-28.** These three tests ran with
+the built-in display only, not with the two LG ULTRAFINE displays attached. This
+was reported by the user on 2026-08-28 and was not stated in the original write-up.
+The measurements themselves are unchanged; only the recorded condition is
+corrected. The practical consequence is that A/B/C and the 2026-08-28 post-reboot
+trial share a display condition and may be compared with each other, while none of
+them measures the three-display desk configuration. External-display cost is
+therefore still entirely unmeasured.
 
 | Test | Exact interval             | AeroSpace                    | SketchyBar + helpers               | Hammerspoon | UI change                                                   |      Drain | Finalized SystemPower | PowerLog direct sample mean |            BDC direct sample mean |
 | ---- | -------------------------- | ---------------------------- | ---------------------------------- | ----------- | ----------------------------------------------------------- | ---------: | --------------------: | --------------------------: | --------------------------------: |
@@ -658,6 +669,11 @@ SketchyBar's high-frequency stats/recording items.
 | tmux and SketchyBar GPU meters are equivalent                    | Rejected: tmux uses `powermetrics` and is about 12-14x costlier per update.          |
 | tmux GPU polling caused the July 2026 onset                      | Not supported by config history; it was enabled in December 2024.                    |
 | The migration day is unrelated                                   | Not established; July 6 correlation is strong enough to test rigorously.             |
+| The stack must cost about 22 W                                    | Rejected by E-20260828-1: all-on measured 13.87 W mean, 10.05 W median.              |
+| Rebooting fixed the regression                                    | Not established: E-20260828-1's workload was lighter than 2026-08-26 and unmatched.  |
+| The 2026-08-26 tests used external displays                       | Rejected: they were built-in-display-only, per the user on 2026-08-28.               |
+| External-display cost has been measured                           | Rejected: no trial has ever run with the two LG displays attached.                   |
+| App toggles are interpretable without a workload control          | Rejected: the measured observer effect, about 30 W, exceeds every app delta so far.  |
 
 ## Append-only experiment template
 
@@ -692,6 +708,207 @@ Summary row to append:
 | ID           | Exact interval KST | A      | SB     | HS     | UI start/end | Warm-up | SystemPower | Direct W | Notes                      |
 | ------------ | ------------------ | ------ | ------ | ------ | ------------ | ------- | ----------- | -------- | -------------------------- |
 | E-YYYYMMDD-N | start-end          | on/off | on/off | on/off | x% -> y%     | 10 min  | x.xx W      | x.xx W   | verified state/confounders |
+
+## Experiments after the 2026-08-28 reboot
+
+### E-20260828-1: all-on baseline after a clean reboot
+
+Status: **complete**.
+
+- Hypothesis: a fresh boot does not by itself return the machine to the
+  pre-July-6 power level. This trial also fills the all-on cell that 2026-08-26
+  never measured: A, B, and C each had at least one component stopped.
+- Exact start (KST): `2026-08-28 19:54:33 +0900`
+- Exact end (KST): `2026-08-28 20:56:19 +0900`; duration 3706 s (1h01m46s)
+- Planned state: AeroSpace on, SketchyBar+helpers on, Hammerspoon on. This is
+  matrix state `11` with Hammerspoon additionally on.
+- Verified start PIDs: AeroSpace 27590; sketchybar 656; Hammerspoon 743;
+  `input_watcher` 1029; `bluetooth_boucles_watcher` 927;
+  `codexbar_usage_watcher` 1297. Exactly one of each. AeroSpace manual-stop
+  marker absent. Homebrew service `sketchybar` loaded and running, PID 656.
+- Battery at 19:52:55: UI 76%, `AppleRawCurrentCapacity` 3174,
+  `AppleRawMaxCapacity` 4376, temperature 30.35 C, 800 cycles, 77% maximum
+  capacity, Service Recommended.
+- Displays: **built-in only**, `Built-in Liquid Retina XDR Display`, 3024x1964
+  native. Both LG ULTRAFINE displays physically absent. AeroSpace, SketchyBar,
+  and `system_profiler` all agree on one display, so this is not the transient
+  SketchyBar display-registration fault described earlier in this document.
+- Other controls: Low Power Mode off; Wi-Fi on; Bluetooth on; Amphetamine
+  running (PID 715) with `caffeinate` assertions held; `displaysleep` 60;
+  no tmux server running at start; brightness `rawBrightness` 1488 of 2047 and
+  381794 of 1599999 milliNits.
+- Workload: **normal interactive work**, deliberately not an idle baseline. An
+  active Claude Code session is part of the measured load. See the warning below.
+
+#### Boot, unplug, and sleep chronology
+
+The unplug was not performed after a state record, so the enclosing discharge
+session must not be used as the experiment interval.
+
+| Time (KST)  | Event                                                                          |
+| ----------- | ------------------------------------------------------------------------------ |
+| ~17:45      | Boot. Uptime was 2h01m at 19:46.                                               |
+| 17:45-18:01 | On AC. PowerLog `ExternalConnected=1`, roughly 8.6-24.0 W.                     |
+| 18:01:04    | Unplug. Last `ExternalConnected=1` sample 18:01:03.                            |
+| 18:01-19:44 | Lid closed. Repeated `Maintenance Sleep`; UI level pinned at 80%; 0.13-0.52 W. |
+| 19:44:33    | `Wake from Deep Idle [CDNVA] ... lid SMC.OutboxNotEmpty/HID Activity`.         |
+| 19:44:33-19:54:33 | Warm-up, discarded from the primary average.                            |
+| 19:54:33    | Measured interval begins.                                                      |
+
+The 103-minute sleep consumed no meaningful charge, so the trial still starts
+from a full 80% cap. Any average computed across 18:01-19:44 would be invalid.
+
+#### Observer effect measured directly
+
+Investigation commands are themselves a large load and must be excluded:
+
+| Time (KST) | Level | SystemPower | Direct V x I | Concurrent activity                          |
+| ---------- | ----: | ----------: | -----------: | -------------------------------------------- |
+| 19:44:58   |   80% |     14.53 W |      15.28 W | post-wake settle, no commands issued         |
+| 19:45:58   |   80% |     17.16 W |      17.10 W | light commands                               |
+| 19:46:58   |   80% |     47.21 W |      48.67 W | `system_profiler`, `pmset -g log`, `ioreg`   |
+| 19:47:42   |   79% |      47.80 W |     47.10 W | same                                          |
+
+`claude` was measured at 97.1% CPU during that window. Diagnostic commands cost
+roughly 30 W over the post-wake idle level. This is why the ten-minute warm-up
+discard starts after the diagnostics, and it is a concrete instance of the
+variability warning recorded earlier in this document. Do not run
+`system_profiler`, `pmset -g log`, `powermetrics`, or wide `ioreg` sweeps inside
+a measured interval.
+
+#### Result
+
+Extracted with the reproducible clipped last-sample-hold query defined in this
+document, so it is directly comparable to future trials but not necessarily to
+the legacy 2026-08-26 finalized figures.
+
+| Field                            | Value                                |
+| -------------------------------- | ------------------------------------ |
+| Samples                          | 71 weighted; 76 in the raw range     |
+| Covered seconds                  | 3706.0 of 3706 (100%)                |
+| Maximum sample gap               | 313.4 s, at the leading boundary hold |
+| **Time-weighted `SystemPower`**  | **13.87 W**                          |
+| Direct V x I, time-weighted      | 14.09 W                              |
+| Median sample                    | 10.05 W                              |
+| p25 / p75                        | 8.65 W / 17.79 W                     |
+| Observed range                   | 7.33-46.17 W                         |
+| UI level                         | 75% -> 50%, 24.29 pp/h               |
+| Battery temperature start/end    | 30.35 C / 30.28 C                    |
+| `AppleRawCurrentCapacity`        | 3174 -> 2012                         |
+
+Verified end state: all six processes held their start PIDs for the whole
+interval (AeroSpace 27590, sketchybar 656, Hammerspoon 743, `input_watcher` 1029,
+`bluetooth_boucles_watcher` 927, `codexbar_usage_watcher` 1297). Manual-stop
+marker still absent, one display throughout, and `pmset -g log` shows no Sleep,
+Wake, or DarkWake inside the interval. The trial is clean on state control.
+
+#### Comparison with 2026-08-26
+
+All four trials share the built-in-display-only condition.
+
+| Trial        | AeroSpace | SketchyBar | Hammerspoon | SystemPower | Direct W | Median W |       Drain |
+| ------------ | --------- | ---------- | ----------- | ----------: | -------: | -------: | ----------: |
+| A            | off       | on         | on          |     25.16 W |  24.61 W |  24.29 W | 51.26 pp/h |
+| B            | on        | off        | on          |     22.05 W |  22.98 W |        - | 43.59 pp/h |
+| C            | on        | off        | off         |     18.09 W |  18.79 W |  18.49 W | 31.79 pp/h |
+| E-20260828-1 | **on**    | **on**     | **on**      | **13.87 W** |  14.09 W |  10.05 W | 24.29 pp/h |
+
+The all-on state after a clean reboot drew less than every 2026-08-26 trial,
+including Test C, which had both SketchyBar and Hammerspoon stopped. It is also
+close to the pre-regression historical baseline of 14.6 W for
+2026-06-25 through 2026-07-05.
+
+#### Interpretation, and what this trial cannot prove
+
+**This is not a demonstration that rebooting fixed the regression.** The workload
+was not matched to 2026-08-26, and the sample distribution shows why:
+
+- This trial's median was 10.05 W against a 13.87 W mean, a strongly
+  right-skewed distribution. The machine was near idle for most of the hour with
+  occasional bursts to 46.17 W.
+- Test A's median was 24.294 W against a 24.901 W unweighted mean, and Test C's
+  median was 18.49 W. Those distributions are much flatter and much higher,
+  meaning sustained load rather than idle punctuated by bursts.
+- Only 19 `UserIsActive` assertion lines appear in the interval, and the
+  operator deliberately issued no commands after the start marker even though
+  the planned workload was "normal interactive work". The realized workload was
+  therefore lighter than planned and lighter than 2026-08-26.
+
+Two hypotheses remain live and this trial does not separate them:
+
+1. Accumulated runtime state matters. The 2026-08-26 tests ran at roughly nine
+   days of uptime with load averages near 10-12, after 151 Hammerspoon recovery
+   restarts and the historical SketchyBar fork/leak defects. A reboot clears
+   that. This is consistent with the app-level toggling on 2026-08-26 having
+   chased the wrong variable.
+2. Workload dominates. A near-idle hour draws about 10 W median whatever the
+   desktop stack is doing, and the 2026-08-26 numbers largely measured active
+   work, not AeroSpace or SketchyBar.
+
+Both predict this result, so it discriminates nothing on its own. What it does
+establish positively is that **the full stack with every component running is
+capable of about 13.9 W mean and about 10 W median on this hardware**, which is
+near the pre-July-6 baseline. Whatever costs 22 W is therefore not an
+unavoidable, intrinsic cost of running AeroSpace plus SketchyBar plus
+Hammerspoon.
+
+The decisive next trial is a workload-matched replicate, not another app toggle:
+repeat this exact all-on configuration at a comparable uptime and under a
+comparable active workload to 2026-08-26. Until a workload control exists, no
+app toggle in the planned 2 x 2 matrix will be interpretable, because the
+observer effect recorded above is larger than every app difference measured so
+far.
+
+| ID           | Exact interval KST  | A  | SB | HS | UI start/end | Warm-up | SystemPower | Direct W | Notes                                                        |
+| ------------ | ------------------- | -- | -- | -- | ------------ | ------- | ----------- | -------- | ------------------------------------------------------------ |
+| E-20260828-1 | 19:54:33-20:56:19   | on | on | on | 75% -> 50%   | 10 min  | 13.87 W     | 14.09 W  | built-in display only; state held; realized workload near idle |
+
+### E-20260828-1c: unbroken continuation to 38%
+
+The user let the discharge continue past the trial endpoint without changing
+anything. All six PIDs were still the originals at 21:17:39, and `pmset -g log`
+records no Sleep, Wake, or DarkWake after the trial began. This is therefore a
+continuation of the same session, not a new trial, and it serves as an
+unplanned replication.
+
+| Segment                       | Interval KST      | Duration | UI level   | SystemPower | Direct W | Median W |     Drain |
+| ----------------------------- | ----------------- | -------- | ---------- | ----------: | -------: | -------: | --------: |
+| E-20260828-1 measured trial   | 19:54:33-20:56:19 | 61m46s   | 75% -> 50% |     13.87 W |  14.09 W |  10.05 W | 24.3 pp/h |
+| Continuation, more operator activity | 20:56:19-21:17:39 | 21m20s   | 48% -> 39% |     15.46 W |  15.64 W |  11.98 W | 25.3 pp/h |
+| **Combined**                  | 19:54:33-21:17:39 | 83m06s   | 75% -> 39% | **14.20 W** |  14.16 W |        - | 26.0 pp/h |
+
+The continuation ran 1.59 W higher than the trial while the operator was
+extracting PowerLog data and editing this document, and its median rose from
+10.05 to 11.98 W. That is the same observer effect recorded above, at a smaller
+magnitude than the 47 W diagnostic spike because the work was lighter. It is
+further evidence that operator activity is a first-order term in these
+measurements.
+
+The important point is the stability of the whole 83 minutes: **14.20 W across
+100 samples with full coverage**, against 18.09-25.16 W for the three
+2026-08-26 trials. A single hour could have been a quiet outlier; 83 unbroken
+minutes with the full stack running and no state change is harder to dismiss.
+The workload caveat from E-20260828-1 still applies in full, and this
+continuation does not remove it.
+
+#### Gauge nonlinearity, quantified
+
+Energy per displayed percentage point, computed as watts divided by pp/h, is not
+constant across these trials:
+
+| Trial                     | W per pp/h, i.e. Wh per displayed point |
+| ------------------------- | --------------------------------------: |
+| 2026-08-26 A              |                                  0.491 |
+| 2026-08-26 B              |                                  0.506 |
+| 2026-08-26 C              |                                  0.569 |
+| E-20260828-1              |                                  0.571 |
+| E-20260828-1 continuation |                                  0.611 |
+
+The spread is about 25%. With `AppleRawMaxCapacity` near 4354 mAh at roughly
+11.5 V, the pack holds about 50 Wh, so one displayed point should be about
+0.50 Wh. The measured values bracket that figure and drift upward as charge
+falls. This is a concrete reason to keep watts, not pp/h, as the primary
+endpoint, exactly as this document already requires.
 
 ## Related repository files
 

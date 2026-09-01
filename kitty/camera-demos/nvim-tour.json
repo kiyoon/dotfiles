@@ -13,12 +13,12 @@
       "y": "top",
       "tilt_x": 2.0,
       "tilt_y": -1.0,
-      "duration": 0.8,
+      "duration": 0.2,
       "easing": "smoothstep"
     },
     {
       "op": "hold",
-      "duration": 3
+      "duration": 0.35
     },
     {
       "op": "camera_to",
@@ -28,17 +28,17 @@
       "y": "bottom",
       "tilt_x": -2.0,
       "tilt_y": 1.0,
-      "duration": 0.8,
+      "duration": 1.0,
       "easing": "smoothstep"
     },
     {
       "op": "hold",
-      "duration": 3
+      "duration": 1.2
     },
     {
       "op": "camera_restore",
-      "duration": 0.8,
-      "easing": "smoothstep"
+      "target": "rest",
+      "duration": 0
     }
   ]
 }

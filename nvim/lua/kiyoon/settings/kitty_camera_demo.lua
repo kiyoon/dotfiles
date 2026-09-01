@@ -3,7 +3,10 @@ local allowed_demo = "nvim-tour"
 
 local function emit_demo(name)
   local osc = ("\27]1337;SetUserVar=camera_demo=%s\7"):format(vim.base64.encode(name))
-  if vim.env.TMUX and vim.env.TMUX ~= "" then
+  local term = vim.env.TERM or ""
+  local through_tmux = vim.env.TMUX and vim.env.TMUX ~= ""
+    and (vim.startswith(term, "tmux") or vim.startswith(term, "screen"))
+  if through_tmux then
     osc = "\27Ptmux;\27" .. osc .. "\27\\"
   end
   vim.api.nvim_ui_send(osc)

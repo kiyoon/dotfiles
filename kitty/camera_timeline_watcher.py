@@ -12,13 +12,13 @@ if TYPE_CHECKING:
 
 
 _TIMELINES = {
-    'nvim-tour': os.path.join(os.path.dirname(__file__), 'camera-demos', 'nvim-tour.json'),
+    'nvim-tour': os.path.join(os.path.dirname(__file__), 'camera-timelines', 'nvim-tour.json'),
 }
 _in_flight: set[int] = set()
 
 
 def on_set_user_var(boss: Boss, window: Window, data: dict[str, Any]) -> None:
-    if data.get('key') != 'camera_demo':
+    if data.get('key') != 'camera_timeline':
         return
     timeline = _TIMELINES.get(data.get('value'))
     window_id = window.id
@@ -28,17 +28,17 @@ def on_set_user_var(boss: Boss, window: Window, data: dict[str, Any]) -> None:
     def on_death(exit_status: int, error: Exception | None) -> None:
         _in_flight.discard(window_id)
         if error is not None:
-            log_error(f'Failed to start camera demo for window {window_id}: {error}')
+            log_error(f'Failed to start camera timeline for window {window_id}: {error}')
         elif exit_status != 0:
-            log_error(f'Camera demo for window {window_id} exited with status {exit_status}')
+            log_error(f'Camera timeline for window {window_id} exited with status {exit_status}')
 
     _in_flight.add(window_id)
     try:
         boss.run_background_process(
-            [kitten_exe(), 'camera-demo', '--match', f'id:{window_id}', timeline],
+            [kitten_exe(), 'camera-timeline', '--match', f'id:{window_id}', timeline],
             allow_remote_control=True,
             notify_on_death=on_death,
         )
     except Exception as error:
         _in_flight.discard(window_id)
-        log_error(f'Failed to start camera demo for window {window_id}: {error}')
+        log_error(f'Failed to start camera timeline for window {window_id}: {error}')

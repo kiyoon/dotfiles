@@ -1,4 +1,3 @@
-local demo_env = "KITTY_CAMERA_DEMO"
 local allowed_demo = "nvim-tour"
 
 local function emit_demo(name)
@@ -15,12 +14,11 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
   callback = function()
-    if vim.env[demo_env] ~= allowed_demo then
+    -- KITTY_WINDOW_ID is inherited through tmux, while other terminals do
+    -- not set it. Headless Nvim has no UI to carry the OSC event.
+    if (vim.env.KITTY_WINDOW_ID or "") == "" or #vim.api.nvim_list_uis() == 0 then
       return
     end
-    vim.env[demo_env] = nil
-    if #vim.api.nvim_list_uis() > 0 then
-      emit_demo(allowed_demo)
-    end
+    emit_demo(allowed_demo)
   end,
 })

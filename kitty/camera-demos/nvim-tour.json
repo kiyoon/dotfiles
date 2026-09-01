@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "steps": [
+    {
+      "op": "camera_begin",
+      "lease": 30
+    },
+    {
+      "op": "camera_to",
+      "fit_columns": 80,
+      "padding_columns": 2,
+      "x": "center",
+      "y": "top",
+      "tilt_x": 2.0,
+      "tilt_y": -1.0,
+      "duration": 0.8,
+      "easing": "smoothstep"
+    },
+    {
+      "op": "hold",
+      "duration": 3
+    },
+    {
+      "op": "camera_to",
+      "fit_columns": 80,
+      "padding_columns": 2,
+      "x": "center",
+      "y": "bottom",
+      "tilt_x": -2.0,
+      "tilt_y": 1.0,
+      "duration": 0.8,
+      "easing": "smoothstep"
+    },
+    {
+      "op": "hold",
+      "duration": 3
+    },
+    {
+      "op": "camera_restore",
+      "duration": 0.8,
+      "easing": "smoothstep"
+    }
+  ]
+}

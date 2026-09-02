@@ -4,23 +4,25 @@
     {
       "op": "camera_begin",
       "lease": 30,
-      "cancel_on_input": false
+      "cancel_on_input": false,
+      "pan_space": "viewport"
     },
     {
       "op": "camera_to",
       "zoom": 1.5,
       "x": "center",
-      "y": 0.3333333333333333,
+      "y": "top",
       "tilt_x": 2.0,
       "tilt_y": -1.0,
-      "duration": 0,
-      "easing": "smoothstep"
+      "duration": 0.5,
+      "easing": "smoothstep",
+      "await": true
     },
     {
       "op": "camera_to",
       "zoom": 1.5,
       "x": "center",
-      "y": 0.6666666666666666,
+      "y": "bottom",
       "tilt_x": -2.0,
       "tilt_y": 1.0,
       "duration": 1.0,

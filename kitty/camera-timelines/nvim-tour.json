@@ -3,12 +3,12 @@
   "steps": [
     {
       "op": "camera_begin",
-      "lease": 30
+      "lease": 30,
+      "cancel_on_input": false
     },
     {
       "op": "camera_to",
-      "fit_columns": 80,
-      "padding_columns": 2,
+      "zoom": 1.5,
       "x": "center",
       "y": "top",
       "tilt_x": 2.0,
@@ -19,8 +19,7 @@
     },
     {
       "op": "camera_to",
-      "fit_columns": 80,
-      "padding_columns": 2,
+      "zoom": 1.5,
       "x": "center",
       "y": "bottom",
       "tilt_x": -2.0,
@@ -32,7 +31,7 @@
     {
       "op": "camera_restore",
       "target": "rest",
-      "duration": 0.35,
+      "duration": 0.6,
       "easing": "smoothstep"
     }
   ]

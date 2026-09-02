@@ -10,18 +10,17 @@
       "op": "camera_to",
       "zoom": 1.5,
       "x": "center",
-      "y": "top",
+      "y": 0.3333333333333333,
       "tilt_x": 2.0,
       "tilt_y": -1.0,
-      "duration": 0.3,
-      "easing": "smoothstep",
-      "await": true
+      "duration": 0,
+      "easing": "smoothstep"
     },
     {
       "op": "camera_to",
       "zoom": 1.5,
       "x": "center",
-      "y": "bottom",
+      "y": 0.6666666666666666,
       "tilt_x": -2.0,
       "tilt_y": 1.0,
       "duration": 1.0,
@@ -31,7 +30,7 @@
     {
       "op": "camera_restore",
       "target": "rest",
-      "duration": 0.6,
+      "duration": 0.8,
       "easing": "smoothstep"
     }
   ]

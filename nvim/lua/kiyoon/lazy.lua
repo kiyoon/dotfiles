@@ -2547,6 +2547,12 @@ return {
     end,
   },
   {
+    "folke/drop.nvim",
+    opts = {
+      -- ...
+    },
+  },
+  {
     "luukvbaal/statuscol.nvim",
     config = function()
       require("kiyoon.statuscol")
@@ -3010,5 +3016,10 @@ return {
       vim.cmd([[autocmd FileType haskell syntax off]])
       vim.cmd([[autocmd FileType haskell TSDisable highlight]])
     end,
+  },
+  {
+    "giusgad/pets.nvim",
+    dependencies = { "MunifTanjim/nui.nvim", "giusgad/hologram.nvim" },
+    opts = {},
   },
 }

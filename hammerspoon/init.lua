@@ -9,6 +9,25 @@ hs.loadSpoon("ChatGPT")
 -- Enables the `hs` command-line tool to talk to Hammerspoon
 require("hs.ipc")
 
+-- ============ 구름 레이아웃 API (PR#923 포크: gureum-cli / distributed notification) ============
+local GUREUM_CLI = "/Library/Input Methods/Gureum.app/Contents/MacOS/gureum-cli"
+local GUREUM_LAYOUT_EVENT = "org.youknowone.gureum.layoutEvent"
+
+---PR#923 포크(gureum-cli 동봉)가 설치돼 있으면 true. 호출할 때마다 확인(stat 1회, µs)해서
+---포크 설치/스톡 복원 직후에도 reload 없이 경로가 바뀐다.
+---@return boolean
+local function gureumHasLayoutAPI()
+  return hs.fs.attributes(GUREUM_CLI) ~= nil
+end
+
+---구름 엔진에 레이아웃 이벤트를 직접 보낸다 (PR#923). 입력 소스 전환이 아니라 구름 내부의
+---changeLayout(.hangul/.roman/.toggle) 경로를 타고, 구름이 selectMode로 소스를 같이 동기화한다.
+---형제 소스 desync가 없고 포커스도 건드리지 않는다. gureum-cli와 같은 notification을 쓴다.
+---@param action "toggle"|"hangul"|"roman"|"hanja"
+local function gureumSend(action)
+  hs.distributednotifications.post(GUREUM_LAYOUT_EVENT, nil, { action = action })
+end
+
 -- 구름입력기 한글 상태에서 hs.keycodes.currentSourceID(GUREUM_EN)로 직접 전환하면
 -- 메뉴바(보고값)만 EN이 되고 실제 조합 엔진은 한글로 남는다 (EN으로 보이는데 한글 입력됨).
 -- 같은 IME 안의 형제 소스 전환에서만 생기는 버그라, 먼저 ABC(다른 IME)로 나갔다가
@@ -21,10 +40,14 @@ local function forceGureumEnglish()
     return
   end
   if cur == GUREUM_KO then
-    hs.keycodes.currentSourceID(APPLE_EN)
+    if gureumHasLayoutAPI() then
+      gureumSend("roman") -- 엔진이 직접 영문으로 바뀌고 selectMode로 소스도 같이 동기화됨
+      return
+    end
+    hs.keycodes.currentSourceID(APPLE_EN) -- (포크 미설치) 형제 소스 desync 회피용 ABC bounce
     hs.timer.usleep(80000)
   end
-  hs.keycodes.currentSourceID(GUREUM_EN)
+  hs.keycodes.currentSourceID(GUREUM_EN) -- 다른 IME/레이아웃에서 진입: 새 활성화라 desync 없음
 end
 
 -- forceGureumEnglish의 반대 방향. 형제 소스 desync는 방향을 가리지 않으므로
@@ -35,10 +58,109 @@ local function forceGureumKorean()
     return
   end
   if cur == GUREUM_EN then
-    hs.keycodes.currentSourceID(APPLE_EN)
+    if gureumHasLayoutAPI() then
+      gureumSend("hangul") -- 엔진이 직접 한글로 바뀌고 selectMode로 소스도 같이 동기화됨
+      return
+    end
+    hs.keycodes.currentSourceID(APPLE_EN) -- (포크 미설치) 형제 소스 desync 회피용 ABC bounce
     hs.timer.usleep(80000)
   end
-  hs.keycodes.currentSourceID(GUREUM_KO)
+  hs.keycodes.currentSourceID(GUREUM_KO) -- 다른 IME/레이아웃에서 진입: 새 활성화라 desync 없음
+end
+
+-- PriType / Ongeul: 이 둘은 입력 소스를 전환하지 않고 자체 모드를 바꾼다.
+-- Hammerspoon이 소스를 직접 전환(currentSourceID)하면
+-- 한글 방향에서 IMK 세션 간섭으로 엔진이 안 따라온다 (메뉴바는 한글, 실제 입력은 영문 →
+-- "english english english then korean"; 2026-09-03 재현). PriType은 right command를 합성해
+-- 보내고, Ongeul은 전용 setMode API를 쓴다. Ongeul에 합성 키를 보내면
+-- 키 탭과 IMK 라이프사이클에 의존해 앱 재설치 후 토글이 멈출 수 있다.
+-- 전제: PriType 설정의 토글 키가 right command(기본값).
+local PRITYPE_KO = "com.pritype.inputmethod.v2.v2"
+local PRITYPE_EN = "com.pritype.inputmethod.v2.v2.english"
+local ONGEUL_KO = "io.github.hiking90.inputmethod.Ongeul"
+local ONGEUL_EN = "io.github.hiking90.inputmethod.Ongeul.English"
+local ONGEUL_SET_MODE_NOTIFICATION = "io.github.hiking90.inputmethod.Ongeul.setMode"
+local RIGHT_COMMAND_KEYCODE = 54 -- kVK_RightCommand (0x36)
+
+-- ============ 기본 입력기 (WezTerm 진입 등 "기본 상태로 강제"할 때 사용) ============
+-- 구름 대신 다른 입력기를 기본으로 쓰고 싶을 때 이 값만 바꾼다: "gureum" | "pritype" | "ongeul"
+local DEFAULT_IME = "gureum"
+local DEFAULT_EN = { gureum = GUREUM_EN, pritype = PRITYPE_EN, ongeul = ONGEUL_EN }
+-- (참고) 기본 입력기의 한글 소스. 한글 방향 소스 전환은 desync가 있어 강제 한글엔 안 씀 — 아래 주석 참고.
+-- local DEFAULT_KO = { gureum = GUREUM_KO, pritype = PRITYPE_KO, ongeul = ONGEUL_KO }
+
+-- 같은 입력기의 한/영 두 소스 ID는 입력기 종류 감지에만 쓴다.
+-- Ongeul의 TIS 소스는 UserDefaults에 기록된 실제 모드보다 느릴 수 있다.
+local MODE_PAIRS = {
+  { ko = PRITYPE_KO, en = PRITYPE_EN },
+  { ko = ONGEUL_KO, en = ONGEUL_EN },
+}
+
+---현재 소스가 PriType/Ongeul의 한/영 쌍에 속하면 그 쌍을 돌려준다.
+---@param id string
+---@return {ko: string, en: string}|nil
+local function modePairFor(id)
+  for _, pair in ipairs(MODE_PAIRS) do
+    if id == pair.ko or id == pair.en then
+      return pair
+    end
+  end
+  return nil
+end
+
+---PriType의 내부 토글 키(right command)를 합성해 한 번 눌렀다 뗀다.
+local function postIMEInternalToggle()
+  hs.eventtap.event.newKeyEvent({ "cmd" }, RIGHT_COMMAND_KEYCODE, true):post()
+  hs.eventtap.event.newKeyEvent({}, RIGHT_COMMAND_KEYCODE, false):post()
+end
+
+---Request a live Ongeul engine mode change without switching its TIS sibling source.
+---@param mode "korean"|"english"|"toggle"
+local function postOngeulMode(mode)
+  hs.distributednotifications.post(
+    ONGEUL_SET_MODE_NOTIFICATION,
+    "Hammerspoon",
+    { mode = mode }
+  )
+end
+
+---PriType/Ongeul이면 내부 토글로 한<->영을 뒤집고 true, 아니면 false.
+---@return boolean
+local function toggleWithinModePair()
+  local pair = modePairFor(hs.keycodes.currentSourceID())
+  if not pair then
+    return false
+  end
+  if pair.ko == ONGEUL_KO then
+    postOngeulMode("toggle")
+    return true
+  end
+  postIMEInternalToggle()
+  -- PriType 내부 토글은 입력 소스 재선택이 아닐 수 있어 sketchybar 이벤트가 안 뜬다 → 직접 갱신.
+  -- (Ongeul은 modeChanged distributed notification이 있어 워쳐가 알아서 갱신함)
+  if pair.ko == PRITYPE_KO then
+    hs.timer.doAfter(0.15, function()
+      hs.execute("/opt/homebrew/bin/sketchybar --trigger input_change >/dev/null 2>&1", true)
+    end)
+  end
+  return true
+end
+
+---nvim/tmux에서 영문을 확정적으로 강제할 때.
+---Ongeul은 지연될 수 있는 TIS 소스를 판단에 쓰지 않고 idempotent API SET을 보낸다.
+---PriType은 영문 소스가 아닐 때만 소스를 전환해 첫 키 씹힘을 최소화한다.
+local function forceEnglish()
+  local cur = hs.keycodes.currentSourceID()
+  local pair = modePairFor(cur)
+  if pair then
+    if pair.ko == ONGEUL_KO then
+      postOngeulMode("english")
+    elseif cur ~= pair.en then
+      hs.keycodes.currentSourceID(pair.en)
+    end
+    return
+  end
+  forceGureumEnglish()
 end
 
 -- ANSI 패턴 감지(tmux active pane, nvim command/terminal mode)는
@@ -112,12 +234,15 @@ end
 --    (단, title에 vi/nvim/git 등 흔적이 있을 때만 스크랩 -> 일반 shell에서는 바로 한/영 전환)
 --    -> command mode 아닌지 확인 (lualine 왼쪽 "COMMAND" 혹은 오른쪽 "  " 색깔로 구분. tokyonight theme 가정. command mode nvim이 여러개 있지 않다는 가정..)
 --    -> f12
--- 4. 구름입력기이면 cmd shift ctrl space
--- 5. 구름입력기가 아니면 강제로 구름입력기 한글로 전환
-hs.hotkey.bind({}, "f18", function()
+-- 4. PriType/Ongeul이면 같은 입력기 안에서 한<->영 모드 전환
+-- 5. 구름입력기이면 구름 한<->영 (ABC bounce)
+-- 6. 그 외에는 Apple 한<->영, 모르면 Apple 한글로
+-- 한/영 전환 본체. F18에 바인딩되고, `hs -c "toggleInputLanguage()"`로도 호출할 수 있다
+-- (합성 F18은 macOS의 fn+F18 "이전 입력 소스" 단축키와 겹쳐서 테스트/스크립트에 못 쓴다).
+local function toggleInputLanguage()
   local input_source = hs.keycodes.currentSourceID()
   local current_app = hs.application.frontmostApplication()
-  print("current_app: " .. current_app:name())
+  print("[F18] app=" .. current_app:name() .. " src=" .. tostring(input_source))
 
   local term_kind = terminal.kindForAppName(current_app:name())
   if term_kind then
@@ -143,7 +268,7 @@ hs.hotkey.bind({}, "f18", function()
         and output ~= nil
         and not terminal.isNvimCommandMode(term_kind, output)
       then
-        forceGureumEnglish()
+        forceEnglish()
         -- if input_source ~= APPLE_EN then
         --   hs.keycodes.currentSourceID(APPLE_EN)
         -- end
@@ -184,7 +309,7 @@ hs.hotkey.bind({}, "f18", function()
           and not terminal.isNvimTerminalMode(term_kind, output)
         then
           print("not in command/terminal mode")
-          forceGureumEnglish()
+          forceEnglish()
           -- if input_source ~= APPLE_EN then
           --   hs.keycodes.currentSourceID(APPLE_EN)
           -- end
@@ -195,21 +320,35 @@ hs.hotkey.bind({}, "f18", function()
     end
   end
 
-  if input_source == GUREUM_EN then
-    -- 합성 단축키(cmd+shift+ctrl+space)는 macOS가 무시하므로 소스를 직접 바꾼다.
-    -- 터미널로 새는 키가 없어야 zsh-vi-mode가 insert에서 튕겨나오지 않는다.
-    forceGureumKorean()
-  elseif input_source == GUREUM_KO then
-    forceGureumEnglish()
+  -- PriType / Ongeul: 같은 입력기 안에서 한<->영 모드만 바꾼다
+  if toggleWithinModePair() then
+    return
+  end
+
+  if input_source == GUREUM_EN or input_source == GUREUM_KO then
+    if gureumHasLayoutAPI() then
+      -- PR#923 포크: 구름 엔진에 toggle을 직접 보낸다. HS가 본 소스가 stale해도 실제 엔진 상태를 뒤집는다.
+      gureumSend("toggle")
+    elseif input_source == GUREUM_EN then
+      -- 합성 단축키(cmd+shift+ctrl+space)는 macOS가 무시하므로 소스를 직접 바꾼다.
+      -- 터미널로 새는 키가 없어야 zsh-vi-mode가 insert에서 튕겨나오지 않는다.
+      forceGureumKorean()
+    else
+      forceGureumEnglish()
+    end
   elseif input_source == APPLE_EN then
     hs.keycodes.currentSourceID(APPLE_KO)
   elseif input_source == APPLE_KO then
     hs.keycodes.currentSourceID(APPLE_EN)
+  elseif DEFAULT_IME == "gureum" then
+    -- 그 외 소스(Spanish 등 레이아웃)에서 한/영 키: 기본 입력기가 구름이면 구름 한글로 진입
+    forceGureumKorean()
   else
-    -- hs.keycodes.currentSourceID(GUREUM_KO)
     hs.keycodes.currentSourceID(APPLE_KO)
   end
-end)
+end
+_G.toggleInputLanguage = toggleInputLanguage
+hs.hotkey.bind({}, "f18", toggleInputLanguage)
 
 -- WezTerm defaults to Gureum English; KakaoTalk prefers Apple sources.
 -- The old Apple<->Gureum enter/exit mapping is kept commented in mapOnExitWezterm.
@@ -218,6 +357,24 @@ local function setSource(id)
     hs.keycodes.currentSourceID(id)
   end
 end
+
+---기본 입력기(DEFAULT_IME)를 영문으로 강제. 현재 어떤 입력기 상태든 기본 입력기 영문으로 전환.
+---구름은 형제 소스 desync 때문에 ABC bounce가 필요하고, PriType/Ongeul은 영문 소스로 직접 전환한다
+---(영문 방향 전환은 desync가 없음; 한글 방향만 문제라 강제 영문에는 안전).
+local function forceDefaultEnglish()
+  if DEFAULT_IME == "gureum" then
+    forceGureumEnglish()
+  else
+    local en = DEFAULT_EN[DEFAULT_IME]
+    if hs.keycodes.currentSourceID() ~= en then
+      hs.keycodes.currentSourceID(en)
+    end
+  end
+end
+-- `hs -c "forceDefaultEnglish()"` 등 CLI/스크립트 테스트용 노출 (toggleInputLanguage와 같은 패턴)
+_G.forceDefaultEnglish = forceDefaultEnglish
+_G.forceGureumEnglish = forceGureumEnglish
+_G.forceGureumKorean = forceGureumKorean
 
 -- Force always Gureum English in Wezterm
 local function mapOnEnterWezterm()
@@ -230,7 +387,7 @@ local function mapOnEnterWezterm()
   --   -- not Gureum EN/KO -> ignore
   -- end
   -- hs.alert.show("Wezterm Activated: EN")
-  forceGureumEnglish()
+  forceDefaultEnglish() -- 기본 입력기 영문 (DEFAULT_IME). 구름으로 되돌리려면: forceGureumEnglish()
 end
 
 local function mapOnExitWezterm()
@@ -349,8 +506,8 @@ function TmuxPrefixForceEnglish()
     and output ~= nil
     and terminal.tmuxCurrentCommand(kind, output) ~= nil
   then
-    print("[tmux-prefix] tmux detected -> Gureum EN")
-    forceGureumEnglish()
+    print("[tmux-prefix] tmux detected -> EN")
+    forceEnglish()
   else
     print("[tmux-prefix] not in tmux; keep input source")
   end
@@ -610,6 +767,72 @@ Assume agents may share one working tree. Assign non-overlapping work or explici
 
 tmux pane(s): ]]
 
+-- Direct-session variants of the two tmux templates above: the agent is addressed by
+-- the 8-hex session id shown in the tmux pane border (cc:… Claude Code, cx:… Codex),
+-- reads the transcript files instead of scraping the screen, checks state through the
+-- Claude session registry / Codex rollout tail, and messages peers natively
+-- (SendMessage / codex queue) instead of tmux send-keys.
+local SESSION_READ_AGENT_AND_CONTINUE_TEMPLATE = [[Take over the unfinished work from the already-running coding agent session(s) listed below by their 8-hex session ids. This is a session-preserving handoff for changing agent/model/program or exhausted quota. Do not restart, interrupt, close, or replace those agents, and do not type into their terminals.
+
+Each id is the `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID) or `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID) shown in the tmux pane border; a bare 8-hex id may be either. Resolve each one to its transcript file, which is the full record and better than any screen scrape:
+SID='xxxxxxxx'
+find ~/.claude/projects ~/.codex/sessions -name "*${SID#*:}*.jsonl"
+# Claude Code: ~/.claude/projects/<project>/<uuid>.jsonl, subagent transcripts in <uuid>/subagents/*.jsonl
+# Codex: ~/.codex/sessions/YYYY/MM/DD/rollout-<timestamp>-<uuid>.jsonl; its subagent threads are separate rollouts: rg -l '"parent_thread_id":"<uuid>"' ~/.codex/sessions
+
+Read the conversation as text (the formats are internal to each tool; adapt if a field is missing):
+F='<path>'
+# Claude Code
+jq -r 'select(.type=="user" or .type=="assistant") | (.message.role|ascii_upcase) as $r | .message.content | if type=="string" then $r+": "+. else map(if .type=="text" then $r+": "+.text elif .type=="tool_use" then "TOOL_USE "+.name+" "+(.input|tostring|.[0:300]) elif .type=="tool_result" then "TOOL_RESULT "+(.content|tostring|.[0:300]) else empty end) | join("\n") end' "$F"
+# Codex
+jq -r 'select(.type=="response_item") | .payload | if .type=="message" then (.role|ascii_upcase)+": "+([.content[]? | .text? // empty] | join("\n")) elif .type=="function_call" then "TOOL_CALL "+.name+" "+(.arguments|tostring|.[0:300]) elif .type=="function_call_output" then "TOOL_OUTPUT "+(.output|tostring|.[0:300]) elif .type=="custom_tool_call" then "TOOL_CALL "+.name+" "+(.input|tostring|.[0:300]) elif .type=="custom_tool_call_output" then "TOOL_OUTPUT "+(.output|tostring|.[0:300]) else empty end' "$F"
+A tool call with no result after it is still pending or was cancelled. Text that was still streaming when you read is not in the file yet.
+
+Check whether the source agent is still alive and what it is doing before relying on its last words:
+# Claude Code: the registry entry exists only while the process runs; status is busy / idle / waiting (+ waitingFor, e.g. "permission prompt"); tmux is its pane
+jq -c 'select(.sessionId=="<uuid>") | {name,status,waitingFor,tmux,pid}' ~/.claude/sessions/*.json
+# Codex: last meaningful event — task_started = still working, task_complete / turn_aborted = idle; the lock file exists while a codex process has the thread open
+jq -r 'select(.type=="event_msg") | .payload.type' "$F" | grep -v -E '^(token_count|item_completed)$' | tail -1
+ls ~/.codex/thread-writer-locks/<uuid>.lock
+
+Recover the latest user request, decisions, completed work, failures, and remaining steps. Verify the transcript against the current files, git state, and test output, then continue the work yourself to completion. Preserve all existing uncommitted and parallel changes. Do not blindly repeat commands or trust claimed completion. Do not ask me to repeat context unless the transcript and workspace genuinely cannot recover it.
+
+Normally treat source sessions as read-only. Only if an essential gap blocks progress and the source agent is alive and idle, send one concise handoff question natively, never via tmux send-keys:
+# Claude Code: SendMessage to the registry `name` (ListAgents shows the same names). It shows in that session as "Message from @<your name>". If it is held because the permission modes differ, tell me instead of retrying.
+# Codex: codex queue --thread <uuid> --message '<question>'   (delivered when that session is idle; it appears there as plain user text, so start it with "[from <your session name>]")
+Read the answer from the transcript file, or from the cross-session reply that arrives in your conversation for Claude Code. Codex approval dialogs are not written to any file: if a Codex thread shows task_started and nothing progresses for minutes, it is probably waiting at a dialog — tell me rather than guessing.
+
+For multiple source sessions, reconcile contradictions using the workspace, tests, timestamps, and newer evidence. Preserve every session and continue the actual task rather than merely summarizing the handoff.
+
+session id(s): ]]
+
+local SESSION_WORK_TOGETHER_TEMPLATE = [[Work with the already-running coding agent session(s) listed below by their 8-hex session ids while preserving all existing sessions. Act as lead coordinator: repeatedly inspect their state, delegate bounded work, read results, integrate them, and send follow-ups until the user's task is genuinely complete. Do not restart, close, interrupt, or replace those agents, and do not type into their terminals.
+
+Each id is the `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID) or `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID) shown in the tmux pane border; a bare 8-hex id may be either. Resolve each one:
+SID='xxxxxxxx'
+find ~/.claude/projects ~/.codex/sessions -name "*${SID#*:}*.jsonl"   # Claude Code: <uuid>.jsonl, Codex: rollout-<timestamp>-<uuid>.jsonl
+F='<path>'
+# Claude Code peer: its name (the address for SendMessage; ListAgents shows the same), live status busy / idle / waiting (+ waitingFor), and its tmux pane. No entry = not running.
+jq -c 'select(.sessionId=="<uuid>") | {name,status,waitingFor,tmux,pid}' ~/.claude/sessions/*.json
+# Codex peer: the thread uuid is the address for codex queue; busy/idle from the rollout tail (task_started = busy, task_complete / turn_aborted = idle)
+jq -r 'select(.type=="event_msg") | .payload.type' "$F" | grep -v -E '^(token_count|item_completed)$' | tail -1
+
+Send messages natively, never with tmux send-keys:
+# Claude Code: SendMessage to the peer's name, with notify_when_idle so you are told when it finishes instead of polling. It shows in the peer's session as "Message from @<your name>", and the reply arrives in your conversation as a cross-session message. If a message is held because the permission modes differ, tell me instead of retrying.
+# Codex: codex queue --thread <uuid> --message '<message>'   (delivered when that session is idle; it appears there as plain user text, so start it with "[from <your session name>] <request id>")
+Do not queue into a Codex session that has never had a turn (no rollout yet); ask me to seed it.
+
+Read results from the files rather than the screen:
+# Claude Code (or wait for the cross-session reply / idle notice)
+jq -r 'select(.type=="user" or .type=="assistant") | (.message.role|ascii_upcase) as $r | .message.content | if type=="string" then $r+": "+. else map(if .type=="text" then $r+": "+.text elif .type=="tool_use" then "TOOL_USE "+.name+" "+(.input|tostring|.[0:300]) elif .type=="tool_result" then "TOOL_RESULT "+(.content|tostring|.[0:300]) else empty end) | join("\n") end' "$F" | tail -n 40
+# Codex: once the rollout tail shows task_complete, read the last assistant message
+jq -r 'select(.type=="response_item" and .payload.type=="message" and .payload.role=="assistant") | .payload.content[]? | .text? // empty' "$F" | tail -n 1
+Give requests unique IDs and ask peers to end replies with A2A_DONE_<id>. Codex approval dialogs are not written to any file: if a Codex thread shows task_started and nothing progresses for minutes, it is probably waiting at a dialog — surface it to me rather than guessing. Never resolve a peer's permission or plan dialog yourself.
+
+Assume agents may share one working tree. Assign non-overlapping work or explicit file ownership, tell every peer to preserve unfamiliar changes, and never let two agents edit the same file concurrently. Keep one coordinator to prevent message loops, and independently verify and integrate peer work before reporting completion. Keep this collaboration loop running until the objective is complete or genuinely blocked; do not stop merely because work was delegated once.
+
+session id(s): ]]
+
 -- Prompt registry: single source of truth for both this hotkey and the
 -- sketchybar "prompts" menu (sketchybar/plugins/prompt_action.sh, which calls
 -- PastePrompt/PromptList over `hs -c`). Add an entry here to grow both at once;
@@ -619,6 +842,8 @@ PROMPTS = {
   { id = "codex_claude_no_fast", title = "Codex + Claude multi-agent (fast off)", text = CODEX_CLAUDE_NO_FAST_TEMPLATE },
   { id = "tmux_read_agent_and_continue", title = "tmux: read agent and continue", text = TMUX_READ_AGENT_AND_CONTINUE_TEMPLATE },
   { id = "tmux_work_together", title = "tmux: work together", text = TMUX_WORK_TOGETHER_TEMPLATE },
+  { id = "session_read_agent_and_continue", title = "session: read agent and continue", text = SESSION_READ_AGENT_AND_CONTINUE_TEMPLATE },
+  { id = "session_work_together", title = "session: work together", text = SESSION_WORK_TOGETHER_TEMPLATE },
 }
 
 local PROMPT_INSERT_INITIAL_DELAY = 0.2

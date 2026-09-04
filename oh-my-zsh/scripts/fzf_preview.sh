@@ -3,12 +3,13 @@
 # Usage: fzf_preview.sh <path>
 #
 # Images are emitted with whichever protocol the attached terminal understands:
-#   kitty  -> kitty graphics protocol via `kitten icat`
-#   others -> sixel via chafa
-# kitty implements no sixel decoder at all, so a sixel preview is silently
-# dropped there (tmux does not even send it: the kitty client has no "sixel"
-# entry in `tmux list-clients -F '#{client_termfeatures}'`).
-# Force one with FZF_PREVIEW_IMG_BACKEND=kitty|sixel|none.
+#   kitty  -> kitty graphics protocol via `kitten icat` (its unicode
+#             placeholders survive both tmux and fzf's preview pane)
+#   others -> sixel via chafa. Beware: fzf cannot host raw sixel inside tmux
+#             (it redraws the pane line by line, chopping the DCS envelope,
+#             so the payload prints as "!255?..." garbage) -- view through a
+#             kitty client for images inside tmux.
+# Force one with FZF_PREVIEW_IMG_BACKEND=kitty|sixel|symbols|none.
 
 f="$1"
 preview_width="${FZF_PREVIEW_COLUMNS:-80}"
@@ -69,6 +70,9 @@ show_image() {
 		;;
 	sixel)
 		chafa --format=sixel --view-size="${preview_width}x${preview_height}" --scale=max "$1"
+		;;
+	symbols)
+		chafa --format=symbols --view-size="${preview_width}x${preview_height}" --scale=max "$1"
 		;;
 	*)
 		[ "$1" = "-" ] && cat >/dev/null

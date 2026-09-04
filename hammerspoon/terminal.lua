@@ -28,7 +28,7 @@ local BOX_H = "\226\148\128" -- U+2500 ─
 -- 사이에 escape가 하나 낀다).
 local PATTERNS = {
   [M.WEZTERM] = {
-    tmux_active_pane = " ([%w%.%-]+) .%[38:2::98:114:164m.%[49m" .. E0B0 .. BOX_H,
+    tmux_active_pane = " ([%w%.%-:]+) .%[38:2::98:114:164m.%[49m" .. E0B0 .. BOX_H,
     nvim_command_right = " " .. E0B2 .. ".%[38:2::27:29:43m.%[48:2::255:199:119m ",
     nvim_command_left = ".%[38:2::27:29:43m.%[48:2::255:199:119m COMMAND .%[38:2::255:199:119m.%[48:2::59:66:97m"
       .. E0B0
@@ -37,7 +37,7 @@ local PATTERNS = {
     nvim_terminal_left = ".%[38:2::27:29:43m.%[48:2::79:214:190m TERMINAL .%[38:2::79:214:190m.%[48:2::59:66:97m ",
   },
   [M.KITTY] = {
-    tmux_active_pane = " ([%w%.%-]+) .%[38:2:98:114:164;49m" .. E0B0 .. BOX_H,
+    tmux_active_pane = " ([%w%.%-:]+) .%[38:2:98:114:164;49m" .. E0B0 .. BOX_H,
     nvim_command_right = " " .. E0B2 .. ".%[38:2:27:29:43;48:2:255:199:119m ",
     nvim_command_left = ".%[38:2:27:29:43;48:2:255:199:119m COMMAND .%[38:2:255:199:119;48:2:59:66:97m" .. E0B0 .. " ",
     nvim_terminal_right = " " .. E0B2 .. ".%[38:2:27:29:43;48:2:79:214:190m ",

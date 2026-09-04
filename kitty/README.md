@@ -13,6 +13,14 @@ Ported from [../wezterm/wezterm.lua](../wezterm/wezterm.lua).
 > `ssh` instead, run `./terminfo.sh myserver` once (no argument installs
 > locally), same usage as `../wezterm/terminfo.sh`.
 
+> [!NOTE]
+> `macos.conf` sets `env PATH` explicitly. kitty started from the Dock inherits
+> launchd's minimal PATH, and kittens **kitty** launches (as opposed to ones you
+> run from a shell) inherit it too — so `choose-files` previews could not find
+> `ffprobe` and failed with `executable file not found in $PATH`. Video previews
+> need `ffmpeg`; e-book covers need calibre's `ebook-meta`, which is not
+> installed.
+
 ## Keys
 
 Same as the wezterm config:
@@ -44,6 +52,42 @@ kitty built-ins replacing wezterm features:
   `Ctrl+Shift+E` opens a URL by keyboard, `Ctrl+Shift+P` prefixes path/word/line
   hints (`?f` insert path, `?n` open path at line in editor, ...)
 - Plain URLs are underlined on hover and open on click, no config needed
+
+## Vertical tabs
+
+`Cmd+Shift+B`, or **View → Toggle Vertical Tabs** in the macOS menubar, flips
+`tab_bar_edge` between `top` and `left`. A left sidebar gives every tab title a
+row to itself, which is worth the columns it costs when the tabs are agents with
+long titles; the horizontal bar splits a single row between all of them.
+
+**View → Sidebar: Small / Medium / Large** set the width, to 12, 20 and 32
+title cells, which came out as 20, 28 and 35 columns of sidebar; 20 cells is
+kitty's own default. Each one sets the edge too, so picking a size while the tab
+bar is horizontal switches to the sidebar in a single click, and the width it
+sets survives the toggle back and forth.
+
+The sidebar is not mouse-resizable, and cannot be made so from config. kitty
+marks no border zone at the tab bar edge, so there is nothing to grab — the
+borders between split windows are drag-resizable, this one is not. Every other
+mouse event over the bar is spoken for as well: a click that misses a tab opens
+a new tab, a scroll is discarded, and `mouse_map` bindings never fire there.
+`tab_title_max_length` is the whole of the width control, which is why the
+presets exist. Vertical tabs arrived in kitty 0.48.0, so this may yet grow
+upstream.
+
+[toggle-tab-bar-edge.sh](toggle-tab-bar-edge.sh) does the flip. kitty ships no
+remote control command that sets an arbitrary option, so the script reads the
+edge in force out of kitty's effective config
+(`~/Library/Caches/kitty/effective-config/<kitty pid>`, last match wins) and
+reloads the config with the other value as a `-o` override. A later reload
+re-applies that override rather than dropping it, so the edge holds while
+kitty.conf is edited, and nothing is written to disk, so quitting kitty returns
+it to the `tab_bar_edge top` in kitty.conf.
+
+There is no button in the titlebar because kitty exposes no API to put one
+there, and a click on the tab bar that lands outside a tab is hardwired to open
+a new tab. The macOS global menubar is the piece of kitty chrome that a
+`menu_map` entry can give the mouse.
 
 ## Hammerspoon integration
 

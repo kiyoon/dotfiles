@@ -15,11 +15,22 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 id="${INPUT_SOURCE_ID:-$("$DIR/../helpers/tis_current" 2>/dev/null)}"
 
 case "$id" in
-	*Gureum.qwerty*)                 label="QW" ;;
+	*Gureum.qwerty*)                 label="Gur" ;;
 	*.Roman*)                        label="A" ;;
-	*Gureum.han2*)                   label="한2" ;;
+	*Gureum.han2*)                   label="구" ;;
 	*Gureum.han3*)                   label="한3" ;;
 	*Gureum*|*Korean*|*han*)         label="한" ;;
+	*pritype*english*)               label="Pri" ;;
+	*pritype*)                       label="프" ;;
+	*hiking90*Ongeul*)
+		# Ongeul reports its mode late via the input source (async selectMode).
+		# input_watcher passes the fork's live mode as ONGEUL_MODE; fall back to
+		# the source id / defaults if absent.
+		m="$ONGEUL_MODE"
+		[ -z "$m" ] && m=$(defaults read io.github.hiking90.inputmethod.Ongeul currentInputMode 2>/dev/null)
+		if [ -z "$m" ]; then case "$id" in *Ongeul.English*) m=english ;; *) m=korean ;; esac; fi
+		[ "$m" = korean ] && label="온" || label="Ong"
+		;;
 	*Japanese*)                      label="あ" ;;
 	*keylayout.ABC-AZERTY*)          label="AZ" ;;
 	*keylayout.ABC-QWERTZ*)          label="QZ" ;;

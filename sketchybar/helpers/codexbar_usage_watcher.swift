@@ -3,8 +3,15 @@
 // two ordinary SketchyBar items. Geometry follows CodexBar v0.41.0's MIT-
 // licensed IconRenderer; both providers intentionally use its undecorated
 // `.combined` style.
+//
+// When CodexBar reports a single Codex window (the Pro plan has only a weekly
+// one), the otherwise empty bottom lane shows this Mac's share of that window
+// as used percent, read from helpers/codex_local_usage.py's JSON. That script
+// is not polled: an FSEvents stream on ~/.codex/sessions runs it, debounced,
+// only when Codex appends to a rollout, plus a rare fallback pass.
 
 import AppKit
+import CoreServices
 import Darwin
 import Foundation
 
@@ -13,9 +20,19 @@ private let outputScale: CGFloat = 2
 
 private struct Configuration {
     var snapshotURL: URL
+    var localUsageURL: URL
     var outputDirectory: URL
+    var sessionsURL: URL
+    var scanScriptURL: URL
     var runOnce = false
     var updateSketchyBar = true
+    var localScan = true
+    // Quiet time after the last rollout change before a scan starts.
+    var scanDebounce: TimeInterval = 5
+    // Floor between scan starts while Codex keeps writing.
+    var scanMinInterval: TimeInterval = 30
+    // Safety net for missed events (sleep, replaced directory).
+    var scanFallbackInterval: TimeInterval = 30 * 60
 }
 
 private enum ProviderStyle: String, CaseIterable {
@@ -30,7 +47,24 @@ private struct ProviderState: Equatable {
     let topPercent: Double?
     let bottomPercent: Double?
     let creditsPercent: Double?
+    // The bottom lane comes from codex_local_usage.py rather than CodexBar.
+    var bottomIsLocalUsage = false
 }
+
+private struct LocalWindow {
+    let windowMinutes: Int
+    let resetsAt: Date?
+    let usedPercent: Double
+    let stale: Bool
+}
+
+private struct LocalUsage {
+    let generatedAt: Date
+    let windows: [LocalWindow]
+}
+
+// Sessions observe the same reset a second or two apart.
+private let localUsageResetTolerance: TimeInterval = 120
 
 private struct SnapshotState: Equatable {
     let providers: [ProviderStyle: ProviderState]
@@ -76,8 +110,16 @@ private func parseConfiguration() -> Configuration {
             .appendingPathComponent("Library/Group Containers", isDirectory: true)
             .appendingPathComponent("Y5PE65HELJ.com.steipete.codexbar", isDirectory: true)
             .appendingPathComponent("widget-snapshot.json"),
+        localUsageURL: home
+            .appendingPathComponent(".cache/sketchybar/codex_local_usage", isDirectory: true)
+            .appendingPathComponent("usage.json"),
         outputDirectory: home
-            .appendingPathComponent(".cache/sketchybar/codexbar", isDirectory: true))
+            .appendingPathComponent(".cache/sketchybar/codexbar", isDirectory: true),
+        sessionsURL: home.appendingPathComponent(".codex/sessions", isDirectory: true),
+        scanScriptURL: (Bundle.main.executableURL ?? URL(fileURLWithPath: CommandLine.arguments[0]))
+            .resolvingSymlinksInPath()
+            .deletingLastPathComponent()
+            .appendingPathComponent("codex_local_usage.py"))
 
     var index = 1
     let arguments = CommandLine.arguments
@@ -90,6 +132,23 @@ private func parseConfiguration() -> Configuration {
         case "--snapshot" where index + 1 < arguments.count:
             index += 1
             configuration.snapshotURL = URL(fileURLWithPath: arguments[index])
+        case "--local-usage" where index + 1 < arguments.count:
+            index += 1
+            configuration.localUsageURL = URL(fileURLWithPath: arguments[index])
+        case "--sessions" where index + 1 < arguments.count:
+            index += 1
+            configuration.sessionsURL = URL(fileURLWithPath: arguments[index], isDirectory: true)
+        case "--local-usage-script" where index + 1 < arguments.count:
+            index += 1
+            configuration.scanScriptURL = URL(fileURLWithPath: arguments[index])
+        case "--scan-debounce" where index + 1 < arguments.count:
+            index += 1
+            configuration.scanDebounce = TimeInterval(arguments[index]) ?? configuration.scanDebounce
+        case "--scan-min-interval" where index + 1 < arguments.count:
+            index += 1
+            configuration.scanMinInterval = TimeInterval(arguments[index]) ?? configuration.scanMinInterval
+        case "--no-local-scan":
+            configuration.localScan = false
         case "--output-dir" where index + 1 < arguments.count:
             index += 1
             configuration.outputDirectory = URL(fileURLWithPath: arguments[index], isDirectory: true)
@@ -143,10 +202,59 @@ private func displayedPercent(_ window: SourceWindow, showUsed: Bool) -> Double 
     showUsed ? window.usedPercent : window.remainingPercent
 }
 
+private func decodeLocalUsage(_ data: Data?) -> LocalUsage? {
+    guard let data,
+          let root = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+          let generatedAt = parseDate(root["generated_at"]),
+          let rows = root["windows"] as? [[String: Any]]
+    else { return nil }
+    let windows = rows.compactMap { row -> LocalWindow? in
+        guard let minutes = number(row["window_minutes"]).map(Int.init),
+              let used = number(row["local_used_percent"])
+        else { return nil }
+        return LocalWindow(
+            windowMinutes: minutes,
+            resetsAt: parseDate(row["resets_at"]),
+            usedPercent: used,
+            stale: (row["stale"] as? Bool) ?? false)
+    }
+    return LocalUsage(generatedAt: generatedAt, windows: windows)
+}
+
+// This Mac's share of the window shown on top. It only fills an otherwise
+// empty bottom lane, is always a used percent whatever CodexBar's toggle says,
+// and never exceeds the account-wide figure for the same window. The JSON
+// stays valid however old it is: it changes only when the rollouts do.
+private func localBottomPercent(
+    for top: SourceWindow,
+    localUsage: LocalUsage?,
+    now: Date) -> Double?
+{
+    guard let localUsage else { return nil }
+    let minutes = top.windowMinutes ?? 10_080
+    guard let window = localUsage.windows.first(where: { $0.windowMinutes == minutes }) else {
+        return nil
+    }
+    var percent = window.stale ? 0 : window.usedPercent
+    if let localReset = window.resetsAt {
+        if now.timeIntervalSince(localReset) > localUsageResetTolerance {
+            // The window it measured has ended and nothing local has run since.
+            percent = 0
+        } else if let topReset = top.resetsAt,
+                  topReset.timeIntervalSince(localReset) > localUsageResetTolerance
+        {
+            // CodexBar already sees a newer window; nothing local happened in it yet.
+            percent = 0
+        }
+    }
+    return max(0, min(percent, top.usedPercent))
+}
+
 private func codexState(
     entry: [String: Any]?,
     visible: Bool,
     showUsed: Bool,
+    localUsage: LocalUsage?,
     now: Date) -> ProviderState
 {
     guard visible else {
@@ -237,11 +345,22 @@ private func codexState(
         nil
     }
 
+    var bottomPercent = selectable.dropFirst().first.map { displayedPercent($0, showUsed: showUsed) }
+    var bottomIsLocalUsage = false
+    if bottomPercent == nil,
+       let top = selectable.first,
+       let local = localBottomPercent(for: top, localUsage: localUsage, now: now)
+    {
+        bottomPercent = local
+        bottomIsLocalUsage = true
+    }
+
     return ProviderState(
         visible: true,
         topPercent: selectable.first.map { displayedPercent($0, showUsed: showUsed) },
-        bottomPercent: selectable.dropFirst().first.map { displayedPercent($0, showUsed: showUsed) },
-        creditsPercent: creditsPercent)
+        bottomPercent: bottomPercent,
+        creditsPercent: creditsPercent,
+        bottomIsLocalUsage: bottomIsLocalUsage)
 }
 
 private func claudeState(
@@ -272,7 +391,11 @@ private func claudeState(
         creditsPercent: nil)
 }
 
-private func decodeSnapshot(_ data: Data, now: Date = Date()) throws -> SnapshotState {
+private func decodeSnapshot(
+    _ data: Data,
+    localUsage: LocalUsage? = nil,
+    now: Date = Date()) throws -> SnapshotState
+{
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
         throw NSError(domain: "CodexBarUsage", code: 1, userInfo: [NSLocalizedDescriptionKey: "root is not an object"])
     }
@@ -294,6 +417,7 @@ private func decodeSnapshot(_ data: Data, now: Date = Date()) throws -> Snapshot
             entry: byProvider[ProviderStyle.codex.rawValue],
             visible: codexVisible,
             showUsed: showUsed,
+            localUsage: localUsage,
             now: now),
         .claude: claudeState(
             entry: byProvider[ProviderStyle.claude.rawValue],
@@ -408,8 +532,9 @@ private func drawMeter(
             drawBar(rect: topRect, percent: state.topPercent)
             drawBar(rect: bottomRect, percent: nil, alpha: 0.45)
         }
-    } else if state.bottomPercent! <= 0 {
+    } else if state.bottomPercent! <= 0, !state.bottomIsLocalUsage {
         // CodexBar uses a thinner secondary track for a literal zero value.
+        // A zero local share keeps the full-height lane: it is empty, not spent.
         if let creditsPercent = state.creditsPercent {
             drawBar(rect: creditsRect, percent: creditsPercent)
         } else {
@@ -474,8 +599,14 @@ private final class SnapshotController {
     private let configuration: Configuration
     private let color = colorFromEnvironment()
     private var lastGoodData: Data?
+    private var lastLocalData: Data?
     private var lastState: SnapshotState?
     private var consecutiveReadFailures = 0
+    // Set by the scanner: a failed scan hides the local lane rather than
+    // showing a number the logs may have moved past.
+    var localScanFailed = false {
+        didSet { if localScanFailed != oldValue { _ = self.refresh(reevaluateTime: true) } }
+    }
 
     private var hiddenState: SnapshotState {
         SnapshotState(providers: Dictionary(uniqueKeysWithValues: ProviderStyle.allCases.map {
@@ -496,14 +627,19 @@ private final class SnapshotController {
         guard let data = try? Data(contentsOf: self.configuration.snapshotURL) else {
             return self.handleReadFailure()
         }
-        if !forceSketchyBarUpdate, !reevaluateTime, data == self.lastGoodData {
+        let localData = self.localScanFailed
+            ? nil
+            : try? Data(contentsOf: self.configuration.localUsageURL)
+        if !forceSketchyBarUpdate, !reevaluateTime, data == self.lastGoodData,
+           localData == self.lastLocalData
+        {
             self.consecutiveReadFailures = 0
             return true
         }
 
         let state: SnapshotState
         do {
-            state = try decodeSnapshot(data)
+            state = try decodeSnapshot(data, localUsage: decodeLocalUsage(localData))
         } catch {
             fputs("codexbar_usage_watcher: invalid snapshot: \(error)\n", stderr)
             return self.handleReadFailure()
@@ -518,6 +654,7 @@ private final class SnapshotController {
         }
         if !forceSketchyBarUpdate, state == self.lastState, visibleImagesExist {
             self.lastGoodData = data
+            self.lastLocalData = localData
             return true
         }
 
@@ -545,13 +682,15 @@ private final class SnapshotController {
                 return false
             }
             self.lastGoodData = data
+            self.lastLocalData = localData
             self.lastState = state
 
             let summary = ProviderStyle.allCases.map { style -> String in
                 let provider = state.providers[style]
                 let top = provider?.topPercent.map { String(format: "%.1f", $0) } ?? "nil"
                 let bottom = provider?.bottomPercent.map { String(format: "%.1f", $0) } ?? "nil"
-                return "\(style.rawValue)=\(provider?.visible == true ? "on" : "off")[\(top),\(bottom)]"
+                let local = provider?.bottomIsLocalUsage == true ? ",local" : ""
+                return "\(style.rawValue)=\(provider?.visible == true ? "on" : "off")[\(top),\(bottom)\(local)]"
             }.joined(separator: " ")
             print(summary)
             return true
@@ -581,6 +720,116 @@ private final class SnapshotController {
         self.lastGoodData = nil
         return false
     }
+}
+
+// Runs codex_local_usage.py when Codex appends to a rollout. FSEvents reports
+// directory-level changes under ~/.codex/sessions with kernel coalescing, so
+// an idle Codex costs nothing and a busy one costs one short Python run per
+// scanMinInterval at most.
+private final class LocalUsageScanner {
+    private let configuration: Configuration
+    private let onFinished: (Bool) -> Void
+    private var stream: FSEventStreamRef?
+    private var pending: DispatchWorkItem?
+    private var running = false
+    private var dirty = false
+    private var lastStart = Date.distantPast
+
+    init(configuration: Configuration, onFinished: @escaping (Bool) -> Void) {
+        self.configuration = configuration
+        self.onFinished = onFinished
+    }
+
+    func start() {
+        self.startStream()
+        self.requestScan(after: 0)
+        Timer.scheduledTimer(
+            withTimeInterval: self.configuration.scanFallbackInterval,
+            repeats: true)
+        { [weak self] _ in
+            guard let self else { return }
+            if self.stream == nil { self.startStream() }
+            self.requestScan(after: 0)
+        }
+    }
+
+    private func startStream() {
+        let path = self.configuration.sessionsURL.path
+        guard FileManager.default.fileExists(atPath: path) else { return }
+        var context = FSEventStreamContext()
+        context.info = Unmanaged.passUnretained(self).toOpaque()
+        guard let stream = FSEventStreamCreate(
+            nil,
+            localUsageEventsCallback,
+            &context,
+            [path] as CFArray,
+            FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
+            2.0,
+            FSEventStreamCreateFlags(kFSEventStreamCreateFlagNone))
+        else {
+            fputs("codexbar_usage_watcher: could not watch \(path)\n", stderr)
+            return
+        }
+        FSEventStreamSetDispatchQueue(stream, .main)
+        FSEventStreamStart(stream)
+        self.stream = stream
+    }
+
+    // Coalesces bursts into one scan; a scan requested mid-run reruns after it.
+    func requestScan(after delay: TimeInterval? = nil) {
+        self.dirty = true
+        if self.running { return }
+        let sinceLast = Date().timeIntervalSince(self.lastStart)
+        let wait = max(delay ?? self.configuration.scanDebounce, self.configuration.scanMinInterval - sinceLast)
+        self.pending?.cancel()
+        let work = DispatchWorkItem { [weak self] in self?.runScan() }
+        self.pending = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + wait, execute: work)
+    }
+
+    private func runScan() {
+        self.pending = nil
+        self.dirty = false
+        self.running = true
+        self.lastStart = Date()
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
+        process.arguments = [
+            "-S", "-E", self.configuration.scanScriptURL.path,
+            "--sessions", self.configuration.sessionsURL.path,
+            "--output", self.configuration.localUsageURL.path,
+            "--cache", self.configuration.localUsageURL
+                .deletingLastPathComponent()
+                .appendingPathComponent("cache.json").path,
+        ]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.standardError
+        process.terminationHandler = { [weak self] finished in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.running = false
+                let success = finished.terminationStatus == 0
+                if !success {
+                    fputs("codexbar_usage_watcher: local usage scan exited \(finished.terminationStatus)\n", stderr)
+                }
+                self.onFinished(success)
+                if self.dirty { self.requestScan() }
+            }
+        }
+        do {
+            try process.run()
+        } catch {
+            self.running = false
+            fputs("codexbar_usage_watcher: could not run scan: \(error)\n", stderr)
+            self.onFinished(false)
+        }
+    }
+}
+
+private let localUsageEventsCallback: FSEventStreamCallback = { _, info, _, _, _, _ in
+    guard let info else { return }
+    Unmanaged<LocalUsageScanner>.fromOpaque(info).takeUnretainedValue().requestScan()
 }
 
 private final class SnapshotDirectoryWatcher {
@@ -630,6 +879,10 @@ private final class SnapshotDirectoryWatcher {
     }
 }
 
+// Summaries go to stdout for humans and tests; keep them line-buffered even
+// when stdout is a file.
+setlinebuf(stdout)
+
 private let configuration = parseConfiguration()
 private let controller = SnapshotController(configuration: configuration)
 let initialSuccess = controller.refresh(forceSketchyBarUpdate: true)
@@ -643,11 +896,28 @@ private let directoryWatcher = SnapshotDirectoryWatcher(directoryPath: directory
 }
 directoryWatcher.ensureWatching()
 
+// The scan replaces its JSON atomically only when the result changed; watch
+// that directory too so a manual run shows up within a second.
+private let localUsageDirectoryPath = configuration.localUsageURL.deletingLastPathComponent().path
+private let localUsageWatcher = SnapshotDirectoryWatcher(directoryPath: localUsageDirectoryPath) {
+    _ = controller.refresh()
+}
+localUsageWatcher.ensureWatching()
+
+private let localUsageScanner = LocalUsageScanner(configuration: configuration) { success in
+    controller.localScanFailed = !success
+    _ = controller.refresh()
+}
+if configuration.localScan {
+    localUsageScanner.start()
+}
+
 // This only rereads a tiny local file when its bytes changed; it never invokes
 // CodexBar or a provider. It recovers from missed events across sleep/wake and
 // rearms the directory source if the app-group container appears or is replaced.
 Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
     directoryWatcher.ensureWatching()
+    localUsageWatcher.ensureWatching()
     _ = controller.refresh(reevaluateTime: true)
 }
 
@@ -659,6 +929,6 @@ if let rawPID = ProcessInfo.processInfo.environment["SKETCHYBAR_PID"],
     }
 }
 
-withExtendedLifetime(directoryWatcher) {
+withExtendedLifetime((directoryWatcher, localUsageWatcher, localUsageScanner)) {
     RunLoop.main.run()
 }

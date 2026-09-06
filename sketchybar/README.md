@@ -7,7 +7,8 @@ Custom [SketchyBar](https://github.com/FelixKratz/SketchyBar) config, integrated
 (grouped per monitor with dividers) · front app. The gaming item is absent at rest.
 **Right:** clock · combined battery/native charge limit · volume · Bluetooth `Boucles soniques` · Wi‑Fi (with
 **un‑redacted SSID**) · cpu/gpu/ram · input source (한/A) · Amphetamine ·
-cached Codex and Claude quota meters.
+cached Codex and Claude quota meters (the Codex meter's lower lane is this Mac's share of the
+weekly window, see §7).
 
 `~/.config/sketchybar` is symlinked to this directory.
 
@@ -45,6 +46,8 @@ curl -L -o ~/Library/Fonts/sketchybar-app-font.ttf \
   CodexBar's fetching CLI and does not capture the native menu-bar item. If a future CodexBar
   release changes the cache schema, uncomment `CODEXBAR_DISPLAY_MODE=alias` beside the CodexBar
   block in `sketchybarrc` and reload to fall back to CodexBar's live merged icon.
+  The Codex meter's lower lane is not CodexBar data: the Pro plan reports only a weekly window,
+  so `helpers/codex_local_usage.py` fills it with this Mac's own share of that window (§7).
 
 ## 2. Grant permissions — System Settings → Privacy & Security
 
@@ -75,6 +78,11 @@ committed; the binaries are git‑ignored.
   reproduces its 18-point Codex and Claude two-bar icons, and updates only when cached data
   changes. A 60-second local-file safety check recovers missed events after sleep; neither path
   asks CodexBar or a provider to refresh.
+- `helpers/codex_local_usage.py` — not compiled; a stdlib Python 3.9 script that
+  `codexbar_usage_watcher` runs only when Codex appends to a rollout (FSEvents on
+  `~/.codex/sessions`, debounced). It scans the rollouts incrementally and writes
+  `~/.cache/sketchybar/codex_local_usage/usage.json`, which the watcher renders as the Codex
+  meter's lower lane (§7).
 
 To force a rebuild:
 
@@ -266,13 +274,81 @@ width prevents the neighboring icons from moving when the label changes, then th
 Detailed output is appended to `$TMPDIR/sketchybar_gaming_stop.log` (normally under the per-user
 macOS temporary directory).
 
+## 7. Codex local usage lane
+
+CodexBar only knows the account-wide figure, and the Codex weekly limit is shared by every
+machine signed into the account. The lower lane of the Codex meter therefore shows **how much of
+the current weekly window this Mac consumed**, always as a used percentage (5% of the week's
+allowance draws a 5% fill) regardless of CodexBar's used/remaining toggle. Top lane 70% left and
+lower lane 27% used means this Mac accounts for 27 of the 30 points spent.
+
+How it is computed (`helpers/codex_local_usage.py`, no network, no CodexBar, no timer):
+
+1. **Window.** Every Codex turn appends a `token_count` event to its rollout under
+   `~/.codex/sessions/YYYY/MM/DD/`, carrying the server's `rate_limits` with an absolute `resets_at`
+   and `window_minutes`. The newest observation for `limit_id=codex` defines the window
+   (`resets_at − window_minutes`). Nothing assumes a 7-day cadence: reset credits restart the
+   window early and the script simply follows the server.
+2. **Tokens.** Each response's `token_usage_record` (CLI ≥ 0.153) inside the window is summed per
+   model with price-like weights: uncached input ×1, cached input ×0.1, output ×8. Rollouts from
+   older CLIs fall back to `token_count.last_token_usage` with consecutive duplicates collapsed
+   (within 1.5% of the true sum). Subagent threads are separate rollouts and are counted; models
+   whose name contains `spark` bill to a separate bucket and are excluded.
+3. **Percent.** Weighted units are divided by a per-model calibration (units that move the weekly
+   bar by 1%), measured on this account in 2026-08/09:
+
+   | Model | Units per 1% |
+   |---|---|
+   | `gpt-5.6-sol` | 5.0 M |
+   | `gpt-6-astra` (and fallback `*`) | 0.88 M |
+
+   The table is `DEFAULT_CALIBRATION` at the top of the script (longest prefix match). To
+   re-measure after a new model appears, use this Mac alone for a while and read
+   `implied_units_per_percent` from `usage.json` (units ÷ observed percent rise over the same
+   span); overrides can also be passed as a JSON file with `--calibration`.
+
+When it runs: the watcher keeps an FSEvents stream on `~/.codex/sessions`. A rollout change
+starts one scan after 5 s of quiet, never more than one per 30 s while Codex keeps writing, and
+a burst of appends collapses into a single run; idle Codex means no process at all. A 30-minute
+fallback pass covers missed events after sleep. A scan costs about 20 ms of interpreter start
+(`python3 -S -E`) plus reading the appended bytes; it lists only the date directories inside the
+retention window (a full walk of all ~4k files, ~20 ms, happens every 6 hours to catch a thread
+resumed after a long idle), keeps a `cache.json` of byte offsets and parsed events next to the
+output, and rewrites neither file unless its content changed. The very first scan reads about
+eight days of rollouts (≈2 GB, ~4 s).
+
+Display rules in the watcher: the lane is filled only when CodexBar shows a single Codex window;
+a second CodexBar lane (a 5-hour window) always wins. The local value is capped at the account-wide
+used percent and shows 0 once its window has ended or CodexBar already reports a newer one
+(nothing local happened in it yet). The JSON has no expiry: it changes only when the rollouts do.
+If a scan exits non-zero the lane is hidden until the next scan succeeds.
+
+Check it by hand:
+
+```bash
+/usr/bin/python3 ~/.config/sketchybar/helpers/codex_local_usage.py --print   # summary + stats= line
+jq . ~/.cache/sketchybar/codex_local_usage/usage.json
+~/.config/sketchybar/helpers/codexbar_usage_watcher --once --no-sketchybar    # decoded lanes
+bash ~/.config/sketchybar/tests/test_codex_local_usage.sh
+bash ~/.config/sketchybar/tests/test_codexbar_usage_watcher.sh                # includes a live FSEvents run
+```
+
+Only `~/.codex` (the account CodexBar shows) is scanned; another `CODEX_HOME` is a different
+account with its own limits and can be pointed at with `--sessions`.
+
 ## Troubleshooting
 
 - **Codex/Claude quota meter is missing** → open CodexBar once and confirm
   `~/Library/Group Containers/Y5PE65HELJ.com.steipete.codexbar/widget-snapshot.json` exists,
-  then `sketchybar --reload`. A missing second Codex lane is intentional: CodexBar puts the
-  first available window on top and leaves the lower track dim. If the snapshot format changed,
+  then `sketchybar --reload`. The lower Codex lane is this Mac's local share (§7), not CodexBar
+  data. If the snapshot format changed,
   uncomment `CODEXBAR_DISPLAY_MODE=alias` in `sketchybarrc` as a temporary fallback.
+- **Codex lower lane is empty although the top lane shows usage** → the local scan failed or
+  never ran. Run `/usr/bin/python3 ~/.config/sketchybar/helpers/codex_local_usage.py --print` to see
+  errors and stats, then `sketchybar --reload` to restart the watcher (its stderr is discarded; run
+  `helpers/codexbar_usage_watcher --once --no-sketchybar` to see it decode). A `0` lane right after a
+  reset is expected until this Mac sends its first turn in the new window. Delete `cache.json` in
+  `~/.cache/sketchybar/codex_local_usage/` to force a full rescan.
 - **Amphetamine item is missing** → Amphetamine isn't running or its Automation permission
   was denied. Launch it and allow `sketchybar` to control it.
 - **Charge-limit item is missing** → it requires an Apple-silicon Mac on macOS 26.4 or later.

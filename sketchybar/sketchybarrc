@@ -381,6 +381,9 @@ else
 		drawing=off \
 		"${codexbar_usage_item[@]}"
 
+	# The watcher also fills the Codex meter's otherwise empty bottom lane with
+	# this Mac's share of the weekly window: it runs helpers/codex_local_usage.py
+	# only when Codex appends to a rollout (FSEvents), never on a timer.
 	if [[ -x "$HELPER_DIR/codexbar_usage_watcher" ]]; then
 		SKETCHYBAR_PID="$PPID" \
 			CODEXBAR_USAGE_COLOR="$LABEL_COLOR" \

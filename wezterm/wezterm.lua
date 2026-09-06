@@ -1,6 +1,10 @@
 local wezterm = require("wezterm")
 
 local config = {
+	-- Shift+Enter multiline is now produced by the kitty keyboard protocol
+	-- (below), not a manual SendString, so the IME can commit the pending
+	-- Korean syllable first. tmux already forwards it (extended-keys always).
+	enable_kitty_keyboard = true,
 	-- color_scheme = "Dracula (Official)",
 	-- color_scheme = "catppuccin-frappe",
 
@@ -18,6 +22,8 @@ local config = {
 	-- undercurl becomes ugly if underline_position < -4
 	underline_position = -4,
 	keys = {
+		--[[ Dropped in favour of enable_kitty_keyboard (kitty keyboard protocol).
+		     Revert: delete enable_kitty_keyboard above and un-comment this.
 		{
 			-- Give Shift+Enter a distinct CSI-u sequence so tmux can forward it
 			-- to applications such as Codex as a multiline/newline shortcut.
@@ -25,6 +31,7 @@ local config = {
 			mods = "SHIFT",
 			action = wezterm.action.SendString("\x1b[13;2u"),
 		},
+		--]]
 		{
 			-- Used in neovim (python-import.nvim)
 			key = "Enter",

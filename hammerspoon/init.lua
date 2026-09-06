@@ -633,6 +633,73 @@ _G.aerospaceDisplayRecovery = aerospaceRecovery.start({
   busyRetrySeconds = 1,
 })
 
+-- Keep Kitty's scene weather in sync with Seoul's current conditions. Open-Meteo
+-- needs no API key for this personal six-hour poll. Failures only reach the
+-- Hammerspoon console, leaving the last successfully applied effect untouched.
+local kittyWeather = require("kitty_weather")
+
+if _G.kittyWeatherController then
+  _G.kittyWeatherController:stop()
+  _G.kittyWeatherController = nil
+end
+
+_G.kittyWeatherController = kittyWeather.start({
+  asyncGet = function(url, callback)
+    return hs.http.asyncGet(url, nil, callback)
+  end,
+  decodeJson = function(body)
+    return hs.json.decode(body)
+  end,
+  kittyPids = function()
+    local pids, seen = {}, {}
+    for _, app in ipairs(hs.application.runningApplications()) do
+      local bundleId = app:bundleID()
+      if app:name() == "kitty" or bundleId == "net.kovidgoyal.kitty" then
+        local pid = app:pid()
+        if pid and not seen[pid] then
+          seen[pid] = true
+          pids[#pids + 1] = pid
+        end
+      end
+    end
+    return pids
+  end,
+  kittySocket = function(pid)
+    return terminal.kittySocket(pid)
+  end,
+  newTask = function(executable, callback, arguments)
+    return hs.task.new(executable, callback, arguments)
+  end,
+  at = function(time, repeatInterval, callback)
+    return hs.timer.doAt(time, repeatInterval, callback)
+  end,
+  watchKitty = function(callback)
+    return hs.application.watcher
+      .new(function(appName, eventType, app)
+        local bundleId = app and app:bundleID()
+        if
+          eventType == hs.application.watcher.launched
+          and (appName == "kitty" or bundleId == "net.kovidgoyal.kitty")
+        then
+          callback()
+        end
+      end)
+      :start()
+  end,
+  after = function(seconds, callback)
+    return hs.timer.doAfter(seconds, callback)
+  end,
+  log = function(message)
+    hs.printf("[kitty-weather] %s", message)
+  end,
+}, {
+  kitten = terminal.KITTEN_CLI,
+  latitude = 37.5665,
+  longitude = 126.9780,
+  timezone = "Asia/Seoul",
+  intervalSeconds = 6 * 60 * 60,
+})
+
 -- 1. Run ./capture_current_display
 -- 2. Open Google Translate directly in Chrome
 -- 3. Paste from clipboard (image/text)
@@ -668,11 +735,11 @@ local CODEX_CLAUDE_TEMPLATE = [[First check all accounts (read-only, shows every
 Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
 Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan) with fast mode ON. hetu is the default Codex home.
 Use below commands:
-CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
+CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-6-astra -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>
 PROMPT
 
-codex exec --enable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra --skip-git-repo-check --sandbox read-only <<'PROMPT'
+codex exec --enable fast_mode --model gpt-6-astra -c model_reasoning_effort=ultra --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>
 PROMPT
 
@@ -687,11 +754,11 @@ local CODEX_CLAUDE_NO_FAST_TEMPLATE = [[First check all accounts (read-only, sho
 Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
 Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan), also with fast mode OFF. hetu is the default Codex home.
 Use below commands:
-CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
+CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-6-astra -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>
 PROMPT
 
-codex exec --disable fast_mode --model gpt-5.6-sol -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
+codex exec --disable fast_mode --model gpt-6-astra -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>
 PROMPT
 
@@ -771,8 +838,16 @@ tmux pane(s): ]]
 -- the 8-hex session id shown in the tmux pane border (cc:… Claude Code, cx:… Codex),
 -- reads the transcript files instead of scraping the screen, checks state through the
 -- Claude session registry / Codex rollout tail, and messages peers natively
--- (SendMessage / codex queue) instead of tmux send-keys.
-local SESSION_READ_AGENT_AND_CONTINUE_TEMPLATE = [[Take over the unfinished work from the already-running coding agent session(s) listed below by their 8-hex session ids. This is a session-preserving handoff for changing agent/model/program or exhausted quota. Do not restart, interrupt, close, or replace those agents, and do not type into their terminals.
+-- (SendMessage / codex queue) instead of tmux send-keys; SESSION_TERMINAL_FALLBACK lists
+-- the paste-into-terminal commands for when that fails (Codex has no SendMessage).
+local SESSION_TERMINAL_FALLBACK = [[
+If native messaging fails, paste into the peer's terminal instead (only while it is idle at its prompt):
+tmux:    tmux set-buffer "$MSG"; tmux paste-buffer -p -t %N; tmux send-keys -t %N Enter
+wezterm: wezterm cli send-text --pane-id N "$MSG"; wezterm cli send-text --pane-id N --no-paste $'\r'
+kitty:   K="kitten @ --to unix:/tmp/kitty-<pid>"; $K send-text --match id:N --stdin --bracketed-paste enable <<< "$MSG"; $K send-text --match id:N '\r'
+]]
+
+local SESSION_READ_AGENT_AND_CONTINUE_TEMPLATE = [[Take over the unfinished work from the already-running coding agent session(s) listed below by their 8-hex session ids. This is a session-preserving handoff for changing agent/model/program or exhausted quota. Do not restart, interrupt, close, or replace those agents, and do not type into their terminals except through the fallback below.
 
 Each id is the `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID) or `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID) shown in the tmux pane border; a bare 8-hex id may be either. Resolve each one to its transcript file, which is the full record and better than any screen scrape:
 SID='xxxxxxxx'
@@ -797,16 +872,17 @@ ls ~/.codex/thread-writer-locks/<uuid>.lock
 
 Recover the latest user request, decisions, completed work, failures, and remaining steps. Verify the transcript against the current files, git state, and test output, then continue the work yourself to completion. Preserve all existing uncommitted and parallel changes. Do not blindly repeat commands or trust claimed completion. Do not ask me to repeat context unless the transcript and workspace genuinely cannot recover it.
 
-Normally treat source sessions as read-only. Only if an essential gap blocks progress and the source agent is alive and idle, send one concise handoff question natively, never via tmux send-keys:
+Normally treat source sessions as read-only. Only if an essential gap blocks progress and the source agent is alive and idle, send one concise handoff question, natively when you can:
 # Claude Code: SendMessage to the registry `name` (ListAgents shows the same names). It shows in that session as "Message from @<your name>". If it is held because the permission modes differ, tell me instead of retrying.
 # Codex: codex queue --thread <uuid> --message '<question>'   (delivered when that session is idle; it appears there as plain user text, so start it with "[from <your session name>]")
+]] .. SESSION_TERMINAL_FALLBACK .. [[
 Read the answer from the transcript file, or from the cross-session reply that arrives in your conversation for Claude Code. Codex approval dialogs are not written to any file: if a Codex thread shows task_started and nothing progresses for minutes, it is probably waiting at a dialog — tell me rather than guessing.
 
 For multiple source sessions, reconcile contradictions using the workspace, tests, timestamps, and newer evidence. Preserve every session and continue the actual task rather than merely summarizing the handoff.
 
 session id(s): ]]
 
-local SESSION_WORK_TOGETHER_TEMPLATE = [[Work with the already-running coding agent session(s) listed below by their 8-hex session ids while preserving all existing sessions. Act as lead coordinator: repeatedly inspect their state, delegate bounded work, read results, integrate them, and send follow-ups until the user's task is genuinely complete. Do not restart, close, interrupt, or replace those agents, and do not type into their terminals.
+local SESSION_WORK_TOGETHER_TEMPLATE = [[Work with the already-running coding agent session(s) listed below by their 8-hex session ids while preserving all existing sessions. Act as lead coordinator: repeatedly inspect their state, delegate bounded work, read results, integrate them, and send follow-ups until the user's task is genuinely complete. Do not restart, close, interrupt, or replace those agents, and do not type into their terminals except through the fallback below.
 
 Each id is the `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID) or `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID) shown in the tmux pane border; a bare 8-hex id may be either. Resolve each one:
 SID='xxxxxxxx'
@@ -817,10 +893,11 @@ jq -c 'select(.sessionId=="<uuid>") | {name,status,waitingFor,tmux,pid}' ~/.clau
 # Codex peer: the thread uuid is the address for codex queue; busy/idle from the rollout tail (task_started = busy, task_complete / turn_aborted = idle)
 jq -r 'select(.type=="event_msg") | .payload.type' "$F" | grep -v -E '^(token_count|item_completed)$' | tail -1
 
-Send messages natively, never with tmux send-keys:
+Send messages natively when you can:
 # Claude Code: SendMessage to the peer's name, with notify_when_idle so you are told when it finishes instead of polling. It shows in the peer's session as "Message from @<your name>", and the reply arrives in your conversation as a cross-session message. If a message is held because the permission modes differ, tell me instead of retrying.
 # Codex: codex queue --thread <uuid> --message '<message>'   (delivered when that session is idle; it appears there as plain user text, so start it with "[from <your session name>] <request id>")
 Do not queue into a Codex session that has never had a turn (no rollout yet); ask me to seed it.
+]] .. SESSION_TERMINAL_FALLBACK .. [[
 
 Read results from the files rather than the screen:
 # Claude Code (or wait for the cross-session reply / idle notice)

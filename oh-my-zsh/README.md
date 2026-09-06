@@ -53,3 +53,51 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/o
 ```
 
 Copy/symlink `.zshrc` to `$HOME`.
+
+## Cache cleanup
+
+`cache-clean` runs each installed program's own cleanup command and respects its
+configured cache locations. Open a new shell or run
+`source "$DOTFILES_DIR/oh-my-zsh/custom/scripts.zsh"` to load it.
+
+```zsh
+cache-clean --list           # Show supported programs and missing dependencies
+cache-clean --dry-run        # Preview commands without cleaning anything
+cache-clean                  # Clean all available default targets
+cache-clean uv cargo bun     # Clean only these programs
+cache-clean docker           # Explicitly prune unused Docker build cache
+```
+
+It also works directly with `bash oh-my-zsh/scripts/cache-clean.sh` from this
+repository. Missing programs are skipped; failures are reported while the other
+targets continue. It exits with status 1 if a cleanup fails and 2 for invalid
+arguments. It does not install tools or use `sudo`.
+
+| Program | Cleanup |
+| --- | --- |
+| uv | All uv cache entries |
+| pip (or pip3) | HTTP and wheel caches |
+| Bun | Global package cache |
+| npm | Package cache |
+| pnpm | Unreferenced packages in the store |
+| Yarn | Global cache (Classic or modern Yarn; preserves modern project caches) |
+| Cargo | Registry and Git caches through `cargo-cache` |
+| Go | Build, test, module download, and fuzz caches |
+| Conda, Mamba, Micromamba | Archive and index caches; preserves extracted packages that environments may link to |
+| Pixi | Pixi-managed caches |
+| Homebrew | Native `cleanup --prune=all --scrub`, including old installed versions |
+| Deno | Deno cache |
+| mise | mise cache |
+| ccache | Compiler cache |
+| Composer | Composer cache |
+| .NET | All local NuGet caches, including downloaded packages |
+| Docker (explicit only) | All unused build cache on the current builder; may target a remote builder |
+
+Cargo support requires [cargo-cache](https://github.com/matthiaskrgr/cargo-cache):
+install it once with `cargo install cargo-cache`. The cleaner reports and skips
+Cargo if it is missing. This cleans the shared cache; project build output is
+handled separately by Cargo's `cargo clean` command.
+
+Programs control what can be reclaimed: for example, pnpm keeps referenced
+packages, and Homebrew may retain downloads for installed packages. Subsequent
+builds or installs may need to download or rebuild cached dependencies.

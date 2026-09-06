@@ -1,5 +1,5 @@
-(& pixi completion --shell powershell) | Out-String | Invoke-Expression
 (&mise activate pwsh) | Out-String | Invoke-Expression
+(& pixi completion --shell powershell) | Out-String | Invoke-Expression
 
 #$Env:PATH += ";$env:USERPROFILE\bin"
 

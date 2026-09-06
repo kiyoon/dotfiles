@@ -28,6 +28,8 @@ Default targets:
 Explicit target only:
   docker        Prune all unused build cache on the current Docker builder.
 
+Bun's global cache is cleared from a temporary empty package, because
+bun pm cache rm refuses to run outside a package.
 Cargo needs cargo-cache (install with: cargo install cargo-cache).
 Conda/Mamba clean archive and index caches, preserving extracted packages.
 Homebrew also removes old installed versions as part of its native cleanup.
@@ -84,10 +86,23 @@ fi
 
 available() { command -v "$1" >/dev/null 2>&1; }
 
+# bun pm cache rm clears the global cache but refuses to run without a package.json,
+# so Bun's cleanup runs from a temporary empty package instead of the caller's directory.
+scratch_package=
+trap 'if [[ -n "$scratch_package" ]]; then rm -rf "$scratch_package"; fi' EXIT
+# Sets scratch_package in this shell (not via command substitution) so the EXIT trap can remove it.
+ensure_scratch_package() {
+	if [[ -z "$scratch_package" ]]; then
+		scratch_package=$(mktemp -d "${TMPDIR:-/tmp}/cache-clean.XXXXXX") || return 1
+		printf '{}\n' > "$scratch_package/package.json" || return 1
+	fi
+}
+
 # Sets an argument array, never an eval-able command string.
 prepare_command() {
 	local target="$1" yarn_version
 	cleanup_command=()
+	cleanup_in_scratch_package=false
 	skip_reason="$target is not installed or not on PATH"
 	if [[ "$target" == pip ]]; then
 		if available pip; then
@@ -103,7 +118,7 @@ prepare_command() {
 	available "$target" || return 1
 	case "$target" in
 	uv) cleanup_command=(uv cache clean) ;;
-	bun) cleanup_command=(bun pm cache rm) ;;
+	bun) cleanup_command=(bun pm cache rm); cleanup_in_scratch_package=true ;;
 	npm) cleanup_command=(npm cache clean --force) ;;
 	pnpm) cleanup_command=(pnpm store prune) ;;
 	yarn)
@@ -141,6 +156,15 @@ prepare_command() {
 	esac
 }
 
+run_cleanup() {
+	if [[ "$cleanup_in_scratch_package" == true ]]; then
+		ensure_scratch_package || return 1
+		(cd "$scratch_package" && "${cleanup_command[@]}")
+	else
+		"${cleanup_command[@]}"
+	fi
+}
+
 completed=0
 skipped=0
 failed=0
@@ -157,12 +181,13 @@ for target in "${targets[@]}"; do
 	esac
 	printf ' %q' "${cleanup_command[@]}"
 	if [[ "$target" == docker ]]; then printf ' (explicit target only)'; fi
+	if [[ "$cleanup_in_scratch_package" == true ]]; then printf ' (from a temporary empty package)'; fi
 	printf '\n'
 	if [[ "$mode" != run ]]; then
 		completed=$((completed + 1))
 		continue
 	fi
-	if "${cleanup_command[@]}"; then
+	if run_cleanup; then
 		completed=$((completed + 1))
 	else
 		result=$?

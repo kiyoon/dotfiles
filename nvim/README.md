@@ -82,13 +82,26 @@ Press and you'll see the available commands with [which-key.nvim](https://github
 
 This config will install lazy.nvim and many plugins automatically when you first launch vim.
 
-Some plugins have dependencies and you can locally install everything by running:
+Install the CLI dependencies using the repository's global
+[mise config](../mise-config/config.toml) first (see the root README for setup).
+Mise manages standalone tools such as uv and bun, not Neovim's Python environment.
+Run the script below from a shell where those tools are available. It creates
+`~/.virtualenvs/neovim` with Python 3.12 if missing, or reuses the existing venv,
+then installs/upgrades pynvim, debugpy and Molten's dependencies with uv.
+Neovim's Python provider uses this venv's Python directly.
+Treemux and Neovim/Zsh's Tmux hooks use `/usr/bin/python3`; the Tmux scripts install
+their Python dependencies separately. This script also installs the Node provider
+and Mason's `virtualenv` CLI directly via `uv tool install`. ImageMagick's `magick`
+CLI comes from mise (`imagemagick` in [mise-config/config.toml](../mise-config/config.toml));
+image.nvim uses its default `magick_cli` processor, so Neovim never loads ImageMagick's
+shared libraries:
 
 ```bash
 ./install-dependencies.sh
 ```
 
-For example, it includes creating a python virtual environment at `~/.virtualenvs/neovim` and installing `pynvim` and `molten.nvim` dependencies.
+Rerun `./install-dependencies.sh` to update these dependencies. Provider packages
+explicitly target the venv; no venv activation or system-pip installation is needed.
 
 Optionally,
 
@@ -116,4 +129,3 @@ After installing dependencies, check health inside nvim:
 ```vim
 :checkhealth kiyoon
 ```
-

@@ -1,71 +1,57 @@
 #!/usr/bin/env bash
-# Install conda, uv, node and rustup.
-# Run `source ~/.cargo/env` afterwards to activate rustup (cargo install)
+# Bootstrap standalone rustup and cargo-binstall, mise, CLI tools, Oh My Zsh and conda on macOS/Linux.
+# Run ../symlink.sh first so mise reads the repository's global config.
+set -euo pipefail
 
-INSTALL_DIR="$HOME/.local"
-# PIP3="/usr/bin/python3 -m pip"
+export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.local/bin:$PATH"
 
-if [[ $OSTYPE == "darwin"* ]]; then
-	# brew install --cask miniconda
-	brew install node
-    brew install bun
+if [[ ! -f "${MISE_GLOBAL_CONFIG_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/mise/config.toml}" ]]; then
+    echo "Global mise config not found. Run ./symlink.sh from the dotfiles directory first." >&2
+    exit 1
+fi
+
+# Rust/Cargo stay outside mise. Install a stable toolchain for cargo install/binstall,
+# but preserve an existing rustup default and let rustup select project toolchains.
+if ! command -v rustup &>/dev/null; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y --no-modify-path --profile minimal --default-toolchain stable
 else
-	if ! command -v "$INSTALL_DIR"/bin/npm &>/dev/null; then
-		curl -sL install-node.vercel.app/lts | bash -s -- --prefix="$INSTALL_DIR" -y
-	fi
-
-    if ! command -v bun &>/dev/null; then
-        curl -fsSL https://bun.sh/install | bash
-    else
-        bun upgrade
+    rustup toolchain install stable --profile minimal
+    if ! rustup default &>/dev/null; then
+        rustup default stable
     fi
 fi
 
+# cargo-binstall also stays with Cargo, outside mise, for ad-hoc `cargo binstall` use.
 if [[ $OSTYPE == "darwin"* ]]; then
-    brew install uv
-else
-    if ! command -v uv &>/dev/null; then
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-    else
-        uv self update
-    fi
+    brew install cargo-binstall
+elif ! command -v cargo-binstall &>/dev/null; then
+    curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+fi
+
+# Official standalone mise installer works on both macOS and Linux, without sudo.
+if ! command -v mise &>/dev/null; then
+    curl -fsSL https://mise.run | sh
+fi
+
+# Run from HOME so an unrelated project's mise.toml cannot override global tools.
+mise -C "$HOME" install --locked
+eval "$(mise -C "$HOME" env -s bash)"
+mise -C "$HOME" run install-extras
+
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 fi
 
 ##### conda
-if ! command -v conda &>/dev/null; then
+if [[ -x "$HOME/bin/miniforge3/bin/mamba" ]]; then
+    "$HOME/bin/miniforge3/bin/mamba" update mamba -y
+elif ! command -v conda &>/dev/null; then
 	mkdir -p "$HOME/bin"
 	wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" -P "$HOME/bin"
 	CONDADIR="$HOME/bin/miniforge3"
 	bash "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh" -b -p "$CONDADIR"
 	rm "$HOME/bin/Miniforge3-$(uname)-$(uname -m).sh"
-else
+elif command -v mamba &>/dev/null; then
     mamba update mamba -y
-fi
-
-# pixi
-if [[ $OSTYPE == "darwin"* ]]; then
-	brew install pixi
-else
-    if ! command -v pixi &>/dev/null; then
-        curl -fsSL https://pixi.sh/install.sh | sh
-    else
-        pixi self-update
-    fi
-fi
-
-# rustup, cargo
-if [[ $OSTYPE == "darwin"* ]]; then
-    brew install rustup
-    brew install cargo-binstall
-else
-    if ! command -v rustc &>/dev/null; then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-        source "$HOME/.cargo/env"
-        rustup default stable
-        # cargo-binstall
-        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-    else
-        rustup self update
-        cargo binstall cargo-binstall
-    fi
 fi

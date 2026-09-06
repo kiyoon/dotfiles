@@ -1,4 +1,9 @@
-vim.g.python3_host_prog = "/usr/bin/python3"
+-- Use the venv created by nvim/install-dependencies.sh.
+if vim.fn.isdirectory(vim.fn.expand("~/.virtualenvs/neovim")) == 1 then
+  vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
+else
+  vim.g.python3_host_prog = "/usr/bin/python3"
+end
 -- vim.g.python3_host_prog = "~/bin/miniconda3/envs/nvim/bin/python3"
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

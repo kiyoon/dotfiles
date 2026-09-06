@@ -21,14 +21,17 @@ Tmux's default keybindings are quite unintuitive, so I've changed a few.
 
 1. Make sure your terminal has nerd font set up
 2. Put [`.tmux.conf`](.tmux.conf) in your home directory
-3. Run [`./install-plugins.sh`](install-plugins.sh) will clone the plugins to `~/.tmux/plugins/` and install python dependencies.
+3. Set up the root mise config (see the repository README), then run [`./install-plugins.sh`](install-plugins.sh). It clones the plugins to `~/.tmux/plugins/` and installs pynvim and libtmux for `/usr/bin/python3`, outside mise. [`./update-plugins.sh`](update-plugins.sh) updates the plugins and these Python packages.
+`.tmux.conf` takes tmux's global PATH from a fresh interactive login shell at server start and on every `prefix r` reload, because hooks and `run-shell` commands otherwise keep the PATH of whatever started the server. After a mise upgrade, press `prefix r` so tmux-window-name and the other hooks find the new tool locations.
 4. (If not using dotfiles entirely) Configure nvim and zsh to set hook for the tmux-window-name plugin.
 This is already configured if you are using my dotfiles.
+Treemux and the Neovim/Zsh hooks use `/usr/bin/python3`, with dependencies
+installed by [`./install-plugins.sh`](install-plugins.sh).
 
 ```zsh
 # ~/.zshrc
 tmux-window-name() {
-    ($TMUX_PLUGIN_MANAGER_PATH/tmux-window-name/scripts/rename_session_windows.py &)
+    (/usr/bin/python3 "$TMUX_PLUGIN_MANAGER_PATH/tmux-window-name/scripts/rename_session_windows.py" &)
 }
 
 add-zsh-hook chpwd tmux-window-name
@@ -36,7 +39,7 @@ add-zsh-hook chpwd tmux-window-name
 
 ```lua
 -- ~/.config/nvim/init.lua
--- NOTE: use /usr/bin/python3 because libtmux is intalled in system python
+-- tmux/install-plugins.sh installs libtmux for system Python.
 vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
   callback = function()
     if vim.env.TMUX_PLUGIN_MANAGER_PATH then

@@ -1163,6 +1163,35 @@ local tmuxRestoreAgentsPath = tmuxRestoreAgentsHome
   .. "/.local/bin:"
   .. tmuxRestoreAgentsHome
   .. "/.bun/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+-- tmux and uv are mise-managed, and mise puts each tool in a versioned directory
+-- (no shims), so ask mise for its PATH once at load instead of hard-coding paths.
+-- Offline: the shell setting keeps this to installed tools. Falls back to the
+-- fixed directories above when mise is missing.
+do
+  local output, ok = hs.execute(
+    'PATH="' .. tmuxRestoreAgentsPath .. '" MISE_OFFLINE=1 mise -C "$HOME" env --json 2>/dev/null'
+  )
+  local decoded_ok, decoded = pcall(hs.json.decode, output)
+  if ok and decoded_ok and type(decoded) == "table" and type(decoded.PATH) == "string" and decoded.PATH ~= "" then
+    tmuxRestoreAgentsPath = decoded.PATH
+  end
+end
+
+---Find an executable on tmuxRestoreAgentsPath, like `command -v`. hs.task needs an
+---absolute launch path, and the attach command is handed to kitty, whose PATH has
+---no mise, so the resolved absolute path is what gets passed along.
+---@param name string
+---@return string executable the absolute path, or the bare name when not found
+local function tmuxRestoreAgentsExecutable(name)
+  for directory in tmuxRestoreAgentsPath:gmatch("[^:]+") do
+    local candidate = directory .. "/" .. name
+    local attributes = hs.fs.attributes(candidate)
+    if attributes and attributes.mode == "file" and attributes.permissions:sub(3, 3) == "x" then
+      return candidate
+    end
+  end
+  return name
+end
 
 if _G.tmuxRestoreAgentsMenuController then
   _G.tmuxRestoreAgentsMenuController:stop()
@@ -1229,8 +1258,8 @@ _G.tmuxRestoreAgentsMenuController = tmuxRestoreAgentsMenu.new({
     return task
   end,
 }, {
-  uv = "/opt/homebrew/bin/uv",
-  tmux = "/opt/homebrew/bin/tmux",
+  uv = tmuxRestoreAgentsExecutable("uv"),
+  tmux = tmuxRestoreAgentsExecutable("tmux"),
   -- wezterm = terminal.WEZTERM_CLI,
   kitten = terminal.KITTEN_CLI,
   open = "/usr/bin/open",

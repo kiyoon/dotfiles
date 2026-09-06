@@ -1,0 +1,22 @@
+[settings]
+# Keep installs explicit and shell activation on direct tool paths.
+not_found_auto_install = false
+
+[tools]
+"github:uutils/coreutils" = "0.10.0" # Unix-like commands for PowerShell
+
+eza = "latest" # PowerShell ls/ll aliases
+bat = "latest" # Syntax-highlighted file viewer
+ripgrep = "latest" # telescope.nvim live grep
+fd = "latest" # wilder.nvim, telescope.nvim and fuzzy file search
+zoxide = "latest" # PowerShell z command
+bottom = "latest" # btm: system monitor
+dust = "latest" # Disk-usage viewer
+yazi = "latest" # Terminal file manager
+fzf = "latest" # PSFzf: fuzzy command history and file selection
+neovim = "latest" # nvim, nvim-coc and nvim-lazyvim
+uv = "latest" # Neovim Python tools and basedpyright (uvx)
+ruff = "latest" # Neovim Python linting, formatting and import fixes
+bun = "latest" # JavaScript runtime/package manager; Neovim Node provider
+
+"github:YS-L/csvlens" = "latest" # Interactive CSV viewer

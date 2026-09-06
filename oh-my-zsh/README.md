@@ -21,10 +21,14 @@ Install zsh locally. (🚨 warning: `sudo apt install zsh` may install an old ve
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/zsh-local-install.sh)"
 ```
 
-Install package managers.
+From the cloned dotfiles directory, link the global mise config and bootstrap
+standalone rustup, mise, CLI tools, Oh My Zsh and conda:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/install-installers.sh)"
+./symlink.sh
+oh-my-zsh/install-installers.sh
+export PATH="$HOME/.local/bin:$PATH"
+eval "$(mise -C "$HOME" env -s bash)"
 ```
 
 Add settings to `~/.bashrc` that launches zsh when in bash login shell (if you don't have root permission and can't do `chsh`):
@@ -33,26 +37,28 @@ Add settings to `~/.bashrc` that launches zsh when in bash login shell (if you d
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/launch-zsh-in-bash.sh)"
 ```
 
-Install oh-my-zsh:
-
-```zsh
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
 Install / update plugins:
 
 ```zsh
 git submodule update --init --remote
 ```
 
-Install apps:
+Install the checked-in CLI versions from [mise.lock](../mise-config/mise.lock):
 
 ```zsh
-##### tig, eza, gh, starship, ..
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/oh-my-zsh/apps-local-install.sh)"
+mise -C "$HOME" install --locked
+mise -C "$HOME" run install-extras
 ```
 
-Copy/symlink `.zshrc` to `$HOME`.
+To update versions, run `mise -C "$HOME" lock --global --bump` first and commit
+the resulting lockfile. See the root README for GitHub authentication when updating.
+
+The linked `.zshrc` activates mise before loading Oh My Zsh plugins and custom files.
+It also deduplicates PATH (`typeset -U path`) and no longer forces `/usr/bin` ahead of Homebrew.
+Rust/Cargo stay under rustup, using the existing Cargo home and default toolchain.
+The bootstrap installs/updates stable without replacing an existing default, and
+installs cargo-binstall next to it (outside mise) for ad-hoc `cargo binstall` use.
+Use `rustup update` to update Rust separately from mise-managed CLI tools.
 
 ## Cache cleanup
 
@@ -77,7 +83,7 @@ arguments. It does not install tools or use `sudo`.
 | --- | --- |
 | uv | All uv cache entries |
 | pip (or pip3) | HTTP and wheel caches |
-| Bun | Global package cache |
+| Bun | Global install cache and cached `bunx` packages, run from a temporary empty package because `bun pm cache rm` refuses to run outside one |
 | npm | Package cache |
 | pnpm | Unreferenced packages in the store |
 | Yarn | Global cache (Classic or modern Yarn; preserves modern project caches) |

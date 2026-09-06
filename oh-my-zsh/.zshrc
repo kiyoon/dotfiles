@@ -1,3 +1,29 @@
+# Make mise and its tools available before any startup scripts or plugins run.
+export BUN_INSTALL="$HOME/.bun"
+# Keep PATH free of duplicates: the first occurrence of a directory wins.
+typeset -U path
+# /usr/bin and /usr/local/bin are already in the system PATH; forcing them ahead
+# would hide Homebrew's git, python3, curl and ssh.
+# Keep Linuxbrew last so its Python does not override other installations.
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH:$BUN_INSTALL/bin:$HOME/.pixi/bin:/home/linuxbrew/.linuxbrew/bin"
+export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew/lib"
+export MANPATH="/usr/local/man:$HOME/.local/share/man:$MANPATH"
+
+# Load other user tool paths first, so mise's selected versions take precedence.
+if [[ -f "$HOME/.cargo/env" ]]; then
+    source "$HOME/.cargo/env"
+fi
+if [[ -f "$HOME/.deno/env" ]]; then
+    source "$HOME/.deno/env"
+fi
+if [[ -d "$HOME/.dotnet/tools" ]]; then
+    export PATH="$HOME/.dotnet/tools:$PATH"
+fi
+
+if (($+commands[mise])); then
+    eval "$(mise activate zsh)"
+fi
+
 SSH_ENV="$HOME/.ssh/agent.env"
 
 start_agent() {
@@ -35,10 +61,6 @@ if [ -f "$SSH_ENV" ]; then
 else
     start_agent
 fi
-
-# If you come from bash you might have to change your $PATH.
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$HOME/bin:/usr/bin:/usr/local/bin:$PATH:$BUN_INSTALL/bin"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -179,8 +201,6 @@ source $ZSH/oh-my-zsh.sh
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey '^s' autosuggest-accept
-
-export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8

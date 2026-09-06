@@ -1,0 +1,78 @@
+# Global tools for macOS and Linux; mise-config/ is symlinked to ~/.config/mise.
+[settings]
+# Keep installs explicit and shell activation on direct tool paths.
+not_found_auto_install = false
+
+[tools]
+neovim = "0.12.4"
+tmux = "latest"
+helix = "latest"
+
+# Runtimes/package managers
+node = "lts" # CoC, Copilot, Mason's npm packages and Prettier
+bun = "latest"
+uv = "latest"
+# Rust/Cargo and cargo-binstall are installed outside mise by oh-my-zsh/install-installers.sh.
+pixi = "latest" # Linux fallback for tools with system-library dependencies (below)
+
+# Zsh plugins, aliases and previews; fd/rg/viu are also Neovim dependencies.
+starship = "latest" # Zsh prompt
+# eza publishes no macOS release binaries; install-extras installs it with Homebrew on macOS.
+"github:eza-community/eza" = { version = "latest", os = ["linux"] } # Zsh ls/ll aliases and fzf/fzf-tab directory previews
+bat = "latest" # Zsh cat alias and fzf/fzf-tab text previews
+fd = "latest" # wilder.nvim, telescope.nvim and Zsh fzf file/directory search
+ripgrep = "latest" # telescope.nvim live grep and Zsh search
+fzf = "latest" # Zsh fzf/fzf-tab: Ctrl-T, Alt-C and Ctrl-R
+zoxide = "latest"
+"github:atanunq/viu" = "latest" # Telescope image previews
+coreutils = { version = "0.10.0", os = ["macos"] }
+
+# Standalone CLI apps from the former app installer.
+gh = "latest" # Zsh gh plugin and GitHub helper functions
+jq = "latest" # Zsh license/GitHub helpers and window-manager scripts
+lazygit = "latest" # Interactive Git UI
+bottom = "latest" # btm: system monitor
+dust = "latest" # Disk-usage viewer
+"github:dalance/procs" = "latest" # Process viewer
+"github:YS-L/csvlens" = "latest" # Interactive CSV viewer
+difftastic = "latest" # Zsh aliases_git.zsh sets GIT_EXTERNAL_DIFF=difft
+yazi = "latest" # Terminal file manager; PDF/image preview dependencies below
+imagemagick = "latest" # magick CLI for image.nvim (molten.nvim); conda-forge build via mise's conda backend
+
+# Neovim linters, formatters and parser tools (formerly install-dependencies.sh).
+ruff = "latest" # Python linting, formatting and import fixes
+biome = "latest" # JavaScript/TypeScript linting and formatting
+stylua = "latest" # Lua formatting
+prettier = { version = "latest", depends = ["node"] } # Web/Markdown formatting
+tree-sitter = "latest" # nvim-treesitter parser generation
+# Mason's virtualenv CLI is installed directly with uv by nvim/install-dependencies.sh.
+
+# Optional dependencies from the old app installer:
+# Zsh colorize plugin (ccat): install pygments separately with `uv tool install pygments`.
+# Ranger's custom viu image viewer needs pillow in Ranger's Python environment.
+
+[tasks.install-extras]
+description = "Install Unix utilities that need Homebrew or conda-forge libraries"
+run = '''
+set -eu
+case "$(uname -s)" in
+  Darwin)
+    # GNU tools used by Zsh helpers and the local install scripts.
+    brew install wget coreutils gnu-sed gnu-tar grep
+    brew install eza      # Zsh ls/ll aliases; eza has no macOS release binaries
+    brew install tig      # Zsh tig plugin (tis, etc.)
+    brew install pv       # Zsh archive/transfer progress helpers
+    brew install chafa    # fzf/fzf-tab and Yazi image previews
+    brew install poppler  # pdftoppm: Yazi and fzf-tab PDF previews (custom/01_env.zsh)
+    ;;
+  Linux)
+    # poppler has no official static binary; its libraries need a dependency solver.
+    # Pixi also supplies ncurses for tig and the libraries used by chafa, without sudo.
+    pixi global install -c conda-forge tig pv chafa poppler
+    ;;
+  *)
+    echo "install-extras supports macOS and Linux only" >&2
+    exit 1
+    ;;
+esac
+'''

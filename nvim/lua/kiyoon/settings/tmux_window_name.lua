@@ -1,6 +1,6 @@
 --- Run ~/.tmux/plugins/tmux-window-name/scripts/rename_session_windows.py on VimEnter and VimLeave
 ---   1. only if tmux-window-name plugin is installed,
----   2. using `uv run` if uv python package manager is available, otherwise using /usr/bin/python3
+---   2. using /usr/bin/python3, with libtmux installed by tmux/install-plugins.sh
 local tmux_window_name_group = vim.api.nvim_create_augroup("tmux_window_name", { clear = true })
 vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
   callback = function()
@@ -15,17 +15,8 @@ vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
       return
     end
 
-    local cmd
     local script = plugin_path .. "/scripts/rename_session_windows.py"
-
-    -- Use uv python package manager (not vim.uv) if available
-    if vim.fn.executable("uv") == 1 then
-      -- avoid using cwd's pyproject.toml by passing --no-project because tmux-window-name is irrelevant to current project
-      cmd = { "uv", "run", "--no-project", "--with", "libtmux", script }
-    else
-      -- NOTE: use /usr/bin/python3 because libtmux is installed in system python
-      cmd = { "/usr/bin/python3", script }
-    end
+    local cmd = { "/usr/bin/python3", script }
 
     -- Run asynchronously so we don't block VimEnter/VimLeave
     vim.system(cmd, { text = true }, function(obj)

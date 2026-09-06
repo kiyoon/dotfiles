@@ -38,10 +38,9 @@ dotstash() {
 dotinstall() {
 	DOTFILES_DIR=$(dotfiles_dir)
 
-	if [[ $OSTYPE != "darwin"* ]]; then
-		"$DOTFILES_DIR"/install-nvim-tmux-locally-linux.sh
-	fi
-	"$DOTFILES_DIR"/oh-my-zsh/apps-local-install.sh
+	"$DOTFILES_DIR"/symlink.sh || return
+	"$DOTFILES_DIR"/oh-my-zsh/install-installers.sh || return
+	eval "$(mise -C "$HOME" env -s zsh)"
 
 	"$DOTFILES_DIR"/nvim/install-dependencies.sh
 	nvim +"lua require('lazy').restore({wait=true})" +qa
@@ -50,8 +49,6 @@ dotinstall() {
 	"$DOTFILES_DIR"/tmux/update-plugins.sh
 
 	"$DOTFILES_DIR"/wezterm/terminfo.sh
-
-	"$DOTFILES_DIR"/symlink.sh
 
 	omz reload
 }

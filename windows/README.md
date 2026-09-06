@@ -24,10 +24,14 @@ Missing commands like `grep`, `awk`, `sed` etc. comes with uutils-coreutils and 
 
 ### Mise-managed CLI tools
 
-Global CLI tools are installed with `mise`. Put the following files
+Global CLI tools are installed with `mise`. Native Windows uses the files in
+`windows/mise-config/`; macOS and Linux use the repository's `mise-config/config.toml`.
+The source directories use `mise-config` so mise does not load them as project
+configs before installation.
+Put the following Windows files in your global mise directory:
 
-> mise/config.toml -> ~/.config/mise/config.toml
-> mise/mise.lock   -> ~/.config/mise/mise.lock
+> windows/mise-config/config.toml -> ~/.config/mise/config.toml
+> windows/mise-config/mise.lock   -> ~/.config/mise/mise.lock
 
 On the first machine, install the tools and generate the lockfile:
 
@@ -36,7 +40,7 @@ mise install
 mise lock --global
 ```
 
-Commit both mise/config.toml and mise/mise.lock.
+Commit both windows/mise-config/config.toml and windows/mise-config/mise.lock.
 
 On a new machine where the lockfile already exists:
 

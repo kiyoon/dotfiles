@@ -1,4 +1,4 @@
--- if venv exists, use it
+-- Use the venv created by nvim/install-dependencies.sh.
 if vim.fn.isdirectory(vim.fn.expand("~/.virtualenvs/neovim")) == 1 then
   vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
   -- vim.g.python3_host_prog = vim.fn.expand("~/bin/miniconda3/envs/nvim/bin/python3")

@@ -29,7 +29,15 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 
 accordion-padding = 12
 default-root-container-layout = 'tiles'
-default-root-container-orientation = 'auto'
+# 'auto' derives the orientation from the monitor shape, so a portrait external
+# monitor gets a vertical root and new windows open BELOW the focused one.
+# Pinned horizontal so a new window always lands to the right instead.
+# This only decides a workspace's root container when that container is first
+# created: a workspace that already went vertical keeps it until emptied, or
+# until `aerospace layout horizontal` / `flatten-workspace-tree` resets it.
+# Windows joined into a nested stack (cmd-alt-h/j/k/l) still receive new
+# windows inside that stack -- insertion follows the focused window's parent.
+default-root-container-orientation = 'horizontal'
 
 # yabai config has mouse_follows_focus off.
 on-focused-monitor-changed = []

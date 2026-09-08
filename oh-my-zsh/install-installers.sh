@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap standalone rustup and cargo-binstall, mise, CLI tools, Oh My Zsh and conda on macOS/Linux.
+# Bootstrap standalone uv, Bun, rustup and cargo-binstall, mise, CLI tools, Oh My Zsh and conda on macOS/Linux.
 # Run ../symlink.sh first so mise reads the repository's global config.
 set -euo pipefail
 
@@ -27,6 +27,26 @@ if [[ $OSTYPE == "darwin"* ]]; then
     brew install cargo-binstall
 elif ! command -v cargo-binstall &>/dev/null; then
     curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+fi
+
+# Keep runners outside mise so background commands can use stable executable paths.
+# Check standalone paths on Linux: an inherited PATH may still contain mise tools.
+if [[ $OSTYPE == "darwin"* ]]; then
+    brew install uv bun
+else
+    if [[ -x "$HOME/.local/bin/uv" ]]; then
+        "$HOME/.local/bin/uv" self update
+    else
+        curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR="$HOME/.local/bin" sh
+    fi
+
+    export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
+    if [[ -x "$BUN_INSTALL/bin/bun" ]]; then
+        "$BUN_INSTALL/bin/bun" upgrade
+    else
+        curl -fsSL https://bun.sh/install | bash
+    fi
+    export PATH="$BUN_INSTALL/bin:$PATH"
 fi
 
 # Official standalone mise installer works on both macOS and Linux, without sudo.

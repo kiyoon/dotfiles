@@ -64,9 +64,9 @@ My main frameworks/languages: Python (PyTorch, FastAPI), TypeScript (React), C# 
 
 ## Requirements
 
-- Linux x86-64, macOS, Windows WSL2
-- Neovim v0.12.4 (make sure you use this exact version)
-- Tmux v3.7 or newer
+- Linux, macOS, Windows, WSL2
+- Neovim v0.12.5 (make sure you use this exact version)
+- Tmux v3.7
 - Zsh v5.9 (in v5.8 highlighting will look weird and fzf-tab will remove some lines)
 
 
@@ -87,26 +87,6 @@ cd dotfiles
 
 2. Install Zsh, mise, CLI tools and Oh My Zsh
 
-On macOS, install Homebrew first for Zsh and the system-library dependencies.
-On Linux, the local Zsh build needs a C compiler, make, curl, wget and rsync.
-The global [mise config](mise-config/config.toml) documents the tools used by Zsh,
-Neovim and their plugins. Native Windows has a separate [config](windows/mise-config/config.toml).
-The source directories are named `mise-config` so mise does not load them as
-project configs when browsing this checkout. `symlink.sh` installs the macOS/Linux
-config by linking `mise-config/` to `~/.config/mise` (or `$XDG_CONFIG_HOME/mise`).
-The accompanying [lockfile](mise-config/mise.lock) records exact versions and
-available download URLs/checksums for Linux x64 and macOS arm64. Keep it with
-the config so installs can reuse those resolutions instead of querying `latest`.
-
-Use `mise activate zsh` / `mise activate pwsh` in interactive shells, never mise
-shim directories or `mise activate --shims`. Non-interactive scripts and Docker
-build steps use `mise env` to activate direct tool paths once per shell. Keep
-Cargo, Pixi and other user tool paths; mise's selected tools take precedence.
-The global configs set `[settings] not_found_auto_install = false` because mise otherwise
-adds auto-install shims even with normal activation. Install missing tools explicitly
-with `mise install --locked`. Interactive Zsh uses activation alone; an extra `mise env`
-at startup can resolve missing `latest` versions through GitHub and hit API limits.
-
 ```bash
 oh-my-zsh/zsh-local-install.sh
 oh-my-zsh/install-installers.sh
@@ -119,42 +99,16 @@ oh-my-zsh/launch-zsh-in-bash.sh
 git submodule update --init --remote  # Install and update all zsh plugins
 ```
 
-The bootstrap uses the [official mise shell installer](https://mise.jdx.dev/installing-mise.html),
-then runs `mise install --locked` and `mise run install-extras` from your home directory.
-Most CLI tools come from mise. The extras task uses Homebrew on macOS and Pixi
-on Linux for utilities whose libraries need a package manager (including PDF previews).
-On macOS it also installs eza with Homebrew, because eza publishes no macOS binaries;
-on Linux mise installs eza from its GitHub release.
-Conda and Oh My Zsh are also bootstrapped by `install-installers.sh`.
-Rust/Cargo are bootstrapped separately through rustup, with cargo-binstall next to it
-(Homebrew on macOS, the official installer on Linux) for ad-hoc `cargo binstall` use.
-Existing rustup defaults are preserved; mise does not select or manage Rust toolchains,
-and no mise-managed tool needs Cargo.
-
 Open your terminal again and you'll see you're running zsh.
+
+Use `mise activate zsh`, never mise shim directories or `mise activate --shims` (they are slow).
 
 See [oh-my-zsh/README.md](oh-my-zsh/README.md) for details.
 
 3. Install Neovim dependencies and Tmux plugins
 
-Neovim v0.12.4 and the locked Tmux version are already installed by mise in step 2.
-Neovim is pinned in `mise-config/config.toml`; Tmux advances when the lockfile is updated.
-The dependency script below uses uv to create or reuse `~/.virtualenvs/neovim`
-and install pynvim, debugpy and Molten's dependencies.
-This venv is managed by the script, not mise; system Python is left untouched.
-The script also installs Mason's `virtualenv` CLI directly with `uv tool install`.
-Treemux and Neovim/Zsh's Tmux hooks use `/usr/bin/python3`; the Tmux scripts install
-their pynvim/libtmux dependencies separately.
-
-Install neovim dependencies:
-
 ```bash
 bash nvim/install-dependencies.sh
-```
-
-Install tmux plugins:
-
-```bash
 bash tmux/install-plugins.sh
 ```
 
@@ -177,23 +131,6 @@ dotupdate			# Use if you want to update to the latest commit
 dotstable			# Use if you want to use the stable tag
 dotupdate <tag>		# Specify the tag/commit you want to use
 ```
-
-Normal bootstrap and `dotupdate` install the checked-in tool versions. To choose
-new versions, refresh the lockfile explicitly, then install them:
-
-```zsh
-MISE_GITHUB_TOKEN="$(gh auth token --hostname github.com)" mise -C "$HOME" lock --global --bump
-mise -C "$HOME" install --locked
-mise -C "$HOME" run install-extras
-```
-
-Commit the updated `mise-config/mise.lock`. `mise lock --bump` keeps the pinned
-Neovim version; edit the config to change it. The GitHub token uses an existing
-`gh auth login` session for authenticated release lookups. Downloads and some
-verification steps still need network access; the npm-based prettier and the
-Homebrew/Pixi extras are not locked by mise.
-Update Rust separately with `rustup update`; rerun `nvim/install-dependencies.sh`
-to update the Neovim venv and uv-managed `virtualenv` CLI.
 
 ## SSH with WezTerm
 If you ssh into a remote server, it won't understand the terminal and the UI will break (like backspace seems to work like space).  

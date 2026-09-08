@@ -22,7 +22,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/kiyoon/dotfiles/master/o
 ```
 
 From the cloned dotfiles directory, link the global mise config and bootstrap
-standalone rustup, mise, CLI tools, Oh My Zsh and conda:
+standalone uv, Bun and rustup, mise, CLI tools, Oh My Zsh and conda:
 
 ```bash
 ./symlink.sh
@@ -55,6 +55,9 @@ the resulting lockfile. See the root README for GitHub authentication when updat
 
 The linked `.zshrc` activates mise before loading Oh My Zsh plugins and custom files.
 It also deduplicates PATH (`typeset -U path`) and no longer forces `/usr/bin` ahead of Homebrew.
+uv and Bun stay outside mise: Homebrew installs them on macOS, and their official
+installers place them in `~/.local/bin` and `~/.bun/bin` on Linux.
+
 Rust/Cargo stay under rustup, using the existing Cargo home and default toolchain.
 The bootstrap installs/updates stable without replacing an existing default, and
 installs cargo-binstall next to it (outside mise) for ad-hoc `cargo binstall` use.
@@ -107,3 +110,21 @@ handled separately by Cargo's `cargo clean` command.
 Programs control what can be reclaimed: for example, pnpm keeps referenced
 packages, and Homebrew may retain downloads for installed packages. Subsequent
 builds or installs may need to download or rebuild cached dependencies.
+
+## Codex usage
+
+`codex-usage` prints the current Codex rate-limit windows for every Codex home
+(`~/.codex` plus any `~/.codex-*` that has an `auth.json`). Each run is one live
+request per home to the endpoint Codex's own `/status` uses, authenticated with
+the tokens Codex CLI already stores, so there is nothing extra to log in to. It
+never refreshes tokens itself (Codex CLI owns them); an expired token is
+reported, and starting Codex in that home refreshes it. Open a new shell or run
+`source "$DOTFILES_DIR/oh-my-zsh/custom/scripts.zsh"` to load it.
+
+```zsh
+codex-usage                          # All homes; the arrow marks the home a bare `codex` uses
+codex-usage --json                   # Raw API response per home
+CODEX_HOMES=~/.codex-x codex-usage   # Override discovery (or pass home directories as arguments)
+```
+
+Offline tests: `python3 oh-my-zsh/scripts/tests/codex-usage_test.py`.

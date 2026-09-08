@@ -1163,8 +1163,8 @@ local tmuxRestoreAgentsPath = tmuxRestoreAgentsHome
   .. "/.local/bin:"
   .. tmuxRestoreAgentsHome
   .. "/.bun/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
--- tmux and uv are mise-managed, and mise puts each tool in a versioned directory
--- (no shims), so ask mise for its PATH once at load instead of hard-coding paths.
+-- tmux is mise-managed, so ask mise for its PATH once at load instead of
+-- hard-coding its versioned directory. Standalone uv uses the fixed paths above.
 -- Offline: the shell setting keeps this to installed tools. Falls back to the
 -- fixed directories above when mise is missing.
 do

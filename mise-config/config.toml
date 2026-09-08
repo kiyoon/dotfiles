@@ -4,28 +4,28 @@
 not_found_auto_install = false
 
 [tools]
-neovim = "0.12.4"
+neovim = "latest"
 tmux = "latest"
 helix = "latest"
 
 # Runtimes/package managers
 node = "lts" # CoC, Copilot, Mason's npm packages and Prettier
-bun = "latest"
-uv = "latest"
-# Rust/Cargo and cargo-binstall are installed outside mise by oh-my-zsh/install-installers.sh.
+# uv, Bun, Rust/Cargo and cargo-binstall are installed outside mise by oh-my-zsh/install-installers.sh.
 pixi = "latest" # Linux fallback for tools with system-library dependencies (below)
 
 # Zsh plugins, aliases and previews; fd/rg/viu are also Neovim dependencies.
 starship = "latest" # Zsh prompt
 # eza publishes no macOS release binaries; install-extras installs it with Homebrew on macOS.
-"github:eza-community/eza" = { version = "latest", os = ["linux"] } # Zsh ls/ll aliases and fzf/fzf-tab directory previews
+"github:eza-community/eza" = { version = "latest", os = [
+  "linux",
+] } # Zsh ls/ll aliases and fzf/fzf-tab directory previews
 bat = "latest" # Zsh cat alias and fzf/fzf-tab text previews
 fd = "latest" # wilder.nvim, telescope.nvim and Zsh fzf file/directory search
 ripgrep = "latest" # telescope.nvim live grep and Zsh search
 fzf = "latest" # Zsh fzf/fzf-tab: Ctrl-T, Alt-C and Ctrl-R
 zoxide = "latest"
 "github:atanunq/viu" = "latest" # Telescope image previews
-coreutils = { version = "0.10.0", os = ["macos"] }
+coreutils = { version = "latest", os = ["macos"] }
 
 # Standalone CLI apps from the former app installer.
 gh = "latest" # Zsh gh plugin and GitHub helper functions

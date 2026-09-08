@@ -4,11 +4,11 @@ fi
 
 if (($+commands[eza])); then
 	# sl is defined in mistakes.zsh
-	alias ls='eza --icons auto --hyperlink'
-	alias ll='eza -alF --icons auto --hyperlink'
-	alias la='eza -a --icons auto --hyperlink'
-	alias l='eza -F --icons auto --hyperlink'
-	alias lg='eza --git-ignore --icons auto --hyperlink'
+	alias ls='eza --icons auto --hyperlink auto'
+	alias ll='eza -alF --icons auto --hyperlink auto'
+	alias la='eza -a --icons auto --hyperlink auto'
+	alias l='eza -F --icons auto --hyperlink auto'
+	alias lg='eza --git-ignore --icons auto --hyperlink auto'
 fi
 
 if (($+commands[nvim])); then

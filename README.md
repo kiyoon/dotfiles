@@ -78,11 +78,12 @@ My main frameworks/languages: Python (PyTorch, FastAPI), TypeScript (React), C# 
 cd ~/.config	# it doesn't have to be here. Just install anywhere
 git clone https://github.com/kiyoon/dotfiles
 
-# WARNING: ./symlink.sh will override existing dotfiles without validation (but will create a backup).
-# The old dotfiles will be moved with '~' suffix.
-# Use with care if you configured something manually.
 cd dotfiles
-./symlink.sh
+# Install mise first if needed.
+curl -fsSL https://mise.run | sh
+export PATH="$HOME/.local/bin:$PATH"
+mise trust
+mise bootstrap dotfiles apply
 ```
 
 2. Install Zsh, mise, CLI tools and Oh My Zsh
@@ -116,7 +117,7 @@ bash tmux/install-plugins.sh
 
 ```bash
 # You might want to symlink dotfiles again in case some scripts overrode them
-./symlink.sh
+mise bootstrap dotfiles apply
 # You only need to install it to the local computer, not in SSH host computer.
 ./install-nerdfont.sh
 # If you're using wezterm (recommended), install terminfo
@@ -126,7 +127,7 @@ wezterm/terminfo.sh
 5. Install / Update dotfiles, apps, plugins etc.
 
 ```zsh
-# WARNING: This includes calling ./symlink.sh so the dotfile symlinks will be updated.
+# WARNING: This includes calling mise bootstrap dotfiles apply so the dotfile symlinks will be updated.
 dotupdate			# Use if you want to update to the latest commit
 dotstable			# Use if you want to use the stable tag
 dotupdate <tag>		# Specify the tag/commit you want to use

@@ -25,7 +25,10 @@ From the cloned dotfiles directory, link the global mise config and bootstrap
 standalone uv, Bun and rustup, mise, CLI tools, Oh My Zsh and conda:
 
 ```bash
-./symlink.sh
+curl -fsSL https://mise.run | sh
+export PATH="$HOME/.local/bin:$PATH"
+mise trust
+mise bootstrap dotfiles apply
 oh-my-zsh/install-installers.sh
 export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise -C "$HOME" env -s bash)"

@@ -38,7 +38,7 @@ dotstash() {
 dotinstall() {
 	DOTFILES_DIR=$(dotfiles_dir)
 
-	"$DOTFILES_DIR"/symlink.sh || return
+	mise -C "$DOTFILES_DIR" bootstrap dotfiles apply || return
 	"$DOTFILES_DIR"/oh-my-zsh/install-installers.sh || return
 	eval "$(mise -C "$HOME" env -s zsh)"
 

@@ -1,0 +1,41 @@
+# Repository setup; personal tools live in mise-config/config.toml.
+[settings]
+dotfiles.default_mode = "symlink"
+
+[dotfiles]
+"~/.config/nvim" = "nvim"
+"~/.config/nvim-coc" = "nvim-coc"
+"~/.config/nvim-lazyvim" = "nvim-lazyvim"
+"~/.config/oh-my-zsh" = "oh-my-zsh"
+"~/.config/starship.toml" = "oh-my-zsh/starship.toml"
+"~/.config/wezterm" = "wezterm"
+"~/.config/kitty" = "kitty"
+"~/.config/helix" = "helix"
+"~/.config/dprint" = "dprint"
+"~/.config/mise" = "mise-config"
+"~/.vimrc" = "nvim/.vimrc"
+"~/.tmux.conf" = "tmux/.tmux.conf"
+"~/.zshrc" = "oh-my-zsh/.zshrc"
+"~/.dircolors" = "oh-my-zsh/.dircolors"
+"~/.cargo/config.toml" = "cargo/config.toml"
+"~/.condarc" = "conda/.condarc"
+
+"~/.config/karabiner" = { source = "karabiner", variants = [{ os = "macos" }] }
+"~/.config/skhd" = { source = "skhd", variants = [{ os = "macos" }] }
+"~/.config/yabai" = { source = "yabai", variants = [{ os = "macos" }] }
+"~/.config/aerospace" = { source = "aerospace", variants = [{ os = "macos" }] }
+"~/.config/sketchybar" = { source = "sketchybar", variants = [{ os = "macos" }] }
+"~/.config/hammerspoon" = { source = "hammerspoon", variants = [{ os = "macos" }] }
+"~/.config/autokey/data" = { source = "autokey/data", variants = [{ os = "linux" }] }
+
+[tasks.setup-dotfiles]
+description = "Link dotfiles configuration"
+run = 'mise bootstrap dotfiles apply'
+
+[tasks.setup-nvim]
+description = "Link nvim configuration"
+run = 'mise bootstrap dotfiles apply "$HOME/.config/nvim"'
+
+[tasks.setup-tmux]
+description = "Link tmux configuration"
+run = 'mise bootstrap dotfiles apply "$HOME/.tmux.conf"'

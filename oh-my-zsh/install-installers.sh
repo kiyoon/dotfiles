@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
-# Bootstrap standalone uv, Bun, rustup and cargo-binstall, mise, CLI tools, Oh My Zsh and conda on macOS/Linux.
-# Run ../symlink.sh first so mise reads the repository's global config.
+# Bootstrap standalone uv, Bun, rustup and cargo-binstall, mise, Oh My Zsh and conda on macOS/Linux.
 set -euo pipefail
 
 export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.local/bin:$PATH"
-
-if [[ ! -f "${MISE_GLOBAL_CONFIG_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/mise/config.toml}" ]]; then
-    echo "Global mise config not found. Run ./symlink.sh from the dotfiles directory first." >&2
-    exit 1
-fi
 
 # Rust/Cargo stay outside mise. Install a stable toolchain for cargo install/binstall,
 # but preserve an existing rustup default and let rustup select project toolchains.
@@ -53,11 +47,6 @@ fi
 if ! command -v mise &>/dev/null; then
     curl -fsSL https://mise.run | sh
 fi
-
-# Run from HOME so an unrelated project's mise.toml cannot override global tools.
-mise -C "$HOME" install --locked
-eval "$(mise -C "$HOME" env -s bash)"
-mise -C "$HOME" run install-extras
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc

@@ -105,7 +105,7 @@ RUN eval "$(mise env -s bash)" \
     && $HOME/install-dependencies.sh
 RUN rm $HOME/install-dependencies.sh
 
-# NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with `symlink.sh`.
+# NOTE: All of the files COPY-ed now are for installation only. They will be replaced later with mise dotfile links.
 COPY --chown=docker1000:docker1000 ./tmux/.tmux.conf $HOME
 RUN eval "$(mise env -s bash)" \
     && git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
@@ -142,13 +142,17 @@ COPY --chown=docker1000:docker1000 ./conda $DOTFILES_PATH/conda
 COPY --chown=docker1000:docker1000 ./cargo $DOTFILES_PATH/cargo
 COPY --chown=docker1000:docker1000 ./mise-config $DOTFILES_PATH/mise-config
 COPY --chown=docker1000:docker1000 ./wezterm $DOTFILES_PATH/wezterm
-COPY --chown=docker1000:docker1000 ./symlink.sh $DOTFILES_PATH/symlink.sh
+COPY --chown=docker1000:docker1000 ./mise.toml $DOTFILES_PATH/mise.toml
+COPY --chown=docker1000:docker1000 ./kitty $DOTFILES_PATH/kitty
+COPY --chown=docker1000:docker1000 ./dprint $DOTFILES_PATH/dprint
+COPY --chown=docker1000:docker1000 ./autokey/data $DOTFILES_PATH/autokey/data
 COPY --chown=docker1000:docker1000 ./nvim $DOTFILES_PATH/nvim
 COPY --chown=docker1000:docker1000 ./tmux $DOTFILES_PATH/tmux
 COPY --chown=docker1000:docker1000 ./oh-my-zsh $DOTFILES_PATH/oh-my-zsh
 RUN chmod 777 $HOME/.config -R
 
-RUN $DOTFILES_PATH/symlink.sh
+RUN mise trust $DOTFILES_PATH/mise.toml \
+    && mise -C "$DOTFILES_PATH" bootstrap dotfiles apply --force --yes
 
 RUN eval "$(mise env -s bash)" \
     && zoxide add $HOME/.config \

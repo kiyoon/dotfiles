@@ -1284,6 +1284,52 @@ local function promptMenuItems()
   return items
 end
 
+-- AeroSpace actions reachable from the SketchyBar 󰍺 button. Every entry runs
+-- the same command as the keyboard chord in its title (see aerospace.toml);
+-- "-" draws a separator. The chord padding is literal because menus render in
+-- a proportional font, so there is no column to align to.
+local aerospaceScripts = "$HOME/.config/aerospace/scripts"
+local AEROSPACE_MENU = {
+  { "⌥⇧A    Move window → left display", aerospaceScripts .. "/monitor.sh move-secondary-toggle" },
+  { "⌥⇧T    Move window → right display", aerospaceScripts .. "/monitor.sh move-main-toggle" },
+  { "⌥⇧D    Move window → recent display", aerospaceScripts .. "/monitor.sh move-recent" },
+  { "⌥⇧W    Focus next display", "aerospace focus-monitor --wrap-around next" },
+  "-",
+  { "⌥⇧P    Move window → previous workspace", aerospaceScripts .. "/workspace.sh move-window-prev-used" },
+  { "⌥⇧N    Move window → next workspace", aerospaceScripts .. "/workspace.sh move-window-next-used" },
+  { "⌥⇧F    Move window → new workspace", aerospaceScripts .. "/workspace.sh move-window-new" },
+  { "F8      Focus previous workspace", aerospaceScripts .. "/workspace.sh focus-prev-used" },
+  { "F10     Focus next workspace", aerospaceScripts .. "/workspace.sh focus-next-used" },
+  { "⌥⇧␣    New workspace with terminal", aerospaceScripts .. "/workspace.sh open-terminal-new" },
+  "-",
+  { "⌥⇧C    Toggle screen floating", aerospaceScripts .. "/window_layout.sh toggle-monitor-floating" },
+  { "⌥⇧G    Toggle window floating / tiling", "aerospace layout floating tiling" },
+  { "⌥⇧M    Fullscreen", "aerospace fullscreen --no-outer-gaps" },
+  { "⌥⇧E    Balance sizes", "aerospace balance-sizes" },
+  "-",
+  { "⌥⇧R    Rotate clockwise", aerospaceScripts .. "/permute.sh rotate-cw" },
+  { "⌥⇧Z    Mirror vertical", aerospaceScripts .. "/permute.sh mirror-y" },
+  { "⌥⇧X    Mirror horizontal", aerospaceScripts .. "/permute.sh mirror-x" },
+}
+
+local function aerospaceMenuItems()
+  local items = {}
+  for _, entry in ipairs(AEROSPACE_MENU) do
+    if entry == "-" then
+      items[#items + 1] = { title = "-" }
+    else
+      local title, command = entry[1], entry[2]
+      items[#items + 1] = {
+        title = title,
+        fn = function()
+          runShell(command)
+        end,
+      }
+    end
+  end
+  return items
+end
+
 local function replaceCompareMenubar(key, title, autosaveName, tooltip, menuFactory)
   _G.sketchybarCompareMenubars = _G.sketchybarCompareMenubars or {}
   if _G.sketchybarCompareMenubars[key] then
@@ -1355,44 +1401,7 @@ local function installSketchybarCompareMenubars()
   end)
 
   replaceCompareMenubar("displays", "Displays", "sketchybar-compare-displays", "Hammerspoon native displays menu", function()
-    return {
-      {
-        title = "⌥⇧A    Move window → left display",
-        fn = function()
-          runShell("$HOME/.config/aerospace/scripts/monitor.sh move-secondary-toggle")
-        end,
-      },
-      {
-        title = "⌥⇧T    Move window → right display",
-        fn = function()
-          runShell("$HOME/.config/aerospace/scripts/monitor.sh move-main-toggle")
-        end,
-      },
-      {
-        title = "-",
-      },
-      {
-        title = "⌥⇧P    Move window → previous workspace",
-        fn = function()
-          runShell("$HOME/.config/aerospace/scripts/workspace.sh move-window-prev-used")
-        end,
-      },
-      {
-        title = "⌥⇧N    Move window → next workspace",
-        fn = function()
-          runShell("$HOME/.config/aerospace/scripts/workspace.sh move-window-next-used")
-        end,
-      },
-      {
-        title = "-",
-      },
-      {
-        title = "⌥⇧C    Toggle screen floating",
-        fn = function()
-          runShell("$HOME/.config/aerospace/scripts/window_layout.sh toggle-monitor-floating")
-        end,
-      },
-    }
+    return aerospaceMenuItems()
   end)
 end
 

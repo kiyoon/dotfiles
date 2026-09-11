@@ -1,0 +1,16 @@
+# Separate global tools for 32-bit ARM Linux (e.g. Raspberry Pi 2).
+[tools]
+"github:BurntSushi/ripgrep" = "latest"
+"github:ajeetdsouza/zoxide" = "latest"
+"github:astral-sh/ruff" = "latest"
+"github:bootandy/dust" = "latest"
+"github:cli/cli" = "latest"
+"github:eza-community/eza" = "latest"
+"github:jqlang/jq" = { version = "latest", asset_pattern = "jq-linux-armhf", version_prefix = "jq-" }
+"github:junegunn/fzf" = "latest"
+"github:sharkdp/bat" = "latest"
+"github:sharkdp/fd" = "latest"
+"github:starship/starship" = "latest"
+"github:uutils/coreutils" = "latest"
+node = "22"
+tree-sitter = "latest"

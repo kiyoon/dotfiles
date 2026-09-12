@@ -17,7 +17,7 @@ shopt -s nullglob
 KITTY_BIN="${KITTY_BIN:-/opt/homebrew/bin/kitty}"
 OPEN_BIN="${OPEN_BIN:-/usr/bin/open}"
 OSASCRIPT_BIN="${OSASCRIPT_BIN:-/usr/bin/osascript}"
-# kitty.conf sets `listen_on unix:/tmp/kitty`; kitty appends its own pid.
+# kinetty.toml sets `listen_on unix:/tmp/kitty`; kitty appends its own pid.
 KITTY_SOCKET_DIR="${KITTY_SOCKET_DIR:-/tmp}"
 
 launch_type="os-window"

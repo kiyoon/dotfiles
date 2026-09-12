@@ -1,6 +1,6 @@
 #!/bin/sh
 #: Flip tab_bar_edge between top and left, for the global menubar entry in
-#: macos.conf and the keybinding in kitty.conf. kitty runs this through its
+#: kinetty.toml and the keybinding in kinetty.toml. kitty runs this through its
 #: remote_control_script action, which spawns it as a direct child of the kitty
 #: process with a remote control channel already open on KITTY_LISTEN_ON -- so
 #: `kitten @` needs no --to here and works under `allow_remote_control

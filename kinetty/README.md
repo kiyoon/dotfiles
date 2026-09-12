@@ -1,4 +1,8 @@
-# kitty config and usage
+# Kinetty config and usage
+
+Configuration lives in `~/.config/kinetty/kinetty.toml`, linked to this directory by mise.
+Terminal settings, key bindings, macOS overrides, and scene presets share that file.
+The executable, Python APIs, terminfo, and remote-control socket still use kitty names.
 
 Ported from [../wezterm/wezterm.lua](../wezterm/wezterm.lua).
 
@@ -14,7 +18,7 @@ Ported from [../wezterm/wezterm.lua](../wezterm/wezterm.lua).
 > locally), same usage as `../wezterm/terminfo.sh`.
 
 > [!NOTE]
-> `macos.conf` sets `env PATH` explicitly. kitty started from the Dock inherits
+> `kinetty.toml` sets `env PATH` explicitly. kitty started from the Dock inherits
 > launchd's minimal PATH, and kittens **kitty** launches (as opposed to ones you
 > run from a shell) inherit it too — so `choose-files` previews could not find
 > `ffprobe` and failed with `executable file not found in $PATH`. Video previews
@@ -81,8 +85,8 @@ edge in force out of kitty's effective config
 (`~/Library/Caches/kitty/effective-config/<kitty pid>`, last match wins) and
 reloads the config with the other value as a `-o` override. A later reload
 re-applies that override rather than dropping it, so the edge holds while
-kitty.conf is edited, and nothing is written to disk, so quitting kitty returns
-it to the `tab_bar_edge top` in kitty.conf.
+kinetty.toml is edited, and nothing is written to disk, so quitting kitty returns
+it to the `tab_bar_edge top` in kinetty.toml.
 
 There is no button in the titlebar because kitty exposes no API to put one
 there, and a click on the tab bar that lands outside a tab is hardwired to open
@@ -93,7 +97,7 @@ a new tab. The macOS global menubar is the piece of kitty chrome that a
 
 `hammerspoon/terminal.lua` drives kitty the same way it drives wezterm (F18
 Korean/English switching, tmux-prefix detection, prompt insertion). It needs the
-remote control settings in `kitty.conf`:
+remote control settings in `kinetty.toml`:
 
 ```
 allow_remote_control socket-only
@@ -149,7 +153,7 @@ a new instance at the folder instead.
 > [!NOTE]
 > Quick actions inherit launchd's minimal PATH, which is why the script calls
 > kitty by absolute path (`/opt/homebrew/bin/kitty`), the same reason
-> `macos.conf` sets `env PATH`.
+> `kinetty.toml` sets `env PATH`.
 
 [tests/finder_quick_actions_test.sh](tests/finder_quick_actions_test.sh) covers
 both scripts with every external command stubbed, so it never launches kitty

@@ -150,7 +150,7 @@ PLIST
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string>"\$HOME/.config/kitty/open-in-kitty.sh"$extra_args "\$@"
+					<string>"\$HOME/.config/kinetty/open-in-kitty.sh"$extra_args "\$@"
 </string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>

@@ -4,23 +4,24 @@ set -euo pipefail
 
 export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.local/bin:$PATH"
 
-# Rust/Cargo stay outside mise. Install a stable toolchain for cargo install/binstall,
-# but preserve an existing rustup default and let rustup select project toolchains.
-if ! command -v rustup &>/dev/null; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
-        | sh -s -- -y --no-modify-path --profile minimal --default-toolchain stable
-else
-    rustup toolchain install stable --profile minimal
-    if ! rustup default &>/dev/null; then
-        rustup default stable
-    fi
-fi
-
-# cargo-binstall also stays with Cargo, outside mise, for ad-hoc `cargo binstall` use.
+# Rust/Cargo and cargo-binstall stay outside mise.
 if [[ $OSTYPE == "darwin"* ]]; then
+    brew install rustup
     brew install cargo-binstall
-elif ! command -v cargo-binstall &>/dev/null; then
-    curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+else
+    if ! command -v rustup &>/dev/null; then
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+            | sh -s -- -y --no-modify-path --profile minimal --default-toolchain stable
+    else
+        rustup toolchain install stable --profile minimal
+        if ! rustup default &>/dev/null; then
+            rustup default stable
+        fi
+    fi
+
+    if ! command -v cargo-binstall &>/dev/null; then
+        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+    fi
 fi
 
 # Keep runners outside mise so background commands can use stable executable paths.

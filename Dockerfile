@@ -152,7 +152,7 @@ COPY --chown=docker1000:docker1000 ./oh-my-zsh $DOTFILES_PATH/oh-my-zsh
 RUN chmod 777 $HOME/.config -R
 
 RUN mise trust $DOTFILES_PATH/mise.toml \
-    && mise -C "$DOTFILES_PATH" bootstrap dotfiles apply --force --yes
+    && mise -C "$DOTFILES_PATH" run setup-dotfiles --force --yes
 
 RUN eval "$(mise env -s bash)" \
     && zoxide add $HOME/.config \

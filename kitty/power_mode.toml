@@ -40,7 +40,7 @@ life_max = 1.6
 
 [terminal]
 camera_particles = "sparks"
-watcher = ["camera_timeline_watcher.py"]
+watcher = ["camera_watcher.py"]
 
 [platform.macos.terminal]
 macos_font_backend = "freetype"
@@ -170,3 +170,9 @@ to = "rest"
 on = "idle"
 after_seconds = 1.5
 duration_seconds = 2.5
+
+[plugins]
+modules = [
+    "/Users/kiyoon/project/wezterm-gureum/kitty/powermode/plugins/themes.py",
+    "/Users/kiyoon/project/wezterm-gureum/kitty/powermode/plugins/games.py",
+]

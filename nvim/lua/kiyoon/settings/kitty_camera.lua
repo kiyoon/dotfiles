@@ -1,9 +1,10 @@
-local allowed_timeline = "nvim-tour"
+local camera_effect = "nvim-tour"
 
-local function emit_timeline(name)
-  local osc = ("\27]1337;SetUserVar=camera_timeline=%s\7"):format(vim.base64.encode(name))
+local function emit_camera_effect(name)
+  local osc = ("\27]1337;SetUserVar=camera_effect=%s\7"):format(vim.base64.encode(name))
   local term = vim.env.TERM or ""
-  local through_tmux = vim.env.TMUX and vim.env.TMUX ~= ""
+  local through_tmux = vim.env.TMUX
+    and vim.env.TMUX ~= ""
     and (vim.startswith(term, "tmux") or vim.startswith(term, "screen"))
   if through_tmux then
     osc = "\27Ptmux;\27" .. osc .. "\27\\"
@@ -19,6 +20,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
     if (vim.env.KITTY_WINDOW_ID or "") == "" or #vim.api.nvim_list_uis() == 0 then
       return
     end
-    emit_timeline(allowed_timeline)
+    emit_camera_effect(camera_effect)
   end,
 })

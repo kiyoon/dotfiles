@@ -28,7 +28,7 @@ standalone uv, Bun and rustup, mise, CLI tools, Oh My Zsh and conda:
 curl -fsSL https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
 mise trust
-mise bootstrap dotfiles apply
+mise run setup-dotfiles
 oh-my-zsh/install-installers.sh
 export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise -C "$HOME" env -s bash)"

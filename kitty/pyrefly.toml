@@ -1,0 +1,6 @@
+search-path = [
+    ".",
+    "/Users/kiyoon/project/wezterm-gureum/kitty",
+]
+
+python-interpreter-path = "/Users/kiyoon/project/wezterm-gureum/kitty/.venv/bin/python"

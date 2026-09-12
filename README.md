@@ -83,7 +83,7 @@ cd dotfiles
 curl -fsSL https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
 mise trust
-mise bootstrap dotfiles apply
+mise run setup-dotfiles
 ```
 
 2. Install Zsh, mise, CLI tools and Oh My Zsh
@@ -117,7 +117,7 @@ bash tmux/install-plugins.sh
 
 ```bash
 # You might want to symlink dotfiles again in case some scripts overrode them
-mise bootstrap dotfiles apply
+mise run setup-dotfiles
 # You only need to install it to the local computer, not in SSH host computer.
 ./install-nerdfont.sh
 # If you're using wezterm (recommended), install terminfo
@@ -127,7 +127,7 @@ wezterm/terminfo.sh
 5. Install / Update dotfiles, apps, plugins etc.
 
 ```zsh
-# WARNING: This includes calling mise bootstrap dotfiles apply so the dotfile symlinks will be updated.
+# WARNING: This includes calling mise run setup-dotfiles so the dotfile symlinks will be updated.
 dotupdate			# Use if you want to update to the latest commit
 dotstable			# Use if you want to use the stable tag
 dotupdate <tag>		# Specify the tag/commit you want to use

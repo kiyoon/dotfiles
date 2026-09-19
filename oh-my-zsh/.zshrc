@@ -4,8 +4,12 @@ export BUN_INSTALL="$HOME/.bun"
 typeset -U path
 # /usr/bin and /usr/local/bin are already in the system PATH; forcing them ahead
 # would hide Homebrew's git, python3, curl and ssh.
+export PATH="$HOME/.local/bin:$PATH:$BUN_INSTALL/bin:$HOME/.pixi/bin"
 # Keep Linuxbrew last so its Python does not override other installations.
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH:$BUN_INSTALL/bin:$HOME/.pixi/bin:/home/linuxbrew/.linuxbrew/bin"
+# Linux only: on macOS, every lookup under /home is slow.
+if [[ $OSTYPE == linux* ]]; then
+    export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin"
+fi
 export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH:/home/linuxbrew/.linuxbrew/lib"
 export MANPATH="/usr/local/man:$HOME/.local/share/man:$MANPATH"
 
@@ -272,3 +276,9 @@ preexec() { printf '\e]133;C;\a'; }
 
 # bun completions
 [ -s "/Users/kiyoon/.bun/_bun" ] && source "/Users/kiyoon/.bun/_bun"
+
+# If you want custom zsh settings not synced with dotfiles, put them in ~/.config/zsh/*.zsh
+for custom_config ("$HOME"/.config/zsh/*.zsh(N)); do
+	source "$custom_config"
+done
+unset custom_config

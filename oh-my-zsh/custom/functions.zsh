@@ -1,30 +1,5 @@
 DOTFILES_OHMYZSH_CUSTOM_DIR="${0:a:h}"
 
-ghremote() {
-	if [ $# -eq 1 ]; then
-		if [[ "$1" = *"/"* ]]; then
-			reponame="$1"
-		else
-			reponame=kiyoon/"$1"
-		fi
-		echo "git remote add origin https://github.com/$reponame"
-		git remote add origin "https://github.com/$reponame"
-	elif [ $# -eq 2 ]; then
-		if [[ "$2" = *"/"* ]]; then
-			reponame="$2"
-		else
-			reponame=kiyoon/"$2"
-		fi
-		echo "git remote add $1 https://github.com/$reponame"
-		git remote add "$1" "https://github.com/$reponame"
-	else
-		echo "Usage: ghremote [remotename=origin] [username]/[reponame]"
-		echo "Example: ghremote kiyoon/awesome"
-		echo "Example2: ghremote awesome (kiyoon can be skipped)"
-		return 1
-	fi
-}
-
 dotfiles_dir() {
 	DOTFILES_DIR=$(git -C "$DOTFILES_OHMYZSH_CUSTOM_DIR" rev-parse --show-toplevel)
 	echo "$DOTFILES_DIR"
@@ -145,22 +120,6 @@ t() {
 
 ssh_delete() {
 	ssh-add -d ~/.ssh/id_ed25519
-}
-
-git_config() {
-	git config --global user.email "kiyoon@users.noreply.github.com"
-	git config --global user.name "Kiyoon Kim"
-	git config --global core.editor nvim
-	git config --global pull.rebase false
-	git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-	git config --global gpg.format ssh
-	git config --global user.signingkey ~/.ssh/id_ed25519.pub
-	git config --global commit.gpgsign true
-
-}
-
-git_amend_author() {
-	git commit --amend --author="Kiyoon Kim <kiyoon@users.noreply.github.com>"
 }
 
 get_sum_bytes() {
@@ -412,6 +371,7 @@ pymv() {
 # It gets generated a lot in my projects but isn't in the upstream templates.
 gi() {
 	echo ".playwright-mcp/"
+	echo ".DS_Store"
 	echo
 	local query="${(j:,:)@}"
 	_gi_curl "$query" || return 1

@@ -1,7 +1,11 @@
 # Kinetty config and usage
 
-Configuration lives in `~/.config/kinetty/kinetty.toml`, linked to this directory by mise.
+Configuration lives in `~/.config/kinetty/init.py`, linked to this directory by mise.
 Terminal settings, key bindings, macOS overrides, and scene presets share that file.
+It uses `kinetty.opts` property assignments and list operations for settings, and
+`plugins.setup(spec=plugin_spec)` for local repository plugins. The original
+`kinetty.toml` and `kitty.conf` are retained as pre-migration references; normal
+startup with the updated build selects `init.py`.
 The executable, Python APIs, terminfo, and remote-control socket still use kitty names.
 
 Ported from [../wezterm/wezterm.lua](../wezterm/wezterm.lua).
@@ -18,7 +22,7 @@ Ported from [../wezterm/wezterm.lua](../wezterm/wezterm.lua).
 > locally), same usage as `../wezterm/terminfo.sh`.
 
 > [!NOTE]
-> `kinetty.toml` sets `env PATH` explicitly. kitty started from the Dock inherits
+> `init.py` sets `env PATH` explicitly. kitty started from the Dock inherits
 > launchd's minimal PATH, and kittens **kitty** launches (as opposed to ones you
 > run from a shell) inherit it too — so `choose-files` previews could not find
 > `ffprobe` and failed with `executable file not found in $PATH`. Video previews
@@ -42,6 +46,14 @@ Same as the wezterm config:
   bare `user/repo` → GitHub, `🔗🐍 [E101]` ruff docs, shellcheck/rustc/clippy/
   biome/luals/selene links, `(URL)`/`[URL]` bracket handling. Keyboard-selected
   instead of wezterm's hover+click, matched from raw text (no OSC 8).
+- `Ctrl+Shift+Space`: wezterm's quick select as hints ([quick_select.py](quick_select.py)):
+  wezterm's default patterns in wezterm's order (markdown links, URLs, diff
+  headers, docker digests, paths, colors, uuids, git hashes, IPs, hex
+  addresses, numbers), its `asdf…` labels, and the pick goes to the clipboard.
+  A match may span a soft-wrapped row. wezterm also pastes on `Shift+label`;
+  the hints kitten reads lowercase labels only, so there is no paste here.
+  The binding spells the action `kinetten hints …`, kinetty's name for its
+  kitten binary, through `action_alias kinetten kitten` in the config.
 
 Useful kitty defaults (same muscle memory as wezterm):
 
@@ -52,9 +64,9 @@ Useful kitty defaults (same muscle memory as wezterm):
 
 kitty built-ins replacing wezterm features:
 
-- Quick select mode (`Ctrl+Shift+Space` in wezterm) → hints kitten:
-  `Ctrl+Shift+E` opens a URL by keyboard, `Ctrl+Shift+P` prefixes path/word/line
-  hints (`?f` insert path, `?n` open path at line in editor, ...)
+- Single-type hints: `Ctrl+Shift+E` opens a URL by keyboard, `Ctrl+Shift+P`
+  prefixes path/word/line hints (`?f` insert path, `?n` open path at line in
+  editor, ...)
 - Plain URLs are underlined on hover and open on click, no config needed
 
 ## Vertical tabs
@@ -85,8 +97,8 @@ edge in force out of kitty's effective config
 (`~/Library/Caches/kitty/effective-config/<kitty pid>`, last match wins) and
 reloads the config with the other value as a `-o` override. A later reload
 re-applies that override rather than dropping it, so the edge holds while
-kinetty.toml is edited, and nothing is written to disk, so quitting kitty returns
-it to the `tab_bar_edge top` in kinetty.toml.
+init.py is edited, and nothing is written to disk, so quitting kitty returns
+it to the `tab_bar_edge top` in init.py.
 
 There is no button in the titlebar because kitty exposes no API to put one
 there, and a click on the tab bar that lands outside a tab is hardwired to open
@@ -97,7 +109,7 @@ a new tab. The macOS global menubar is the piece of kitty chrome that a
 
 `hammerspoon/terminal.lua` drives kitty the same way it drives wezterm (F18
 Korean/English switching, tmux-prefix detection, prompt insertion). It needs the
-remote control settings in `kinetty.toml`:
+remote control settings in `init.py`:
 
 ```
 allow_remote_control socket-only
@@ -153,11 +165,19 @@ a new instance at the folder instead.
 > [!NOTE]
 > Quick actions inherit launchd's minimal PATH, which is why the script calls
 > kitty by absolute path (`/opt/homebrew/bin/kitty`), the same reason
-> `kinetty.toml` sets `env PATH`.
+> `init.py` sets `env PATH`.
 
 [tests/finder_quick_actions_test.sh](tests/finder_quick_actions_test.sh) covers
 both scripts with every external command stubbed, so it never launches kitty
 nor writes to `~/Library/Services`.
+
+[tests/quick_select_test.py](tests/quick_select_test.py) covers `quick_select.py`
+against the text kitty hands a hints kitten (`\r` soft wraps, `\n` line ends,
+`\0` blank cells) with the fork's venv Python from `pyrefly.toml`:
+
+```sh
+/Users/kiyoon/project/wezterm-gureum/kitty/.venv/bin/python -m pytest kinetty/tests/quick_select_test.py
+```
 
 ## Not ported
 

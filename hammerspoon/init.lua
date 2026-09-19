@@ -731,8 +731,8 @@ end)
 -- Cursor lands on a fresh line after "use multi agents" — type the task there.
 -- Uses small, paced paste chunks so Claude Code and Codex keep the text inline
 -- and editable instead of collapsing it into a large-paste attachment.
-local CODEX_CLAUDE_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
-Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
+local CODEX_CLAUDE_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): agent-usage
+First use dear ($20 plan) with fast mode OFF via CODEX_HOME if agent-usage shows quota is available.
 Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan) with fast mode ON. hetu is the default Codex home.
 Use below commands:
 CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-6-astra -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
@@ -750,9 +750,9 @@ PROMPT
 use multi agents
 ]]
 
-local CODEX_CLAUDE_NO_FAST_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): cdx usage
-Do not run cdx switch. First use dear ($20 plan) with fast mode OFF via CODEX_HOME if cdx usage shows quota is available.
-Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan), also with fast mode OFF. hetu is the default Codex home.
+local CODEX_CLAUDE_NO_FAST_TEMPLATE = [[First check all accounts (read-only, shows every account, doesn't disturb others): agent-usage
+First use dear ($20 plan) via CODEX_HOME if agent-usage shows quota is available.
+Only if dear is rate limited or out of credits, fall back to default hetu ($200 plan). hetu is the default Codex home.
 Use below commands:
 CODEX_HOME="$HOME/.codex-dear" codex exec --disable fast_mode --model gpt-6-astra -c model_reasoning_effort=ultra -c service_tier=default --skip-git-repo-check --sandbox read-only <<'PROMPT'
 <your prompt>
@@ -835,11 +835,12 @@ Assume agents may share one working tree. Assign non-overlapping work or explici
 tmux pane(s): ]]
 
 -- Direct-session variants of the two tmux templates above: the agent is addressed by
--- the 8-hex session id shown in the tmux pane border (cc:… Claude Code, cx:… Codex),
--- reads the transcript files instead of scraping the screen, checks state through the
--- Claude session registry / Codex rollout tail, and messages peers natively
--- (SendMessage / codex queue) instead of tmux send-keys; SESSION_TERMINAL_FALLBACK lists
--- the paste-into-terminal commands for when that fails (Codex has no SendMessage).
+-- the 8-hex session id shown in the tmux pane border (cc:… Claude Code, cx:… Codex,
+-- gc:… GitHub Copilot, oc:… OpenCode), reads the transcript files instead of scraping
+-- the screen, and checks state through each agent's own records. Only Claude Code and
+-- Codex can be messaged natively (SendMessage / codex queue); Copilot and OpenCode have
+-- no way to inject into a running session, so they always use SESSION_TERMINAL_FALLBACK,
+-- which lists the paste-into-terminal commands.
 local SESSION_TERMINAL_FALLBACK = [[
 If native messaging fails, paste into the peer's terminal instead (only while it is idle at its prompt):
 tmux:    tmux set-buffer "$MSG"; tmux paste-buffer -p -t %N; tmux send-keys -t %N Enter
@@ -849,11 +850,15 @@ kitty:   K="kitten @ --to unix:/tmp/kitty-<pid>"; $K send-text --match id:N --st
 
 local SESSION_READ_AGENT_AND_CONTINUE_TEMPLATE = [[Take over the unfinished work from the already-running coding agent session(s) listed below by their 8-hex session ids. This is a session-preserving handoff for changing agent/model/program or exhausted quota. Do not restart, interrupt, close, or replace those agents, and do not type into their terminals except through the fallback below.
 
-Each id is the `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID) or `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID) shown in the tmux pane border; a bare 8-hex id may be either. Resolve each one to its transcript file, which is the full record and better than any screen scrape:
+Each id shown in the tmux pane border names its agent and which end of the session id it took: `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID), `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID), `gc:xxxxxxxx` (GitHub Copilot, first 8 hex of its session UUID), `oc:xxxxxxxx` (OpenCode, last 8 of its `ses_…` id). A bare 8-hex id is Claude Code, Codex or Copilot. Resolve each one to its transcript, which is the full record and better than any screen scrape:
 SID='xxxxxxxx'
-find ~/.claude/projects ~/.codex/sessions -name "*${SID#*:}*.jsonl"
+find ~/.claude/projects ~/.codex/sessions -name "*${SID#*:}*.jsonl"   # Claude Code, Codex
+ls -d ~/.copilot/session-state/${SID#*:}*                             # Copilot
+sqlite3 ~/.local/share/opencode/opencode.db "select id from session where id like '%${SID#*:}'"   # OpenCode
 # Claude Code: ~/.claude/projects/<project>/<uuid>.jsonl, subagent transcripts in <uuid>/subagents/*.jsonl
 # Codex: ~/.codex/sessions/YYYY/MM/DD/rollout-<timestamp>-<uuid>.jsonl; its subagent threads are separate rollouts: rg -l '"parent_thread_id":"<uuid>"' ~/.codex/sessions
+# Copilot: ~/.copilot/session-state/<uuid>/events.jsonl
+# OpenCode: no file per session; `opencode export <ses_id>` writes the whole session as JSON to stdout (its "Exporting session:" banner goes to stderr)
 
 Read the conversation as text (the formats are internal to each tool; adapt if a field is missing):
 F='<path>'
@@ -861,6 +866,10 @@ F='<path>'
 jq -r 'select(.type=="user" or .type=="assistant") | (.message.role|ascii_upcase) as $r | .message.content | if type=="string" then $r+": "+. else map(if .type=="text" then $r+": "+.text elif .type=="tool_use" then "TOOL_USE "+.name+" "+(.input|tostring|.[0:300]) elif .type=="tool_result" then "TOOL_RESULT "+(.content|tostring|.[0:300]) else empty end) | join("\n") end' "$F"
 # Codex
 jq -r 'select(.type=="response_item") | .payload | if .type=="message" then (.role|ascii_upcase)+": "+([.content[]? | .text? // empty] | join("\n")) elif .type=="function_call" then "TOOL_CALL "+.name+" "+(.arguments|tostring|.[0:300]) elif .type=="function_call_output" then "TOOL_OUTPUT "+(.output|tostring|.[0:300]) elif .type=="custom_tool_call" then "TOOL_CALL "+.name+" "+(.input|tostring|.[0:300]) elif .type=="custom_tool_call_output" then "TOOL_OUTPUT "+(.output|tostring|.[0:300]) else empty end' "$F"
+# Copilot (events.jsonl)
+jq -r 'select(.type=="user.message" or .type=="assistant.message" or .type=="tool.execution_complete") | if .type=="user.message" then "USER: "+.data.content elif .type=="assistant.message" then "ASSISTANT: "+(.data.content // "")+([.data.toolRequests[]? | " TOOL_USE "+(.name // .toolName // "?")] | join("")) else "TOOL_RESULT "+(.data|tostring|.[0:300]) end' ~/.copilot/session-state/<uuid>/events.jsonl
+# OpenCode (export JSON, not a jsonl stream)
+opencode export <ses_id> 2>/dev/null | jq -r '.messages[] | (.info.role|ascii_upcase) as $r | .parts[]? | if .type=="text" then $r+": "+.text elif .type=="tool" then "TOOL "+((.tool // "?")|tostring)+" "+((.state.output // .state.input // "")|tostring|.[0:300]) else empty end'
 A tool call with no result after it is still pending or was cancelled. Text that was still streaming when you read is not in the file yet.
 
 Check whether the source agent is still alive and what it is doing before relying on its last words:
@@ -869,12 +878,19 @@ jq -c 'select(.sessionId=="<uuid>") | {name,status,waitingFor,tmux,pid}' ~/.clau
 # Codex: last meaningful event — task_started = still working, task_complete / turn_aborted = idle; the lock file exists while a codex process has the thread open
 jq -r 'select(.type=="event_msg") | .payload.type' "$F" | grep -v -E '^(token_count|item_completed)$' | tail -1
 ls ~/.codex/thread-writer-locks/<uuid>.lock
+# Copilot: the registry lists only open sessions and says whether one is working; inuse.<pid>.lock names the live process. Unlike Codex it DOES record dialogs: a permission.requested with no permission.completed after it is a session stopped at a prompt.
+jq -c '.["<uuid>"]' ~/.copilot/open-sessions-state.json          # {openedAt, refreshedAt, working}
+ls ~/.copilot/session-state/<uuid>/inuse.*.lock
+jq -r 'select(.type|startswith("assistant.turn_")or startswith("permission.")) | .type' ~/.copilot/session-state/<uuid>/events.jsonl | tail -1
+# OpenCode: no registry at all. Its newest message tells you: an assistant message whose time has no `completed` is a turn still running.
+sqlite3 ~/.local/share/opencode/opencode.db "select data from message where session_id='<ses_id>' order by time_created desc limit 1" | jq -c '{role,time}'
 
 Recover the latest user request, decisions, completed work, failures, and remaining steps. Verify the transcript against the current files, git state, and test output, then continue the work yourself to completion. Preserve all existing uncommitted and parallel changes. Do not blindly repeat commands or trust claimed completion. Do not ask me to repeat context unless the transcript and workspace genuinely cannot recover it.
 
 Normally treat source sessions as read-only. Only if an essential gap blocks progress and the source agent is alive and idle, send one concise handoff question, natively when you can:
 # Claude Code: SendMessage to the registry `name` (ListAgents shows the same names). It shows in that session as "Message from @<your name>". If it is held because the permission modes differ, tell me instead of retrying.
 # Codex: codex queue --thread <uuid> --message '<question>'   (delivered when that session is idle; it appears there as plain user text, so start it with "[from <your session name>]")
+# Copilot and OpenCode: no native path exists — neither can accept a message into a session that is already running, and `copilot --resume <id>` / `opencode run --session <id>` would start a SECOND process on the same session and corrupt it. Use the terminal fallback below for those two, and never those two commands.
 ]] .. SESSION_TERMINAL_FALLBACK .. [[
 Read the answer from the transcript file, or from the cross-session reply that arrives in your conversation for Claude Code. Codex approval dialogs are not written to any file: if a Codex thread shows task_started and nothing progresses for minutes, it is probably waiting at a dialog — tell me rather than guessing.
 
@@ -884,19 +900,27 @@ session id(s): ]]
 
 local SESSION_WORK_TOGETHER_TEMPLATE = [[Work with the already-running coding agent session(s) listed below by their 8-hex session ids while preserving all existing sessions. Act as lead coordinator: repeatedly inspect their state, delegate bounded work, read results, integrate them, and send follow-ups until the user's task is genuinely complete. Do not restart, close, interrupt, or replace those agents, and do not type into their terminals except through the fallback below.
 
-Each id is the `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID) or `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID) shown in the tmux pane border; a bare 8-hex id may be either. Resolve each one:
+Each id shown in the tmux pane border names its agent and which end of the session id it took: `cc:xxxxxxxx` (Claude Code, first 8 hex of its session UUID), `cx:xxxxxxxx` (Codex, last 8 hex of its thread UUID), `gc:xxxxxxxx` (GitHub Copilot, first 8 hex of its session UUID), `oc:xxxxxxxx` (OpenCode, last 8 of its `ses_…` id). A bare 8-hex id is Claude Code, Codex or Copilot. Resolve each one:
 SID='xxxxxxxx'
 find ~/.claude/projects ~/.codex/sessions -name "*${SID#*:}*.jsonl"   # Claude Code: <uuid>.jsonl, Codex: rollout-<timestamp>-<uuid>.jsonl
+ls -d ~/.copilot/session-state/${SID#*:}*                             # Copilot: that dir holds events.jsonl
+sqlite3 ~/.local/share/opencode/opencode.db "select id from session where id like '%${SID#*:}'"   # OpenCode
 F='<path>'
 # Claude Code peer: its name (the address for SendMessage; ListAgents shows the same), live status busy / idle / waiting (+ waitingFor), and its tmux pane. No entry = not running.
 jq -c 'select(.sessionId=="<uuid>") | {name,status,waitingFor,tmux,pid}' ~/.claude/sessions/*.json
 # Codex peer: the thread uuid is the address for codex queue; busy/idle from the rollout tail (task_started = busy, task_complete / turn_aborted = idle)
 jq -r 'select(.type=="event_msg") | .payload.type' "$F" | grep -v -E '^(token_count|item_completed)$' | tail -1
+# Copilot peer: the registry holds only open sessions, and `working` is its busy flag. It is the one agent that records dialogs: a permission.requested with no permission.completed after it means it is stopped at a prompt.
+jq -c '.["<uuid>"]' ~/.copilot/open-sessions-state.json          # missing key = not running
+jq -r 'select(.type|startswith("assistant.turn_")or startswith("permission.")) | .type' ~/.copilot/session-state/<uuid>/events.jsonl | tail -1
+# OpenCode peer: no registry. Its newest message is the state — an assistant message whose time has no `completed` is a turn still running.
+sqlite3 ~/.local/share/opencode/opencode.db "select data from message where session_id='<ses_id>' order by time_created desc limit 1" | jq -c '{role,time}'
 
 Send messages natively when you can:
 # Claude Code: SendMessage to the peer's name, with notify_when_idle so you are told when it finishes instead of polling. It shows in the peer's session as "Message from @<your name>", and the reply arrives in your conversation as a cross-session message. If a message is held because the permission modes differ, tell me instead of retrying.
 # Codex: codex queue --thread <uuid> --message '<message>'   (delivered when that session is idle; it appears there as plain user text, so start it with "[from <your session name>] <request id>")
 Do not queue into a Codex session that has never had a turn (no rollout yet); ask me to seed it.
+# Copilot and OpenCode have no native path: neither accepts a message into an already-running session. `copilot --resume <id>` and `opencode run --session <id>` would start a SECOND process on the same session and corrupt it, so never run those against a live peer — reach those two only through the terminal fallback below.
 ]] .. SESSION_TERMINAL_FALLBACK .. [[
 
 Read results from the files rather than the screen:
@@ -904,7 +928,11 @@ Read results from the files rather than the screen:
 jq -r 'select(.type=="user" or .type=="assistant") | (.message.role|ascii_upcase) as $r | .message.content | if type=="string" then $r+": "+. else map(if .type=="text" then $r+": "+.text elif .type=="tool_use" then "TOOL_USE "+.name+" "+(.input|tostring|.[0:300]) elif .type=="tool_result" then "TOOL_RESULT "+(.content|tostring|.[0:300]) else empty end) | join("\n") end' "$F" | tail -n 40
 # Codex: once the rollout tail shows task_complete, read the last assistant message
 jq -r 'select(.type=="response_item" and .payload.type=="message" and .payload.role=="assistant") | .payload.content[]? | .text? // empty' "$F" | tail -n 1
-Give requests unique IDs and ask peers to end replies with A2A_DONE_<id>. Codex approval dialogs are not written to any file: if a Codex thread shows task_started and nothing progresses for minutes, it is probably waiting at a dialog — surface it to me rather than guessing. Never resolve a peer's permission or plan dialog yourself.
+# Copilot: once the tail shows assistant.turn_end
+jq -r 'select(.type=="assistant.message") | .data.content // empty' ~/.copilot/session-state/<uuid>/events.jsonl | tail -n 1
+# OpenCode: once the newest assistant message has time.completed
+opencode export <ses_id> 2>/dev/null | jq -r '[.messages[] | select(.info.role=="assistant") | .parts[]? | select(.type=="text") | .text] | last'
+Give requests unique IDs and ask peers to end replies with A2A_DONE_<id>. Codex and OpenCode approval dialogs are not written to any file: if such a session looks busy and nothing progresses for minutes, it is probably waiting at a dialog — surface it to me rather than guessing. Copilot does record them, so check its permission.requested there first. Never resolve a peer's permission or plan dialog yourself.
 
 Assume agents may share one working tree. Assign non-overlapping work or explicit file ownership, tell every peer to preserve unfamiliar changes, and never let two agents edit the same file concurrently. Keep one coordinator to prevent message loops, and independently verify and integrate peer work before reporting completion. Keep this collaboration loop running until the objective is complete or genuinely blocked; do not stop merely because work was delegated once.
 

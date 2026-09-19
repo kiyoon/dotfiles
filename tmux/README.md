@@ -74,6 +74,7 @@ or, `tmux new -s <session_name>`
 - Ctrl+a + ,: change window title
 - Ctrl+Shift+s+Left / Right: re-order windows
 - Mouse: drag and hold a window title for 0.5 seconds; the pink `` shows the exact insertion position
+- Mouse: click `󰘀` / `󰘁` around the window list to jump to the first / last window, and the `<` / `>` that appear when the list is clipped for the previous / next one
 
 ### Detach and resume
 

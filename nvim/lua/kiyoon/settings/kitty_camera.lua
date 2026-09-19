@@ -1,6 +1,10 @@
 local camera_effect = "nvim-tour"
 
 local function emit_camera_effect(name)
+  -- Headless Nvim and other terminals have no Kitty watcher to notify.
+  if (vim.env.KITTY_WINDOW_ID or "") == "" or #vim.api.nvim_list_uis() == 0 then
+    return
+  end
   local osc = ("\27]1337;SetUserVar=camera_effect=%s\7"):format(vim.base64.encode(name))
   local term = vim.env.TERM or ""
   local through_tmux = vim.env.TMUX
@@ -15,11 +19,12 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
   callback = function()
-    -- KITTY_WINDOW_ID is inherited through tmux, while other terminals do
-    -- not set it. Headless Nvim has no UI to carry the OSC event.
-    if (vim.env.KITTY_WINDOW_ID or "") == "" or #vim.api.nvim_list_uis() == 0 then
-      return
-    end
     emit_camera_effect(camera_effect)
+  end,
+})
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  callback = function()
+    emit_camera_effect("nvim-rest")
   end,
 })

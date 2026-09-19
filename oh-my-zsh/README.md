@@ -114,20 +114,30 @@ Programs control what can be reclaimed: for example, pnpm keeps referenced
 packages, and Homebrew may retain downloads for installed packages. Subsequent
 builds or installs may need to download or rebuild cached dependencies.
 
-## Codex usage
+## Agent usage
 
-`codex-usage` prints the current Codex rate-limit windows for every Codex home
-(`~/.codex` plus any `~/.codex-*` that has an `auth.json`). Each run is one live
-request per home to the endpoint Codex's own `/status` uses, authenticated with
-the tokens Codex CLI already stores, so there is nothing extra to log in to. It
-never refreshes tokens itself (Codex CLI owns them); an expired token is
-reported, and starting Codex in that home refreshes it. Open a new shell or run
+`agent-usage` prints the current rate-limit windows for every Claude Code account
+and every Codex home, fetched live from the same endpoints the CLIs' own `/usage`
+(Claude) and `/status` (Codex) use, authenticated with the tokens the CLIs already
+store, so there is nothing extra to log in to. It never refreshes tokens itself
+(each CLI owns them); an expired token is reported, and starting that CLI once
+refreshes it. Open a new shell or run
 `source "$DOTFILES_DIR/oh-my-zsh/custom/scripts.zsh"` to load it.
 
+- Claude: `~/.claude` plus any `~/.claude-*` with credentials, read from the macOS
+  keychain item `Claude Code-credentials` (a custom `CLAUDE_CONFIG_DIR` gets a hashed
+  suffix, as in Claude Code) or `<dir>/.credentials.json`. Every limit the API returns
+  is shown, not just the bars `/usage` draws: the unified limits list (session, weekly,
+  model- or surface-scoped weeklies such as a per-model cap), any other non-null bucket
+  (including codenamed ones), extra usage / spend, and the weekly breakdown by product.
+- Codex: `~/.codex` plus any `~/.codex-*` that has an `auth.json`.
+
 ```zsh
-codex-usage                          # All homes; the arrow marks the home a bare `codex` uses
-codex-usage --json                   # Raw API response per home
-CODEX_HOMES=~/.codex-x codex-usage   # Override discovery (or pass home directories as arguments)
+agent-usage                             # Everything; arrows mark the dirs a bare `claude` / `codex` use
+agent-usage --claude                    # Only Claude accounts (--codex: only Codex homes)
+agent-usage --json                      # Raw API response per dir
+CLAUDE_CONFIG_DIRS=~/.claude-x agent-usage --claude   # Override discovery (CODEX_HOMES for Codex)
+agent-usage ~/.codex-x ~/.claude-x      # Or pass dirs: auth.json inside means Codex, otherwise Claude
 ```
 
-Offline tests: `python3 oh-my-zsh/scripts/tests/codex-usage_test.py`.
+Offline tests: `python3 oh-my-zsh/scripts/tests/agent-usage_test.py`.

@@ -5,9 +5,11 @@ if [[ -n $TMUX_PLUGIN_MANAGER_PATH ]]; then
 	}
 
 	_tmux-window-name-preexec() {
-		# $2 is alias-expanded, so cod/cld become codex/claude here.
+		# $2 is alias-expanded, so cod/cld become codex/claude here, and
+		# ocl becomes opencode.
+		# codr and ocr are functions, not aliases, so they stay literal.
 		case ${${(z)2}[1]:t} in
-			claude|codex) ;;
+			claude|codex|codr|opencode|ocr) ;;
 			*) return 0 ;;
 		esac
 

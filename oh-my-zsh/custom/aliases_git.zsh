@@ -25,18 +25,6 @@ if (($+commands[gh])); then
 	alias ghr='gh repo'
 	alias ghb='gh browse'
 	alias ghc='gh repo clone'
-	ghck() {
-		# ${@:2} = slice from second to the last
-		gh repo clone kiyoon/$1 ${@:2}
-	}
-	ghci() {
-		# ${@:2} = slice from second to the last
-		gh repo clone Innerverz-AI/$1 ${@:2}
-	}
-	ghcd() {
-		# ${@:2} = slice from second to the last
-		gh repo clone deargen/$1 ${@:2}
-	}
 fi
 
 alias cdg='cd $(git rev-parse --show-toplevel)'

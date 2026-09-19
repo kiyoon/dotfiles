@@ -1,6 +1,4 @@
-search-path = [
-    ".",
-    "/Users/kiyoon/project/wezterm-gureum/kitty",
-]
+# The checkout is needed for config helpers that still import kitty.* internals.
+search-path = [".", "/Users/kiyoon/project/wezterm-gureum/kitty"]
 
-python-interpreter-path = "/Users/kiyoon/project/wezterm-gureum/kitty/.venv/bin/python"
+python-interpreter-path = ".venv/bin/python"

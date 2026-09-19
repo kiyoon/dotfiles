@@ -2547,12 +2547,6 @@ return {
     end,
   },
   {
-    "folke/drop.nvim",
-    opts = {
-      -- ...
-    },
-  },
-  {
     "luukvbaal/statuscol.nvim",
     config = function()
       require("kiyoon.statuscol")

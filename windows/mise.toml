@@ -1,0 +1,11 @@
+# Windows setup; global tools live in mise-config/config.toml.
+[dotfiles]
+# Replaces the root's entry on Windows only. Linking the directory makes a junction,
+# so `mise lock --global` updates this repo; file symlinks need Developer Mode or
+# mise copies them instead.
+"~/.config/mise" = { source = "mise-config", variants = [{ os = "windows" }] }
+
+[tasks.setup-dotfiles]
+description = "Link Windows dotfiles configuration"
+# Name each target: mise also loads the Unix entries in ../mise.toml from here.
+run = 'mise bootstrap dotfiles apply ~/.config/mise'

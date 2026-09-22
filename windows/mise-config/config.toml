@@ -18,5 +18,6 @@ neovim = "latest" # nvim, nvim-coc and nvim-lazyvim
 uv = "latest" # Neovim Python tools and basedpyright (uvx)
 ruff = "latest" # Neovim Python linting, formatting and import fixes
 bun = "latest" # JavaScript runtime/package manager; Neovim Node provider
+gopass = "latest"
 
 "github:YS-L/csvlens" = "latest" # Interactive CSV viewer

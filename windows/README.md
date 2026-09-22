@@ -8,6 +8,7 @@ winget install -e --id Microsoft.PowerShell --source winget
 winget install -e --id JernejSimoncic.Wget
 Install-Module -Name PSFzf
 winget install -e --id Git.Git
+winget install -e --id GnuPG.Gpg4win
 winget install wez.wezterm
 winget install -e --id DEVCOM.JetBrainsMonoNerdFont
 winget install -e --id Starship.Starship
@@ -28,10 +29,15 @@ Global CLI tools are installed with `mise`. Native Windows uses the files in
 `windows/mise-config/`; macOS and Linux use the repository's `mise-config/config.toml`.
 The source directories use `mise-config` so mise does not load them as project
 configs before installation.
-Put the following Windows files in your global mise directory:
+`windows/mise.toml` links `windows/mise-config/` to `~/.config/mise` as a junction,
+so `mise lock --global` updates the files in this repository. Run it from `windows/`;
+the repository root links the macOS/Linux config instead:
 
-> windows/mise-config/config.toml -> ~/.config/mise/config.toml
-> windows/mise-config/mise.lock   -> ~/.config/mise/mise.lock
+```powershell
+cd ~/.config/dotfiles/windows
+mise trust
+mise run setup-dotfiles  # add --force to replace an existing ~/.config/mise
+```
 
 On the first machine, install the tools and generate the lockfile:
 

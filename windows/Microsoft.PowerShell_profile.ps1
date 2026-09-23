@@ -1,5 +1,4 @@
 (&mise activate pwsh) | Out-String | Invoke-Expression
-(& pixi completion --shell powershell) | Out-String | Invoke-Expression
 
 #$Env:PATH += ";$env:USERPROFILE\bin"
 
@@ -7,6 +6,7 @@
 $Env:PATH += ";$env:HOMEDRIVE\cygwin64\bin"
 $Env:PATH += ";$env:ProgramFiles\7-Zip"
 $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
+$Env:PATH += ";$env:USERPROFILE\.bun\bin"
 Set-Alias awk gawk
 Set-Alias find $env:HOMEDRIVE\cygwin64\bin\find -Option AllScope
 function cygbash { & $env:HOMEDRIVE\cygwin64\bin\bash.exe -i -l $args }
@@ -411,3 +411,8 @@ function z {
     cd $dest
   }
 }
+
+foreach ($customConfig in (Get-ChildItem "$HOME/.config/pwsh/private/*.ps1" -File -ErrorAction SilentlyContinue | Sort-Object Name)) {
+    . $customConfig.FullName
+}
+Remove-Variable customConfig -ErrorAction SilentlyContinue

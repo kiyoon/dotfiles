@@ -3,17 +3,21 @@
 # Usage: fzf_preview.sh <path>
 #
 # Images are emitted with whichever protocol the attached terminal understands:
+#   graffitty -> Kitty graphics via bundled `gft icat` (no kitten needed)
 #   kitty  -> kitty graphics protocol via `kitten icat` (its unicode
 #             placeholders survive both tmux and fzf's preview pane)
 #   others -> sixel via chafa. Beware: fzf cannot host raw sixel inside tmux
 #             (it redraws the pane line by line, chopping the DCS envelope,
 #             so the payload prints as "!255?..." garbage) -- view through a
 #             kitty client for images inside tmux.
-# Force one with FZF_PREVIEW_IMG_BACKEND=kitty|sixel|symbols|none.
+# Force one with FZF_PREVIEW_IMG_BACKEND=graffitty|kitty|sixel|symbols|none.
 
-f="$1"
+f="${1:-}"
+# Command and option completions have no filesystem path to preview.
+[ -n "$f" ] && [ -e "$f" ] || exit 0
 preview_width="${FZF_PREVIEW_COLUMNS:-80}"
 preview_height="${FZF_PREVIEW_LINES:-24}"
+gft_bin="${GRAFFITTY_BIN:-gft}"
 
 # Inside tmux, TERM is whatever the server was started under (default-terminal is
 # "${TERM}"), so it says "wezterm" even in a kitty pane. Ask tmux which client is
@@ -21,6 +25,13 @@ preview_height="${FZF_PREVIEW_LINES:-24}"
 img_backend() {
 	if [ -n "$FZF_PREVIEW_IMG_BACKEND" ]; then
 		printf '%s' "$FZF_PREVIEW_IMG_BACKEND"
+		return
+	fi
+	# Graffitty bundles icat; use placeholders so fzf can redraw the preview
+	# and stream bytes so previews also work on remote clients.
+	if { [ "$TERM_PROGRAM" = graffitty ] || [ -n "$GRAFFITTY_BIN" ]; } &&
+		command -v "$gft_bin" >/dev/null 2>&1; then
+		printf graffitty
 		return
 	fi
 	if [ -n "$TMUX" ]; then
@@ -50,6 +61,15 @@ img_backend=$(img_backend)
 # show_image <file>   -- "-" reads the image bytes from stdin
 show_image() {
 	case "$img_backend" in
+	graffitty)
+		if [ "$1" = "-" ]; then
+			"$gft_bin" icat --transfer-mode=stream --unicode-placeholder --stdin=yes \
+				--place="${preview_width}x${preview_height}@0x0"
+		else
+			"$gft_bin" icat --transfer-mode=stream --unicode-placeholder --stdin=no \
+				--place="${preview_width}x${preview_height}@0x0" "$1"
+		fi
+		;;
 	kitty)
 		# transfer-mode=file puts only a path in the escape sequence, keeping the
 		# payload tmux has to pass through small. Switch to "stream" to preview

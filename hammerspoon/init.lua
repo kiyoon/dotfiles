@@ -633,72 +633,11 @@ _G.aerospaceDisplayRecovery = aerospaceRecovery.start({
   busyRetrySeconds = 1,
 })
 
--- Keep Kitty's scene weather in sync with Seoul's current conditions. Open-Meteo
--- needs no API key for this personal six-hour poll. Failures only reach the
--- Hammerspoon console, leaving the last successfully applied effect untouched.
-local kittyWeather = require("kitty_weather")
-
+-- Stop the old Kinetty weather automation; upstream Kitty has no set_weather action.
 if _G.kittyWeatherController then
   _G.kittyWeatherController:stop()
   _G.kittyWeatherController = nil
 end
-
-_G.kittyWeatherController = kittyWeather.start({
-  asyncGet = function(url, callback)
-    return hs.http.asyncGet(url, nil, callback)
-  end,
-  decodeJson = function(body)
-    return hs.json.decode(body)
-  end,
-  kittyPids = function()
-    local pids, seen = {}, {}
-    for _, app in ipairs(hs.application.runningApplications()) do
-      local bundleId = app:bundleID()
-      if app:name() == "kitty" or bundleId == "net.kovidgoyal.kitty" then
-        local pid = app:pid()
-        if pid and not seen[pid] then
-          seen[pid] = true
-          pids[#pids + 1] = pid
-        end
-      end
-    end
-    return pids
-  end,
-  kittySocket = function(pid)
-    return terminal.kittySocket(pid)
-  end,
-  newTask = function(executable, callback, arguments)
-    return hs.task.new(executable, callback, arguments)
-  end,
-  at = function(time, repeatInterval, callback)
-    return hs.timer.doAt(time, repeatInterval, callback)
-  end,
-  watchKitty = function(callback)
-    return hs.application.watcher
-      .new(function(appName, eventType, app)
-        local bundleId = app and app:bundleID()
-        if
-          eventType == hs.application.watcher.launched
-          and (appName == "kitty" or bundleId == "net.kovidgoyal.kitty")
-        then
-          callback()
-        end
-      end)
-      :start()
-  end,
-  after = function(seconds, callback)
-    return hs.timer.doAfter(seconds, callback)
-  end,
-  log = function(message)
-    hs.printf("[kitty-weather] %s", message)
-  end,
-}, {
-  kitten = terminal.KITTEN_CLI,
-  latitude = 37.5665,
-  longitude = 126.9780,
-  timezone = "Asia/Seoul",
-  intervalSeconds = 6 * 60 * 60,
-})
 
 -- 1. Run ./capture_current_display
 -- 2. Open Google Translate directly in Chrome

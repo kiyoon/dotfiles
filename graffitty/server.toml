@@ -1,0 +1,20 @@
+# Session server defaults migrated from init.gd.
+[remote]
+enabled = true
+bind_address = "100.126.110.10" # Tailscale
+
+[terminal]
+login_shell = true
+shell_integration = true
+
+[terminal.environment]
+
+[terminal.limits]
+scrollback_bytes = 30000
+kitty_image_storage_mb = 320
+kitty_image_transmission_mib = 65
+
+# Allow client microphone transcription using server-side credentials.
+[dictation]
+enabled = true
+provider = "gemini"

@@ -1,5 +1,6 @@
 -- Integrates tmux.nvim with yanky.nvim and which-key.nvim so we get the benefits of all yank-related plugins.
 require("tmux").setup({
+  navigation = { enable_default_keybindings = false },
   copy_sync = {
     enable = true,
     sync_clipboard = false,

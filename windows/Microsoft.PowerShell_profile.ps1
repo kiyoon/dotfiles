@@ -1,5 +1,7 @@
 (&mise activate pwsh) | Out-String | Invoke-Expression
 
+$env:EDITOR = "nvim"
+
 #$Env:PATH += ";$env:USERPROFILE\bin"
 
 # grep, awk, sed, ...

@@ -9,8 +9,7 @@ dotfiles.default_mode = "symlink"
 "~/.config/oh-my-zsh" = "oh-my-zsh"
 "~/.config/starship.toml" = "oh-my-zsh/starship.toml"
 "~/.config/wezterm" = "wezterm"
-"~/.config/kinetty" = "kinetty"
-"~/.config/helix" = "helix"
+"~/.config/kitty" = "kitty"
 "~/.config/dprint" = "dprint"
 "~/.config/mise" = "mise-config"
 "~/.vimrc" = "nvim/.vimrc"
@@ -30,7 +29,7 @@ dotfiles.default_mode = "symlink"
 
 [tasks.setup-dotfiles]
 description = "Link dotfiles configuration"
-run = 'mise bootstrap dotfiles apply'
+run = ["mise bootstrap dotfiles apply", "mise -C ~/.config/ssh_configs run install-agent-hooks"]
 
 [tasks.setup-nvim]
 description = "Link nvim configuration"

@@ -65,7 +65,8 @@ remember() {
 pid=$(agent_pid codex)
 if [ -n "$pid" ]; then
   cached cx "$pid" && exit 0
-  # Codex keeps its rollout file(s) open. Subagent threads have their own; take the newest main thread.
+  # Local (--no-daemon) Codex keeps its rollout file(s) open. Subagent threads
+  # have their own; take the newest main thread.
   if [ -d "/proc/$pid/fd" ]; then                 # Linux
     files=$(for l in /proc/"$pid"/fd/*; do readlink "$l"; done 2>/dev/null)
   else                                            # macOS
@@ -77,6 +78,11 @@ if [ -n "$pid" ]; then
     printf 'cx:%s' "$(printf %s "$id" | cut -c5-12)"  # -> last 8 hex of the UUID
     break
   done)
+  if [ -z "$result" ]; then
+    # With a shared daemon, only the TUI's listener identifies its thread.
+    # Pass its open paths too: SQLite handles reveal per-account CODEX_HOME.
+    result=$(printf '%s\n' "$files" | /usr/bin/python3 "$(dirname "$0")/codex-daemon-sid.py" "$pid" 2>/dev/null)
+  fi
   remember cx "$pid" "$result"
   exit 0
 fi

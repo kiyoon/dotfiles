@@ -16,6 +16,16 @@ local icons = require("kiyoon.icons")
 
 return {
   {
+    dir = vim.fn.expand("~/project/wezterm-gureum/graffitty.nvim"),
+    name = "graffitty.nvim",
+    lazy = false,
+    config = function()
+      require("graffitty").setup({
+        navigator = { enable_default_keybindings = true },
+      })
+    end,
+  },
+  {
     "folke/tokyonight.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
@@ -492,10 +502,6 @@ return {
   {
     "aserowy/tmux.nvim",
     keys = {
-      "<C-h>",
-      "<C-j>",
-      "<C-k>",
-      "<C-l>",
       { "<C-A-i>", [[<cmd>lua require("tmux").resize_top()<cr>]] },
       { "<C-A-u>", [[<cmd>lua require("tmux").resize_bottom()<cr>]] },
       { "<C-A-y>", [[<cmd>lua require("tmux").resize_left()<cr>]] },
@@ -840,7 +846,7 @@ return {
     },
     dependencies = {
       "nvim-lua/plenary.nvim", -- required
-      "sindrets/diffview.nvim", -- optional - Diff integration
+      "dlyongemallo/diffview-plus.nvim", -- optional - Diff integration
       "nvim-telescope/telescope.nvim", -- optional
     },
     config = function()
@@ -848,13 +854,22 @@ return {
     end,
   },
   {
-    "sindrets/diffview.nvim",
+    "dlyongemallo/diffview-plus.nvim",
+    version = "*",
     keys = {
       { "<leader>dv", ":DiffviewOpen<CR>" },
       { "<leader>dc", ":DiffviewClose<CR>" },
       { "<leader>dq", ":DiffviewClose<CR>:q<CR>" },
     },
-    cmd = { "DiffviewOpen", "DiffviewClose" },
+    cmd = {
+      "DiffviewOpen",
+      "DiffviewClose",
+      "DiffviewToggle",
+      "DiffviewFileHistory",
+      "DiffviewDiffFiles",
+      "DiffviewMergeFiles",
+      "DiffviewDiffDirs",
+    },
   },
   {
     "lewis6991/gitsigns.nvim",
@@ -2612,6 +2627,12 @@ return {
         port = 0, -- 0 = auto (8421 for takeover, OS-assigned for multi)
         open_browser = true,
         debounce_ms = 300,
+        browser = vim.env.TERM_PROGRAM == "graffitty" and vim.env.GRAFFITTY_BIN and {
+          vim.env.GRAFFITTY_BIN,
+          "browser",
+          "create",
+          "--url",
+        } or nil,
       })
     end,
   },

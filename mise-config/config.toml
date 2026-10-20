@@ -45,6 +45,7 @@ biome = "latest" # JavaScript/TypeScript linting and formatting
 stylua = "latest" # Lua formatting
 prettier = { version = "latest", depends = ["node"] } # Web/Markdown formatting
 tree-sitter = "latest" # nvim-treesitter parser generation
+fnox = "1.35.0"
 # Mason's virtualenv CLI is installed directly with uv by nvim/install-dependencies.sh.
 
 # Optional dependencies from the old app installer:

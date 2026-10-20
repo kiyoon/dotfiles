@@ -8,6 +8,7 @@ My IDE-like Tmux configuration and tutorial!
 - File tree viewer with [treemux](https://github.com/kiyoon/treemux)
 - Seamless mouse support
 - PID and pane ID viewing for all panes, helping to write scripts instantly.
+- Agent session IDs in pane borders (`cc:`, `cx:`, `gc:`, `oc:`).
 - More intuitive keybindings
 
 Tmux's default keybindings are quite unintuitive, so I've changed a few.
@@ -55,6 +56,18 @@ vim.api.nvim_create_autocmd({ "VimEnter", "VimLeave" }, {
 > [!NOTE]
 > On Mac, for the GPU status to work, add this to the sudoers file (`/etc/sudoers`), replacing the username and omitting the quotes. Be mindful of the two tabs after the username:  
 > "username		ALL = (root) NOPASSWD: /usr/bin/powermetrics"
+
+### Agent session IDs
+
+Codex pane borders show `cx:` followed by the last eight session ID characters.
+Local (`--no-daemon`) sessions are identified from the process's open rollout file.
+Shared-daemon sessions use [`codex-daemon-sid.py`](scripts/codex-daemon-sid.py)
+to match the pane's Codex listener to a loaded main thread, following
+`godot-ghostty`'s Codex discovery. This uses `/usr/bin/python3` with no extra
+packages and reads metadata from the existing daemon. Open SQLite files identify
+custom account homes. If the daemon cannot supply a unique match (including
+older daemons or disabled task tools), the ID stays blank. Results are cached
+for 30 seconds; missing IDs are retried after five seconds.
 
 ## 💻 Useful tmux commands
 

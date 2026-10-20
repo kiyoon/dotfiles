@@ -8,4 +8,4 @@
 [tasks.setup-dotfiles]
 description = "Link Windows dotfiles configuration"
 # Name each target: mise also loads the Unix entries in ../mise.toml from here.
-run = 'mise bootstrap dotfiles apply ~/.config/mise'
+run = ['mise bootstrap dotfiles apply ~/.config/mise', 'mise -C ~/.config/ssh_configs run install-agent-hooks']

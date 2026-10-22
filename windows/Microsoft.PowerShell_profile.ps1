@@ -250,7 +250,8 @@ function git_commit { & git commit --verbose $args }
 Set-Alias gc git_commit -Force -Option AllScope
 function gst { & git status $args }
 function ga { & git add $args }
-function gp { & git push $args }
+Remove-Item Alias:gp -Force -ErrorAction SilentlyContinue
+function gp { & git push @args }
 function ggp {
     param (
         [string[]]$Branches

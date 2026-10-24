@@ -16,11 +16,6 @@ function cygbash { & $env:HOMEDRIVE\cygwin64\bin\bash.exe -i -l $args }
 # Reload powershell profile
 function src { . $profile }
 
-function cache-clean {
-    $dotfilesRoot = if ($env:DOTFILES_DIR) { $env:DOTFILES_DIR } else { Join-Path $HOME '.config/dotfiles' }
-    & (Join-Path $dotfilesRoot 'windows/scripts/cache-clean.ps1') @args
-}
-
 Set-PSReadLineOption -EditMode Vi
 
 Invoke-Expression (&starship init powershell)

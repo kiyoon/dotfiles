@@ -23,34 +23,6 @@ The profile file location is at `nvim $profile`. Put the profile file content th
 
 Missing commands like `grep`, `awk`, `sed` etc. comes with uutils-coreutils and Cygwin.
 
-### Cache cleanup
-
-Reload the profile with `. $PROFILE`, then use the native PowerShell equivalent of
-the zsh `cache-clean` command:
-
-```powershell
-cache-clean --list          # list available tools; no cleanup
-cache-clean --dry-run       # preview the default commands
-cache-clean mise bun uv     # clean only these tools
-cache-clean                # clean all available default targets
-cache-clean docker         # opt in to Docker builder cache cleanup
-```
-
-The script is `windows/scripts/cache-clean.ps1`. The profile looks for this repository
-at `$env:DOTFILES_DIR`, or `~/.config/dotfiles` when unset. It can also be run directly
-with `& ~/.config/dotfiles/windows/scripts/cache-clean.ps1 --dry-run`.
-
-Targets match zsh: uv, pip, bun, npm, pnpm, yarn, cargo, go, conda, mamba,
-micromamba, pixi, brew, deno, mise, ccache, composer, dotnet, and explicit-only docker.
-Missing tools are skipped. Cargo requires `cargo-cache`. Each tool manages its own
-configured cache paths; Bun runs in a temporary empty package. Modern Yarn uses
-`--mirror` to preserve project caches. Conda-family commands preserve extracted
-packages and environments. Go also removes downloaded modules, and Brew cleanup
-also removes old installed versions. Docker acts on the current builder, which may
-be remote. Preview may query Yarn's version but never runs cleanup commands.
-Failures are reported while other targets continue; exit codes are 0 for success,
-1 for cleanup failures, and 2 for invalid arguments.
-
 ### Mise-managed CLI tools
 
 Global CLI tools are installed with `mise`. Native Windows uses the files in

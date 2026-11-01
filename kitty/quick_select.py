@@ -1,8 +1,8 @@
 # Port of wezterm's quick select mode (ctrl+shift+space) as a kitty hints
 # kitten: the same default patterns, in the same order, so the same text
 # gets a hint. Used by: ctrl+shift+space in kitty.conf, which copies the
-# pick with --program @. (wezterm copies on the label and pastes on
-# shift+label; the hints kitten reads only lowercase labels, so this copies.)
+# pick with --program @. As in wezterm, typing the label in uppercase also
+# pastes it (see handle_result).
 
 import re
 
@@ -71,3 +71,21 @@ def mark(text, args, Mark, extra_cli_args, *a):
                 continue
             yield Mark(index, offsets[start], offsets[end - 1] + 1, line[start:end], {})
             index += 1
+
+
+def handle_result(args, data, target_window_id, boss, extra_cli_args, *a):
+    """Run the --program actions the way the hints kitten does, adding a
+    paste when the label was typed in uppercase. The hints kitten drops
+    letters outside --alphabet, so kitty.conf maps shift+letter in this
+    overlay to the quick_select_paste alias, which sets the
+    quick_select_paste user var on the window underneath and then types the
+    lowercase letter."""
+    from kittens.hints.main import handle_result as run_programs
+
+    programs = list(data['programs'] or ('default',))
+    w = boss.window_id_map.get(target_window_id)
+    if w is not None and w.user_vars.get('quick_select_paste'):
+        w.set_user_var('quick_select_paste', None)
+        if '-' not in programs:
+            programs.append('-')
+    run_programs(args, {**data, 'programs': programs, 'customize_processing': ''}, target_window_id, boss)

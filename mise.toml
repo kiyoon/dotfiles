@@ -29,7 +29,7 @@ dotfiles.default_mode = "symlink"
 
 [tasks.setup-dotfiles]
 description = "Link dotfiles configuration"
-run = ["mise bootstrap dotfiles apply", "mise -C ~/.config/ssh_configs run install-agent-hooks"]
+run = 'mise bootstrap dotfiles apply'
 
 [tasks.setup-nvim]
 description = "Link nvim configuration"

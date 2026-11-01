@@ -18,7 +18,7 @@ Ported from [../wezterm/wezterm.lua](../wezterm/wezterm.lua).
 > [!NOTE]
 > No terminfo setup needed locally, unlike wezterm. For remote servers,
 > `kitten ssh myserver` copies the terminfo automatically. When using plain
-> `ssh` instead, run `./terminfo.sh myserver` once (no argument installs
+> `ssh` instead, run `../kitty/terminfo.sh myserver` once (no argument installs
 > locally), same usage as `../wezterm/terminfo.sh`.
 
 > [!NOTE]

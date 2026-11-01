@@ -206,7 +206,7 @@ function M.new(deps, options)
   end
 
   function controller:snapshotAndKill()
-    deps.alert("Saving main tmux snapshot...")
+    deps.alert("Saving manual tmux snapshot...")
     -- --no-skip-agentless: the CLI drops an agentless capture by default, which
     -- would make --require-write fail and leave the server running in exactly the
     -- case this menu item is for -- stopping tmux after the agents are gone.
@@ -218,7 +218,7 @@ function M.new(deps, options)
       end
       startTask("tmux kill-server", tmux, { "kill-server" }, function(killExitCode, killStdout, killStderr)
         if killExitCode == 0 then
-          deps.alert("Saved main snapshot and stopped tmux")
+          deps.alert("Saved manual snapshot and stopped tmux")
         else
           deps.alert("Snapshot saved, but tmux did not stop: " .. taskError(killStdout, killStderr))
         end
@@ -388,12 +388,12 @@ function M.new(deps, options)
         end,
       },
       {
-        title = "Resume main snapshot",
-        menu = self:snapshotMenuItems("main"),
+        title = "Resume manual snapshot",
+        menu = self:snapshotMenuItems("manual"),
       },
       {
-        title = "Resume cron snapshot",
-        menu = self:snapshotMenuItems("cron"),
+        title = "Resume auto snapshot",
+        menu = self:snapshotMenuItems("auto"),
       },
     }
   end

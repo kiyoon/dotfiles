@@ -12,17 +12,71 @@ local haskell_scope_highlighting_dev = false
 local indent_blankline_v2_dev = false
 local treesitter_indent_object_dev = false
 
+local in_graffitty = vim.env.GRAFFITTY_SOCKET ~= nil and vim.env.GRAFFITTY_SOCKET ~= ""
+
 local icons = require("kiyoon.icons")
 
 return {
   {
-    dir = vim.fn.expand("~/project/wezterm-gureum/graffitty.nvim"),
-    name = "graffitty.nvim",
-    lazy = false,
-    config = function()
-      require("graffitty").setup({
-        navigator = { enable_default_keybindings = true },
-      })
+    "graffitty/graffitty.nvim",
+    opts = {},
+    keys = function()
+      local keys = {
+        { "<C-h>", function() require("graffitty.navigator").move_left() end, desc = "Navigate left" },
+        { "<C-j>", function() require("graffitty.navigator").move_down() end, desc = "Navigate down" },
+        { "<C-k>", function() require("graffitty.navigator").move_up() end, desc = "Navigate up" },
+        { "<C-l>", function() require("graffitty.navigator").move_right() end, desc = "Navigate right" },
+      }
+      if in_graffitty then
+        vim.list_extend(keys, {
+          {
+            "-",
+            function()
+              require("graffitty.send").send_to_pane()
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+            end,
+            mode = { "n", "x" },
+            desc = "Send to Graffitty pane",
+          },
+          {
+            "_",
+            function()
+              require("graffitty.send").send_to_pane({ add_newline = false })
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+            end,
+            mode = { "n", "x" },
+            desc = "Send to Graffitty pane (plain)",
+          },
+          {
+            "<space>-",
+            function()
+              require("graffitty.send").send_to_pane({ count_is_uid = true })
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+            end,
+            mode = { "n", "x" },
+            desc = "Send to Graffitty pane w/ pane uid",
+          },
+          {
+            "<space>_",
+            function()
+              require("graffitty.send").send_to_pane({ count_is_uid = true, add_newline = false })
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+            end,
+            mode = { "n", "x" },
+            desc = "Send to Graffitty pane w/ pane uid (plain)",
+          },
+          {
+            "<C-_>",
+            function()
+              require("graffitty.send").save_to_clipboard()
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", true)
+            end,
+            mode = { "n", "x" },
+            desc = "Save to clipboard",
+          },
+        })
+      end
+      return keys
     end,
   },
   {
@@ -36,6 +90,7 @@ return {
   },
   {
     "kiyoon/tmux-send.nvim",
+    cond = not in_graffitty,
     dev = tmux_send_dev,
     keys = {
       {
@@ -794,6 +849,30 @@ return {
       require("gp").setup({
         openai_api_key = { "pass", "API-dear/openai" },
         agents = {
+          {
+            name = "GPT6Luna",
+            provider = "openai",
+            chat = false,
+            command = true,
+            model = "gpt-6-luna",
+            system_prompt = require("gp.defaults").code_system_prompt,
+          },
+          {
+            name = "GPT6.1Sol",
+            provider = "openai",
+            chat = false,
+            command = true,
+            model = "gpt-6.1-sol",
+            system_prompt = require("gp.defaults").code_system_prompt,
+          },
+          {
+            name = "GPT6.1Terra",
+            provider = "openai",
+            chat = false,
+            command = true,
+            model = "gpt-6.1-terra",
+            system_prompt = require("gp.defaults").code_system_prompt,
+          },
           {
             name = "ChatGPT5",
             chat = true,

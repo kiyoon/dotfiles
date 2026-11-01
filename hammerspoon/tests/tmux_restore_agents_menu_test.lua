@@ -119,8 +119,8 @@ local function completeRestore(tasks, sessionId)
 end
 
 local NOW = 1787804000
-local MAIN_TAG_DIR = "/state/snapshots/tag-main--0123456789abcdef"
-local CRON_TAG_DIR = "/state/snapshots/tag-cron--fedcba9876543210"
+local MANUAL_TAG_DIR = "/state/snapshots/tag-manual--0123456789abcdef"
+local AUTO_TAG_DIR = "/state/snapshots/tag-auto--fedcba9876543210"
 
 local function countsDocument(sessions, windows, panes)
   local function list(n)
@@ -145,17 +145,17 @@ local function historyHarness(extra)
     halfHour = snapshotName(NOW - 1800, "cccc"),
     hour = snapshotName(NOW - 3600, "dddd"),
     day = snapshotName(NOW - 90000, "eeee"),
-    cron = snapshotName(NOW - 300, "ffff"),
+    auto = snapshotName(NOW - 300, "ffff"),
   }
   local options = {
     now = NOW,
     directories = {
       ["/state/snapshots"] = {
         "snapshot-01787630819647906000-stray.json",
-        "tag-cron--fedcba9876543210",
-        "tag-main--0123456789abcdef",
+        "tag-auto--fedcba9876543210",
+        "tag-manual--0123456789abcdef",
       },
-      [MAIN_TAG_DIR] = {
+      [MANUAL_TAG_DIR] = {
         names.halfHour,
         "layout.json",
         names.newest,
@@ -164,23 +164,23 @@ local function historyHarness(extra)
         names.minute,
         names.hour,
       },
-      [CRON_TAG_DIR] = { names.cron },
+      [AUTO_TAG_DIR] = { names.auto },
     },
     files = {
-      [MAIN_TAG_DIR .. "/" .. names.newest] = "main-newest",
-      [MAIN_TAG_DIR .. "/" .. names.minute] = "main-minute",
-      [MAIN_TAG_DIR .. "/" .. names.halfHour] = "main-half-hour",
-      [MAIN_TAG_DIR .. "/" .. names.hour] = "main-hour",
-      [MAIN_TAG_DIR .. "/" .. names.day] = "main-day",
-      [CRON_TAG_DIR .. "/" .. names.cron] = "cron-only",
+      [MANUAL_TAG_DIR .. "/" .. names.newest] = "manual-newest",
+      [MANUAL_TAG_DIR .. "/" .. names.minute] = "manual-minute",
+      [MANUAL_TAG_DIR .. "/" .. names.halfHour] = "manual-half-hour",
+      [MANUAL_TAG_DIR .. "/" .. names.hour] = "manual-hour",
+      [MANUAL_TAG_DIR .. "/" .. names.day] = "manual-day",
+      [AUTO_TAG_DIR .. "/" .. names.auto] = "auto-only",
     },
     json = {
-      ["main-newest"] = countsDocument(4, 9, 12),
-      ["main-minute"] = countsDocument(3, 10, 20),
-      ["main-half-hour"] = countsDocument(5, 34, 34),
-      ["main-hour"] = countsDocument(1, 1, 1),
-      ["main-day"] = countsDocument(2, 3, 4),
-      ["cron-only"] = countsDocument(2, 2, 2),
+      ["manual-newest"] = countsDocument(4, 9, 12),
+      ["manual-minute"] = countsDocument(3, 10, 20),
+      ["manual-half-hour"] = countsDocument(5, 34, 34),
+      ["manual-hour"] = countsDocument(1, 1, 1),
+      ["manual-day"] = countsDocument(2, 3, 4),
+      ["auto-only"] = countsDocument(2, 2, 2),
     },
   }
   for key, value in pairs(extra or {}) do
@@ -193,17 +193,17 @@ end
 test("resume submenus list snapshots newest first with age and counts", function()
   local controller = historyHarness()
   local items = controller:menuItems()
-  local main = items[2].menu
-  assertEqual(type(main), "table", "main submenu exists")
-  assertEqual(#main, 5, "main submenu ignores stray files")
-  assertEqual(main[1].title, "45s ago, 4 sessions, 9 windows, 12 panes", "newest first")
-  assertEqual(main[2].title, "1m ago, 3 sessions, 10 windows, 20 panes", "minute entry")
-  assertEqual(main[3].title, "30m ago, 5 sessions, 34 windows, 34 panes", "half hour entry")
-  assertEqual(main[4].title, "1h ago, 1 session, 1 window, 1 pane", "singular counts")
-  assertEqual(main[5].title, "1d ago, 2 sessions, 3 windows, 4 panes", "day entry")
-  local cron = items[3].menu
-  assertEqual(#cron, 1, "cron submenu")
-  assertEqual(cron[1].title, "5m ago, 2 sessions, 2 windows, 2 panes", "cron entry")
+  local manual = items[2].menu
+  assertEqual(type(manual), "table", "manual submenu exists")
+  assertEqual(#manual, 5, "manual submenu ignores stray files")
+  assertEqual(manual[1].title, "45s ago, 4 sessions, 9 windows, 12 panes", "newest first")
+  assertEqual(manual[2].title, "1m ago, 3 sessions, 10 windows, 20 panes", "minute entry")
+  assertEqual(manual[3].title, "30m ago, 5 sessions, 34 windows, 34 panes", "half hour entry")
+  assertEqual(manual[4].title, "1h ago, 1 session, 1 window, 1 pane", "singular counts")
+  assertEqual(manual[5].title, "1d ago, 2 sessions, 3 windows, 4 panes", "day entry")
+  local auto = items[3].menu
+  assertEqual(#auto, 1, "auto submenu")
+  assertEqual(auto[1].title, "5m ago, 2 sessions, 2 windows, 2 panes", "auto entry")
 end)
 
 test("submenu entries resume their exact snapshot", function()
@@ -219,18 +219,18 @@ test("submenu entries resume their exact snapshot", function()
     UV_PREFIX[5],
     "resume",
     "--tag",
-    "main",
+    "manual",
     "--snapshot",
-    MAIN_TAG_DIR .. "/" .. names.halfHour,
+    MANUAL_TAG_DIR .. "/" .. names.halfHour,
     "--no-attach",
   }, "submenu resume")
-  assertEqual(alerts[#alerts], "Restoring main tmux snapshot from 30m ago...", "submenu restoring alert")
+  assertEqual(alerts[#alerts], "Restoring manual tmux snapshot from 30m ago...", "submenu restoring alert")
   completeRestore(tasks, "$5")
-  assertEqual(alerts[#alerts], "Restored main snapshot from 30m ago; attaching $5...", "submenu restored alert")
+  assertEqual(alerts[#alerts], "Restored manual snapshot from 30m ago; attaching $5...", "submenu restored alert")
   assertEqual(tasks[3].executable, "/kitten", "submenu resume attaches")
 end)
 
-test("cron submenu entries resume with the cron tag", function()
+test("auto submenu entries resume with the auto tag", function()
   local controller, tasks, _, names = historyHarness()
   local items = controller:menuItems()
   items[3].menu[1].fn()
@@ -242,11 +242,11 @@ test("cron submenu entries resume with the cron tag", function()
     UV_PREFIX[5],
     "resume",
     "--tag",
-    "cron",
+    "auto",
     "--snapshot",
-    CRON_TAG_DIR .. "/" .. names.cron,
+    AUTO_TAG_DIR .. "/" .. names.auto,
     "--no-attach",
-  }, "cron submenu resume")
+  }, "auto submenu resume")
 end)
 
 test("submenus cap history at the ten newest snapshots", function()
@@ -256,13 +256,13 @@ test("submenus cap history at the ten newest snapshots", function()
   for index = 1, 12 do
     local name = snapshotName(NOW - index * 60, "entry" .. index)
     directoryNames[#directoryNames + 1] = name
-    files[MAIN_TAG_DIR .. "/" .. name] = "capped"
+    files[MANUAL_TAG_DIR .. "/" .. name] = "capped"
   end
   local controller = harness({
     now = NOW,
     directories = {
-      ["/state/snapshots"] = { "tag-main--0123456789abcdef" },
-      [MAIN_TAG_DIR] = directoryNames,
+      ["/state/snapshots"] = { "tag-manual--0123456789abcdef" },
+      [MANUAL_TAG_DIR] = directoryNames,
     },
     files = files,
     json = json,
@@ -277,8 +277,8 @@ test("missing or empty histories show a disabled placeholder", function()
   local controller = harness({
     now = NOW,
     directories = {
-      ["/state/snapshots"] = { "tag-cron--fedcba9876543210" },
-      [CRON_TAG_DIR] = {},
+      ["/state/snapshots"] = { "tag-auto--fedcba9876543210" },
+      [AUTO_TAG_DIR] = {},
     },
   })
   local items = controller:menuItems()
@@ -296,22 +296,22 @@ test("unreadable snapshots stay visible but disabled", function()
   local controller = harness({
     now = NOW,
     directories = {
-      ["/state/snapshots"] = { "tag-main--0123456789abcdef" },
-      [MAIN_TAG_DIR] = { missing, broken },
+      ["/state/snapshots"] = { "tag-manual--0123456789abcdef" },
+      [MANUAL_TAG_DIR] = { missing, broken },
     },
-    files = { [MAIN_TAG_DIR .. "/" .. broken] = "not-json" },
+    files = { [MANUAL_TAG_DIR .. "/" .. broken] = "not-json" },
     json = {},
   })
   local items = controller:menuItems()
-  local main = items[2].menu
-  assertEqual(main[1].title, "1m ago, unreadable snapshot", "missing file entry")
-  assertEqual(main[1].disabled, true, "missing file disabled")
-  assertEqual(main[1].fn, nil, "missing file has no action")
-  assertEqual(main[2].title, "30m ago, unreadable snapshot", "invalid JSON entry")
-  assertEqual(main[2].disabled, true, "invalid JSON disabled")
+  local manual = items[2].menu
+  assertEqual(manual[1].title, "1m ago, unreadable snapshot", "missing file entry")
+  assertEqual(manual[1].disabled, true, "missing file disabled")
+  assertEqual(manual[1].fn, nil, "missing file has no action")
+  assertEqual(manual[2].title, "30m ago, unreadable snapshot", "invalid JSON entry")
+  assertEqual(manual[2].disabled, true, "invalid JSON disabled")
 end)
 
-test("main capture kills tmux only after a successful snapshot", function()
+test("manual capture kills tmux only after a successful snapshot", function()
   local controller, tasks, alerts = harness()
   assertEqual(controller:snapshotAndKill(), true, "snapshot task starts")
   assertEqual(tasks[1].executable, "/uv", "snapshot executable")
@@ -324,7 +324,7 @@ test("main capture kills tmux only after a successful snapshot", function()
     "snapshot",
     "--require-write",
     "--no-skip-agentless",
-  }, "main snapshot")
+  }, "manual snapshot")
   assertEqual(#tasks, 1, "tmux remains alive during capture")
 
   tasks[1]:complete(0)
@@ -332,7 +332,7 @@ test("main capture kills tmux only after a successful snapshot", function()
   assertEqual(tasks[2].executable, "/tmux", "kill executable")
   assertArguments(tasks[2].arguments, { "kill-server" }, "kill-server")
   tasks[2]:complete(0)
-  assertEqual(alerts[#alerts], "Saved main snapshot and stopped tmux", "success alert")
+  assertEqual(alerts[#alerts], "Saved manual snapshot and stopped tmux", "success alert")
 end)
 
 test("failed capture never kills tmux", function()
@@ -343,8 +343,8 @@ test("failed capture never kills tmux", function()
   assertEqual(alerts[#alerts], "tmux snapshot failed: no stable topology", "failure alert")
 end)
 
-test("main and cron resume restore the selected tag before attaching", function()
-  for _, tag in ipairs({ "main", "cron" }) do
+test("manual and auto resume restore the selected tag before attaching", function()
+  for _, tag in ipairs({ "manual", "auto" }) do
     local controller, tasks = harness()
     assertEqual(controller:resume(tag), true, tag .. " resume task starts")
     assertEqual(tasks[1].executable, "/uv", tag .. " resume executable")
@@ -364,8 +364,8 @@ end)
 
 test("completed restore reads its attach target and opens an existing GUI", function()
   local controller, tasks, alerts = harness()
-  assertEqual(controller:resume("main"), true, "first resume starts")
-  assertEqual(controller:resume("cron"), false, "a concurrent action is rejected")
+  assertEqual(controller:resume("manual"), true, "first resume starts")
+  assertEqual(controller:resume("auto"), false, "a concurrent action is rejected")
   assertEqual(alerts[#alerts], "tmux restore action already in progress", "concurrent alert")
 
   tasks[1]:complete(0, "restored\n", "")
@@ -394,20 +394,20 @@ test("completed restore reads its attach target and opens an existing GUI", func
     "$5",
   }, "existing GUI attach")
   tasks[3]:complete(0, "42\n", "")
-  assertEqual(controller:resume("cron"), true, "completed spawn releases the lock")
+  assertEqual(controller:resume("auto"), true, "completed spawn releases the lock")
   assertEqual(#tasks, 4, "second resume starts after completion")
 end)
 
 test("immediate terminal spawn completion cannot leave a stale lock", function()
   local controller, tasks = harness({ completeOnStart = true })
-  assertEqual(controller:resume("main"), true, "first immediate resume starts")
-  assertEqual(controller:resume("cron"), true, "second immediate resume starts")
+  assertEqual(controller:resume("manual"), true, "first immediate resume starts")
+  assertEqual(controller:resume("auto"), true, "second immediate resume starts")
   assertEqual(#tasks, 6, "both immediate restore chains start")
 end)
 
 test("missing kitty socket falls back to a new GUI process", function()
   local controller, tasks, alerts = harness()
-  assertEqual(controller:resume("main"), true, "background restore starts")
+  assertEqual(controller:resume("manual"), true, "background restore starts")
   completeRestore(tasks, "$5")
   tasks[3]:complete(1, "", "cannot connect to socket")
 
@@ -435,12 +435,12 @@ test("missing kitty socket falls back to a new GUI process", function()
   assertEqual(alerts[#alerts], "No running kitty; opening a new window...", "fallback alert")
 
   tasks[4]:complete(0)
-  assertEqual(controller:resume("cron"), true, "completed GUI launch releases the lock")
+  assertEqual(controller:resume("auto"), true, "completed GUI launch releases the lock")
 end)
 
 test("no running kitty opens a new GUI without a remote control attempt", function()
   local controller, tasks, alerts = harness({ noKitty = true })
-  assertEqual(controller:resume("main"), true, "background restore starts")
+  assertEqual(controller:resume("manual"), true, "background restore starts")
   completeRestore(tasks, "$5")
 
   assertEqual(#tasks, 3, "a missing kitty skips the remote control task")
@@ -448,12 +448,12 @@ test("no running kitty opens a new GUI without a remote control attempt", functi
   assertEqual(alerts[#alerts], "No running kitty; opening a new window...", "fallback alert")
 
   tasks[3]:complete(0)
-  assertEqual(controller:resume("cron"), true, "completed GUI launch releases the lock")
+  assertEqual(controller:resume("auto"), true, "completed GUI launch releases the lock")
 end)
 
 test("failed new GUI launch reports its error and releases the lock", function()
   local controller, tasks, alerts = harness()
-  controller:resume("main")
+  controller:resume("manual")
   completeRestore(tasks, "$5")
   tasks[3]:complete(1, "", "cannot connect to socket")
   tasks[4]:complete(1, "", "LaunchServices rejected the app")
@@ -463,39 +463,39 @@ test("failed new GUI launch reports its error and releases the lock", function()
     "Could not open restored tmux: LaunchServices rejected the app",
     "fallback failure alert"
   )
-  assertEqual(controller:resume("main"), true, "failed GUI launch releases the lock")
+  assertEqual(controller:resume("manual"), true, "failed GUI launch releases the lock")
 end)
 
 test("failed background restore never opens a terminal and releases the lock", function()
   local controller, tasks, alerts = harness()
-  controller:resume("main")
+  controller:resume("manual")
   tasks[1]:complete(1, "", "exact restore failed")
 
   assertEqual(#tasks, 1, "failed restore does not query or attach")
   assertEqual(alerts[#alerts], "tmux resume failed: exact restore failed", "restore failure alert")
-  assertEqual(controller:resume("main"), true, "failed restore releases the lock")
+  assertEqual(controller:resume("manual"), true, "failed restore releases the lock")
 end)
 
 test("invalid attach target never opens a terminal and releases the lock", function()
   local controller, tasks, alerts = harness()
-  controller:resume("main")
+  controller:resume("manual")
   tasks[1]:complete(0, "restored\n", "")
   tasks[2]:complete(0, ATTACH_ENVIRONMENT .. "=not-a-raw-id\n", "")
 
   assertEqual(#tasks, 2, "invalid target does not attach")
   assertEqual(alerts[#alerts], "Could not read restored tmux attach target: invalid session id", "invalid target alert")
-  assertEqual(controller:resume("main"), true, "invalid target releases the lock")
+  assertEqual(controller:resume("manual"), true, "invalid target releases the lock")
 end)
 
-test("menu exposes snapshot submenus for main and cron", function()
+test("menu exposes snapshot submenus for manual and auto", function()
   local controller = historyHarness()
   local items = controller:menuItems()
   assertEqual(items[1].title, "Snapshot tmux and kill", "capture title")
-  assertEqual(items[2].title, "Resume main snapshot", "main title")
-  assertEqual(items[3].title, "Resume cron snapshot", "cron title")
+  assertEqual(items[2].title, "Resume manual snapshot", "manual title")
+  assertEqual(items[3].title, "Resume auto snapshot", "auto title")
   assertEqual(#items, 3, "tmux actions must be one contiguous group")
-  assertEqual(type(items[2].menu), "table", "main submenu")
-  assertEqual(type(items[3].menu), "table", "cron submenu")
+  assertEqual(type(items[2].menu), "table", "manual submenu")
+  assertEqual(type(items[3].menu), "table", "auto submenu")
   assertEqual(items[2].fn, nil, "submenu parents must not have direct actions")
   assertEqual(items[3].fn, nil, "submenu parents must not have direct actions")
 end)

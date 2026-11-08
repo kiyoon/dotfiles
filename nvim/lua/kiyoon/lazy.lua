@@ -2708,8 +2708,8 @@ return {
         debounce_ms = 300,
         browser = vim.env.TERM_PROGRAM == "graffitty" and vim.env.GRAFFITTY_BIN and {
           vim.env.GRAFFITTY_BIN,
-          "browser",
-          "create",
+          "chromium",
+          "new",
           "--url",
         } or nil,
       })

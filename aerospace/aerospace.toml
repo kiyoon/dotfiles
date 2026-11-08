@@ -66,6 +66,12 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:${PATH}'
 check-further-callbacks = true
 run = 'exec-and-forget sketchybar --trigger aerospace_workspace_change'
 
+# Moonlight Office's stream window has no full-screen button (Moonlight disables
+# macOS full-screen spaces), so AeroSpace's dialog heuristic would float it.
+[[on-window-detected]]
+if.app-id = 'dev.graffitty.MoonlightOffice'
+run = 'layout tiling'
+
 [[on-window-detected]]
 if.app-name-regex-substring = '^System.*(Preferences|Settings)$'
 run = 'layout floating'

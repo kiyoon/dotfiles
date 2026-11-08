@@ -239,9 +239,12 @@ end
 -- 6. 그 외에는 Apple 한<->영, 모르면 Apple 한글로
 -- 한/영 전환 본체. F18에 바인딩되고, `hs -c "toggleInputLanguage()"`로도 호출할 수 있다
 -- (합성 F18은 macOS의 fn+F18 "이전 입력 소스" 단축키와 겹쳐서 테스트/스크립트에 못 쓴다).
+local moonlightHostIme = require("moonlight_host_ime")
 local function toggleInputLanguage()
-  local input_source = hs.keycodes.currentSourceID()
   local current_app = hs.application.frontmostApplication()
+  if moonlightHostIme.handle(current_app) then return end
+  if not current_app then return end
+  local input_source = hs.keycodes.currentSourceID()
   print("[F18] app=" .. current_app:name() .. " src=" .. tostring(input_source))
 
   local term_kind = terminal.kindForAppName(current_app:name())
